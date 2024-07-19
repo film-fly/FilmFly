@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -48,4 +49,15 @@ public class Review extends TimeStampEntity {
 
     @Column(nullable = false)
     private Long badCount;
+
+    @Builder
+    public Review(User user, Movie movie, String title, String content, Float rating) {
+        this.user = user;
+        this.movie = movie;
+        this.title = title;
+        this.content = content;
+        this.rating = rating;
+        this.goodCount = 0L;
+        this.badCount = 0L;
+    }
 }
