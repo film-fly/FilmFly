@@ -1,0 +1,14 @@
+package com.sparta.filmfly.domain.favorite.controller;
+
+import com.sparta.filmfly.domain.favorite.service.FavoriteService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RestController;
+
+@Slf4j
+@RestController
+@RequiredArgsConstructor
+public class FavoriteController {
+
+    private final FavoriteService favoriteService;
+}

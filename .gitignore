@@ -1,3 +1,6 @@
+# 환경변수
+/src/main/resources/properties/env.yml
+
 # QueryDSL QClass 포함 안함
 /src/main/generated/**
 
