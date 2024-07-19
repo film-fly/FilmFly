@@ -2,7 +2,6 @@ package com.sparta.filmfly.domain.comment.entity;
 
 import com.sparta.filmfly.domain.board.entity.Board;
 import com.sparta.filmfly.domain.comment.dto.CommentResponseDto;
-import com.sparta.filmfly.domain.exam.dto.ExamUpdateRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import jakarta.persistence.Column;
@@ -50,10 +49,6 @@ public class Comment extends TimeStampEntity {
         this.user = user;
         this.board = board;
         this.content = content;
-    }
-
-    public void update(ExamUpdateRequestDto requestDto) {
-        this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
     }
 
     public CommentResponseDto toResponseDto() {

@@ -1,6 +1,5 @@
 package com.sparta.filmfly.domain.board.entity;
 
-import com.sparta.filmfly.domain.exam.dto.ExamUpdateRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import jakarta.persistence.Column;
@@ -11,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,11 +49,6 @@ public class Board extends TimeStampEntity {
     public Board(String title, String content) {
         this.title = title;
         this.content = content;
-    }
-
-    public void update(ExamUpdateRequestDto requestDto) {
-        this.title = requestDto.getTitle() != null ? requestDto.getTitle() : title;
-        this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
     }
 
     public void validateExam() {

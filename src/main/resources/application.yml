@@ -20,7 +20,7 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        #show_sql: true
+        show_sql: true
         format_sql: true
         connection:
           CharSet: utf-8
@@ -34,4 +34,5 @@ logging.level:
 #  org.springframework.security: debug
 #  org.springframework.web: debug
 
-jwt-secret-key: ${JWT-SECRET-KEY}
+# 혹시나 에러가 뜨면 "_"에서 "-"으로 바꾸기
+jwt_secret_key: ${JWT-SECRET-KEY}

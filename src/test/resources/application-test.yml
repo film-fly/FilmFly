@@ -25,5 +25,3 @@ spring:
           characterEncoding: utf-8
           useUnicode: true
     defer-datasource-initialization: true
-
-jwt-secret-key: ${JWT-SECRET-KEY}
