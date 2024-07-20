@@ -13,6 +13,7 @@ import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -40,7 +41,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     // 화이트 리스트에 포함된 URI는 인증을 생략
     private final List<String> anyMethodWhiteList = List.of(
-            "/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/email/verify" , "/email/send"
+            "/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/email/verify", "/email/send"
     );
 
     public JwtAuthorizationFilter(JwtProvider jwtProvider, UserDetailsServiceImpl userDetailsService,
@@ -66,8 +67,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
 
         try {
-            // 요청 헤더에서 액세스 토큰 추출
-            String accessToken = jwtProvider.getAccessTokenFromHeader(req);
+            // 쿠키에서 액세스 토큰과 리프레시 토큰 추출
+            String accessToken = getTokenFromCookie(req, "accessToken");
             if (!StringUtils.hasText(accessToken)) {
                 setErrorResponse(res, ResponseCodeEnum.INVALID_TOKENS);
                 return;
@@ -113,6 +114,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         filterChain.doFilter(req, res);
     }
 
+    // 쿠키에서 토큰 추출
+    private String getTokenFromCookie(HttpServletRequest request, String tokenName) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (tokenName.equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
     // 유효한 액세스 토큰을 처리하여 인증을 설정
     private void handleValidAccessToken(String accessToken) {
         Claims accessTokenClaims = jwtProvider.getUserInfoFromToken(accessToken);
@@ -122,8 +136,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     // 액세스 토큰이 만료된 경우 리프레시 토큰을 통해 새로운 액세스 토큰을 발급
     private void handleExpiredAccessToken(HttpServletRequest req, HttpServletResponse res) {
-        // 요청 헤더에서 리프레시 토큰 추출
-        String refreshToken = jwtProvider.getRefreshTokenFromHeader(req);
+        // 쿠키에서 리프레시 토큰 추출
+        String refreshToken = getTokenFromCookie(req, "refreshToken");
         if (StringUtils.hasText(refreshToken) && jwtProvider.validateToken(refreshToken)) {
             Claims refreshTokenClaims = jwtProvider.getUserInfoFromToken(refreshToken);
             String username = refreshTokenClaims.getSubject();

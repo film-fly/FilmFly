@@ -9,6 +9,7 @@ import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -79,9 +80,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = jwtProvider.createAccessToken(username);
         String refreshToken = jwtProvider.createRefreshToken(username);
 
-        // 액세스 토큰과 리프레시 토큰을 헤더로 설정
-        response.setHeader("Authorization", accessToken);
-        response.setHeader("Refresh-Token", refreshToken);
+        Cookie accessTokenCookie = new Cookie("refreshToken", accessToken);
+        response.addCookie(accessTokenCookie);
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        response.addCookie(refreshTokenCookie);
+
 
         // 사용자 정보 업데이트
         User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
