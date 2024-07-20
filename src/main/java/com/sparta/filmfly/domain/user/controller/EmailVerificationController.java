@@ -1,11 +1,13 @@
 package com.sparta.filmfly.domain.user.controller;
 
+import com.sparta.filmfly.domain.user.dto.EmailSendRequestDto;
 import com.sparta.filmfly.domain.user.dto.EmailVerificationRequestDto;
 import com.sparta.filmfly.domain.user.service.EmailVerificationService;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,7 +19,8 @@ public class EmailVerificationController {
 
     // 이메일 인증 코드를 전송
     @PostMapping("/send")
-    public ResponseEntity<MessageResponseDto> sendVerificationCode(@RequestParam String email) {
+    public ResponseEntity<MessageResponseDto> sendVerificationCode(@RequestBody EmailSendRequestDto requestDto) {
+        String email = requestDto.getEmail();
         emailVerificationService.createVerificationCode(email);
         return ResponseUtils.success();
     }

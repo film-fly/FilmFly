@@ -40,7 +40,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     // 화이트 리스트에 포함된 URI는 인증을 생략
     private final List<String> anyMethodWhiteList = List.of(
-            "/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/email/verify" , "/email/resend"
+            "/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/email/verify" , "/email/send"
     );
 
     public JwtAuthorizationFilter(JwtProvider jwtProvider, UserDetailsServiceImpl userDetailsService,
@@ -141,7 +141,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
                 // 새로운 액세스 토큰 생성
                 String newAccessToken = jwtProvider.createAccessToken(username);
-                res.addHeader(JwtProvider.AUTHORIZATION_HEADER, "Bearer " + newAccessToken);
+                res.addHeader(JwtProvider.AUTHORIZATION_HEADER, newAccessToken);
                 setAuthentication(username);
             } else {
                 setErrorResponse(res, ResponseCodeEnum.INVALID_TOKENS);
