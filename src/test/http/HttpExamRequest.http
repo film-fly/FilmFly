@@ -3,10 +3,10 @@ POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
-  "email" : "admin@gmail.com",
-  "password": "sparta12!@",
-  "name" : "admin",
-  "adminToken": "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC"
+  "username": "admin1",
+  "password": "Test123!",
+  "email" : "dmarb0313@gmail.com",
+  "adminPassword": "1234"
 }
 
 ### ADMIN 회원가입시 토큰값이 다를 때 실패
@@ -14,10 +14,10 @@ POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
-  "email" : "adminFail@gmail.com",
-  "password": "sparta12!@",
-  "name" : "admin1",
-  "adminToken": "AC"
+  "username": "admin2",
+  "password": "Test123!",
+  "email" : "dmarb0313@gmail.com",
+  "adminPassword": "12341"
 }
 
 ### USER 회원가입
@@ -25,9 +25,17 @@ POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
-  "email" : "user@gmail.com",
-  "password": "sparta12!@",
-  "name" : "user"
+  "username": "user1",
+  "password": "Test123!",
+  "email" : "dmsrb0125@naver.com"
+}
+
+### EMAIL 인증
+POST http://localhost:8080/email/verify
+Content-Type: application/json
+
+{
+   "code" : "208263"
 }
 
 ### ADMIN 로그인
@@ -35,8 +43,8 @@ POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "email" : "admin@gmail.com",
-  "password": "sparta12!@"
+  "username" : "manager1",
+  "password": "Test123!"
 }
 
 > {% client.global.set("ADMIN_TOKEN", response.headers.valueOf("Authorization")); %}
@@ -46,8 +54,8 @@ POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "email" : "user@gmail.com",
-  "password": "sparta12!@"
+  "username" : "user1",
+  "password": "Test123!"
 }
 
 > {% client.global.set("USER_TOKEN", response.headers.valueOf("Authorization"));
