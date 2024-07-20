@@ -15,18 +15,31 @@ spring:
 #      data-locations: classpath:/data.sql
 #      mode: always
 
+  mail:
+    protocol: smtp
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_ACCOUNT}
+    password: ${MAIL_APP_PASSWORD}
+    default-encoding: utf-8
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
+
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        show_sql: true
+        #show_sql: true
         format_sql: true
         connection:
           CharSet: utf-8
           characterEncoding: utf-8
           useUnicode: true
-#    defer-datasource-initialization: true
 
 logging.level:
   root: info
@@ -35,4 +48,7 @@ logging.level:
 #  org.springframework.web: debug
 
 # 혹시나 에러가 뜨면 "_"에서 "-"으로 바꾸기
-jwt_secret_key: ${JWT-SECRET-KEY}
+
+jwt_secret_key: ${JWT_SECRET_KEY}
+admin_password: ${ADMIN_PASSWORD}
+
