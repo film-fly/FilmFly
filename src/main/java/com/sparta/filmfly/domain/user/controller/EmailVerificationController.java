@@ -22,13 +22,6 @@ public class EmailVerificationController {
         return ResponseUtils.success();
     }
 
-    // 이메일 인증 코드를 재발송
-    @PostMapping("/resend")
-    public ResponseEntity<MessageResponseDto> resendVerificationCode(@RequestParam String email) {
-        emailVerificationService.createVerificationCode(email);
-        return ResponseUtils.success();
-    }
-
     // 이메일 인증 코드를 검증
     @PostMapping("/verify")
     public ResponseEntity<MessageResponseDto> verifyCode(@RequestBody EmailVerificationRequestDto requestDto) {
