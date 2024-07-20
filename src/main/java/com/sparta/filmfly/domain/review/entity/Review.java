@@ -1,6 +1,7 @@
 package com.sparta.filmfly.domain.review.entity;
 
 import com.sparta.filmfly.domain.movie.entity.Movie;
+import com.sparta.filmfly.domain.review.dto.ReviewUpdateRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import jakarta.persistence.Column;
@@ -59,5 +60,11 @@ public class Review extends TimeStampEntity {
         this.rating = rating;
         this.goodCount = 0L;
         this.badCount = 0L;
+    }
+
+    public void updateReview(ReviewUpdateRequestDto requestDto) {
+        if (requestDto.getTitle() != null) this.title = requestDto.getTitle();
+        if (requestDto.getContent() != null) this.content = requestDto.getContent();
+        if (requestDto.getRating() != null) this.rating = requestDto.getRating();
     }
 }

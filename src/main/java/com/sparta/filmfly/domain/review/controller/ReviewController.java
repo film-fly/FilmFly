@@ -2,6 +2,7 @@ package com.sparta.filmfly.domain.review.controller;
 
 import com.sparta.filmfly.domain.review.dto.ReviewCreateRequestDto;
 import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
+import com.sparta.filmfly.domain.review.dto.ReviewUpdateRequestDto;
 import com.sparta.filmfly.domain.review.service.ReviewService;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,5 +55,14 @@ public class ReviewController {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
         List<ReviewResponseDto> responseDtos = reviewService.findReviews(1L, pageable); // 영화 id
         return ResponseUtils.success(responseDtos);
+    }
+
+    @PatchMapping("/{reviewId}")
+    public ResponseEntity<DataResponseDto<ReviewResponseDto>> updateReview(
+        @RequestBody ReviewUpdateRequestDto requestDto,
+        @PathVariable Long reviewId
+    ) {
+        ReviewResponseDto responseDto = reviewService.updateReview(requestDto, reviewId);
+        return ResponseUtils.success(responseDto);
     }
 }

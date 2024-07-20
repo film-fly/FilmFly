@@ -4,6 +4,7 @@ import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.review.dto.ReviewCreateRequestDto;
 import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
+import com.sparta.filmfly.domain.review.dto.ReviewUpdateRequestDto;
 import com.sparta.filmfly.domain.review.entity.Review;
 import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.domain.user.entity.User;
@@ -56,5 +57,13 @@ public class ReviewService {
         // QueryDSL 정렬 OrderSpecifier
         // QueryDSL 조건 BooleanExpression
         return responseDtos;
+    }
+
+    @Transactional
+    public ReviewResponseDto updateReview(ReviewUpdateRequestDto requestDto, Long reviewId) {
+        User findUser = userRepository.findByIdOrElseThrow(1L);// 로그인 기능 완료되면 없애기
+        Review findReview = reviewRepository.findByIdOrElseThrow(reviewId);
+        findReview.updateReview(requestDto);
+        return ReviewResponseDto.fromEntity(findUser, findReview);
     }
 }
