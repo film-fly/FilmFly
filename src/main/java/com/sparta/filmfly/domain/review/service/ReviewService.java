@@ -9,8 +9,11 @@ import com.sparta.filmfly.domain.review.entity.Review;
 import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
+import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
+import com.sparta.filmfly.global.exception.custom.detail.NotOwnerException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -65,5 +68,15 @@ public class ReviewService {
         Review findReview = reviewRepository.findByIdOrElseThrow(reviewId);
         findReview.updateReview(requestDto);
         return ReviewResponseDto.fromEntity(findUser, findReview);
+    }
+
+    @Transactional
+    public void deleteReview(Long reviewId) {
+        User findUser = userRepository.findByIdOrElseThrow(1L);
+        Review findReview = reviewRepository.findByIdOrElseThrow(reviewId);
+        if (!Objects.equals(findReview.getUser().getId(), findUser.getId())) {
+            throw new NotOwnerException(ResponseCodeEnum.REVIEW_NOT_OWNER);
+        }
+        reviewRepository.delete(findReview);
     }
 }

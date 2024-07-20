@@ -11,7 +11,7 @@ public enum ResponseCodeEnum {
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "신고내용을 찾을 수 없습니다."),
     BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "차단내용을 찾을 수 없습니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
-
+    REVIEW_NOT_OWNER(HttpStatus.FORBIDDEN, "본인이 작성한 리뷰만 삭제할 수 있습니다."),
 
 
     ;
