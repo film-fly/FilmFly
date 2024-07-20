@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // 로그인 시도하는 username 조회
             User user = userRepository.findByUsernameOrElseThrow(requestDto.getUsername());
 
-            // 사용자 상태(탈퇴,정지) 검증
+            // 사용자 상태(탈퇴,정지,인증) 검증
             user.validateUserStatus();
 
             // 비밀번호 검증
