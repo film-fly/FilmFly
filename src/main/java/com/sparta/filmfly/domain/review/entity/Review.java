@@ -12,15 +12,18 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE review SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 public class Review extends TimeStampEntity {
 
@@ -50,6 +53,8 @@ public class Review extends TimeStampEntity {
 
     @Column(nullable = false)
     private Long badCount;
+
+    private LocalDateTime deletedAt;
 
     @Builder
     public Review(User user, Movie movie, String title, String content, Float rating) {

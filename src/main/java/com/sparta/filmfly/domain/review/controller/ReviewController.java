@@ -5,6 +5,7 @@ import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
 import com.sparta.filmfly.domain.review.dto.ReviewUpdateRequestDto;
 import com.sparta.filmfly.domain.review.service.ReviewService;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
+import com.sparta.filmfly.global.common.response.MessageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import com.sparta.filmfly.global.util.PageUtils;
 import java.util.List;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -64,5 +66,13 @@ public class ReviewController {
     ) {
         ReviewResponseDto responseDto = reviewService.updateReview(requestDto, reviewId);
         return ResponseUtils.success(responseDto);
+    }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<MessageResponseDto> deleteReview(
+        @PathVariable Long reviewId
+    ) {
+        reviewService.deleteReview(reviewId);
+        return ResponseUtils.success();
     }
 }
