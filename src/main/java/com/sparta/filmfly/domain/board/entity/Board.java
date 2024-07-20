@@ -32,7 +32,6 @@ public class Board extends TimeStampEntity {
     @Column(nullable = false)
     private String title;
 
-
     @Column(nullable = false)
     private String content;
 
@@ -49,6 +48,9 @@ public class Board extends TimeStampEntity {
     public Board(String title, String content) {
         this.title = title;
         this.content = content;
+
+        goodCount = 0L;
+        badCount = 0L;
     }
 
     public void validateExam() {

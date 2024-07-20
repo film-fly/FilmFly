@@ -11,7 +11,7 @@ public class BoardResponseDto {
     @NotBlank
     private String content;
 
-    public BoardResponseDto fromEntity(Board board) {
+    public static BoardResponseDto fromEntity(Board board) {
         return BoardResponseDto.builder()
             .title(board.getTitle())
             .content(board.getContent())
