@@ -80,8 +80,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String refreshToken = jwtProvider.createRefreshToken(username);
 
         // 액세스 토큰과 리프레시 토큰을 헤더로 설정
-        response.setHeader("Authorization", "Bearer " + accessToken);
-        response.setHeader("Refresh-Token", "Bearer " + refreshToken);
+        response.setHeader("Authorization", accessToken);
+        response.setHeader("Refresh-Token", refreshToken);
 
         // 사용자 정보 업데이트
         User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
