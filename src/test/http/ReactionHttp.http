@@ -1,0 +1,10 @@
+### 좋아요 등록
+POST http://localhost:8080/goods
+Content-Type: application/json
+
+{
+  "contentId": 1,
+  "contentType": "review"
+}
+
+###
