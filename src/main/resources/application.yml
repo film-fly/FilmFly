@@ -51,3 +51,6 @@ logging.level:
 
 jwt_secret_key: ${JWT_SECRET_KEY}
 admin_password: ${ADMIN_PASSWORD}
+kakao:
+  client_id: ${CLIENT_ID}
+  redirect_uri: http://localhost:8080/users/kakao/callback

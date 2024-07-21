@@ -54,17 +54,20 @@ public class User extends TimeStampEntity {
     @Column
     private Long kakaoId;
 
-    // 일반 회원가입 유저 생성
+    // 사용자 생성
     @Builder
-    public User(String username, String password, String email, UserStatusEnum userStatus, UserRoleEnum userRole) {
+    public User(String username, String password, String email, String nickname, Long kakaoId, String pictureUrl, UserStatusEnum userStatus, UserRoleEnum userRole) {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.nickname = nickname;
+        this.kakaoId = kakaoId;
+        this.pictureUrl = pictureUrl;
         this.userStatus = userStatus;
         this.userRole = userRole;
     }
 
-    // 사용자가 탈퇴,정지,이메일 인증안된 상태인지 검증
+    // 사용자가 탈퇴, 정지, 이메일 인증 안 된 상태인지 검증
     public void validateUserStatus() {
         if (this.userStatus == UserStatusEnum.DELETED) {
             throw new AccessDeniedException(ResponseCodeEnum.USER_DELETED);
@@ -87,7 +90,6 @@ public class User extends TimeStampEntity {
         this.refreshToken = refreshToken;
     }
 
-
     // 인증된 상태로 변경하는 메서드
     public void updateVerified() {
         if (this.userStatus != UserStatusEnum.UNVERIFIED) {
@@ -96,4 +98,3 @@ public class User extends TimeStampEntity {
         this.userStatus = UserStatusEnum.VERIFIED;
     }
 }
-
