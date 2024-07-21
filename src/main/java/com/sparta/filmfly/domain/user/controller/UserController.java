@@ -2,6 +2,7 @@ package com.sparta.filmfly.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta.filmfly.domain.user.dto.PasswordUpdateRequestDto;
+import com.sparta.filmfly.domain.user.dto.ProfileUpdateRequestDto;
 import com.sparta.filmfly.domain.user.dto.SignupRequestDto;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
 import com.sparta.filmfly.domain.user.service.KakaoService;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -71,6 +73,17 @@ public class UserController {
             @Validated @RequestBody PasswordUpdateRequestDto requestDto
     ) {
         userService.updatePassword(loginUser.getUser(), requestDto);
+        return ResponseUtils.success();
+    }
+
+    // 프로필 업로드
+    @PutMapping("/profile")
+    public ResponseEntity<MessageResponseDto> updateProfile(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Validated @RequestPart("profileUpdateRequestDto") ProfileUpdateRequestDto requestDto,
+            @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture
+    ) {
+        userService.updateProfile(userDetails.getUser(), requestDto, profilePicture);
         return ResponseUtils.success();
     }
 }
