@@ -1,5 +1,6 @@
 package com.sparta.filmfly.domain.board.controller;
 
+import com.oracle.svm.core.annotate.Delete;
 import com.sparta.filmfly.domain.board.dto.BoardPageResponseDto;
 import com.sparta.filmfly.domain.board.dto.BoardRequestDto;
 import com.sparta.filmfly.domain.board.dto.BoardResponseDto;
@@ -67,6 +68,16 @@ public class BoardController {
             //@AuthenticationPrincipal UserDetailsImpl userDetails,
     ) {
         BoardResponseDto responseDto = boardService.update(boardId,requestDto);
+        return ResponseUtils.success(responseDto);
+    }
+
+    //보드 삭제
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<DataResponseDto<String>> delete(
+            @PathVariable Long boardId
+            //@AuthenticationPrincipal UserDetailsImpl userDetails,
+    ) {
+        String responseDto = boardService.delete(boardId);
         return ResponseUtils.success(responseDto);
     }
 
