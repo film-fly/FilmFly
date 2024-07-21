@@ -1,5 +1,6 @@
 package com.sparta.filmfly.domain.user.service;
 
+import com.sparta.filmfly.domain.user.dto.PasswordUpdateRequestDto;
 import com.sparta.filmfly.domain.user.dto.SignupRequestDto;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
 import com.sparta.filmfly.domain.user.entity.User;
@@ -50,7 +51,7 @@ public class UserService {
 
         // 어드민이 아닌 경우에만 이메일 인증 코드 전송
         if (user.getUserRole() != UserRoleEnum.ROLE_ADMIN) {
-            emailVerificationService.createVerificationCode(requestDto.getEmail());
+            emailVerificationService.createVerificationCode(requestDto.getUsername());
         }
 
         // UserResponseDto 반환
@@ -61,6 +62,19 @@ public class UserService {
                 .userRole(user.getUserRole())
                 .userStatus(user.getUserStatus())
                 .build();
+    }
+
+    // 비밀번호 변경
+    @Transactional
+    public void updatePassword(User loginUser, PasswordUpdateRequestDto requestDto) {
+        User user = userRepository.findByIdOrElseThrow(loginUser.getId());
+
+        user.validatePassword(requestDto.getCurrentPassword(), passwordEncoder);
+        user.validateNewPassword(requestDto.getNewPassword(), passwordEncoder);
+
+        String encodedNewPassword = passwordEncoder.encode(requestDto.getNewPassword());
+        user.updatePassword(encodedNewPassword);
+        userRepository.save(user);
     }
 
     // 유저 상태 설정
