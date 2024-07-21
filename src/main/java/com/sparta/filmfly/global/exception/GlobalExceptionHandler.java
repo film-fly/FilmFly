@@ -23,6 +23,12 @@ public class GlobalExceptionHandler {
         return ResponseUtils.of(e.getExamCodeEnum().getHttpStatus(), e.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<MessageResponseDto> handleIllegalArgumentException(IllegalArgumentException e) {
+        log.error("에러: ", e);
+        return ResponseUtils.of(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<DataResponseDto<List<String>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         List<String> errorMessageList = new ArrayList<>();
