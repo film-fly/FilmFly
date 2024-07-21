@@ -1,17 +1,11 @@
 package com.sparta.filmfly.domain.comment.entity;
 
 import com.sparta.filmfly.domain.board.entity.Board;
+import com.sparta.filmfly.domain.comment.dto.CommentRequestDto;
 import com.sparta.filmfly.domain.comment.dto.CommentResponseDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,6 +46,10 @@ public class Comment extends TimeStampEntity {
 
         this.goodCount = 0L;
         this.badCount = 0L;
+    }
+
+    public void update(CommentRequestDto requestDto) {
+        this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
     }
 
     public CommentResponseDto toResponseDto() {
