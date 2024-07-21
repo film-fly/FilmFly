@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +31,15 @@ public class BadController {
     ) {
         User loginUser = userRepository.findByIdOrElseThrow(1L); // 로그인 기능 구현 시 제거
         badService.addBad(loginUser, requestDto);
+        return ResponseUtils.success();
+    }
+
+    @DeleteMapping
+    public ResponseEntity<MessageResponseDto> deleteBad(
+        @Valid @RequestBody BadRequestDto requestDto
+    ) {
+        User loginUser = userRepository.findByIdOrElseThrow(1L); // 로그인 기능 구현 시 제거
+        badService.removeGood(loginUser, requestDto);
         return ResponseUtils.success();
     }
 }

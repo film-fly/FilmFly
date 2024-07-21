@@ -14,6 +14,7 @@ public enum ResponseCodeEnum {
     GOOD_ALREADY_ADD(HttpStatus.CONFLICT, "이미 좋아요를 등록했습니다."),
     GOOD_ALREADY_REMOVE(HttpStatus.CONFLICT, "이미 좋아요를 취소했습니다."),
     BAD_ALREADY_ADD(HttpStatus.CONFLICT, "이미 싫어요를 등록했습니다."),
+    BAD_ALREADY_REMOVE(HttpStatus.CONFLICT, "이미 싫어요를 취소했습니다."),
 
 
     ;

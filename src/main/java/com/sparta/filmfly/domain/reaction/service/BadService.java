@@ -5,6 +5,7 @@ import com.sparta.filmfly.domain.comment.repository.CommentRepository;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.dto.BadRequestDto;
+import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
 import com.sparta.filmfly.domain.reaction.entity.Bad;
 import com.sparta.filmfly.domain.reaction.entity.Good;
 import com.sparta.filmfly.domain.reaction.repository.BadRepository;
@@ -12,6 +13,7 @@ import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AlreadyActionException;
+import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,24 @@ public class BadService {
 
         Bad bad = requestDto.toEntity(loginUser, contentType);
         badRepository.save(bad);
+    }
+
+    public void removeGood(User loginUser, BadRequestDto requestDto) {
+        ReactionContentTypeEnum contentType = ReactionContentTypeEnum.validateContentType(requestDto.getContentType());
+
+        // 해당 컨텐츠가 있는지 없는지 확인
+        checkContentExist(requestDto);
+
+        Bad findBad = badRepository.findByTypeIdAndType(
+            requestDto.getContentId(), contentType
+        ).orElse(null);
+
+        // 좋아요가 없으면 예외
+        if (null == findBad) {
+            throw new NotFoundException(ResponseCodeEnum.BAD_ALREADY_REMOVE);
+        }
+
+        badRepository.delete(findBad);
     }
 
     private void checkContentExist(BadRequestDto requestDto) {
