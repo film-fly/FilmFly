@@ -49,6 +49,9 @@ public class Comment extends TimeStampEntity {
         this.user = user;
         this.board = board;
         this.content = content;
+
+        this.goodCount = 0L;
+        this.badCount = 0L;
     }
 
     public CommentResponseDto toResponseDto() {
