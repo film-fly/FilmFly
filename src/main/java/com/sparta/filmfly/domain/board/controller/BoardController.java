@@ -28,19 +28,17 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    /**
-     * 보드 생성
-     */
+    //보드 생성
     @PostMapping
     public ResponseEntity<DataResponseDto<BoardResponseDto>> create(
-            //@AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody BoardRequestDto requestDto
+            //@AuthenticationPrincipal UserDetailsImpl userDetails,
     ) {
         BoardResponseDto responseDto = boardService.create(requestDto);
         return ResponseUtils.success(responseDto);
     }
 
-    // 조회
+    //조회
     @GetMapping("/{boardId}")
     public ResponseEntity<DataResponseDto<BoardResponseDto>> read(
             @PathVariable Long boardId
@@ -49,8 +47,8 @@ public class BoardController {
         return ResponseUtils.success(responseDto);
     }
 
-    // 페이징 조회
-    // http://localhost:8080/board/page?pageNum=1&size=5
+    //페이징 조회
+    //http://localhost:8080/board/page?pageNum=1&size=5
     @GetMapping("/page")
     public ResponseEntity<DataResponseDto<BoardPageResponseDto>> reads(
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum,
@@ -58,6 +56,17 @@ public class BoardController {
     ) {
         Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         BoardPageResponseDto responseDto = boardService.reads(pageable);
+        return ResponseUtils.success(responseDto);
+    }
+
+    //보드 수정
+    @PatchMapping("/{boardId}")
+    public ResponseEntity<DataResponseDto<BoardResponseDto>> update(
+            @PathVariable Long boardId,
+            @Valid @RequestBody BoardRequestDto requestDto
+            //@AuthenticationPrincipal UserDetailsImpl userDetails,
+    ) {
+        BoardResponseDto responseDto = boardService.update(boardId,requestDto);
         return ResponseUtils.success(responseDto);
     }
 

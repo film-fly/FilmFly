@@ -1,5 +1,6 @@
 package com.sparta.filmfly.domain.board.entity;
 
+import com.sparta.filmfly.domain.board.dto.BoardRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import jakarta.persistence.Column;
@@ -53,6 +54,11 @@ public class Board extends TimeStampEntity {
         goodCount = 0L;
         badCount = 0L;
         hits = 0L;
+    }
+
+    public void update(BoardRequestDto requestDto) {
+        this.title = requestDto.getTitle() != null ? requestDto.getTitle() : title;
+        this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
     }
 
     public void validateExam() {
