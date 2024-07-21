@@ -34,7 +34,7 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        #show_sql: true
+        show_sql: true
         format_sql: true
         connection:
           CharSet: utf-8
@@ -51,4 +51,3 @@ logging.level:
 
 jwt_secret_key: ${JWT_SECRET_KEY}
 admin_password: ${ADMIN_PASSWORD}
-
