@@ -38,6 +38,16 @@ Content-Type: application/json
    "code" : "208263"
 }
 
+### EMAIL 전송
+POST http://localhost:8080/email/send
+Content-Type: application/json
+
+{
+
+}
+> {% client.global.set("USER_TOKEN",response.headers.valueOf("Authorization"));
+    client.global.set("USER_REFRESH_TOKEN",response.headers.valueOf("REFRESH_TOKEN_HEADER")); %}
+
 ### ADMIN 로그인
 POST http://localhost:8080/users/login
 Content-Type: application/json

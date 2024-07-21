@@ -16,8 +16,6 @@ import java.util.Date;
 public class JwtProvider {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
-    public static final String REFRESH_TOKEN_HEADER = "Refresh-Token";
-    public static final String BEARER_PREFIX = "Bearer ";
 
     @Value("${jwt_secret_key}")
     private String secretKey;
