@@ -1,5 +1,6 @@
 package com.sparta.filmfly.domain.coupon.entity;
 
+import com.sparta.filmfly.domain.coupon.dto.CouponRequestDto;
 import com.sparta.filmfly.domain.officeboard.entity.OfficeBoard;
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import jakarta.persistence.Column;
@@ -35,7 +36,8 @@ public class Coupon extends TimeStampEntity {
     Boolean status;
 
     @Builder
-    public Coupon(String couponNumber){
-        this.couponNumber = couponNumber;
+    public Coupon(CouponRequestDto requestDto){
+        this.couponNumber = requestDto.getCouponNumber();
+        this.status = true;
     }
 }
