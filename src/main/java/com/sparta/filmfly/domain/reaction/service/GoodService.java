@@ -4,7 +4,7 @@ import com.sparta.filmfly.domain.board.repository.BoardRepository;
 import com.sparta.filmfly.domain.comment.repository.CommentRepository;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
-import com.sparta.filmfly.domain.reaction.dto.GoodAddRequestDto;
+import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
 import com.sparta.filmfly.domain.reaction.entity.Good;
 import com.sparta.filmfly.domain.reaction.repository.GoodRepository;
 import com.sparta.filmfly.domain.review.repository.ReviewRepository;
@@ -27,7 +27,7 @@ public class GoodService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
-    public void addGood(User loginUser, GoodAddRequestDto requestDto) {
+    public void addGood(User loginUser, GoodRequestDto requestDto) {
         ReactionContentTypeEnum contentType = ReactionContentTypeEnum.validateContentType(requestDto.getContentType());
 
         // 해당 컨텐츠가 있는지 없는지 확인
@@ -46,7 +46,25 @@ public class GoodService {
         goodRepository.save(good);
     }
 
-    private void checkContentExist(GoodAddRequestDto requestDto) {
+    public void removeGood(User loginUser, GoodRequestDto requestDto) {
+        ReactionContentTypeEnum contentType = ReactionContentTypeEnum.validateContentType(requestDto.getContentType());
+
+        // 해당 컨텐츠가 있는지 없는지 확인
+        checkContentExist(requestDto);
+
+        Good findGood = goodRepository.findByTypeIdAndType(
+            requestDto.getContentId(), contentType
+        ).orElse(null);
+
+        // 좋아요가 없으면 예외
+        if (null == findGood) {
+            throw new NotFoundException(ResponseCodeEnum.GOOD_ALREADY_REMOVE);
+        }
+
+        goodRepository.delete(findGood);
+    }
+
+    private void checkContentExist(GoodRequestDto requestDto) {
         if (requestDto.getContentType().equalsIgnoreCase(ReactionContentTypeEnum.MOVIE.getContentType())) {
             movieRepository.findById(requestDto.getContentId())
                 .orElseThrow(() -> new IllegalArgumentException("영화가 없음"));  // 각 기능 다 되면 삭제
