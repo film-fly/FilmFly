@@ -1,11 +1,12 @@
 package com.sparta.filmfly.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sparta.filmfly.domain.user.dto.PasswordUpdateRequestDto;
 import com.sparta.filmfly.domain.user.dto.SignupRequestDto;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
 import com.sparta.filmfly.domain.user.service.KakaoService;
 import com.sparta.filmfly.domain.user.service.UserService;
-import com.sparta.filmfly.global.auth.JwtProvider;
+import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
@@ -13,8 +14,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -27,7 +29,6 @@ public class UserController {
 
     private final UserService userService;
     private final KakaoService kakaoService;
-    private final JwtProvider jwtProvider;
 
     @Value("${CLIENT_ID}")
     private String clientId;
@@ -61,5 +62,15 @@ public class UserController {
         } else {
             return ResponseUtils.success();
         }
+    }
+
+    // 비밀번호 변경
+    @PutMapping("/password")
+    public ResponseEntity<MessageResponseDto> updatePassword(
+            @AuthenticationPrincipal UserDetailsImpl loginUser,
+            @Validated @RequestBody PasswordUpdateRequestDto requestDto
+    ) {
+        userService.updatePassword(loginUser.getUser(), requestDto);
+        return ResponseUtils.success();
     }
 }

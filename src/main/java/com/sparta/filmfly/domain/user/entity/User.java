@@ -4,6 +4,7 @@ import com.sparta.filmfly.global.common.TimeStampEntity;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
 import com.sparta.filmfly.global.exception.custom.detail.InformationMismatchException;
+import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -85,6 +86,13 @@ public class User extends TimeStampEntity {
         }
     }
 
+    // 새로운 비밀번호가 기존 비밀번호와 다른지 검증
+    public void validateNewPassword(String newPassword, PasswordEncoder passwordEncoder) {
+        if (passwordEncoder.matches(newPassword, this.password)) {
+            throw new DuplicateException(ResponseCodeEnum.SAME_AS_OLD_PASSWORD);
+        }
+    }
+
     // 리프레시 토큰 업데이트
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
@@ -92,9 +100,12 @@ public class User extends TimeStampEntity {
 
     // 인증된 상태로 변경하는 메서드
     public void updateVerified() {
-        if (this.userStatus != UserStatusEnum.UNVERIFIED) {
-            throw new IllegalStateException("User is already verified or in an invalid state.");
-        }
         this.userStatus = UserStatusEnum.VERIFIED;
     }
+
+    // 비밀번호 업데이트
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
 }
