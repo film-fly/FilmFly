@@ -11,9 +11,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@SQLRestriction("deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE comment SET deleted_at = CURRENT_TIMESTAMP where id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends TimeStampEntity {
@@ -37,6 +41,8 @@ public class Comment extends TimeStampEntity {
 
     @Column(nullable = false)
     private Long badCount;
+
+    private LocalDateTime deletedAt;
 
     @Builder // 필요한 것만 생성자로
     public Comment(User user,Board board, String content) {

@@ -70,4 +70,15 @@ public class CommentController {
         return ResponseUtils.success(responseDto);
     }
 
+    //댓글 삭제
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<DataResponseDto<String>> deleteComment(
+            @PathVariable Long boardId,
+            @PathVariable Long commentId
+            //@AuthenticationPrincipal UserDetailsImpl userDetails,
+    ) {
+        String responseDto = commentService.deleteComment(boardId,commentId);
+        return ResponseUtils.success(responseDto);
+    }
+
 }
