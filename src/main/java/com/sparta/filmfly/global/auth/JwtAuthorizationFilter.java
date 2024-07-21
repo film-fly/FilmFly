@@ -30,6 +30,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Slf4j(topic = "JWT 검증 및 인가")
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -39,9 +40,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
 
-    // 화이트 리스트에 포함된 URI는 인증을 생략
+    // 화이트 리스트에 포함된 URI 패턴은 인증을 생략
     private final List<String> anyMethodWhiteList = List.of(
-            "/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/email/verify", "/email/send"
+            "/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/email/verify", "/email/.*/resend"
     );
 
     public JwtAuthorizationFilter(JwtProvider jwtProvider, UserDetailsServiceImpl userDetailsService,
@@ -210,6 +211,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     // 화이트 리스트 검사
     private boolean isWhiteListed(String uri) {
-        return anyMethodWhiteList.stream().anyMatch(uri::equals);
+        return anyMethodWhiteList.stream().anyMatch(pattern -> Pattern.matches(pattern, uri));
     }
 }
