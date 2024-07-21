@@ -16,8 +16,11 @@ public abstract class TimeStampEntity {
 
     @Column(updatable = false)
     @CreatedDate
-    private LocalDateTime createdAt;
+    public LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @LastModifiedDate
+    protected LocalDateTime deletedAt;
 }

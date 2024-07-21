@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,14 +44,21 @@ public class OfficeBoard extends TimeStampEntity {
     @Column(nullable = false)
     Long goodCount;
 
+
     @Builder
-    public OfficeBoard(String title, String content){
-        this.title = title;
-        this.content = content;
+    // 로그인 완료되면 유저 추가
+    public OfficeBoard(User user, OfficeBoardRequestDto requestDto){
+        this.user = user;
+        this.title = requestDto.getTitle();
+        this.content = requestDto.getContent();
     }
 
     public void update(OfficeBoardRequestDto requestDto) {
         this.title = requestDto.getTitle() != null ? requestDto.getTitle() : title;
         this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
+    }
+
+    public void delete(){
+        this.deletedAt = LocalDateTime.now();
     }
 }
