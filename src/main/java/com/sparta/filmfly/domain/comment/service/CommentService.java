@@ -38,6 +38,7 @@ public class CommentService {
         return CommentResponseDto.fromEntity(savedComment);
     }
 
+    @Transactional(readOnly = true)
     public CommentResponseDto readComment(Long boardId, Long commentId) {
         Board board = boardRepository.findByIdOrElseThrow(boardId); //게시판 경로 확인
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
@@ -45,6 +46,7 @@ public class CommentService {
         return CommentResponseDto.fromEntity(comment);
     }
 
+    @Transactional(readOnly = true)
     public CommentPageResponseDto readsComment(Long boardId, Pageable pageable) {
         Board board = boardRepository.findByIdOrElseThrow(boardId); //게시판 경로 확인
         Page<Comment> comments = commentRepository.findAll(pageable);
@@ -52,5 +54,20 @@ public class CommentService {
 
         //List 형식 totalPages,size,content,number 등 필요한 정보만 보내는 PageResponse
         return CommentPageResponseDto.fromPage(comments);
+    }
+
+    @Transactional
+    public CommentResponseDto updateComment(Long boardId, Long commentId, CommentRequestDto requestDto) {
+        // 활동 정지 당한 유저라면 에러 추가
+        // user.validateExam();
+
+        Board board = boardRepository.findByIdOrElseThrow(boardId); //게시판 경로 확인
+        Comment comment = commentRepository.findByIdOrElseThrow(boardId); //보드 존재 여부 확인
+        //수정 요청한 유저가 해당 보드의 소유주인지 확인하기
+        //if(comment.getUser().getId() == user.getId()) {}
+        comment.update(requestDto);
+        Comment updatedComment = commentRepository.save(comment);
+
+        return CommentResponseDto.fromEntity(updatedComment);
     }
 }

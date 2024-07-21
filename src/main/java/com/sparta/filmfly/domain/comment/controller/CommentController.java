@@ -1,6 +1,5 @@
 package com.sparta.filmfly.domain.comment.controller;
 
-import com.sparta.filmfly.domain.board.dto.BoardResponseDto;
 import com.sparta.filmfly.domain.comment.dto.CommentPageResponseDto;
 import com.sparta.filmfly.domain.comment.dto.CommentRequestDto;
 import com.sparta.filmfly.domain.comment.dto.CommentResponseDto;
@@ -56,6 +55,18 @@ public class CommentController {
         Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.ASC, "createdAt"));
         //정렬은 생성 시간, 받은 댓글은 수정 시간
         CommentPageResponseDto responseDto = commentService.readsComment(boardId, pageable);
+        return ResponseUtils.success(responseDto);
+    }
+
+    //댓글 수정
+    @PatchMapping("/comment/{commentId}")
+    public ResponseEntity<DataResponseDto<CommentResponseDto>> updateComment(
+            @PathVariable Long boardId,
+            @PathVariable Long commentId,
+            @Valid @RequestBody CommentRequestDto requestDto
+            //@AuthenticationPrincipal UserDetailsImpl userDetails,
+    ) {
+        CommentResponseDto responseDto = commentService.updateComment(boardId,commentId,requestDto);
         return ResponseUtils.success(responseDto);
     }
 
