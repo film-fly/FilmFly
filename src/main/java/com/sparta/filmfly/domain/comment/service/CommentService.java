@@ -62,7 +62,7 @@ public class CommentService {
         // user.validateExam();
 
         Board board = boardRepository.findByIdOrElseThrow(boardId); //게시판 경로 확인
-        Comment comment = commentRepository.findByIdOrElseThrow(boardId); //보드 존재 여부 확인
+        Comment comment = commentRepository.findByIdOrElseThrow(commentId); //보드 존재 여부 확인
         //수정 요청한 유저가 해당 보드의 소유주인지 확인하기
         //if(comment.getUser().getId() == user.getId()) {}
         comment.update(requestDto);
@@ -70,4 +70,19 @@ public class CommentService {
 
         return CommentResponseDto.fromEntity(updatedComment);
     }
+
+    @Transactional
+    public String deleteComment(Long boardId, Long commentId) {
+        // 활동 정지 당한 유저라면 에러 추가
+        // user.validateExam();
+
+        Board board = boardRepository.findByIdOrElseThrow(boardId); //게시판 경로 확인
+        Comment comment = commentRepository.findByIdOrElseThrow(commentId); //보드 존재 여부 확인
+        //수정 요청한 유저가 해당 보드의 소유주인지 확인하기
+        //if(board.getUser().getId() == user.getId()) {}
+        commentRepository.delete(comment);
+
+        return "댓글이 삭제되었습니다.";
+    }
+
 }
