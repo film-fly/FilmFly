@@ -1,6 +1,6 @@
 package com.sparta.filmfly.domain.reaction.controller;
 
-import com.sparta.filmfly.domain.reaction.dto.GoodAddRequestDto;
+import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,10 +27,19 @@ public class GoodController {
 
     @PostMapping
     public ResponseEntity<MessageResponseDto> addGood(
-        @Valid @RequestBody GoodAddRequestDto requestDto
+        @Valid @RequestBody GoodRequestDto requestDto
     ) {
-        User loginUser = userRepository.findByIdOrElseThrow(1L);
+        User loginUser = userRepository.findByIdOrElseThrow(1L); // 로그인 기능 구현 시 제거
         goodService.addGood(loginUser, requestDto);
+        return ResponseUtils.success();
+    }
+
+    @DeleteMapping
+    public ResponseEntity<MessageResponseDto> removeGood(
+        @Valid @RequestBody GoodRequestDto requestDto
+    ) {
+        User loginUser = userRepository.findByIdOrElseThrow(1L); // 로그인 기능 구현 시 제거
+        goodService.removeGood(loginUser, requestDto);
         return ResponseUtils.success();
     }
 }

@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public class GoodAddRequestDto {
+public class GoodRequestDto {
 
     @NotNull(message = "컨텐츠의 번호를 입력해 주세요.")
     private Long contentId;
