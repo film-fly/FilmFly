@@ -3,11 +3,9 @@ package com.sparta.filmfly.global.auth;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Base64;
@@ -47,7 +45,9 @@ public class JwtProvider {
                 .setIssuedAt(now)
                 .signWith(key, signatureAlgorithm);
 
-        return BEARER_PREFIX + builder.compact();
+        String token = builder.compact();
+        // Base64 URL-safe encoding
+        return Base64.getUrlEncoder().encodeToString(token.getBytes());
     }
 
     public String createAccessToken(String username) {
@@ -60,29 +60,15 @@ public class JwtProvider {
         return createToken(username, REFRESH_TOKEN_TIME);
     }
 
-    public String getAccessTokenFromHeader(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(BEARER_PREFIX.length());
-        }
-        return null;
-    }
-
-    public String getRefreshTokenFromHeader(HttpServletRequest request) {
-        String bearerToken = request.getHeader(REFRESH_TOKEN_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(BEARER_PREFIX.length());
-        }
-        return null;
-    }
-
     public Claims getUserInfoFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        String decodedToken = new String(Base64.getUrlDecoder().decode(token));
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(decodedToken).getBody();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            String decodedToken = new String(Base64.getUrlDecoder().decode(token));
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(decodedToken);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
             log.error("유효하지 않는 JWT 서명 또는 잘못된 토큰 입니다.");
