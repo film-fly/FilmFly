@@ -111,7 +111,10 @@ public class KakaoService {
         JsonNode jsonNode = objectMapper.readTree(response.getBody());
         Long id = jsonNode.get("id").asLong();
         String nickname = jsonNode.get("properties").get("nickname").asText();
-        String pictureUrl = jsonNode.get("properties").get("profile_image").asText();
+        String pictureUrl = null;
+        if (jsonNode.get("properties").get("profile_image") != null) {
+            pictureUrl = jsonNode.get("properties").get("profile_image").asText();
+        }
         String email = jsonNode.get("kakao_account").get("email").asText();
 
         return KakaoUserInfoDto.builder()
