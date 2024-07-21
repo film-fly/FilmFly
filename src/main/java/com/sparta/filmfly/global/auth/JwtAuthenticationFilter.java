@@ -80,9 +80,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = jwtProvider.createAccessToken(username);
         String refreshToken = jwtProvider.createRefreshToken(username);
 
-        Cookie accessTokenCookie = new Cookie("refreshToken", accessToken);
+        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+        accessTokenCookie.setPath("/");
         response.addCookie(accessTokenCookie);
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setPath("/");
         response.addCookie(refreshTokenCookie);
 
 
