@@ -50,6 +50,8 @@ dependencies {
     testRuntimeOnly 'com.h2database:h2'
     // Mail(메일인증기능)
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    // OAuth2 Client
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 tasks.named('test') {
