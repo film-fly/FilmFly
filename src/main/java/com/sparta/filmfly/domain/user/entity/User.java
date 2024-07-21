@@ -108,4 +108,10 @@ public class User extends TimeStampEntity {
         this.password = password;
     }
 
+    // 프로필 업데이트
+    public void updateProfile(String nickname, String introduce, String pictureUrl) {
+        this.nickname = nickname;
+        this.introduce = introduce;
+        this.pictureUrl = pictureUrl;
+    }
 }
