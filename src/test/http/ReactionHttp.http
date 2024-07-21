@@ -1,5 +1,5 @@
 ### 좋아요 등록
-POST http://localhost:8080/goods
+POST http://localhost:8080/good
 Content-Type: application/json
 
 {
@@ -8,7 +8,16 @@ Content-Type: application/json
 }
 
 ### 좋아요 취소
-DELETE http://localhost:8080/goods
+DELETE http://localhost:8080/good
+Content-Type: application/json
+
+{
+  "contentId": 1,
+  "contentType": "review"
+}
+
+### 싫어요 등록
+POST http://localhost:8080/bad
 Content-Type: application/json
 
 {
