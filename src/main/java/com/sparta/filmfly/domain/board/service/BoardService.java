@@ -5,8 +5,6 @@ import com.sparta.filmfly.domain.board.dto.BoardRequestDto;
 import com.sparta.filmfly.domain.board.dto.BoardResponseDto;
 import com.sparta.filmfly.domain.board.entity.Board;
 import com.sparta.filmfly.domain.board.repository.BoardRepository;
-import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
-import com.sparta.filmfly.domain.review.entity.Review;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -54,5 +48,19 @@ public class BoardService {
 
         //List 형식 totalPages,size,content,number 등 필요한 정보만 보내는 PageResponse
         return BoardPageResponseDto.fromPage(boards);
+    }
+
+    @Transactional
+    public BoardResponseDto update(Long boardId, BoardRequestDto requestDto) {
+        // 활동 정지 당한 유저라면 에러 추가
+        // user.validateExam();
+
+        Board board = boardRepository.findByIdOrElseThrow(boardId); //보드 존재 여부 확인
+        //수정 요청한 유저가 해당 보드의 소유주인지 확인하기
+        //if(board.getUser().getId() == user.getId()) {}
+        board.update(requestDto);
+        Board updatedBoard = boardRepository.save(board);
+
+        return BoardResponseDto.fromEntity(updatedBoard);
     }
 }
