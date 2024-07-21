@@ -16,9 +16,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@SQLRestriction("deleted_at IS NULL") // 조회 시 자동으로 삭제된 값은 빼고 가져옴
 @SQLDelete(sql = "UPDATE board SET deleted_at = CURRENT_TIMESTAMP where id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board extends TimeStampEntity {
@@ -44,6 +48,8 @@ public class Board extends TimeStampEntity {
 
     @Column(nullable = false)
     private Long hits;
+
+    private LocalDateTime deletedAt;
 
     @Builder // 필요한 것만 생성자로
     public Board(User user, String title, String content) {

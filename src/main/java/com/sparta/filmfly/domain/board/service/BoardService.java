@@ -63,4 +63,16 @@ public class BoardService {
 
         return BoardResponseDto.fromEntity(updatedBoard);
     }
+
+    public String delete(Long boardId) {
+        // 활동 정지 당한 유저라면 에러 추가
+        // user.validateExam();
+
+        Board board = boardRepository.findByIdOrElseThrow(boardId); //보드 존재 여부 확인
+        //수정 요청한 유저가 해당 보드의 소유주인지 확인하기
+        //if(board.getUser().getId() == user.getId()) {}
+        boardRepository.delete(board);
+
+        return "게시물이 삭제되었습니다.";
+    }
 }
