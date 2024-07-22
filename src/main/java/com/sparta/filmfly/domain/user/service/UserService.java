@@ -1,20 +1,23 @@
 package com.sparta.filmfly.domain.user.service;
 
-import com.sparta.filmfly.domain.user.dto.PasswordUpdateRequestDto;
-import com.sparta.filmfly.domain.user.dto.SignupRequestDto;
-import com.sparta.filmfly.domain.user.dto.UserResponseDto;
+import com.sparta.filmfly.domain.user.dto.*;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
-import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
-import com.sparta.filmfly.global.exception.custom.detail.InformationMismatchException;
+import com.sparta.filmfly.global.exception.custom.detail.*;
+import com.sparta.filmfly.global.common.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,10 +26,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
+    private final S3Uploader s3Uploader;
 
     @Value("${admin_password}")
     private String managerPassword;
 
+    // 회원가입
     @Transactional
     public UserResponseDto signup(SignupRequestDto requestDto) {
         // 중복된 사용자 체크
@@ -59,6 +64,9 @@ public class UserService {
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .nickname(user.getNickname())
+                .introduce(user.getIntroduce())
+                .pictureUrl(user.getPictureUrl())
                 .userRole(user.getUserRole())
                 .userStatus(user.getUserStatus())
                 .build();
@@ -74,6 +82,126 @@ public class UserService {
 
         String encodedNewPassword = passwordEncoder.encode(requestDto.getNewPassword());
         user.updatePassword(encodedNewPassword);
+        userRepository.save(user);
+    }
+
+    // 프로필 업데이트
+    @Transactional
+    public void updateProfile(User user, ProfileUpdateRequestDto requestDto, MultipartFile profilePicture) {
+        String pictureUrl = user.getPictureUrl(); // 기존 URL 유지
+
+        if (profilePicture != null && !profilePicture.isEmpty()) {
+            try {
+                pictureUrl = s3Uploader.upload(profilePicture, "profile-pictures");
+            } catch (IOException e) {
+                throw new UploadException(ResponseCodeEnum.UPLOAD_FAILED);
+            }
+        }
+
+        user.updateProfile(requestDto.getNickname(), requestDto.getIntroduce(), pictureUrl);
+        userRepository.save(user);
+    }
+
+    // 프로필 조회
+    @Transactional(readOnly = true)
+    public UserResponseDto getProfile(Long userId) {
+        User user = userRepository.findByIdOrElseThrow(userId);
+        return UserResponseDto.builder()
+                .nickname(user.getNickname())
+                .introduce(user.getIntroduce())
+                .pictureUrl(user.getPictureUrl())
+                .build();
+    }
+
+    // 로그아웃
+    @Transactional
+    public void logout(User user) {
+        user.deleteRefreshToken();
+        userRepository.save(user);
+    }
+
+    // 회원 탈퇴
+    @Transactional
+    public void deleteUser(User user, AccountDeleteRequestDto requestDto) {
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new InformationMismatchException(ResponseCodeEnum.PASSWORD_INCORRECT);
+        }
+
+        user.deleteRefreshToken();
+        user.updateDeleted();
+        userRepository.save(user);
+    }
+
+    // 유저 상세 조회 (관리자 기능)
+    @Transactional(readOnly = true)
+    public UserResponseDto getUserDetail(UserSearchRequestDto userSearchRequestDto, User currentUser) {
+        // 현재 사용자가 어드민인지 확인
+        currentUser.validateAdminRole();
+
+        User user = userRepository.findByUsernameOrElseThrow(userSearchRequestDto.getUsername());
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .introduce(user.getIntroduce())
+                .pictureUrl(user.getPictureUrl())
+                .userRole(user.getUserRole())
+                .userStatus(user.getUserStatus())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .build();
+    }
+
+    // 상태별 유저 조회
+    @Transactional(readOnly = true)
+    public UserStatusResponseDto getUsersByStatus(UserStatusEnum status, User currentUser) {
+        // 현재 사용자가 어드민인지 확인
+        currentUser.validateAdminRole();
+
+        List<User> users = userRepository.findAllByUserStatus(status);
+
+        List<UserResponseDto> userResponseDtos = users.stream()
+                .map(user -> UserResponseDto.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .build())
+                .collect(Collectors.toList());
+
+        return UserStatusResponseDto.builder()
+                .users(userResponseDtos)
+                .userCount(users.size())
+                .build();
+    }
+
+    // 유저 정지
+    @Transactional
+    public void suspendUser(Long userId, User currentUser) {
+        // 현재 사용자가 어드민인지 확인
+        currentUser.validateAdminRole();
+
+        User user = userRepository.findByIdOrElseThrow(userId);
+
+        // 정지 대상이 일반 유저인지 확인
+        if (user.getUserRole() != UserRoleEnum.ROLE_USER) {
+            throw new InvalidTargetException(ResponseCodeEnum.INVALID_ADMIN_TARGET);
+        }
+
+        // 유저 상태를 정지 상태로 변경
+        user.updateSuspended();
+        userRepository.save(user);
+    }
+
+    // 유저 활설화 상태로 만들기
+    @Transactional
+    public void activateUser(Long userId, User currentUser) {
+        // 현재 사용자가 어드민인지 확인
+        currentUser.validateAdminRole();
+
+        User user = userRepository.findByIdOrElseThrow(userId);
+
+        // 유저 상태를 인증된 상태로 변경
+        user.updateVerified();
         userRepository.save(user);
     }
 
