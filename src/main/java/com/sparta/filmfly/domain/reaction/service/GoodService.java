@@ -33,8 +33,8 @@ public class GoodService {
         // 해당 컨텐츠가 있는지 없는지 확인
         checkContentExist(requestDto);
 
-        Good findGood = goodRepository.findByTypeIdAndType(
-            requestDto.getContentId(), contentType
+        Good findGood = goodRepository.findByTypeIdAndTypeAndUser(
+            requestDto.getContentId(), contentType, loginUser
         ).orElse(null);
 
         // 이미 좋아요가 등록되어 있으면 예외
@@ -52,8 +52,8 @@ public class GoodService {
         // 해당 컨텐츠가 있는지 없는지 확인
         checkContentExist(requestDto);
 
-        Good findGood = goodRepository.findByTypeIdAndType(
-            requestDto.getContentId(), contentType
+        Good findGood = goodRepository.findByTypeIdAndTypeAndUser(
+            requestDto.getContentId(), contentType, loginUser
         ).orElse(null);
 
         // 좋아요가 없으면 예외

@@ -5,9 +5,7 @@ import com.sparta.filmfly.domain.comment.repository.CommentRepository;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.dto.BadRequestDto;
-import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
 import com.sparta.filmfly.domain.reaction.entity.Bad;
-import com.sparta.filmfly.domain.reaction.entity.Good;
 import com.sparta.filmfly.domain.reaction.repository.BadRepository;
 import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.domain.user.entity.User;
@@ -35,8 +33,8 @@ public class BadService {
         // 해당 컨텐츠가 있는지 없는지 확인
         checkContentExist(requestDto);
 
-        Bad findBad = badRepository.findByTypeIdAndType(
-            requestDto.getContentId(), contentType
+        Bad findBad = badRepository.findByTypeIdAndTypeAndUser(
+            requestDto.getContentId(), contentType, loginUser
         ).orElse(null);
 
         // 이미 좋아요가 등록되어 있으면 예외
@@ -48,14 +46,14 @@ public class BadService {
         badRepository.save(bad);
     }
 
-    public void removeGood(User loginUser, BadRequestDto requestDto) {
+    public void removeBad(User loginUser, BadRequestDto requestDto) {
         ReactionContentTypeEnum contentType = ReactionContentTypeEnum.validateContentType(requestDto.getContentType());
 
         // 해당 컨텐츠가 있는지 없는지 확인
         checkContentExist(requestDto);
 
-        Bad findBad = badRepository.findByTypeIdAndType(
-            requestDto.getContentId(), contentType
+        Bad findBad = badRepository.findByTypeIdAndTypeAndUser(
+            requestDto.getContentId(), contentType, loginUser
         ).orElse(null);
 
         // 좋아요가 없으면 예외
