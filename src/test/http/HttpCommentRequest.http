@@ -1,0 +1,40 @@
+### 테스트에 사용할 데이터
+@username1 = user1
+@password1 = Test123!
+
+### USER 로그인
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username" : "{{username1}}",
+  "password": "{{password1}}"
+}
+
+### 댓글 생성
+POST http://localhost:8080/board/3/comment
+Content-Type: application/json
+Authorization:{{USER_TOKEN}}
+
+{
+  "content": "댓글 내용1"
+}
+
+### 댓글 조회
+GET http://localhost:8080/board/1/comment/1
+
+### 댓글 페이징 조회
+GET http://localhost:8080/board/1/comments?pageNum=1&size=50
+
+### 댓글 수정
+PATCH http://localhost:8080/board/1/comment/1
+Content-Type: application/json
+Authorization:{{USER_TOKEN}}
+
+{
+  "content": "댓글 내용 수정12345"
+}
+
+### 댓글 삭제
+DELETE http://localhost:8080/board/1/comment/1
+Authorization:{{USER_TOKEN}}
