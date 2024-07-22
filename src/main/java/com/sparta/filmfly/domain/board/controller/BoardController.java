@@ -1,83 +1,76 @@
 package com.sparta.filmfly.domain.board.controller;
 
-import com.oracle.svm.core.annotate.Delete;
 import com.sparta.filmfly.domain.board.dto.BoardPageResponseDto;
 import com.sparta.filmfly.domain.board.dto.BoardRequestDto;
 import com.sparta.filmfly.domain.board.dto.BoardResponseDto;
-import com.sparta.filmfly.domain.board.entity.Board;
 import com.sparta.filmfly.domain.board.service.BoardService;
+import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/board")
+@RequestMapping
 public class BoardController {
 
     private final BoardService boardService;
 
     //보드 생성
-    @PostMapping
-    public ResponseEntity<DataResponseDto<BoardResponseDto>> create(
-            @Valid @RequestBody BoardRequestDto requestDto
-            //@AuthenticationPrincipal UserDetailsImpl userDetails,
+    @PostMapping("/board")
+    public ResponseEntity<DataResponseDto<BoardResponseDto>> createBoard(
+            @Valid @RequestBody BoardRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        BoardResponseDto responseDto = boardService.create(requestDto);
+        BoardResponseDto responseDto = boardService.createBoard(requestDto,userDetails.getUser());
         return ResponseUtils.success(responseDto);
     }
 
     //조회
-    @GetMapping("/{boardId}")
-    public ResponseEntity<DataResponseDto<BoardResponseDto>> read(
+    @GetMapping("/board/{boardId}")
+    public ResponseEntity<DataResponseDto<BoardResponseDto>> readBoard(
             @PathVariable Long boardId
     ) {
-        BoardResponseDto responseDto = boardService.read(boardId);
+        BoardResponseDto responseDto = boardService.readBoard(boardId);
         return ResponseUtils.success(responseDto);
     }
 
     //페이징 조회
-    //http://localhost:8080/board/page?pageNum=1&size=5
-    @GetMapping("/page")
-    public ResponseEntity<DataResponseDto<BoardPageResponseDto>> reads(
+    //http://localhost:8080/boards?pageNum=1&size=5
+    @GetMapping("/boards")
+    public ResponseEntity<DataResponseDto<BoardPageResponseDto>> readBoards(
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum,
             @RequestParam(value = "size", required = false, defaultValue = "5") final Integer size
     ) {
-        Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        BoardPageResponseDto responseDto = boardService.reads(pageable);
+        BoardPageResponseDto responseDto = boardService.readBoards(pageNum,size);
         return ResponseUtils.success(responseDto);
     }
 
     //보드 수정
-    @PatchMapping("/{boardId}")
-    public ResponseEntity<DataResponseDto<BoardResponseDto>> update(
+    @PatchMapping("/board/{boardId}")
+    public ResponseEntity<DataResponseDto<BoardResponseDto>> updateBoard(
             @PathVariable Long boardId,
-            @Valid @RequestBody BoardRequestDto requestDto
-            //@AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody BoardRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        BoardResponseDto responseDto = boardService.update(boardId,requestDto);
+        BoardResponseDto responseDto = boardService.updateBoard(boardId,requestDto,userDetails.getUser());
         return ResponseUtils.success(responseDto);
     }
 
     //보드 삭제
-    @DeleteMapping("/{boardId}")
-    public ResponseEntity<DataResponseDto<String>> delete(
-            @PathVariable Long boardId
-            //@AuthenticationPrincipal UserDetailsImpl userDetails,
+    @DeleteMapping("/board/{boardId}")
+    public ResponseEntity<DataResponseDto<String>> deleteBoard(
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        String responseDto = boardService.delete(boardId);
+        String responseDto = boardService.deleteBoard(boardId,userDetails.getUser());
         return ResponseUtils.success(responseDto);
     }
 
