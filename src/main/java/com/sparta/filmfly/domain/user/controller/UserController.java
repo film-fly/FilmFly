@@ -19,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 
 @RestController
@@ -138,12 +137,22 @@ public class UserController {
     }
 
     // 개인 유저 상세 조회 (관리자 기능)
-    @GetMapping("/search")
+    @GetMapping("/search/detail")
     public ResponseEntity<DataResponseDto<UserResponseDto>> getUserDetail(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody UserSearchRequestDto userSearchRequestDto
     ) {
         UserResponseDto userDetail = userService.getUserDetail(userSearchRequestDto, userDetails.getUser());
         return ResponseUtils.success(userDetail);
+    }
+
+    // 유저 상태별 조회 (관리자 기능)
+    @GetMapping("/search/status")
+    public ResponseEntity<DataResponseDto<UserStatusResponseDto>> getUsersByStatus(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody UserStatusRequestDto userStatusRequestDto
+    ) {
+        UserStatusResponseDto users = userService.getUsersByStatus(userStatusRequestDto.getStatus(), userDetails.getUser());
+        return ResponseUtils.success(users);
     }
 }

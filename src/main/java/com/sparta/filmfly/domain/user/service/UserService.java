@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -150,6 +152,27 @@ public class UserService {
                 .userStatus(user.getUserStatus())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
+                .build();
+    }
+
+    // 상태별 유저 조회
+    @Transactional(readOnly = true)
+    public UserStatusResponseDto getUsersByStatus(UserStatusEnum status, User currentUser) {
+        // 현재 사용자가 어드민인지 확인
+        currentUser.validateAdminRole();
+
+        List<User> users = userRepository.findAllByUserStatus(status);
+
+        List<UserResponseDto> userResponseDtos = users.stream()
+                .map(user -> UserResponseDto.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .build())
+                .collect(Collectors.toList());
+
+        return UserStatusResponseDto.builder()
+                .users(userResponseDtos)
+                .userCount(users.size())
                 .build();
     }
 

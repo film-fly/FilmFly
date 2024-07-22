@@ -13,7 +13,6 @@
     import org.hibernate.annotations.SQLDelete;
     import org.hibernate.annotations.SQLRestriction;
     import org.springframework.security.crypto.password.PasswordEncoder;
-
     import java.time.LocalDateTime;
 
 
@@ -60,6 +59,7 @@
         @Column
         private Long kakaoId;
 
+        @Column
         private LocalDateTime deletedAt;
 
         // 사용자 생성
