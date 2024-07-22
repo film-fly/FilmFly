@@ -5,6 +5,7 @@ import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import lombok.Builder;
 import lombok.Getter;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -18,4 +19,6 @@ public class UserResponseDto {
     private String pictureUrl;
     private UserRoleEnum userRole;
     private UserStatusEnum userStatus;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

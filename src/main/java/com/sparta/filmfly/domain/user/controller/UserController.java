@@ -1,11 +1,7 @@
 package com.sparta.filmfly.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.sparta.filmfly.domain.user.dto.PasswordUpdateRequestDto;
-import com.sparta.filmfly.domain.user.dto.ProfileUpdateRequestDto;
-import com.sparta.filmfly.domain.user.dto.SignupRequestDto;
-import com.sparta.filmfly.domain.user.dto.UserResponseDto;
-import com.sparta.filmfly.domain.user.dto.AccountDeleteRequestDto;
+import com.sparta.filmfly.domain.user.dto.*;
 import com.sparta.filmfly.domain.user.service.KakaoService;
 import com.sparta.filmfly.domain.user.service.UserService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
@@ -139,5 +135,15 @@ public class UserController {
 
         SecurityContextHolder.clearContext();
         return ResponseUtils.success();
+    }
+
+    // 개인 유저 상세 조회 (관리자 기능)
+    @GetMapping("/search")
+    public ResponseEntity<DataResponseDto<UserResponseDto>> getUserDetail(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody UserSearchRequestDto userSearchRequestDto
+    ) {
+        UserResponseDto userDetail = userService.getUserDetail(userSearchRequestDto, userDetails.getUser());
+        return ResponseUtils.success(userDetail);
     }
 }

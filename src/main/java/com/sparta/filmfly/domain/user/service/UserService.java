@@ -1,10 +1,6 @@
 package com.sparta.filmfly.domain.user.service;
 
-import com.sparta.filmfly.domain.user.dto.PasswordUpdateRequestDto;
-import com.sparta.filmfly.domain.user.dto.ProfileUpdateRequestDto;
-import com.sparta.filmfly.domain.user.dto.SignupRequestDto;
-import com.sparta.filmfly.domain.user.dto.UserResponseDto;
-import com.sparta.filmfly.domain.user.dto.AccountDeleteRequestDto;
+import com.sparta.filmfly.domain.user.dto.*;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
@@ -134,6 +130,27 @@ public class UserService {
         user.deleteRefreshToken();
         user.updateDeleted();
         userRepository.save(user);
+    }
+
+    // 유저 상세 조회 (관리자 기능)
+    @Transactional(readOnly = true)
+    public UserResponseDto getUserDetail(UserSearchRequestDto userSearchRequestDto, User currentUser) {
+        // 현재 사용자가 어드민인지 확인
+        currentUser.validateAdminRole();
+
+        User user = userRepository.findByUsernameOrElseThrow(userSearchRequestDto.getUsername());
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .introduce(user.getIntroduce())
+                .pictureUrl(user.getPictureUrl())
+                .userRole(user.getUserRole())
+                .userStatus(user.getUserStatus())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .build();
     }
 
     // 유저 상태 설정
