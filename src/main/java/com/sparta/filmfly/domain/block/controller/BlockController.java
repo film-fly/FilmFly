@@ -3,7 +3,6 @@ package com.sparta.filmfly.domain.block.controller;
 import com.sparta.filmfly.domain.block.dto.BlockRequestDto;
 import com.sparta.filmfly.domain.block.dto.BlockedUserResponseDto;
 import com.sparta.filmfly.domain.block.service.BlockService;
-import com.sparta.filmfly.domain.user.dto.UserResponseDto;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
@@ -29,7 +28,7 @@ public class BlockController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody @Validated BlockRequestDto blockRequestDto
     ) {
-        blockService.blockUser(userDetails.getUser().getId(), blockRequestDto.getBlockedId(), blockRequestDto.getMemo());
+        blockService.blockUser(userDetails.getUser().getId(), blockRequestDto);
         return ResponseUtils.success();
     }
 
@@ -40,5 +39,15 @@ public class BlockController {
     ) {
         List<BlockedUserResponseDto> blockedUsers = blockService.getBlockedUsers(userDetails.getUser());
         return ResponseUtils.success(blockedUsers);
+    }
+
+    // 차단 해제
+    @DeleteMapping
+    public ResponseEntity<MessageResponseDto> unblockUser(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody @Validated BlockRequestDto blockRequestDto
+    ) {
+        blockService.unblockUser(userDetails.getUser().getId(), blockRequestDto.getBlockedId());
+        return ResponseUtils.success();
     }
 }
