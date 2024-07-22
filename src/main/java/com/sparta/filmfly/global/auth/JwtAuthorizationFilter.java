@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,8 +43,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     // 화이트 리스트에 포함된 URI 패턴은 인증을 생략
     private final List<String> anyMethodWhiteList = List.of(
-            "/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/email/verify", "/email/.*/resend"
+            "/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/email/verify", "/email/[0-9]+/resend"
     );
+
+   // GET 메서드 화이트 리스트
+    private final List<String> getMethodWhiteList = List.of(
+           "/users/[0-9]+/profile"
+   );
 
     public JwtAuthorizationFilter(JwtProvider jwtProvider, UserDetailsServiceImpl userDetailsService,
                                   UserRepository userRepository, ObjectMapper objectMapper) {
@@ -61,7 +67,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         log.info("요청된 URI: {}", uri);
 
         // 화이트 리스트에 포함된 URI는 인증을 생략
-        if (isWhiteListed(uri)) {
+        if (isWhiteListed(uri) || isGetMethodWhiteListed(req.getMethod(), uri)) {
             log.info("인증이 필요 없는 요청: {}", uri);
             filterChain.doFilter(req, res);
             return;
@@ -212,5 +218,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     // 화이트 리스트 검사
     private boolean isWhiteListed(String uri) {
         return anyMethodWhiteList.stream().anyMatch(pattern -> Pattern.matches(pattern, uri));
+    }
+    // GET 메서드 화이트 리스트 검사
+    private boolean isGetMethodWhiteListed(String method, String uri) {
+        return HttpMethod.GET.matches(method) && getMethodWhiteList.stream().anyMatch(pattern -> Pattern.compile(pattern).matcher(uri).matches());
     }
 }
