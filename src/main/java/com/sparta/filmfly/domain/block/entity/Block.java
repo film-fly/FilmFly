@@ -1,12 +1,9 @@
 package com.sparta.filmfly.domain.block.entity;
 
-
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Entity
@@ -19,12 +16,19 @@ public class Block extends TimeStampEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blocker_id", nullable = false)
-    private User blockerId; // 차단한 사람
+    private User blocker; // 차단한 사람
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blocked_id", nullable = false)
-    private User blockedId; // 차단 당한 사람
+    private User blocked; // 차단 당한 사람
 
     @Column
     private String memo; // 차단사유 이유 메모
+
+    @Builder
+    public Block(User blocker, User blocked, String memo) {
+        this.blocker = blocker;
+        this.blocked = blocked;
+        this.memo = memo;
+    }
 }
