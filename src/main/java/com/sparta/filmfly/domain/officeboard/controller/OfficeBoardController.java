@@ -3,7 +3,7 @@ package com.sparta.filmfly.domain.officeboard.controller;
 import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardRequestDto;
 import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardResponseDto;
 import com.sparta.filmfly.domain.officeboard.service.OfficeBoardService;
-import com.sparta.filmfly.domain.user.entity.User;
+import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import com.sparta.filmfly.global.util.PageUtils;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,9 +36,11 @@ public class OfficeBoardController {
 
     @PostMapping
     public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> createOfficeBoard(
-            User user, @Valid @RequestBody OfficeBoardRequestDto requestDto
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody OfficeBoardRequestDto requestDto
     ) {
-        OfficeBoardResponseDto responseDto = officeBoardService.createOfficeBoard(user, requestDto);
+        OfficeBoardResponseDto responseDto = officeBoardService.createOfficeBoard(
+                userDetails.getUser(), requestDto);
         return ResponseUtils.success(responseDto);
     }
 
@@ -63,18 +66,21 @@ public class OfficeBoardController {
 
     @PatchMapping
     public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> update(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long id,
             @Valid @RequestBody OfficeBoardRequestDto requestDto
     ) {
-        OfficeBoardResponseDto responseDto = officeBoardService.update(id, requestDto);
+        OfficeBoardResponseDto responseDto = officeBoardService.update(userDetails.getUser(), id,
+                requestDto);
         return ResponseUtils.success(responseDto);
     }
 
     @DeleteMapping
     public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> delete(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long id
     ) {
-        OfficeBoardResponseDto responseDto = officeBoardService.delete(id);
+        OfficeBoardResponseDto responseDto = officeBoardService.delete(userDetails.getUser(), id);
         return ResponseUtils.success(responseDto);
     }
 

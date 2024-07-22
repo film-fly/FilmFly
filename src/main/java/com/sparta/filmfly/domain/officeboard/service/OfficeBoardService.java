@@ -10,8 +10,10 @@ import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
+import com.sparta.filmfly.global.exception.custom.detail.NotMatchedException;
 import com.sparta.filmfly.global.exception.custom.detail.UnAuthorizedException;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +32,9 @@ public class OfficeBoardService {
 
     @Transactional
     public OfficeBoardResponseDto createOfficeBoard(User user, OfficeBoardRequestDto requestDto) {
-        // validUser(user);
+
+        validUser(user);
+
         OfficeBoard officeBoard = OfficeBoard.builder()
                 .user(user)
                 .requestDto(requestDto)
@@ -63,28 +67,30 @@ public class OfficeBoardService {
     }
 
     @Transactional
-    public OfficeBoardResponseDto update(Long id, OfficeBoardRequestDto requestDto) {
-        //User user
-        // 사용자만 수정 할 수 있습니다.
+    public OfficeBoardResponseDto update(User user, Long id, OfficeBoardRequestDto requestDto) {
+        validUser(user);
 
         OfficeBoard officeBoard = officeBoardRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(ResponseCodeEnum.BOARD_NOT_FOUND)
         );
+        
+        checkUser(user, officeBoard.getUser());
 
         officeBoard.update(requestDto);
         return OfficeBoardResponseDto.fromEntity(officeBoard);
 
     }
 
+
     @Transactional
-    public OfficeBoardResponseDto delete(Long id) {
-        //User user
-        //사용자만 삭제 할 수 있습니다.
+    public OfficeBoardResponseDto delete(User user, Long id) {
+        validUser(user);
 
         OfficeBoard officeBoard = officeBoardRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(ResponseCodeEnum.BOARD_NOT_FOUND)
         );
 
+        checkUser(user, officeBoard.getUser());
         officeBoard.delete();
         return OfficeBoardResponseDto.fromEntity(officeBoard);
     }
@@ -92,6 +98,12 @@ public class OfficeBoardService {
     public void validUser(User user) {
         if (user.getUserRole() != ROLE_ADMIN) {
             throw new UnAuthorizedException(ResponseCodeEnum.USER_UNAUTHORIZED);
+        }
+    }
+
+    public void checkUser(User user, User user2) {
+        if(!Objects.equals(user,user2)){
+            throw new NotMatchedException(ResponseCodeEnum.USER_NOT_MATCHED);
         }
     }
 
