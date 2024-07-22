@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/OfficeBoard")
+@RequestMapping("/officeboard")
 
 // 공통 로그인 구현 완료되면 유저검증 추가
 public class OfficeBoardController {
@@ -51,36 +51,39 @@ public class OfficeBoardController {
             @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
             @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
+
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
         List<OfficeBoardResponseDto> responseDto = officeBoardService.findAll(pageable);
         return ResponseUtils.success(responseDto);
     }
 
-    @GetMapping
+    @GetMapping("/{boardId}")
     public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> findOne(
-            @PathVariable Long id
+            @PathVariable Long boardId
     ) {
-        OfficeBoardResponseDto responseDto = officeBoardService.findOne(id);
+        System.out.println("============================");
+        System.out.println("boardId = " + boardId);
+        OfficeBoardResponseDto responseDto = officeBoardService.findOne(boardId);
         return ResponseUtils.success(responseDto);
     }
 
-    @PatchMapping
+    @PatchMapping("/{boardId}")
     public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> update(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long id,
+            @PathVariable Long boardId,
             @Valid @RequestBody OfficeBoardRequestDto requestDto
     ) {
-        OfficeBoardResponseDto responseDto = officeBoardService.update(userDetails.getUser(), id,
+        OfficeBoardResponseDto responseDto = officeBoardService.update(userDetails.getUser(), boardId,
                 requestDto);
         return ResponseUtils.success(responseDto);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{boardId}")
     public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> delete(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long id
+            @PathVariable Long boardId
     ) {
-        OfficeBoardResponseDto responseDto = officeBoardService.delete(userDetails.getUser(), id);
+        OfficeBoardResponseDto responseDto = officeBoardService.delete(userDetails.getUser(), boardId);
         return ResponseUtils.success(responseDto);
     }
 

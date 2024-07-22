@@ -5,7 +5,6 @@ import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardResponseDto;
 import com.sparta.filmfly.domain.officeboard.entity.OfficeBoard;
 import com.sparta.filmfly.domain.officeboard.repository.OfficeBoardRepository;
 import com.sparta.filmfly.domain.user.entity.User;
-import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import java.util.List;
@@ -22,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class OfficeBoardService {
 
     private final OfficeBoardRepository officeBoardRepository;
-    private final UserRepository userRepository;
-
 
     @Transactional
     public OfficeBoardResponseDto createOfficeBoard(User user, OfficeBoardRequestDto requestDto) {
@@ -41,7 +38,7 @@ public class OfficeBoardService {
     @Transactional
     public List<OfficeBoardResponseDto> findAll(Pageable pageable) {
 
-        List<OfficeBoardResponseDto> list = officeBoardRepository.findAll(pageable)
+        List<OfficeBoardResponseDto> list = officeBoardRepository.findAllByOrderByCreatedAtDesc(pageable)
                 .stream()
                 .map(OfficeBoardResponseDto::fromEntity)
                 .toList();
@@ -56,6 +53,7 @@ public class OfficeBoardService {
                 () -> new NotFoundException(ResponseCodeEnum.BOARD_NOT_FOUND)
         );
 
+
         return OfficeBoardResponseDto.fromEntity(officeBoard);
 
     }
@@ -68,7 +66,7 @@ public class OfficeBoardService {
         );
 
         officeBoard.validUser();
-        officeBoard.checkAdminUser(user);
+        officeBoard.checkOwnerUser(user);
         officeBoard.update(requestDto);
 
         return OfficeBoardResponseDto.fromEntity(officeBoard);
@@ -84,7 +82,7 @@ public class OfficeBoardService {
         );
 
         officeBoard.validUser();
-        officeBoard.checkAdminUser(user);
+        officeBoard.checkOwnerUser(user);
         officeBoard.delete();
         return OfficeBoardResponseDto.fromEntity(officeBoard);
     }
