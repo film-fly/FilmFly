@@ -45,7 +45,9 @@ public class JwtProvider {
 
         String token = builder.compact();
         // Base64 URL-safe encoding
-        return Base64.getUrlEncoder().encodeToString(token.getBytes());
+//        String encodingToken = Base64.getUrlEncoder().encodeToString(token.getBytes());
+//        log.info("encodingToken : {}", encodingToken);
+        return token;
     }
 
     public String createAccessToken(String username) {
@@ -59,14 +61,14 @@ public class JwtProvider {
     }
 
     public Claims getUserInfoFromToken(String token) {
-        String decodedToken = new String(Base64.getUrlDecoder().decode(token));
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(decodedToken).getBody();
+//        String decodedToken = new String(Base64.getUrlDecoder().decode(token));
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
     public boolean validateToken(String token) {
         try {
-            String decodedToken = new String(Base64.getUrlDecoder().decode(token));
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(decodedToken);
+//            String decodedToken = new String(Base64.getUrlDecoder().decode(token));
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
             log.error("유효하지 않는 JWT 서명 또는 잘못된 토큰 입니다.");
