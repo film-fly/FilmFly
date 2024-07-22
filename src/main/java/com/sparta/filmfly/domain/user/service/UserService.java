@@ -34,6 +34,7 @@ public class UserService {
     @Value("${admin_password}")
     private String managerPassword;
 
+    // 회원가입
     @Transactional
     public UserResponseDto signup(SignupRequestDto requestDto) {
         // 중복된 사용자 체크
@@ -113,6 +114,13 @@ public class UserService {
                 .introduce(user.getIntroduce())
                 .pictureUrl(user.getPictureUrl())
                 .build();
+    }
+
+    // 로그아웃
+    @Transactional
+    public void logout(User user) {
+        user.deleteRefreshToken();
+        userRepository.save(user);
     }
 
     // 유저 상태 설정

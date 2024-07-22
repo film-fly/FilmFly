@@ -98,6 +98,11 @@ public class User extends TimeStampEntity {
         this.refreshToken = refreshToken;
     }
 
+    // 리프레시 토큰 삭제
+    public void deleteRefreshToken() {
+        this.refreshToken = null;
+    }
+
     // 인증된 상태로 변경하는 메서드
     public void updateVerified() {
         this.userStatus = UserStatusEnum.VERIFIED;
