@@ -24,7 +24,7 @@ public enum ResponseCodeEnum {
     BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "차단내용을 찾을 수 없습니다."),
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     USER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "관리자 권한이 없습니다."),
-    USER_NOT_MATCHED(HttpStatus.UNAUTHORIZED, "작성자만 변경 가능합니다.")
+    OFFICEBOARD_NOT_OWNER(HttpStatus.UNAUTHORIZED, "작성자만 변경 가능합니다.")
 
     ;
     private final HttpStatus httpStatus;
