@@ -6,12 +6,11 @@ import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
-import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
-import com.sparta.filmfly.global.exception.custom.detail.InformationMismatchException;
-import com.sparta.filmfly.global.exception.custom.detail.UploadException;
+import com.sparta.filmfly.global.exception.custom.detail.*;
 import com.sparta.filmfly.global.common.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.expression.AccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -174,6 +173,24 @@ public class UserService {
                 .users(userResponseDtos)
                 .userCount(users.size())
                 .build();
+    }
+
+    // 유저 정지
+    @Transactional
+    public void suspendUser(Long userId, User currentUser) {
+        // 현재 사용자가 어드민인지 확인
+        currentUser.validateAdminRole();
+
+        User user = userRepository.findByIdOrElseThrow(userId);
+
+        // 정지 대상이 일반 유저인지 확인
+        if (user.getUserRole() != UserRoleEnum.ROLE_USER) {
+            throw new InvalidTargetException(ResponseCodeEnum.INVALID_ADMIN_TARGET);
+        }
+
+        // 유저 상태를 정지 상태로 변경
+        user.updateSuspended();
+        userRepository.save(user);
     }
 
     // 유저 상태 설정
