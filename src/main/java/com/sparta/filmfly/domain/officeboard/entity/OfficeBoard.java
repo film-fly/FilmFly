@@ -78,7 +78,7 @@ public class OfficeBoard extends TimeStampEntity {
         }
     }
 
-    public void checkUser(User requestUser) {
+    public void checkAdminUser(User requestUser) {
         if(!Objects.equals(this.user,requestUser)){
             throw new NotOwnerException(ResponseCodeEnum.OFFICEBOARD_NOT_OWNER);
         }

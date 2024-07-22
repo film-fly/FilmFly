@@ -68,7 +68,7 @@ public class OfficeBoardService {
         );
 
         officeBoard.validUser();
-        officeBoard.checkUser(user);
+        officeBoard.checkAdminUser(user);
         officeBoard.update(requestDto);
 
         return OfficeBoardResponseDto.fromEntity(officeBoard);
@@ -84,7 +84,7 @@ public class OfficeBoardService {
         );
 
         officeBoard.validUser();
-        officeBoard.checkUser(user);
+        officeBoard.checkAdminUser(user);
         officeBoard.delete();
         return OfficeBoardResponseDto.fromEntity(officeBoard);
     }
