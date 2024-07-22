@@ -165,4 +165,14 @@ public class UserController {
         userService.suspendUser(userId, userDetails.getUser());
         return ResponseUtils.success();
     }
+
+    // 유저 활성화 상태로 만들기 (관리자 기능)
+    @PutMapping("/activate/{userId}")
+    public ResponseEntity<MessageResponseDto> activateUser(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long userId
+    ) {
+        userService.activateUser(userId, userDetails.getUser());
+        return ResponseUtils.success();
+    }
 }

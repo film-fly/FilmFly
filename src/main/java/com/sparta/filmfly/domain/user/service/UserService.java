@@ -10,7 +10,6 @@ import com.sparta.filmfly.global.exception.custom.detail.*;
 import com.sparta.filmfly.global.common.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.expression.AccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -190,6 +189,19 @@ public class UserService {
 
         // 유저 상태를 정지 상태로 변경
         user.updateSuspended();
+        userRepository.save(user);
+    }
+
+    // 유저 활설화 상태로 만들기
+    @Transactional
+    public void activateUser(Long userId, User currentUser) {
+        // 현재 사용자가 어드민인지 확인
+        currentUser.validateAdminRole();
+
+        User user = userRepository.findByIdOrElseThrow(userId);
+
+        // 유저 상태를 인증된 상태로 변경
+        user.updateVerified();
         userRepository.save(user);
     }
 
