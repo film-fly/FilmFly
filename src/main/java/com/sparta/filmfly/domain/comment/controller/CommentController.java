@@ -4,6 +4,7 @@ import com.sparta.filmfly.domain.comment.dto.CommentPageResponseDto;
 import com.sparta.filmfly.domain.comment.dto.CommentRequestDto;
 import com.sparta.filmfly.domain.comment.dto.CommentResponseDto;
 import com.sparta.filmfly.domain.comment.service.CommentService;
+import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,10 +29,10 @@ public class CommentController {
     @PostMapping("/comment")
     public ResponseEntity<DataResponseDto<CommentResponseDto>> createComment(
             @PathVariable Long boardId,
-            @Valid @RequestBody CommentRequestDto requestDto
-            //@AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody CommentRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        CommentResponseDto responseDto = commentService.createComment(boardId,requestDto);
+        CommentResponseDto responseDto = commentService.createComment(boardId,requestDto,userDetails.getUser());
         return ResponseUtils.success(responseDto);
     }
 
@@ -63,10 +65,10 @@ public class CommentController {
     public ResponseEntity<DataResponseDto<CommentResponseDto>> updateComment(
             @PathVariable Long boardId,
             @PathVariable Long commentId,
-            @Valid @RequestBody CommentRequestDto requestDto
-            //@AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody CommentRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        CommentResponseDto responseDto = commentService.updateComment(boardId,commentId,requestDto);
+        CommentResponseDto responseDto = commentService.updateComment(boardId,commentId,requestDto,userDetails.getUser());
         return ResponseUtils.success(responseDto);
     }
 
@@ -74,10 +76,10 @@ public class CommentController {
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity<DataResponseDto<String>> deleteComment(
             @PathVariable Long boardId,
-            @PathVariable Long commentId
-            //@AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        String responseDto = commentService.deleteComment(boardId,commentId);
+        String responseDto = commentService.deleteComment(boardId,commentId,userDetails.getUser());
         return ResponseUtils.success(responseDto);
     }
 
