@@ -11,12 +11,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDateTime;
+
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE user SET deleted_at = CURRENT_TIMESTAMP where id = ?")
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE user SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 public class User extends TimeStampEntity {
 
     @Id
@@ -54,6 +59,8 @@ public class User extends TimeStampEntity {
 
     @Column
     private Long kakaoId;
+
+    private LocalDateTime deletedAt;
 
     // 사용자 생성
     @Builder
@@ -106,6 +113,12 @@ public class User extends TimeStampEntity {
     // 인증된 상태로 변경하는 메서드
     public void updateVerified() {
         this.userStatus = UserStatusEnum.VERIFIED;
+    }
+
+    // 유저 탈퇴 상태로 변경
+    public void updateDeleted() {
+        this.userStatus = UserStatusEnum.DELETED;
+        this.deletedAt = LocalDateTime.now();
     }
 
     // 비밀번호 업데이트
