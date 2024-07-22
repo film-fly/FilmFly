@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class BoardResponseDto {
+    private Long id;
     private String title;
     private String content;
     private String nickname;
@@ -21,6 +22,7 @@ public class BoardResponseDto {
 
     public static BoardResponseDto fromEntity(Board board) {
         return BoardResponseDto.builder()
+                .id(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())
                 .nickname(board.getUser().getNickname())
