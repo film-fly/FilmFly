@@ -86,4 +86,11 @@ public class UserController {
         userService.updateProfile(userDetails.getUser(), requestDto, profilePicture);
         return ResponseUtils.success();
     }
+
+    // 프로필 조회
+    @GetMapping("/{userId}/profile")
+    public ResponseEntity<DataResponseDto<UserResponseDto>> getProfile(@PathVariable Long userId) {
+        UserResponseDto profile = userService.getProfile(userId);
+        return ResponseUtils.success(profile);
+    }
 }

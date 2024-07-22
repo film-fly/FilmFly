@@ -66,6 +66,9 @@ public class UserService {
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .nickname(user.getNickname())
+                .introduce(user.getIntroduce())
+                .pictureUrl(user.getPictureUrl())
                 .userRole(user.getUserRole())
                 .userStatus(user.getUserStatus())
                 .build();
@@ -87,7 +90,7 @@ public class UserService {
     // 프로필 업데이트
     @Transactional
     public void updateProfile(User user, ProfileUpdateRequestDto requestDto, MultipartFile profilePicture) {
-        String pictureUrl = user.getPictureUrl();
+        String pictureUrl = user.getPictureUrl(); // 기존 URL 유지
 
         if (profilePicture != null && !profilePicture.isEmpty()) {
             try {
@@ -99,6 +102,17 @@ public class UserService {
 
         user.updateProfile(requestDto.getNickname(), requestDto.getIntroduce(), pictureUrl);
         userRepository.save(user);
+    }
+
+    // 프로필 조회
+    @Transactional(readOnly = true)
+    public UserResponseDto getProfile(Long userId) {
+        User user = userRepository.findByIdOrElseThrow(userId);
+        return UserResponseDto.builder()
+                .nickname(user.getNickname())
+                .introduce(user.getIntroduce())
+                .pictureUrl(user.getPictureUrl())
+                .build();
     }
 
     // 유저 상태 설정
