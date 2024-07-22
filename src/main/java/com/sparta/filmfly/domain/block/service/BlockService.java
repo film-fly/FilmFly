@@ -1,12 +1,11 @@
 package com.sparta.filmfly.domain.block.service;
 
 import com.sparta.filmfly.domain.block.dto.BlockedUserResponseDto;
+import com.sparta.filmfly.domain.block.dto.BlockRequestDto;
 import com.sparta.filmfly.domain.block.entity.Block;
 import com.sparta.filmfly.domain.block.repository.BlockRepository;
-import com.sparta.filmfly.domain.user.dto.UserResponseDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,11 +20,11 @@ public class BlockService {
     private final BlockRepository blockRepository;
     private final UserRepository userRepository;
 
-    // 차단하 기
+    // 차단 하기
     @Transactional
-    public void blockUser(Long blockerId, Long blockedId, String memo) {
+    public void blockUser(Long blockerId, BlockRequestDto blockRequestDto) {
         User blocker = userRepository.findByIdOrElseThrow(blockerId);
-        User blocked = userRepository.findByIdOrElseThrow(blockedId);
+        User blocked = userRepository.findByIdOrElseThrow(blockRequestDto.getBlockedId());
 
         // 이미 차단된 관계가 있는지 확인
         blockRepository.checkIfAlreadyBlocked(blocker, blocked);
@@ -33,7 +32,7 @@ public class BlockService {
         Block block = Block.builder()
                 .blocker(blocker)
                 .blocked(blocked)
-                .memo(memo)
+                .memo(blockRequestDto.getMemo())
                 .build();
         blockRepository.save(block);
     }
@@ -50,5 +49,17 @@ public class BlockService {
                         .memo(block.getMemo())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    // 차단 해제
+    @Transactional
+    public void unblockUser(Long blockerId, Long blockedId) {
+        User blocker = userRepository.findByIdOrElseThrow(blockerId);
+        User blocked = userRepository.findByIdOrElseThrow(blockedId);
+
+        // 차단한 상대인지 확인
+        Block block = blockRepository.findByBlockerAndBlockedOrElseThrow(blocker, blocked);
+
+        blockRepository.delete(block);
     }
 }
