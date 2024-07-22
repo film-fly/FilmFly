@@ -5,6 +5,7 @@ import com.sparta.filmfly.domain.user.dto.PasswordUpdateRequestDto;
 import com.sparta.filmfly.domain.user.dto.ProfileUpdateRequestDto;
 import com.sparta.filmfly.domain.user.dto.SignupRequestDto;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
+import com.sparta.filmfly.domain.user.dto.AccountDeleteRequestDto;
 import com.sparta.filmfly.domain.user.service.KakaoService;
 import com.sparta.filmfly.domain.user.service.UserService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
@@ -100,6 +101,30 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<MessageResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletResponse response) {
         userService.logout(userDetails.getUser());
+
+        // 쿠키를 무효화하여 삭제
+        Cookie accessTokenCookie = new Cookie("accessToken", null);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(0);
+        response.addCookie(accessTokenCookie);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0);
+        response.addCookie(refreshTokenCookie);
+
+        SecurityContextHolder.clearContext();
+        return ResponseUtils.success();
+    }
+
+    // 회원탈퇴
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<MessageResponseDto> deleteUser(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Validated @RequestBody AccountDeleteRequestDto requestDto,
+            HttpServletResponse response
+    ) {
+        userService.deleteUser(userDetails.getUser(), requestDto);
 
         // 쿠키를 무효화하여 삭제
         Cookie accessTokenCookie = new Cookie("accessToken", null);

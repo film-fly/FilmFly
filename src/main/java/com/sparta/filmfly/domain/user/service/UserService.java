@@ -4,6 +4,7 @@ import com.sparta.filmfly.domain.user.dto.PasswordUpdateRequestDto;
 import com.sparta.filmfly.domain.user.dto.ProfileUpdateRequestDto;
 import com.sparta.filmfly.domain.user.dto.SignupRequestDto;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
+import com.sparta.filmfly.domain.user.dto.AccountDeleteRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
@@ -120,6 +121,18 @@ public class UserService {
     @Transactional
     public void logout(User user) {
         user.deleteRefreshToken();
+        userRepository.save(user);
+    }
+
+    // 회원 탈퇴
+    @Transactional
+    public void deleteUser(User user, AccountDeleteRequestDto requestDto) {
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new InformationMismatchException(ResponseCodeEnum.PASSWORD_INCORRECT);
+        }
+
+        user.deleteRefreshToken();
+        user.updateDeleted();
         userRepository.save(user);
     }
 
