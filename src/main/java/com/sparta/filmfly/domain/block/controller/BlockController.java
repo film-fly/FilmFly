@@ -16,7 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users/block")  // 수정된 부분
+@RequestMapping("/users/block")
 @RequiredArgsConstructor
 public class BlockController {
 
