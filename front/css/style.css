@@ -64,3 +64,7 @@
   flex-direction: column;
   gap: 10px;
 }
+
+.collection-detail .collection-detail-content .row .col {
+  cursor: pointer;
+}

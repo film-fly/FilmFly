@@ -34,6 +34,26 @@
 </div>
 
 <script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const editId = urlParams.get('edit');
+  if (editId) {
+    $('#inputCollectionTitle').val('수정할 컬렉션 제목');
+    $('#inputCollectionDescription').val('수정할 컬렉션 설명');
+    $('#btnCreateCollection').text("수정");
+    // $.ajax({
+    //   type: 'GET',
+    //   url: `/api/collections/${editId}`
+    // })
+    // .done(function (data) {
+    //   $('#inputCollectionTitle').val(data.title);
+    //   $('#inputCollectionDescription').val(data.description);
+    //   $('#btnCreateCollection').val("수정");
+    // })
+    // .fail(function (xhr, status, er) {
+    //   alert("데이터를 불러오는 데 실패했습니다.");
+    // });
+  }
+
   $('#btnCreateCollection').on('click', function () {
     const title = $('#inputCollectionTitle').val();
     const description = $('#inputCollectionDescription').val();
@@ -44,13 +64,13 @@
     };
 
     $.ajax({
-      type: 'post',
+      type: 'POST',
       url: '',
       data: JSON.stringify(data),
       contentType: "application/json;charset=utf-8"
     })
     .done(function (result, status, xhr) {
-      location.replace("/");
+      location.replace("./collection-detail.html");
     })
     .fail(function (xhr, status, er) {
       alert("보관함 저장 실패");
