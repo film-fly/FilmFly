@@ -16,7 +16,7 @@ public class ReviewCreateRequestDto {
     private String title;
     @NotBlank(message = "내용을 입력해 주세요.")
     private String content;
-    @NotBlank(message = "별점을 입력해 주세요.")
+    @NotNull(message = "별점을 입력해 주세요.")
     private Float rating;
     @NotNull(message = "리뷰를 남길 영화의 id값을 입력해 주세요.")
     private Long movieId;

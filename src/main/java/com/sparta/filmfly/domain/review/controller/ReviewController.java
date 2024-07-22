@@ -4,15 +4,18 @@ import com.sparta.filmfly.domain.review.dto.ReviewCreateRequestDto;
 import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
 import com.sparta.filmfly.domain.review.dto.ReviewUpdateRequestDto;
 import com.sparta.filmfly.domain.review.service.ReviewService;
+import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import com.sparta.filmfly.global.util.PageUtils;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -33,9 +36,10 @@ public class ReviewController {
 
     @PostMapping
     public ResponseEntity<DataResponseDto<ReviewResponseDto>> saveReview(
-        @RequestBody ReviewCreateRequestDto requestDto
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @Valid @RequestBody ReviewCreateRequestDto requestDto
     ) {
-        ReviewResponseDto responseDto = reviewService.saveReview(requestDto);
+        ReviewResponseDto responseDto = reviewService.saveReview(userDetails.getUser(), requestDto);
         return ResponseUtils.success(responseDto);
     }
 
@@ -61,18 +65,20 @@ public class ReviewController {
 
     @PatchMapping("/{reviewId}")
     public ResponseEntity<DataResponseDto<ReviewResponseDto>> updateReview(
-        @RequestBody ReviewUpdateRequestDto requestDto,
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @Valid @RequestBody ReviewUpdateRequestDto requestDto,
         @PathVariable Long reviewId
     ) {
-        ReviewResponseDto responseDto = reviewService.updateReview(requestDto, reviewId);
+        ReviewResponseDto responseDto = reviewService.updateReview(userDetails.getUser(), requestDto, reviewId);
         return ResponseUtils.success(responseDto);
     }
 
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<MessageResponseDto> deleteReview(
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
         @PathVariable Long reviewId
     ) {
-        reviewService.deleteReview(reviewId);
+        reviewService.deleteReview(userDetails.getUser(), reviewId);
         return ResponseUtils.success();
     }
 }

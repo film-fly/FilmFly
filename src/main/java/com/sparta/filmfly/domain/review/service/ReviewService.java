@@ -8,12 +8,8 @@ import com.sparta.filmfly.domain.review.dto.ReviewUpdateRequestDto;
 import com.sparta.filmfly.domain.review.entity.Review;
 import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.domain.user.entity.User;
-import com.sparta.filmfly.domain.user.repository.UserRepository;
-import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
-import com.sparta.filmfly.global.exception.custom.detail.NotOwnerException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,28 +22,25 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ReviewService {
 
-    private final UserRepository userRepository; // 로그인 기능 완료되면 없애기
     private final ReviewRepository reviewRepository;
     private final MovieRepository movieRepository;
 
     @Transactional
-    public ReviewResponseDto saveReview(ReviewCreateRequestDto requestDto) {
+    public ReviewResponseDto saveReview(User loginUser, ReviewCreateRequestDto requestDto) {
         Movie findMovie = movieRepository.findById(requestDto.getMovieId())
             .orElseThrow(() -> new IllegalArgumentException("영화 못 찾음")); // Movie 기능 올리면
 
-        User findUser = userRepository.findByIdOrElseThrow(1L); // 로그인 기능 완료되면 없애기
-        Review review = requestDto.toEntity(findUser, findMovie);
+        Review review = requestDto.toEntity(loginUser, findMovie);
         Review savedReview = reviewRepository.save(review);
 
-        return ReviewResponseDto.fromEntity(findUser, savedReview);
+        return ReviewResponseDto.fromEntity(loginUser, savedReview);
     }
 
     @Transactional(readOnly = true)
     public ReviewResponseDto findReview(Long reviewId) {
-        User findUser = userRepository.findByIdOrElseThrow(1L); // 로그인 기능 완료되면 없애기
         Review findReview = reviewRepository.findByIdOrElseThrow(reviewId);
 
-        return ReviewResponseDto.fromEntity(findUser, findReview);
+        return ReviewResponseDto.fromEntity(findReview.getUser(), findReview);
     }
 
     @Transactional(readOnly = true)
@@ -63,20 +56,21 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewResponseDto updateReview(ReviewUpdateRequestDto requestDto, Long reviewId) {
-        User findUser = userRepository.findByIdOrElseThrow(1L);// 로그인 기능 완료되면 없애기
+    public ReviewResponseDto updateReview(User loginUser, ReviewUpdateRequestDto requestDto, Long reviewId) {
         Review findReview = reviewRepository.findByIdOrElseThrow(reviewId);
+
+        findReview.checkReviewOwner(loginUser);
+
         findReview.updateReview(requestDto);
-        return ReviewResponseDto.fromEntity(findUser, findReview);
+        return ReviewResponseDto.fromEntity(findReview.getUser(), findReview);
     }
 
     @Transactional
-    public void deleteReview(Long reviewId) {
-        User findUser = userRepository.findByIdOrElseThrow(1L);
+    public void deleteReview(User loginUser, Long reviewId) {
         Review findReview = reviewRepository.findByIdOrElseThrow(reviewId);
-        if (!Objects.equals(findReview.getUser().getId(), findUser.getId())) {
-            throw new NotOwnerException(ResponseCodeEnum.REVIEW_NOT_OWNER);
-        }
+
+        findReview.checkReviewOwner(loginUser);
+
         reviewRepository.delete(findReview);
     }
 }

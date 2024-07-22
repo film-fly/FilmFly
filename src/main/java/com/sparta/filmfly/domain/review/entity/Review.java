@@ -4,6 +4,8 @@ import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.review.dto.ReviewUpdateRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
+import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
+import com.sparta.filmfly.global.exception.custom.detail.NotOwnerException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,5 +74,11 @@ public class Review extends TimeStampEntity {
         if (requestDto.getTitle() != null) this.title = requestDto.getTitle();
         if (requestDto.getContent() != null) this.content = requestDto.getContent();
         if (requestDto.getRating() != null) this.rating = requestDto.getRating();
+    }
+
+    public void checkReviewOwner(User loginUser) {
+        if (!Objects.equals(this.user.getId(), loginUser.getId())) {
+            throw new NotOwnerException(ResponseCodeEnum.REVIEW_NOT_OWNER);
+        }
     }
 }
