@@ -3,6 +3,8 @@ package com.sparta.filmfly.domain.board.entity;
 import com.sparta.filmfly.domain.board.dto.BoardRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
+import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
+import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -67,8 +69,8 @@ public class Board extends TimeStampEntity {
         this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
     }
 
-    public void validateExam() {
-        // exam 검증
-        // ex) 사용자가 탈퇴 여부 검증
+    public void validateOwner(User requestUser) {
+        if(this.user.getId() != requestUser.getId())
+           throw new AccessDeniedException(ResponseCodeEnum.BOARD_NOT_OWNER);
     }
 }
