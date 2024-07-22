@@ -155,4 +155,14 @@ public class UserController {
         UserStatusResponseDto users = userService.getUsersByStatus(userStatusRequestDto.getStatus(), userDetails.getUser());
         return ResponseUtils.success(users);
     }
+
+    // 유저 정지 (관리자 기능)
+    @PutMapping("/suspend/{userId}")
+    public ResponseEntity<MessageResponseDto> suspendUser(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long userId
+    ) {
+        userService.suspendUser(userId, userDetails.getUser());
+        return ResponseUtils.success();
+    }
 }

@@ -122,6 +122,11 @@
             this.userStatus = UserStatusEnum.VERIFIED;
         }
 
+        // 유저 정지 상태로 변경
+        public void updateSuspended() {
+            this.userStatus = UserStatusEnum.SUSPENDED;
+        }
+
         // 유저 탈퇴 상태로 변경
         public void updateDeleted() {
             this.userStatus = UserStatusEnum.DELETED;
