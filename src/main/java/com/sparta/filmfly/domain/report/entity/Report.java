@@ -4,6 +4,7 @@ import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,4 +36,14 @@ public class Report extends TimeStampEntity {
 
     @Column(nullable = false)
     private String reason; // 신고 이유
+
+    @Builder
+    public Report(User reporterId, User reportedId, String content, Long typeId, ReportTypeEnum type, String reason) {
+        this.reporterId = reporterId;
+        this.reportedId = reportedId;
+        this.content = content;
+        this.typeId = typeId;
+        this.type = type;
+        this.reason = reason;
+    }
 }
