@@ -2,6 +2,7 @@ package com.sparta.filmfly.domain.officeboard.entity;
 
 import static com.sparta.filmfly.domain.user.entity.UserRoleEnum.ROLE_ADMIN;
 
+import com.sparta.filmfly.domain.media.entity.Media;
 import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
@@ -16,14 +17,18 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Getter
@@ -69,7 +74,7 @@ public class OfficeBoard extends TimeStampEntity {
     }
 
     public void delete() {
-        this.deletedAt = LocalDateTime.now();
+        setDeletedAt();
     }
 
     public void validUser() {
@@ -84,4 +89,10 @@ public class OfficeBoard extends TimeStampEntity {
         }
     }
 
+    public boolean isFilesNotNull(List<MultipartFile> files){
+        if (files == null || files.isEmpty() || files.get(0).isEmpty()) {
+            return false;
+        }
+        return true;
+    }
 }

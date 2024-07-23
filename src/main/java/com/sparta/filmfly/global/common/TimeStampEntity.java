@@ -25,5 +25,9 @@ public abstract class TimeStampEntity {
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
-    protected LocalDateTime deletedAt;
+    private LocalDateTime deletedAt;
+
+    public void setDeletedAt() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }

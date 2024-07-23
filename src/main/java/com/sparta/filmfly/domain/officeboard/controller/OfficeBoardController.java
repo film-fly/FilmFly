@@ -2,6 +2,7 @@ package com.sparta.filmfly.domain.officeboard.controller;
 
 import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardRequestDto;
 import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardResponseDto;
+import com.sparta.filmfly.domain.officeboard.entity.OfficeBoard;
 import com.sparta.filmfly.domain.officeboard.service.OfficeBoardService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
@@ -19,10 +20,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -36,11 +38,18 @@ public class OfficeBoardController {
 
     @PostMapping
     public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> createOfficeBoard(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Valid @RequestBody OfficeBoardRequestDto requestDto
+            @Valid @RequestPart(value = "officeBoardRequestDto") OfficeBoardRequestDto requestDto,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+
     ) {
-        OfficeBoardResponseDto responseDto = officeBoardService.createOfficeBoard(
-                userDetails.getUser(), requestDto);
+        OfficeBoard officeBoard = OfficeBoard.builder()
+                .user(userDetails.getUser())
+                .requestDto(requestDto)
+                .build();
+
+        OfficeBoardResponseDto responseDto = officeBoardService.createOfficeBoard(officeBoard,
+                files);
         return ResponseUtils.success(responseDto);
     }
 
@@ -61,20 +70,20 @@ public class OfficeBoardController {
     public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> findOne(
             @PathVariable Long boardId
     ) {
-        System.out.println("============================");
-        System.out.println("boardId = " + boardId);
         OfficeBoardResponseDto responseDto = officeBoardService.findOne(boardId);
         return ResponseUtils.success(responseDto);
     }
 
     @PatchMapping("/{boardId}")
     public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> update(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
+
             @PathVariable Long boardId,
-            @Valid @RequestBody OfficeBoardRequestDto requestDto
+            @Valid @RequestPart(value = "officeBoardRequestDto") OfficeBoardRequestDto requestDto,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        OfficeBoardResponseDto responseDto = officeBoardService.update(userDetails.getUser(), boardId,
-                requestDto);
+        OfficeBoardResponseDto responseDto = officeBoardService.update(userDetails.getUser(),
+                boardId, requestDto, files);
         return ResponseUtils.success(responseDto);
     }
 
@@ -83,7 +92,8 @@ public class OfficeBoardController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long boardId
     ) {
-        OfficeBoardResponseDto responseDto = officeBoardService.delete(userDetails.getUser(), boardId);
+        OfficeBoardResponseDto responseDto = officeBoardService.delete(userDetails.getUser(),
+                boardId);
         return ResponseUtils.success(responseDto);
     }
 
