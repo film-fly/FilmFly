@@ -18,14 +18,18 @@ public class BoardPageResponseDto {
 
     public static BoardPageResponseDto fromPage(Page<Board> boards) {
         //Page<BoardResponseDto> boardsDto = boards.map(BoardResponseDto::fromEntity);
-        List<BoardResponseDto> boardsDto = boards.stream().map(BoardResponseDto::fromEntity).toList();
+        //List<BoardResponseDto> boardsDto = boards.stream().map(BoardResponseDto::fromEntity).toList();
 
         return BoardPageResponseDto.builder()
                 .totalPages(boards.getTotalPages())
                 .totalElements(boards.getTotalElements())
                 .currentPages(boards.getNumber()+1)
                 .size(boards.getSize())
-                .content(boardsDto)
+                //.content(boardsDto)
                 .build();
+    }
+
+    public void addContent(List<BoardResponseDto> content) {
+        this.content = content;
     }
 }

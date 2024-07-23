@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -22,14 +25,15 @@ import org.springframework.web.bind.annotation.*;
 public class BoardController {
 
     private final BoardService boardService;
-
-    //보드 생성
-    @PostMapping("/board")
-    public ResponseEntity<DataResponseDto<BoardResponseDto>> createBoard(
-            @Valid @RequestBody BoardRequestDto requestDto,
+    
+    //보드 생성 + 파일 업로드
+    @PostMapping(value = "/board", consumes = "multipart/form-data")
+    public ResponseEntity<DataResponseDto<BoardResponseDto>> createBoard2(
+            @Valid @RequestPart(value = "boardRequestDto") BoardRequestDto requestDto,
+            @RequestPart(value = "files", required=false) List<MultipartFile> files,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        BoardResponseDto responseDto = boardService.createBoard(requestDto,userDetails.getUser());
+        BoardResponseDto responseDto = boardService.createBoard(requestDto,files,userDetails.getUser());
         return ResponseUtils.success(responseDto);
     }
 
@@ -53,14 +57,15 @@ public class BoardController {
         return ResponseUtils.success(responseDto);
     }
 
-    //보드 수정
+    //보드 수정 + 파일
     @PatchMapping("/board/{boardId}")
-    public ResponseEntity<DataResponseDto<BoardResponseDto>> updateBoard(
+    public ResponseEntity<DataResponseDto<BoardResponseDto>> updateBoard2(
             @PathVariable Long boardId,
-            @Valid @RequestBody BoardRequestDto requestDto,
+            @Valid @RequestPart(value = "boardRequestDto") BoardRequestDto requestDto,
+            @RequestPart(value = "files", required=false) List<MultipartFile> files,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        BoardResponseDto responseDto = boardService.updateBoard(boardId,requestDto,userDetails.getUser());
+        BoardResponseDto responseDto = boardService.updateBoard(boardId,files,requestDto,userDetails.getUser());
         return ResponseUtils.success(responseDto);
     }
 
