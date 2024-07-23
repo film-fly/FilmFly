@@ -34,46 +34,50 @@
       <p class="fs-6 mb-3">컬렉션 설명</p>
       <hr>
     </div>
-    <div class="collection-detail-content">
-      <div class="row row-cols-1 row-cols-md-3 g-4">
-        <div class="col" data-movie-id="1">
-          <div class="card h-100">
-            <img src="../images/logo.png" class="card-img-top" alt="영화 포스터">
-            <div class="card-body">
-              <h5 class="card-title">가나다라마바사아자차카타파하가나다라마바사아자차카타</h5>
-            </div>
-          </div>
-        </div>
-        <div class="col" data-movie-id="2">
-          <div class="card h-100">
-            <img src="../images/logo.png" class="card-img-top" alt="영화 포스터">
-            <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-            </div>
-          </div>
-        </div>
-        <div class="col" data-movie-id="3">
-          <div class="card h-100">
-            <img src="../images/logo.png" class="card-img-top" alt="영화 포스터">
-            <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-            </div>
-          </div>
-        </div>
-        <div class="col" data-movie-id="4">
-          <div class="card h-100">
-            <img src="../images/logo.png" class="card-img-top" alt="영화 포스터">
-            <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-            </div>
-          </div>
-        </div>
-      </div>
+
+    <div id="collection-detail-content" class="row row-cols-1 row-cols-md-3 g-4">
     </div>
   </div>
 </div>
 
 <script>
+  const movies = [
+    {
+      "movieId": 1,
+      "movieUrl": "../images/logo.png",
+      "title": "가나다라마바사아자차카타파하가나다라마바사아자차카타"
+    },
+    {
+      "movieId": 2,
+      "movieUrl": "../images/logo.png",
+      "title": "영화 제목 2"
+    },
+    {
+      "movieId": 3,
+      "movieUrl": "../images/logo.png",
+      "title": "영화 제목 3"
+    },
+    {
+      "movieId": 4,
+      "movieUrl": "../images/logo.png",
+      "title": "영화 제목 4"
+    }
+  ];
+
+  movies.forEach(movie => {
+    const movieHtml = `
+    <div class="col" data-movie-id="${movie.movieId}">
+      <div class="card h-100">
+        <img src="${movie.movieUrl}" class="card-img-top" alt="영화 포스터">
+        <div class="card-body">
+          <h5 class="card-title">${movie.title}</h5>
+        </div>
+      </div>
+    </div>
+    `;
+    $('#collection-detail-content').append(movieHtml);
+  });
+
   $('#btnUpdateCollection').on('click', function () {
     location.href = './create-collection.html?edit=1';
   });

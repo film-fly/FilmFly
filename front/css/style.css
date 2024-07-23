@@ -40,8 +40,13 @@
 }
 
 .collection-form img {
-  width: 140px;
-  height: 160px;
+  width: 100px;
+  height: 120px;
+}
+
+.img-default-size {
+  width: 100px;
+  height: 120px;
 }
 
 .collection-form .collection-text-box {
@@ -67,4 +72,62 @@
 
 .row .col {
   cursor: pointer;
+}
+
+/* 탭 전체 스타일 */
+.tabs {
+  margin-top: 50px;
+  padding-bottom: 40px;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* 탭 스타일 */
+.tab_item {
+  width: calc(100% / 4);
+  height: 50px;
+  border-bottom: 3px solid #0D6EFD;
+  background-color: #f8f8f8;
+  line-height: 50px;
+  font-size: 16px;
+  text-align: center;
+  color: #333333;
+  display: block;
+  float: left;
+  text-align: center;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.tab_item:hover {
+  opacity: 0.75;
+}
+
+/* 라디오 버튼 UI삭제*/
+input[name="tab_item"] {
+  display: none;
+}
+
+/* 탭 컨텐츠 스타일 */
+.tab_content {
+  display: none;
+  padding: 40px 40px 0;
+  clear: both;
+  overflow: hidden;
+}
+
+/* 선택 된 탭 콘텐츠를 표시 */
+#movie:checked ~ #movie_content,
+#review:checked ~ #review_content,
+#board:checked ~ #board_content,
+#comment:checked ~ #comment_content {
+  display: block;
+}
+
+/* 선택된 탭 스타일 */
+.tabs input:checked + .tab_item {
+  background-color: #0D6EFD;
+  color: #fff;
 }
