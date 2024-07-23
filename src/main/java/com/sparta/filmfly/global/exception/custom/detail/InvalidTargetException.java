@@ -7,5 +7,4 @@ public class InvalidTargetException extends GlobalException {
     public InvalidTargetException(ResponseCodeEnum responseCodeEnum) {
         super(responseCodeEnum);
     }
-
 }
