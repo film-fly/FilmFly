@@ -1,24 +1,24 @@
 package com.sparta.filmfly.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.sparta.filmfly.domain.user.dto.PasswordUpdateRequestDto;
-import com.sparta.filmfly.domain.user.dto.SignupRequestDto;
-import com.sparta.filmfly.domain.user.dto.UserResponseDto;
+import com.sparta.filmfly.domain.user.dto.*;
 import com.sparta.filmfly.domain.user.service.KakaoService;
 import com.sparta.filmfly.domain.user.service.UserService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
@@ -67,10 +67,112 @@ public class UserController {
     // 비밀번호 변경
     @PutMapping("/password")
     public ResponseEntity<MessageResponseDto> updatePassword(
-            @AuthenticationPrincipal UserDetailsImpl loginUser,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Validated @RequestBody PasswordUpdateRequestDto requestDto
     ) {
-        userService.updatePassword(loginUser.getUser(), requestDto);
+        userService.updatePassword(userDetails.getUser(), requestDto);
+        return ResponseUtils.success();
+    }
+
+    // 프로필 업로드
+    @PutMapping("/profile")
+    public ResponseEntity<MessageResponseDto> updateProfile(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Validated @RequestPart("profileUpdateRequestDto") ProfileUpdateRequestDto requestDto,
+            @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture
+    ) {
+        userService.updateProfile(userDetails.getUser(), requestDto, profilePicture);
+        return ResponseUtils.success();
+    }
+
+    // 프로필 조회
+    @GetMapping("/{userId}/profile")
+    public ResponseEntity<DataResponseDto<UserResponseDto>> getProfile(@PathVariable Long userId) {
+        UserResponseDto profile = userService.getProfile(userId);
+        return ResponseUtils.success(profile);
+    }
+
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<MessageResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletResponse response) {
+        userService.logout(userDetails.getUser());
+
+        // 쿠키를 무효화하여 삭제
+        Cookie accessTokenCookie = new Cookie("accessToken", null);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(0);
+        response.addCookie(accessTokenCookie);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0);
+        response.addCookie(refreshTokenCookie);
+
+        SecurityContextHolder.clearContext();
+        return ResponseUtils.success();
+    }
+
+    // 회원탈퇴
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<MessageResponseDto> deleteUser(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Validated @RequestBody AccountDeleteRequestDto requestDto,
+            HttpServletResponse response
+    ) {
+        userService.deleteUser(userDetails.getUser(), requestDto);
+
+        // 쿠키를 무효화하여 삭제
+        Cookie accessTokenCookie = new Cookie("accessToken", null);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(0);
+        response.addCookie(accessTokenCookie);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0);
+        response.addCookie(refreshTokenCookie);
+
+        SecurityContextHolder.clearContext();
+        return ResponseUtils.success();
+    }
+
+    // 개인 유저 상세 조회 (관리자 기능)
+    @GetMapping("/search/detail")
+    public ResponseEntity<DataResponseDto<UserResponseDto>> getUserDetail(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody UserSearchRequestDto userSearchRequestDto
+    ) {
+        UserResponseDto userDetail = userService.getUserDetail(userSearchRequestDto, userDetails.getUser());
+        return ResponseUtils.success(userDetail);
+    }
+
+    // 유저 상태별 조회 (관리자 기능)
+    @GetMapping("/search/status")
+    public ResponseEntity<DataResponseDto<UserStatusResponseDto>> getUsersByStatus(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody UserStatusRequestDto userStatusRequestDto
+    ) {
+        UserStatusResponseDto users = userService.getUsersByStatus(userStatusRequestDto.getStatus(), userDetails.getUser());
+        return ResponseUtils.success(users);
+    }
+
+    // 유저 정지 (관리자 기능)
+    @PutMapping("/suspend/{userId}")
+    public ResponseEntity<MessageResponseDto> suspendUser(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long userId
+    ) {
+        userService.suspendUser(userId, userDetails.getUser());
+        return ResponseUtils.success();
+    }
+
+    // 유저 활성화 상태로 만들기 (관리자 기능)
+    @PutMapping("/activate/{userId}")
+    public ResponseEntity<MessageResponseDto> activateUser(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long userId
+    ) {
+        userService.activateUser(userId, userDetails.getUser());
         return ResponseUtils.success();
     }
 }

@@ -12,8 +12,8 @@ spring:
   sql:
     init:
       encoding: UTF-8
-  #      data-locations: classpath:/data.sql
-  #      mode: always
+#      data-locations: classpath:/data.sql
+#      mode: always
 
   mail:
     protocol: smtp
@@ -51,7 +51,6 @@ logging.level:
 
 jwt_secret_key: ${JWT_SECRET_KEY}
 admin_password: ${ADMIN_PASSWORD}
-
 kakao:
   client_id: ${CLIENT_ID}
   redirect_uri: http://localhost:8080/users/kakao/callback
@@ -65,3 +64,4 @@ cloud:
       static: us-east-2
     s3:
       bucket: sparta-storage
+
