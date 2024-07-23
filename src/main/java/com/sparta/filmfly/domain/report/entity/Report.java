@@ -4,6 +4,7 @@ import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,11 +18,11 @@ public class Report extends TimeStampEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id", nullable = false)
-    private User reporterId; // 신고자
+    private User reporter; // 신고자
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reported_id", nullable = false)
-    private User reportedId; // 신고된 사용자
+    private User reported; // 신고된 사용자
 
     @Column(nullable = false)
     private String content; // 신고된 콘텐츠의 원본 내용
@@ -35,4 +36,14 @@ public class Report extends TimeStampEntity {
 
     @Column(nullable = false)
     private String reason; // 신고 이유
+
+    @Builder
+    public Report(User reporter, User reported, String content, Long typeId, ReportTypeEnum type, String reason) {
+        this.reporter = reporter;
+        this.reported = reported;
+        this.content = content;
+        this.typeId = typeId;
+        this.type = type;
+        this.reason = reason;
+    }
 }
