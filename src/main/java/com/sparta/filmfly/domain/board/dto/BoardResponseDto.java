@@ -1,11 +1,15 @@
 package com.sparta.filmfly.domain.board.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sparta.filmfly.domain.board.entity.Board;
+import com.sparta.filmfly.domain.media.dto.MediaResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
@@ -19,6 +23,8 @@ public class BoardResponseDto {
     private Long goodCount;
     private Long badCount;
     private Long hits;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private List<MediaResponseDto> mediaList;
 
     public static BoardResponseDto fromEntity(Board board) {
         return BoardResponseDto.builder()
@@ -31,6 +37,12 @@ public class BoardResponseDto {
                 .badCount(board.getBadCount())
                 .hits(board.getHits())
                 .build();
+    }
+
+    public void addMediaDto(MediaResponseDto media) {
+        if (mediaList == null)
+            mediaList = new ArrayList<>();
+        mediaList.add(media);
     }
 
 }
