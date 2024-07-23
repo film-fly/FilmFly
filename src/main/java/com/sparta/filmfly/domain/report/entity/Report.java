@@ -18,11 +18,11 @@ public class Report extends TimeStampEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id", nullable = false)
-    private User reporter; // 신고자
+    private User reporterId; // 신고자
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reported_id", nullable = false)
-    private User reported; // 신고된 사용자
+    private User reportedId; // 신고된 사용자
 
     @Column(nullable = false)
     private String content; // 신고된 콘텐츠의 원본 내용
@@ -38,9 +38,9 @@ public class Report extends TimeStampEntity {
     private String reason; // 신고 이유
 
     @Builder
-    public Report(User reporter, User reported, String content, Long typeId, ReportTypeEnum type, String reason) {
-        this.reporter = reporter;
-        this.reported = reported;
+    public Report(User reporterId, User reportedId, String content, Long typeId, ReportTypeEnum type, String reason) {
+        this.reporterId = reporterId;
+        this.reportedId = reportedId;
         this.content = content;
         this.typeId = typeId;
         this.type = type;
