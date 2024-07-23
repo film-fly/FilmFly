@@ -10,10 +10,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ReportRepository extends JpaRepository<Report, Long> {
-    Optional<Report> findByReporterAndReportedAndTypeIdAndType(User reporter, User reported, Long typeId, ReportTypeEnum type);
+    Optional<Report> findByReporterIdAndReportedIdAndTypeIdAndType(User reporterId, User reportedId, Long typeId, ReportTypeEnum type);
 
-    default void checkIfAlreadyReported(User reporter, User reported, Long typeId, ReportTypeEnum type) {
-        findByReporterAndReportedAndTypeIdAndType(reporter, reported, typeId, type)
+    default void checkIfAlreadyReported(User reporterId, User reportedId, Long typeId, ReportTypeEnum type) {
+        findByReporterIdAndReportedIdAndTypeIdAndType(reporterId, reportedId, typeId, type)
                 .ifPresent(report -> {
                     throw new DuplicateException(ResponseCodeEnum.ALREADY_REPORTED);
                 });
