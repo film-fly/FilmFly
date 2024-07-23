@@ -36,7 +36,7 @@
         @Column(nullable = false)
         private String email;
 
-        @Column
+        @Column(nullable = false)
         private String nickname;
 
         @Enumerated(EnumType.STRING)
