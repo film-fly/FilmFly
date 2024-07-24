@@ -49,6 +49,11 @@
   height: 120px;
 }
 
+.img-big-size {
+  width: 170px;
+  height: 240px;
+}
+
 .collection-form .collection-text-box {
   flex-grow: 1;
   display: flex;
@@ -193,4 +198,9 @@ input[name="tab_item"] {
 #editCommentModal #editCommentText {
   width: 100%;
   height: 100px;
+}
+
+#searchOptionModal .modal-body label {
+  width: 24%;
+  margin-bottom: 10px;
 }
