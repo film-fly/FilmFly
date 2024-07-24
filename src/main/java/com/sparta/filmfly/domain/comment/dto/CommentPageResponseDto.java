@@ -16,6 +16,9 @@ public class CommentPageResponseDto {
     int size;
     List<CommentResponseDto> content;
 
+    /**
+     * totalPages,size,content,number 등 필요한 정보만 보내는 PageResponse
+     */
     public static CommentPageResponseDto fromPage(Page<Comment> comment) {
         List<CommentResponseDto> commentsDto = comment.stream().map(CommentResponseDto::fromEntity).toList();
 

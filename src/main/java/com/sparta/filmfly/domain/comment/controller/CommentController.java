@@ -25,61 +25,69 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
     private final CommentService commentService;
 
-    //댓글 생성
+    /**
+     * 댓글 생성
+     */
     @PostMapping("/comment")
     public ResponseEntity<DataResponseDto<CommentResponseDto>> createComment(
-            @PathVariable Long boardId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CommentRequestDto requestDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @PathVariable Long boardId
     ) {
-        CommentResponseDto responseDto = commentService.createComment(boardId,requestDto,userDetails.getUser());
+        CommentResponseDto responseDto = commentService.createComment(userDetails.getUser(),requestDto,boardId);
         return ResponseUtils.success(responseDto);
     }
 
-    //조회
+    /**
+     * 댓글 조회
+     */
     @GetMapping("/comment/{commentId}")
-    public ResponseEntity<DataResponseDto<CommentResponseDto>> readComment(
+    public ResponseEntity<DataResponseDto<CommentResponseDto>> getComment(
             @PathVariable Long boardId,
             @PathVariable Long commentId
     ) {
-        CommentResponseDto responseDto = commentService.readComment(boardId, commentId);
+        CommentResponseDto responseDto = commentService.getComment(boardId, commentId);
         return ResponseUtils.success(responseDto);
     }
 
-    //페이징 조회
-    //http://localhost:8080/board/{boardId}/comment?pageNum=1&size=50
+    /**
+     * 댓글 페이지 조회
+     * http://localhost:8080/board/{boardId}/comment?pageNum=1&size=50
+     */
     @GetMapping("/comments")
-    public ResponseEntity<DataResponseDto<CommentPageResponseDto>> readsComment(
+    public ResponseEntity<DataResponseDto<CommentPageResponseDto>> gerPageComment(
             @PathVariable Long boardId,
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum,
             @RequestParam(value = "size", required = false, defaultValue = "50") final Integer size
     ) {
-        Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.ASC, "createdAt"));
-        //정렬은 생성 시간, 받은 댓글은 수정 시간
-        CommentPageResponseDto responseDto = commentService.readsComment(boardId, pageable);
+        CommentPageResponseDto responseDto = commentService.gerPageComment(pageNum,size,boardId);
         return ResponseUtils.success(responseDto);
     }
 
-    //댓글 수정
+    /**
+     * 댓글 수정
+     */
     @PatchMapping("/comment/{commentId}")
     public ResponseEntity<DataResponseDto<CommentResponseDto>> updateComment(
-            @PathVariable Long boardId,
-            @PathVariable Long commentId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CommentRequestDto requestDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @PathVariable Long boardId,
+            @PathVariable Long commentId
     ) {
-        CommentResponseDto responseDto = commentService.updateComment(boardId,commentId,requestDto,userDetails.getUser());
+        CommentResponseDto responseDto = commentService.updateComment(userDetails.getUser(),requestDto,boardId,commentId);
         return ResponseUtils.success(responseDto);
     }
 
-    //댓글 삭제
+    /**
+     * 댓글 삭제
+     */
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity<DataResponseDto<String>> deleteComment(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long boardId,
-            @PathVariable Long commentId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @PathVariable Long commentId
     ) {
-        String responseDto = commentService.deleteComment(boardId,commentId,userDetails.getUser());
+        String responseDto = commentService.deleteComment(userDetails.getUser(),boardId,commentId);
         return ResponseUtils.success(responseDto);
     }
 
