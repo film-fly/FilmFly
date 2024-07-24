@@ -11,7 +11,6 @@ import com.sparta.filmfly.domain.media.entity.MediaTypeEnum;
 import com.sparta.filmfly.domain.media.service.MediaService;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -49,7 +48,7 @@ public class BoardService {
             return boardResponseDto;
 
         for (MultipartFile file : files) { //파일들 하나씩 s3로 올리기
-            MediaResponseDto mediaResponseDto = mediaService.saveMedia(MediaTypeEnum.BOARD,savedBoard.getId(),file);
+            MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.BOARD,savedBoard.getId(),file);
             boardResponseDto.addMediaDto(mediaResponseDto);
         }
 
@@ -62,7 +61,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardResponseDto getBoard(Long boardId) {
         Board board = boardRepository.findByIdOrElseThrow(boardId);
-        List<Media> mediaList = mediaService.getMediaList(MediaTypeEnum.BOARD,board.getId());
+        List<Media> mediaList = mediaService.getListMedia(MediaTypeEnum.BOARD,board.getId());
 
         BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(board);
         for (Media media : mediaList) {
@@ -87,7 +86,7 @@ public class BoardService {
         List<BoardResponseDto> boardsDto = new ArrayList<>();
         for (Board board : boards) {
             BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(board); //보드 기본 정보 Dto
-            List<Media> mediaList = mediaService.getMediaList(MediaTypeEnum.BOARD,board.getId()); //해당 보드의 미디어가 있으면 가지고 온다
+            List<Media> mediaList = mediaService.getListMedia(MediaTypeEnum.BOARD,board.getId()); //해당 보드의 미디어가 있으면 가지고 온다
             for (Media media : mediaList) {
                 boardResponseDto.addMediaDto(MediaResponseDto.fromEntity(media)); //미디어가 존재하면 보드dto에 정보를 넣어준다
             }
@@ -119,7 +118,7 @@ public class BoardService {
             return boardResponseDto;
 
         for (MultipartFile file : files) {
-            MediaResponseDto mediaResponseDto = mediaService.saveMedia(MediaTypeEnum.BOARD,boardId,file);
+            MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.BOARD,boardId,file);
             boardResponseDto.addMediaDto(mediaResponseDto);
         }
 
