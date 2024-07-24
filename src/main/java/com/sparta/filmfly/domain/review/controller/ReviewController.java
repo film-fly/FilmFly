@@ -62,13 +62,14 @@ public class ReviewController {
      */
     @GetMapping
     public ResponseEntity<DataResponseDto<List<ReviewResponseDto>>> getPageReview(
+        @RequestParam Long movieId,
         @RequestParam(required = false, defaultValue = "1") int page,
         @RequestParam(required = false, defaultValue = "5") int size,
         @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
         @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        List<ReviewResponseDto> responseDtos = reviewService.getPageReview(1L, pageable); // 영화 id
+        List<ReviewResponseDto> responseDtos = reviewService.getPageReview(movieId, pageable);
         return ResponseUtils.success(responseDtos);
     }
 
