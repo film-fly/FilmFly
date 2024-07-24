@@ -58,12 +58,14 @@ public class BoardService {
     /**
      * 보드 조회
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public BoardResponseDto getBoard(Long boardId) {
         Board board = boardRepository.findByIdOrElseThrow(boardId);
         List<Media> mediaList = mediaService.getListMedia(MediaTypeEnum.BOARD,board.getId());
 
-        BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(board);
+        board.addHits();
+        Board savedBoard = boardRepository.save(board);
+        BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(savedBoard);
         for (Media media : mediaList) {
             boardResponseDto.addMediaDto(MediaResponseDto.fromEntity(media));
         }
