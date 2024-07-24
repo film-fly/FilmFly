@@ -25,57 +25,67 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
-    
-    //보드 생성 + 파일 업로드
+
+    /**
+     * 보드 생성
+     */
     @PostMapping(value = "/board", consumes = "multipart/form-data")
     public ResponseEntity<DataResponseDto<BoardResponseDto>> createBoard2(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestPart(value = "boardRequestDto") BoardRequestDto requestDto,
-            @RequestPart(value = "files", required=false) List<MultipartFile> files,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @RequestPart(value = "files", required=false) List<MultipartFile> files
     ) {
-        BoardResponseDto responseDto = boardService.createBoard(requestDto,files,userDetails.getUser());
+        BoardResponseDto responseDto = boardService.createBoard(requestDto, files, userDetails.getUser());
         return ResponseUtils.success(responseDto);
     }
 
-    //조회
+    /**
+     * 보드 조회
+     */
     @GetMapping("/board/{boardId}")
-    public ResponseEntity<DataResponseDto<BoardResponseDto>> readBoard(
+    public ResponseEntity<DataResponseDto<BoardResponseDto>> getBoard(
             @PathVariable Long boardId
     ) {
-        BoardResponseDto responseDto = boardService.readBoard(boardId);
+        BoardResponseDto responseDto = boardService.getBoard(boardId);
         return ResponseUtils.success(responseDto);
     }
 
-    //페이징 조회
-    //http://localhost:8080/boards?pageNum=1&size=5
+    /**
+     * 보드 페이징 조회
+     * http://localhost:8080/boards?pageNum=1&size=5
+     */
     @GetMapping("/boards")
-    public ResponseEntity<DataResponseDto<BoardPageResponseDto>> readBoards(
+    public ResponseEntity<DataResponseDto<BoardPageResponseDto>> getPageBoard(
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum,
             @RequestParam(value = "size", required = false, defaultValue = "5") final Integer size
     ) {
-        BoardPageResponseDto responseDto = boardService.readBoards(pageNum,size);
+        BoardPageResponseDto responseDto = boardService.getPageBoard(pageNum,size);
         return ResponseUtils.success(responseDto);
     }
 
-    //보드 수정 + 파일
+    /**
+     * 보드 수정
+     */
     @PatchMapping("/board/{boardId}")
-    public ResponseEntity<DataResponseDto<BoardResponseDto>> updateBoard2(
-            @PathVariable Long boardId,
+    public ResponseEntity<DataResponseDto<BoardResponseDto>> updateBoard(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestPart(value = "boardRequestDto") BoardRequestDto requestDto,
             @RequestPart(value = "files", required=false) List<MultipartFile> files,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @PathVariable Long boardId
     ) {
-        BoardResponseDto responseDto = boardService.updateBoard(boardId,files,requestDto,userDetails.getUser());
+        BoardResponseDto responseDto = boardService.updateBoard(userDetails.getUser(),requestDto,files,boardId);
         return ResponseUtils.success(responseDto);
     }
 
-    //보드 삭제
+    /**
+     * 보드 삭제
+     */
     @DeleteMapping("/board/{boardId}")
     public ResponseEntity<DataResponseDto<String>> deleteBoard(
-            @PathVariable Long boardId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long boardId
     ) {
-        String responseDto = boardService.deleteBoard(boardId,userDetails.getUser());
+        String responseDto = boardService.deleteBoard(userDetails.getUser(),boardId);
         return ResponseUtils.success(responseDto);
     }
 

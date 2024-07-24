@@ -11,6 +11,7 @@ import com.sparta.filmfly.domain.media.entity.MediaTypeEnum;
 import com.sparta.filmfly.domain.media.service.MediaService;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,9 +33,12 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MediaService mediaService;
 
+    /**
+     * 보드 생성
+     */
     @Transactional
     public BoardResponseDto createBoard(BoardRequestDto requestDto, List<MultipartFile> files, User user) {
-        user.validateUserStatus(); //탈퇴,정지 상태 비교
+        user.validateUserStatus();
 
         Board entity = requestDto.toEntity(user);
         Board savedBoard = boardRepository.save(entity);
@@ -52,8 +56,11 @@ public class BoardService {
         return boardResponseDto;
     }
 
+    /**
+     * 보드 조회
+     */
     @Transactional(readOnly = true)
-    public BoardResponseDto readBoard(Long boardId) {
+    public BoardResponseDto getBoard(Long boardId) {
         Board board = boardRepository.findByIdOrElseThrow(boardId);
         List<Media> mediaList = mediaService.getMediaList(MediaTypeEnum.BOARD,board.getId());
 
@@ -65,20 +72,22 @@ public class BoardService {
         return boardResponseDto;
     }
 
+    /**
+     * 보드 페이징 조회
+     */
     @Transactional(readOnly = true)
-    public BoardPageResponseDto readBoards(Integer pageNum, Integer size) {
+    public BoardPageResponseDto getPageBoard(Integer pageNum, Integer size) {
         Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
+        //QueryDSL 최적화로 변경하기
         Page<Board> boards = boardRepository.findAll(pageable);
-        //QueryDSL 최적화 수정
-        BoardPageResponseDto boardPageResponseDto = BoardPageResponseDto.fromPage(boards);
         //List 형식 totalPages,size,content,number 등 필요한 정보만 보내는 PageResponse
+        BoardPageResponseDto boardPageResponseDto = BoardPageResponseDto.fromPage(boards);
 
         List<BoardResponseDto> boardsDto = new ArrayList<>();
         for (Board board : boards) {
-            BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(board); //보드 기본 정보
-            List<Media> mediaList = mediaService.getMediaList(MediaTypeEnum.BOARD,board.getId());
-            //해당 보드의 미디어가 있으면 가지고 온다
+            BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(board); //보드 기본 정보 Dto
+            List<Media> mediaList = mediaService.getMediaList(MediaTypeEnum.BOARD,board.getId()); //해당 보드의 미디어가 있으면 가지고 온다
             for (Media media : mediaList) {
                 boardResponseDto.addMediaDto(MediaResponseDto.fromEntity(media)); //미디어가 존재하면 보드dto에 정보를 넣어준다
             }
@@ -89,11 +98,14 @@ public class BoardService {
         return boardPageResponseDto;
     }
 
+    /**
+     * 보드 수정
+     */
     @Transactional
-    public BoardResponseDto updateBoard(Long boardId, List<MultipartFile> files, BoardRequestDto requestDto, User user) {
+    public BoardResponseDto updateBoard(User user, BoardRequestDto requestDto, List<MultipartFile> files, Long boardId) {
         user.validateUserStatus();
-        Board board = boardRepository.findByIdOrElseThrow(boardId); //보드 존재 여부 확인
-        board.validateOwner(user); //수정 요청한 유저가 해당 보드의 소유주인지 확인
+        Board board = boardRepository.findByIdOrElseThrow(boardId);
+        board.validateOwner(user);
 
         board.update(requestDto);
         Board updatedBoard = boardRepository.save(board);
@@ -103,10 +115,10 @@ public class BoardService {
         //수정 전 기존 미디어들 삭제 요청
         mediaService.deleteAllMedia(MediaTypeEnum.BOARD,board.getId());
 
-        if(files == null || files.isEmpty() || files.get(0).isEmpty()) //파일이 비어있으면 바로 종료
+        if(files == null || files.isEmpty() || files.get(0).isEmpty())
             return boardResponseDto;
 
-        for (MultipartFile file : files) { //파일들 하나씩 s3로 올리기
+        for (MultipartFile file : files) {
             MediaResponseDto mediaResponseDto = mediaService.saveMedia(MediaTypeEnum.BOARD,boardId,file);
             boardResponseDto.addMediaDto(mediaResponseDto);
         }
@@ -114,12 +126,16 @@ public class BoardService {
         return boardResponseDto;
     }
 
+    /**
+     * 보드 삭제
+     */
     @Transactional
-    public String deleteBoard(Long boardId, User user) {
+    public String deleteBoard(User user, Long boardId) {
         user.validateUserStatus();
-
         Board board = boardRepository.findByIdOrElseThrow(boardId);
-        if(user.getUserRole() == UserRoleEnum.ROLE_USER) //관리자면 삭제 가능하게
+
+        //관리자면 삭제 가능하게
+        if(user.getUserRole() == UserRoleEnum.ROLE_USER)
             board.validateOwner(user);
 
         boardRepository.delete(board);
