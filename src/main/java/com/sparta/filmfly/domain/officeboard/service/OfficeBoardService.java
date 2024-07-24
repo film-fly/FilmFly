@@ -45,7 +45,7 @@ public class OfficeBoardService {
 
         // responseDto에 요청 file들 추가
         for (MultipartFile file : files) {
-            MediaResponseDto mediaResponseDto = mediaService.saveMedia(MediaTypeEnum.OFFICE_BOARD,
+            MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.OFFICE_BOARD,
                     savedOfficeBoard.getId(), file);
             officeBoardresponseDto.addMediaDto(mediaResponseDto);
         }
@@ -68,7 +68,7 @@ public class OfficeBoardService {
             OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(
                     responseDto.getId());
 
-            List<Media> mediaList = mediaService.getMediaList(MediaTypeEnum.OFFICE_BOARD,
+            List<Media> mediaList = mediaService.getListMedia(MediaTypeEnum.OFFICE_BOARD,
                     officeBoard.getId());
 
             for (Media media : mediaList) {
@@ -86,7 +86,7 @@ public class OfficeBoardService {
     public OfficeBoardResponseDto getOfficeBoard(Long id) {
 
         OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(id);
-        List<Media> mediaList = mediaService.getMediaList(MediaTypeEnum.OFFICE_BOARD,
+        List<Media> mediaList = mediaService.getListMedia(MediaTypeEnum.OFFICE_BOARD,
                 officeBoard.getId());
 
         OfficeBoardResponseDto officeResponseDto = OfficeBoardResponseDto.fromEntity(officeBoard);
@@ -119,7 +119,7 @@ public class OfficeBoardService {
         }
 
         for (MultipartFile file : files) {
-            MediaResponseDto mediaResponseDto = mediaService.saveMedia(MediaTypeEnum.OFFICE_BOARD,
+            MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.OFFICE_BOARD,
                     officeBoard.getId(), file);
             responseDto.addMediaDto(mediaResponseDto);
         }
