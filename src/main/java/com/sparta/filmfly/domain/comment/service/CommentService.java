@@ -12,7 +12,9 @@ import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,9 +25,12 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
+    /**
+     * 댓글 생성
+     */
     @Transactional
-    public CommentResponseDto createComment(Long boardId, CommentRequestDto requestDto, User user) {
-        user.validateUserStatus(); //탈퇴,정지 상태 비교
+    public CommentResponseDto createComment(User user, CommentRequestDto requestDto, Long boardId) {
+        user.validateUserStatus();
 
         Board board = boardRepository.findByIdOrElseThrow(boardId);
         Comment entity = requestDto.toEntity(user,board);
@@ -34,30 +39,40 @@ public class CommentService {
         return CommentResponseDto.fromEntity(savedComment);
     }
 
+    /**
+     * 댓글 조회
+     */
     @Transactional(readOnly = true)
-    public CommentResponseDto readComment(Long boardId, Long commentId) {
+    public CommentResponseDto getComment(Long boardId, Long commentId) {
         Board board = boardRepository.findByIdOrElseThrow(boardId); //게시판 경로 확인
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
         return CommentResponseDto.fromEntity(comment);
     }
 
+    /**
+     * 댓글 페이지 조회
+     */
     @Transactional(readOnly = true)
-    public CommentPageResponseDto readsComment(Long boardId, Pageable pageable) {
+    public CommentPageResponseDto gerPageComment(Integer pageNum,Integer size, Long boardId) {
+        //정렬은 생성 시간, get으로 넘겨주는 댓글은 수정 시간
+        Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.ASC, "createdAt"));
         Board board = boardRepository.findByIdOrElseThrow(boardId);
         Page<Comment> comments = commentRepository.findAll(pageable);
-        //QueryDSL 최적화 수정
+        //QueryDSL 최적화로 변경하기
 
-        //List 형식 totalPages,size,content,number 등 필요한 정보만 보내는 PageResponse
         return CommentPageResponseDto.fromPage(comments);
     }
 
+    /**
+     * 댓글 수정
+     */
     @Transactional
-    public CommentResponseDto updateComment(Long boardId, Long commentId, CommentRequestDto requestDto, User user) {
+    public CommentResponseDto updateComment(User user, CommentRequestDto requestDto, Long boardId, Long commentId) {
         user.validateUserStatus();
-        Board board = boardRepository.findByIdOrElseThrow(boardId); //게시판 경로 확인
-        Comment comment = commentRepository.findByIdOrElseThrow(commentId); //보드 존재 여부 확인
-        comment.validateOwner(user); //요청한 유저가 해당 댓글 소유주인지 확인
+        Board board = boardRepository.findByIdOrElseThrow(boardId);
+        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
+        comment.validateOwner(user);
 
         comment.update(requestDto);
         Comment updatedComment = commentRepository.save(comment);
@@ -65,8 +80,11 @@ public class CommentService {
         return CommentResponseDto.fromEntity(updatedComment);
     }
 
+    /**
+     * 댓글 삭제
+     */
     @Transactional
-    public String deleteComment(Long boardId, Long commentId, User user) {
+    public String deleteComment(User user, Long boardId, Long commentId) {
         user.validateUserStatus();
         Board board = boardRepository.findByIdOrElseThrow(boardId);
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
