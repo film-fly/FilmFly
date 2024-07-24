@@ -69,6 +69,10 @@ public class Board extends TimeStampEntity {
         this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
     }
 
+    public void addHits(){
+        hits += 1;
+    }
+
     /**
      * 요청한 유저가 해당 보드의 소유주인지 확인
      */
