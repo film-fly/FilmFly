@@ -70,6 +70,7 @@ public class MediaService {
         List<Media> mediaList = getListMedia(mediaType,typeId);
         for (Media media : mediaList) {
             s3Uploader.boardFileDelete(media.getTypeId(),media.getFileName());
+            mediaRepository.delete(media);
         }
     }
 }
