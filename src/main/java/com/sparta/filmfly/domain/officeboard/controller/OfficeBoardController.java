@@ -36,25 +36,28 @@ public class OfficeBoardController {
 
     private final OfficeBoardService officeBoardService;
 
+    /**
+     * 운영보드 생성
+     */
     @PostMapping
     public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> createOfficeBoard(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestPart(value = "officeBoardRequestDto") OfficeBoardRequestDto requestDto,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
 
     ) {
-        OfficeBoard officeBoard = OfficeBoard.builder()
-                .user(userDetails.getUser())
-                .requestDto(requestDto)
-                .build();
+        OfficeBoard officeBoard = requestDto.toEntity(userDetails.getUser(), requestDto);
 
         OfficeBoardResponseDto responseDto = officeBoardService.createOfficeBoard(officeBoard,
                 files);
         return ResponseUtils.success(responseDto);
     }
 
+    /**
+     * 운영보드 전체 조회
+     */
     @GetMapping
-    public ResponseEntity<DataResponseDto<List<OfficeBoardResponseDto>>> findAll(
+    public ResponseEntity<DataResponseDto<List<OfficeBoardResponseDto>>> getAllOfficeBoards(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "5") int size,
             @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
@@ -62,37 +65,47 @@ public class OfficeBoardController {
     ) {
 
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        List<OfficeBoardResponseDto> responseDto = officeBoardService.findAll(pageable);
+        List<OfficeBoardResponseDto> responseDto = officeBoardService.getAllOfficeBoards(pageable);
         return ResponseUtils.success(responseDto);
     }
 
+    /**
+     * 운영보드 단일 조회
+     */
     @GetMapping("/{boardId}")
-    public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> findOne(
+    public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> getOfficeBoard(
             @PathVariable Long boardId
     ) {
-        OfficeBoardResponseDto responseDto = officeBoardService.findOne(boardId);
+        OfficeBoardResponseDto responseDto = officeBoardService.getOfficeBoard(boardId);
         return ResponseUtils.success(responseDto);
     }
 
+    /**
+     * 운영보드 수정
+     */
     @PatchMapping("/{boardId}")
-    public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> update(
-
-            @PathVariable Long boardId,
+    public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> updateOfficeBoard(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestPart(value = "officeBoardRequestDto") OfficeBoardRequestDto requestDto,
             @RequestPart(value = "files", required = false) List<MultipartFile> files,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @PathVariable Long boardId
     ) {
-        OfficeBoardResponseDto responseDto = officeBoardService.update(userDetails.getUser(),
+        OfficeBoardResponseDto responseDto = officeBoardService.updateOfficeBoard(
+                userDetails.getUser(),
                 boardId, requestDto, files);
         return ResponseUtils.success(responseDto);
     }
 
+    /**
+     * 운영보드 삭제
+     */
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> delete(
+    public ResponseEntity<DataResponseDto<OfficeBoardResponseDto>> deleteOfficeBoard(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long boardId
     ) {
-        OfficeBoardResponseDto responseDto = officeBoardService.delete(userDetails.getUser(),
+        OfficeBoardResponseDto responseDto = officeBoardService.deleteOfficeBoard(
+                userDetails.getUser(),
                 boardId);
         return ResponseUtils.success(responseDto);
     }

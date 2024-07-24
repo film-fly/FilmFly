@@ -2,7 +2,6 @@ package com.sparta.filmfly.domain.officeboard.entity;
 
 import static com.sparta.filmfly.domain.user.entity.UserRoleEnum.ROLE_ADMIN;
 
-import com.sparta.filmfly.domain.media.entity.Media;
 import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
@@ -17,11 +16,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -59,21 +55,20 @@ public class OfficeBoard extends TimeStampEntity {
 
 
     @Builder
-    // 로그인 완료되면 유저 추가
-    public OfficeBoard(User user, OfficeBoardRequestDto requestDto) {
+    public OfficeBoard(User user, String title, String content) {
         this.user = user;
-        this.title = requestDto.getTitle();
-        this.content = requestDto.getContent();
+        this.title = title;
+        this.content = content;
         this.hits = 0L;
         this.goodCount = 0L;
     }
 
-    public void update(OfficeBoardRequestDto requestDto) {
+    public void updateOfficeBoard(OfficeBoardRequestDto requestDto) {
         this.title = requestDto.getTitle() != null ? requestDto.getTitle() : title;
         this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
     }
 
-    public void delete() {
+    public void deleteOfficeBoard() {
         setDeletedAt();
     }
 

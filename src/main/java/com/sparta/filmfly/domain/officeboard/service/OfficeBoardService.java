@@ -20,12 +20,15 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-// 공통 -> 로그인 완료되면 유저 추가
+
 public class OfficeBoardService {
 
     private final OfficeBoardRepository officeBoardRepository;
     private final MediaService mediaService;
 
+    /**
+     * 운영보드 생성
+     */
     @Transactional
     public OfficeBoardResponseDto createOfficeBoard(OfficeBoard officeBoard,
             List<MultipartFile> files) {
@@ -40,6 +43,7 @@ public class OfficeBoardService {
             return officeBoardresponseDto;
         }
 
+        // responseDto에 요청 file들 추가
         for (MultipartFile file : files) {
             MediaResponseDto mediaResponseDto = mediaService.saveMedia(MediaTypeEnum.OFFICE_BOARD,
                     savedOfficeBoard.getId(), file);
@@ -48,8 +52,11 @@ public class OfficeBoardService {
         return officeBoardresponseDto;
     }
 
-    @Transactional
-    public List<OfficeBoardResponseDto> findAll(Pageable pageable) {
+    /**
+     * 운영보드 전체 조회(페이징 포함)
+     */
+    @Transactional(readOnly = true)
+    public List<OfficeBoardResponseDto> getAllOfficeBoards(Pageable pageable) {
 
         List<OfficeBoardResponseDto> list = officeBoardRepository.findAllByOrderByCreatedAtDesc(
                         pageable)
@@ -72,8 +79,11 @@ public class OfficeBoardService {
         return list;
     }
 
-    @Transactional
-    public OfficeBoardResponseDto findOne(Long id) {
+    /**
+     * 운영보드 단일 조회
+     */
+    @Transactional(readOnly = true)
+    public OfficeBoardResponseDto getOfficeBoard(Long id) {
 
         OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(id);
         List<Media> mediaList = mediaService.getMediaList(MediaTypeEnum.OFFICE_BOARD,
@@ -89,8 +99,11 @@ public class OfficeBoardService {
 
     }
 
+    /**
+     * 운영보드 수정
+     */
     @Transactional
-    public OfficeBoardResponseDto update(User user, Long id,
+    public OfficeBoardResponseDto updateOfficeBoard(User user, Long id,
             OfficeBoardRequestDto requestDto, List<MultipartFile> files) {
 
         OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(id);
@@ -99,7 +112,7 @@ public class OfficeBoardService {
 
         OfficeBoardResponseDto responseDto = OfficeBoardResponseDto.fromEntity(officeBoard);
         mediaService.deleteAllMedia(MediaTypeEnum.OFFICE_BOARD, officeBoard.getId());
-        officeBoard.update(requestDto);
+        officeBoard.updateOfficeBoard(requestDto);
 
         if (!officeBoard.isFilesNotNull(files)) {
             return responseDto;
@@ -115,15 +128,17 @@ public class OfficeBoardService {
 
     }
 
-
+    /**
+     * 운영보드 삭제
+     */
     @Transactional
-    public OfficeBoardResponseDto delete(User user, Long id) {
+    public OfficeBoardResponseDto deleteOfficeBoard(User user, Long id) {
 
         OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(id);
 
         officeBoard.validUser();
         officeBoard.checkOwnerUser(user);
-        officeBoard.delete();
+        officeBoard.deleteOfficeBoard();
         return OfficeBoardResponseDto.fromEntity(officeBoard);
     }
 
