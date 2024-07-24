@@ -34,35 +34,47 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
+    /**
+     * 리뷰 저장
+     */
     @PostMapping
-    public ResponseEntity<DataResponseDto<ReviewResponseDto>> saveReview(
+    public ResponseEntity<DataResponseDto<ReviewResponseDto>> createReview(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @Valid @RequestBody ReviewCreateRequestDto requestDto
     ) {
-        ReviewResponseDto responseDto = reviewService.saveReview(userDetails.getUser(), requestDto);
+        ReviewResponseDto responseDto = reviewService.createReview(userDetails.getUser(), requestDto);
         return ResponseUtils.success(responseDto);
     }
 
+    /**
+     * 리뷰 단일 조회
+     */
     @GetMapping("/{reviewId}")
-    public ResponseEntity<DataResponseDto<ReviewResponseDto>> findReview(
+    public ResponseEntity<DataResponseDto<ReviewResponseDto>> getReview(
         @PathVariable Long reviewId
     ) {
-        ReviewResponseDto responseDto = reviewService.findReview(reviewId);
+        ReviewResponseDto responseDto = reviewService.getReview(reviewId);
         return ResponseUtils.success(responseDto);
     }
 
+    /**
+     * 특정 영화에 대한 리뷰 전체 조회
+     */
     @GetMapping
-    public ResponseEntity<DataResponseDto<List<ReviewResponseDto>>> findReviews(
+    public ResponseEntity<DataResponseDto<List<ReviewResponseDto>>> getPageReview(
         @RequestParam(required = false, defaultValue = "1") int page,
         @RequestParam(required = false, defaultValue = "5") int size,
         @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
         @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        List<ReviewResponseDto> responseDtos = reviewService.findReviews(1L, pageable); // 영화 id
+        List<ReviewResponseDto> responseDtos = reviewService.getPageReview(1L, pageable); // 영화 id
         return ResponseUtils.success(responseDtos);
     }
 
+    /**
+     * 리뷰 수정
+     */
     @PatchMapping("/{reviewId}")
     public ResponseEntity<DataResponseDto<ReviewResponseDto>> updateReview(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -73,6 +85,9 @@ public class ReviewController {
         return ResponseUtils.success(responseDto);
     }
 
+    /**
+     * 리뷰 삭제
+     */
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<MessageResponseDto> deleteReview(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
