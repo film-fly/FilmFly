@@ -16,16 +16,15 @@ public class BoardPageResponseDto {
     int size;
     List<BoardResponseDto> content;
 
+    /**
+     * content 제외한 기본 페이지 정보  정적 팩토리
+     */
     public static BoardPageResponseDto fromPage(Page<Board> boards) {
-        //Page<BoardResponseDto> boardsDto = boards.map(BoardResponseDto::fromEntity);
-        //List<BoardResponseDto> boardsDto = boards.stream().map(BoardResponseDto::fromEntity).toList();
-
         return BoardPageResponseDto.builder()
                 .totalPages(boards.getTotalPages())
                 .totalElements(boards.getTotalElements())
                 .currentPages(boards.getNumber()+1)
                 .size(boards.getSize())
-                //.content(boardsDto)
                 .build();
     }
 

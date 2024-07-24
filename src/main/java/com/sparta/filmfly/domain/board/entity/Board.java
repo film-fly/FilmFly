@@ -69,6 +69,9 @@ public class Board extends TimeStampEntity {
         this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
     }
 
+    /**
+     * 요청한 유저가 해당 보드의 소유주인지 확인
+     */
     public void validateOwner(User requestUser) {
         if(this.user.getId() != requestUser.getId())
            throw new AccessDeniedException(ResponseCodeEnum.BOARD_NOT_OWNER);
