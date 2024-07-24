@@ -23,9 +23,12 @@ public class MediaService {
     private final MediaRepository mediaRepository;
     private final S3Uploader s3Uploader;
 
-    //파일 하나씩 저장 후 저장된 Dto 반환
+    /**
+     * 미디어 생성
+     * 파일 하나씩 저장 후 Dto 반환
+     */
     @Transactional
-    public MediaResponseDto saveMedia(MediaTypeEnum mediaType,Long typeId,MultipartFile file) {
+    public MediaResponseDto createMedia(MediaTypeEnum mediaType, Long typeId, MultipartFile file) {
         MediaResponseDto mediaResponseDto = null;
 
         boolean trySuccess = false;
@@ -51,16 +54,20 @@ public class MediaService {
         return mediaResponseDto;
     }
 
-    //미디어 리스트 반환
+    /**
+     * 미디어 리스트 조회
+     */
     @Transactional(readOnly = true)
-    public List<Media> getMediaList(MediaTypeEnum mediaType, Long typeId) {
+    public List<Media> getListMedia(MediaTypeEnum mediaType, Long typeId) {
         return mediaRepository.findAllByTypeAndTypeId(mediaType,typeId);
     }
 
-    //해당 게시글 모든 미디어 삭제
+    /**
+     * 해당 게시글 모든 미디어 삭제
+     */
     @Transactional
     public void deleteAllMedia(MediaTypeEnum mediaType, Long typeId) {
-        List<Media> mediaList = getMediaList(mediaType,typeId);
+        List<Media> mediaList = getListMedia(mediaType,typeId);
         for (Media media : mediaList) {
             s3Uploader.boardFileDelete(media.getTypeId(),media.getFileName());
         }
