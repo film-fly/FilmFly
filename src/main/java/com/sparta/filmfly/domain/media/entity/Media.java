@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,9 +24,20 @@ public class Media {
     private String s3Url;
 
     @Column(nullable = false)
+    private String fileName;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private MediaTypeEnum Type;
+    private MediaTypeEnum type;
 
     @Column(nullable = false)
     private Long typeId;
+
+    @Builder
+    public Media(String s3Url, String fileName, MediaTypeEnum type, Long typeId) {
+        this.s3Url = s3Url;
+        this.fileName = fileName;
+        this.type = type;
+        this.typeId = typeId;
+    }
 }
