@@ -73,24 +73,7 @@ public class EmailVerificationService {
         sendEmail(recipientAddress, subject, message);
     }
 
-    // 이메일을 전송하는 메서드
-    private void sendEmail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-
-        mailSender.send(message);
-    }
-
-    // 6자리 인증 코드를 생성하는 메서드
-    private String generateVerificationToken() {
-        Random random = new Random();
-        int token = 100000 + random.nextInt(900000); // 6자리 숫자 생성
-        return String.valueOf(token);
-    }
-
-    // 사용자가 입력한 인증 코드를 검증하는 메서드
+    // 사용자가 입력한 인증 코드를 검증하고 인증상태로 변경 하는 메서드
     @Transactional
     public void verifyEmail(String token) {
         // 인증 코드로 EmailVerification 객체를 조회합니다. 없으면 예외를 발생시킵니다.
@@ -109,4 +92,22 @@ public class EmailVerificationService {
         // 사용된 인증 코드는 삭제
         verificationRepository.delete(verification);
     }
+
+    // 이메일을 전송하는 메서드
+    private void sendEmail(String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+
+        mailSender.send(message);
+    }
+
+    // 6자리 인증 코드를 생성하는 메서드
+    private String generateVerificationToken() {
+        Random random = new Random();
+        int token = 100000 + random.nextInt(900000); // 6자리 숫자 생성
+        return String.valueOf(token);
+    }
+
 }
