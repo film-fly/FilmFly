@@ -29,29 +29,20 @@ public class MediaService {
      */
     @Transactional
     public MediaResponseDto createMedia(MediaTypeEnum mediaType, Long typeId, MultipartFile file) {
-        MediaResponseDto mediaResponseDto = null;
-
-        boolean trySuccess = false;
-        String mediaUrl = null;
         try {
-            mediaUrl = s3Uploader.boardFileUpload(mediaType,typeId,file);
-            trySuccess = true;
+            String mediaUrl = s3Uploader.boardFileUpload(mediaType,typeId,file);
+            Media media = Media.builder()
+                                .s3Url(mediaUrl)
+                                .fileName(file.getOriginalFilename())
+                                .type(mediaType)
+                                .typeId(typeId)
+                                .build();
+            Media savedMedia = mediaRepository.save(media);
+
+            return MediaResponseDto.fromEntity(savedMedia);
         } catch (IOException e) {
             throw new UploadException(ResponseCodeEnum.UPLOAD_FAILED);
         }
-        finally {
-            if (trySuccess) {
-                Media media = Media.builder()
-                        .s3Url(mediaUrl)
-                        .fileName(file.getOriginalFilename())
-                        .type(mediaType)
-                        .typeId(typeId)
-                        .build();
-                Media savedMedia = mediaRepository.save(media);
-                mediaResponseDto = MediaResponseDto.fromEntity(savedMedia);
-            }
-        }
-        return mediaResponseDto;
     }
 
     /**
