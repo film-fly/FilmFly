@@ -42,14 +42,30 @@ public class UserService {
         // 비밀번호 인코딩
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
+        // 유저 상태 결정
+        UserStatusEnum userStatus = (requestDto.getAdminPassword() != null && !requestDto.getAdminPassword().isEmpty() && managerPassword.equals(requestDto.getAdminPassword()))
+                ? UserStatusEnum.VERIFIED
+                : UserStatusEnum.UNVERIFIED;
+
+        // 유저 역할 결정
+        UserRoleEnum userRole;
+        if (requestDto.getAdminPassword() != null && !requestDto.getAdminPassword().isEmpty()) {
+            if (!managerPassword.equals(requestDto.getAdminPassword())) {
+                throw new InformationMismatchException(ResponseCodeEnum.INVALID_ADMIN_PASSWORD);
+            }
+            userRole = UserRoleEnum.ROLE_ADMIN;
+        } else {
+            userRole = UserRoleEnum.ROLE_USER;
+        }
+
         // User 엔티티 생성
         User user = User.builder()
                 .username(requestDto.getUsername())
                 .password(encodedPassword)
                 .email(requestDto.getEmail())
                 .nickname(requestDto.getNickname())
-                .userStatus(determineUserStatus(requestDto.getAdminPassword())) // 유저 상태 결정
-                .userRole(determineUserRole(requestDto.getAdminPassword())) // 유저 역할 결정
+                .userStatus(userStatus) // 유저 상태 설정
+                .userRole(userRole) // 유저 역할 설정
                 .build();
 
         // User 엔티티 저장
@@ -194,7 +210,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // 유저 활설화 상태로 만들기
+    // 유저 활성화 상태로 만들기
     @Transactional
     public void activateUser(Long userId, User currentUser) {
         // 현재 사용자가 어드민인지 확인
@@ -205,23 +221,5 @@ public class UserService {
         // 유저 상태를 인증된 상태로 변경
         user.updateVerified();
         userRepository.save(user);
-    }
-
-    // 유저 상태 설정
-    private UserStatusEnum determineUserStatus(String adminPassword) {
-        return (adminPassword != null && !adminPassword.isEmpty() && managerPassword.equals(adminPassword))
-                ? UserStatusEnum.VERIFIED
-                : UserStatusEnum.UNVERIFIED;
-    }
-
-    // 유저 권한 설정
-    private UserRoleEnum determineUserRole(String adminPassword) {
-        if (adminPassword != null && !adminPassword.isEmpty()) {
-            if (!managerPassword.equals(adminPassword)) {
-                throw new InformationMismatchException(ResponseCodeEnum.INVALID_ADMIN_PASSWORD);
-            }
-            return UserRoleEnum.ROLE_ADMIN;
-        }
-        return UserRoleEnum.ROLE_USER;
     }
 }
