@@ -10,13 +10,13 @@ import com.sparta.filmfly.global.common.response.MessageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -68,7 +68,7 @@ public class UserController {
     @PutMapping("/password")
     public ResponseEntity<MessageResponseDto> updatePassword(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Validated @RequestBody PasswordUpdateRequestDto requestDto
+            @Valid @RequestBody PasswordUpdateRequestDto requestDto
     ) {
         userService.updatePassword(userDetails.getUser(), requestDto);
         return ResponseUtils.success();
@@ -78,7 +78,7 @@ public class UserController {
     @PutMapping("/profile")
     public ResponseEntity<MessageResponseDto> updateProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Validated @RequestPart("profileUpdateRequestDto") ProfileUpdateRequestDto requestDto,
+            @Valid @RequestPart("profileUpdateRequestDto") ProfileUpdateRequestDto requestDto,
             @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture
     ) {
         userService.updateProfile(userDetails.getUser(), requestDto, profilePicture);
@@ -116,7 +116,7 @@ public class UserController {
     @DeleteMapping("/withdraw")
     public ResponseEntity<MessageResponseDto> deleteUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Validated @RequestBody AccountDeleteRequestDto requestDto,
+            @Valid @RequestBody AccountDeleteRequestDto requestDto,
             HttpServletResponse response
     ) {
         userService.deleteUser(userDetails.getUser(), requestDto);
