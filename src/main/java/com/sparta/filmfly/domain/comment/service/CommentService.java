@@ -88,8 +88,9 @@ public class CommentService {
         user.validateUserStatus();
         Board board = boardRepository.findByIdOrElseThrow(boardId);
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
-        if(user.getUserRole() == UserRoleEnum.ROLE_USER) //관리자면 삭제 가능하게
+        if(user.getUserRole() == UserRoleEnum.ROLE_USER) { //관리자면 삭제 가능하게
             comment.validateOwner(user);
+        }
 
         commentRepository.delete(comment);
 

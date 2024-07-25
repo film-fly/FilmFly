@@ -10,9 +10,6 @@ import com.sparta.filmfly.global.common.response.ResponseUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -21,14 +18,14 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/board/{boardId}")
+@RequestMapping("/boards/{boardId}")
 public class CommentController {
     private final CommentService commentService;
 
     /**
      * 댓글 생성
      */
-    @PostMapping("/comment")
+    @PostMapping("/comments")
     public ResponseEntity<DataResponseDto<CommentResponseDto>> createComment(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CommentRequestDto requestDto,
@@ -41,7 +38,7 @@ public class CommentController {
     /**
      * 댓글 조회
      */
-    @GetMapping("/comment/{commentId}")
+    @GetMapping("/comments/{commentId}")
     public ResponseEntity<DataResponseDto<CommentResponseDto>> getComment(
             @PathVariable Long boardId,
             @PathVariable Long commentId
@@ -52,7 +49,7 @@ public class CommentController {
 
     /**
      * 댓글 페이지 조회
-     * http://localhost:8080/board/{boardId}/comment?pageNum=1&size=50
+     * http://localhost:8080/boards/{boardId}/comments?pageNum=1&size=50
      */
     @GetMapping("/comments")
     public ResponseEntity<DataResponseDto<CommentPageResponseDto>> gerPageComment(
@@ -67,7 +64,7 @@ public class CommentController {
     /**
      * 댓글 수정
      */
-    @PatchMapping("/comment/{commentId}")
+    @PatchMapping("/comments/{commentId}")
     public ResponseEntity<DataResponseDto<CommentResponseDto>> updateComment(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CommentRequestDto requestDto,
@@ -81,7 +78,7 @@ public class CommentController {
     /**
      * 댓글 삭제
      */
-    @DeleteMapping("/comment/{commentId}")
+    @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<DataResponseDto<String>> deleteComment(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long boardId,
