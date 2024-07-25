@@ -43,7 +43,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     // 화이트 리스트에 포함된 URI 패턴은 인증을 생략
     private final List<String> anyMethodWhiteList = List.of(
-            "/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/email/verify", "/email/[0-9]+/resend"
+            "/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/email/verify", "/email/[0-9]+/resend", "/1", "/2", "/testcode"
     );
 
    // GET 메서드 화이트 리스트
