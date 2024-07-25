@@ -10,8 +10,6 @@ public enum ResponseCodeEnum {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "신고내용을 찾을 수 없습니다."),
     BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "차단내용을 찾을 수 없습니다."),
-    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
-    REVIEW_NOT_OWNER(HttpStatus.FORBIDDEN, "본인이 작성한 리뷰가 아닙니다."),
 
     PASSWORD_INCORRECT(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     EMAIL_VERIFICATION_REQUIRED(HttpStatus.FORBIDDEN, "이메일 인증이 필요합니다."),
@@ -30,8 +28,11 @@ public enum ResponseCodeEnum {
     INVALID_ADMIN_TARGET(HttpStatus.FORBIDDEN, "관리자를 대상으로 할 수 없습니다."),
     USER_ALREADY_BLOCKED(HttpStatus.BAD_REQUEST, "이미 차단된 사용자입니다."),
     NOT_BLOCKED_TARGET(HttpStatus.NOT_FOUND, "차단된 상대가 아닙니다."),
-    ALREADY_REPORTED(HttpStatus.BAD_REQUEST, "이미 신고 처리 되었습니다.")
+    ALREADY_REPORTED(HttpStatus.BAD_REQUEST, "이미 신고 처리 되었습니다."),
 
+    // Review
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
+    REVIEW_NOT_OWNER(HttpStatus.FORBIDDEN, "본인이 작성한 리뷰가 아닙니다."),
 
     ;
     private final HttpStatus httpStatus;
