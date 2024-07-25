@@ -33,7 +33,9 @@ public enum ResponseCodeEnum {
     //Board
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "보드를 찾을 수 없습니다."),
     BOARD_NOT_OWNER(HttpStatus.FORBIDDEN, "보드의 주인이 아닙니다."),
-
+    //Comment
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
+    COMMENT_NOT_OWNER(HttpStatus.FORBIDDEN, "댓글의 주인이 아닙니다."),
     // Review
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     REVIEW_NOT_OWNER(HttpStatus.FORBIDDEN, "본인이 작성한 리뷰가 아닙니다."),
