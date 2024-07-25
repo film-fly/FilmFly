@@ -6,6 +6,7 @@ import com.sparta.filmfly.domain.user.repository.EmailVerificationRepository;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.ExpiredException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -15,19 +16,12 @@ import java.time.LocalDateTime;
 import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
 public class EmailVerificationService {
 
     private final UserRepository userRepository;
     private final EmailVerificationRepository verificationRepository;
     private final JavaMailSender mailSender;
-
-    public EmailVerificationService(UserRepository userRepository,
-                                    EmailVerificationRepository verificationRepository,
-                                    JavaMailSender mailSender) {
-        this.userRepository = userRepository;
-        this.verificationRepository = verificationRepository;
-        this.mailSender = mailSender;
-    }
 
     // 인증 코드를 생성하고 이메일로 전송하는 메서드
     @Transactional
@@ -36,7 +30,11 @@ public class EmailVerificationService {
         String token = generateVerificationToken();
 
         // 새로운 인증 코드 생성
-        EmailVerification verification = new EmailVerification(user, token, LocalDateTime.now().plusMinutes(3));
+        EmailVerification verification = EmailVerification.builder()
+                .user(user)
+                .emailVerificationToken(token)
+                .emailExpiryTime(LocalDateTime.now().plusMinutes(3))
+                .build();
         verificationRepository.save(verification);
 
         String recipientAddress = user.getEmail();
@@ -54,6 +52,14 @@ public class EmailVerificationService {
 
         // EmailVerification 객체를 조회하고 없으면 예외 발생
         EmailVerification verification = verificationRepository.findByUserOrElseThrow(user);
+
+        // 재전송 가능 여부 검증
+        verification.validateResendLimit();
+
+        // 재전송 횟수 증가 및 마지막 재전송 시간 업데이트
+        verification.incrementResendCount();
+        verification.updateLastResendTime(LocalDateTime.now());
+
         // 기존 인증 코드 업데이트
         verification.updateEmailVerificationToken(token);
         verification.createEmailExpiryTime(LocalDateTime.now().plusMinutes(3)); // 3분간 유효
