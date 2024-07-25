@@ -3,7 +3,7 @@ package com.sparta.filmfly.domain.user.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.filmfly.domain.user.dto.KakaoUserInfoDto;
+import com.sparta.filmfly.domain.user.dto.UserKakaoInfoDto;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
@@ -48,7 +48,7 @@ public class KakaoService {
         String accessToken = getToken(code);
         log.info("Kakao access token: {}", accessToken);
 
-        KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
+        UserKakaoInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
         log.info("Kakao user info: {}", kakaoUserInfo);
 
         return createOrUpdateUser(kakaoUserInfo, response);
@@ -87,7 +87,7 @@ public class KakaoService {
     }
 
     // Kakao 사용자 정보를 얻기 위한 메서드
-    private KakaoUserInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
+    private UserKakaoInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kapi.kakao.com")
                 .path("/v2/user/me")
@@ -118,7 +118,7 @@ public class KakaoService {
         }
         String email = jsonNode.get("kakao_account").get("email").asText();
 
-        return KakaoUserInfoDto.builder()
+        return UserKakaoInfoDto.builder()
                 .id(id)
                 .nickname(nickname)
                 .pictureUrl(pictureUrl)
@@ -128,7 +128,7 @@ public class KakaoService {
 
     // 사용자 생성 또는 업데이트 메서드
     @Transactional
-    public UserResponseDto createOrUpdateUser(KakaoUserInfoDto kakaoUserInfo, HttpServletResponse response) {
+    public UserResponseDto createOrUpdateUser(UserKakaoInfoDto kakaoUserInfo, HttpServletResponse response) {
         String kakaoUsername = "kakao_" + kakaoUserInfo.getId();
         User user;
         boolean isNewUser = false;
