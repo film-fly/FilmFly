@@ -1,13 +1,22 @@
-INSERT INTO exam (title, content, created_at, updated_at)
-VALUES ('제목1', '내용1', now(), now()),
-       ('제목2', '내용2', now(), now()),
-       ('제목3', '내용3', now(), now()),
-       ('제목4', '내용4', now(), now()),
-       ('제목5', '내용5', now(), now()),
-       ('제목6', '내용6', now(), now()),
-       ('제목7', '내용7', now(), now()),
-       ('제목8', '내용8', now(), now()),
-       ('제목9', '내용9', now(), now()),
-       ('제목10', '내용10', now(), now()),
-       ('제목11', '내용11', now(), now()),
-       ('제목12', '내용12', now(), now());
+INSERT INTO user (created_at, updated_at, email, introduce, kakao_id, nickname, password,
+                  picture_url, refresh_token, user_role, user_status, username)
+VALUES (now(), now(), 'email@gmail.com', '안녕', 12345, '닉네임', '$2a$12$u48yj1bNay/ordPp//pX9OVd7DdFaNQfbvesn0ME6PAVfl/dicjdC',
+        '사진URL', 'refresh', 'ROLE_USER', 'VERIFIED', 'testId1');
+
+INSERT INTO movie (content, rating, summary, title)
+VALUES ('영화 내용', 3.3, '요약', '제목');
+
+INSERT INTO review (created_at, updated_at, rating, bad_count, good_count, movie_id, user_id, content, title)
+VALUES (now(), now(), 4.5, 12, 11, 1, 1, '내용1', '제목1');
+INSERT INTO review (created_at, updated_at, rating, bad_count, good_count, movie_id, user_id, content, title)
+VALUES (now(), now(), 4.5, 12, 11, 1, 1, '내용2', '제목2');
+INSERT INTO review (created_at, updated_at, rating, bad_count, good_count, movie_id, user_id, content, title)
+VALUES (now(), now(), 4.5, 12, 11, 1, 1, '내용3', '제목3');
+INSERT INTO review (created_at, updated_at, rating, bad_count, good_count, movie_id, user_id, content, title)
+VALUES (now(), now(), 4.5, 12, 11, 1, 1, '내용4', '제목4');
+INSERT INTO review (created_at, updated_at, rating, bad_count, good_count, movie_id, user_id, content, title)
+VALUES (now(), now(), 4.5, 12, 11, 1, 1, '내용5', '제목5');
+INSERT INTO review (created_at, updated_at, rating, bad_count, good_count, movie_id, user_id, content, title)
+VALUES (now(), now(), 4.5, 12, 11, 1, 1, '내용6', '제목6');
+INSERT INTO review (created_at, updated_at, rating, bad_count, good_count, movie_id, user_id, content, title)
+VALUES (now(), now(), 4.5, 12, 11, 1, 1, '내용7', '제목7');
