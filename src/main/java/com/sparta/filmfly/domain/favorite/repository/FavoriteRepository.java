@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 
+    boolean existsFavoriteByMovieIdAndUserId(Long movieId, Long userId);
+
 //    @Query("SELECT * FROM favorite f WHERE f.deleted_at IS NOT NULL", nativeQuery = true)
 //    List<Favorite> findAllByDeletedAtIsNotNull();
 //
