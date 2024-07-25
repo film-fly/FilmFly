@@ -2,7 +2,6 @@ package com.sparta.filmfly.domain.coupon.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.filmfly.domain.coupon.entity.Coupon;
-import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,17 +11,22 @@ import lombok.Getter;
 public class CouponResponseDto {
 
     private Long id;
-
-    @NotBlank
-    String couponNumber;
+    private String title;
+    private String description;
+    private double discountRate;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
+    Boolean status;
+
     public static CouponResponseDto fromEntity(Coupon coupon) {
         return CouponResponseDto.builder()
                 .id(coupon.getId())
-                .couponNumber(coupon.getCouponNumber())
+                .title(coupon.getTitle())
+                .description(coupon.getDescription())
+                .discountRate(coupon.getDiscountRate())
+                .status(coupon.getStatus())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
