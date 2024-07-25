@@ -38,17 +38,11 @@ public class S3Uploader {
         return amazonS3.getUrl(bucketName, fileName).toString();
     }
 
-    //보드 파일 업로드
+    /**
+     * s3 파일 업로드
+     */
     public String boardFileUpload(MediaTypeEnum mediaType, Long typeId, MultipartFile file) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        if(mediaType == MediaTypeEnum.BOARD)
-            sb.append("board/");
-        else if(mediaType == MediaTypeEnum.OFFICE_BOARD)
-            sb.append("officeBoard/");
-        else
-            throw new UploadException(ResponseCodeEnum.UPLOAD_FAILED);
-        sb.append(typeId).append("/").append(file.getOriginalFilename());
-        String fileName = sb.toString(); //같은 이름의 파일은 그 위에 다시 업로드됨
+        String fileName = createMediaPath(mediaType,typeId,file.getOriginalFilename()); //같은 이름의 파일은 그 위에 다시 업로드됨
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
@@ -58,12 +52,32 @@ public class S3Uploader {
         return amazonS3.getUrl(bucketName, fileName).toString();
     }
 
-    public void boardFileDelete(Long typeId, String fileName){
-        String key = "board/" + typeId + "/" + fileName; //s3에 올라간 파일 이름
+    /**
+     * s3 파일 삭제
+     */
+    public void boardFileDelete(MediaTypeEnum mediaType, Long typeId, String fileName){
+        String key = createMediaPath(mediaType,typeId,fileName); //s3에 올라간 파일 이름
         try{
             amazonS3.deleteObject(new DeleteObjectRequest(bucketName, key));
         }catch (Exception e){
             throw new UploadException(ResponseCodeEnum.UPLOAD_FAILED);
         }
+    }
+
+    /**
+     * s3에 저장하는 파일 이름 변경
+     */
+    private String createMediaPath(MediaTypeEnum mediaType, Long typeId, String fileName){
+        StringBuilder sb = new StringBuilder();
+        if(mediaType == MediaTypeEnum.BOARD) {
+            sb.append("boards/");
+        }
+        else if(mediaType == MediaTypeEnum.OFFICE_BOARD) {
+            sb.append("officeBoards/");
+        }
+        else {
+            sb.append("etc/");
+        }
+        return sb.append(typeId).append("/").append(fileName).toString();
     }
 }
