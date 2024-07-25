@@ -70,7 +70,8 @@ public class Comment extends TimeStampEntity {
      * 요청한 유저가 해당 댓글 소유주인지 유효성 검사
      */
     public void validateOwner(User requestUser) {
-        if(this.user.getId() != requestUser.getId())
+        if(this.user.getId() != requestUser.getId()) {
             throw new AccessDeniedException(ResponseCodeEnum.COMMENT_NOT_OWNER);
+        }
     }
 }
