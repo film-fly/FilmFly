@@ -47,6 +47,7 @@ public class UserService {
                 .username(requestDto.getUsername())
                 .password(encodedPassword)
                 .email(requestDto.getEmail())
+                .nickname(requestDto.getNickname())
                 .userStatus(determineUserStatus(requestDto.getAdminPassword())) // 유저 상태 결정
                 .userRole(determineUserRole(requestDto.getAdminPassword())) // 유저 역할 결정
                 .build();
@@ -69,6 +70,7 @@ public class UserService {
                 .pictureUrl(user.getPictureUrl())
                 .userRole(user.getUserRole())
                 .userStatus(user.getUserStatus())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 
