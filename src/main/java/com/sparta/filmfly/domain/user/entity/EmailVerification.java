@@ -60,11 +60,6 @@ public class EmailVerification extends TimeStampEntity {
         this.resendCount++;
     }
 
-    // 재전송 횟수 초기화
-    public void resetResendCount() {
-        this.resendCount = 0;
-    }
-
     // 마지막 재전송 시간 업데이트
     public void updateLastResendTime(LocalDateTime time) {
         this.lastResendTime = time;
