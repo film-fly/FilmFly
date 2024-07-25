@@ -33,7 +33,7 @@ public class UserService {
 
     // 회원가입
     @Transactional
-    public UserResponseDto signup(SignupRequestDto requestDto) {
+    public UserResponseDto signup(UserSignupRequestDto requestDto) {
         // 중복된 사용자 체크
         if (userRepository.findByUsername(requestDto.getUsername()).isPresent()) {
             throw new DuplicateException(ResponseCodeEnum.USER_ALREADY_EXISTS);
@@ -92,7 +92,7 @@ public class UserService {
 
     // 비밀번호 변경
     @Transactional
-    public void updatePassword(User loginUser, PasswordUpdateRequestDto requestDto) {
+    public void updatePassword(User loginUser, UserPasswordUpdateRequestDto requestDto) {
         User user = userRepository.findByIdOrElseThrow(loginUser.getId());
 
         user.validatePassword(requestDto.getCurrentPassword(), passwordEncoder);
@@ -105,7 +105,7 @@ public class UserService {
 
     // 프로필 업데이트
     @Transactional
-    public void updateProfile(User user, ProfileUpdateRequestDto requestDto, MultipartFile profilePicture) {
+    public void updateProfile(User user, UserProfileUpdateRequestDto requestDto, MultipartFile profilePicture) {
         String pictureUrl = user.getPictureUrl(); // 기존 URL 유지
 
         if (profilePicture != null && !profilePicture.isEmpty()) {
@@ -140,7 +140,7 @@ public class UserService {
 
     // 회원 탈퇴
     @Transactional
-    public void deleteUser(User user, AccountDeleteRequestDto requestDto) {
+    public void deleteUser(User user, UserDeleteRequestDto requestDto) {
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new InformationMismatchException(ResponseCodeEnum.PASSWORD_INCORRECT);
         }
@@ -173,7 +173,7 @@ public class UserService {
 
     // 상태별 유저 조회
     @Transactional(readOnly = true)
-    public UserStatusResponseDto getUsersByStatus(UserStatusEnum status, User currentUser) {
+    public UserStatusSearchResponseDto getUsersByStatus(UserStatusEnum status, User currentUser) {
         // 현재 사용자가 어드민인지 확인
         currentUser.validateAdminRole();
 
@@ -186,7 +186,7 @@ public class UserService {
                         .build())
                 .collect(Collectors.toList());
 
-        return UserStatusResponseDto.builder()
+        return UserStatusSearchResponseDto.builder()
                 .users(userResponseDtos)
                 .userCount(users.size())
                 .build();

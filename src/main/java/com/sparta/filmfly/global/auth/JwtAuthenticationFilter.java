@@ -1,7 +1,7 @@
 package com.sparta.filmfly.global.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.filmfly.domain.user.dto.LoginRequestDto;
+import com.sparta.filmfly.domain.user.dto.UserLoginRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
@@ -45,7 +45,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("JwtAuthenticationFilter: 인증 시도 시작");
         try {
             // 요청 본문에서 로그인 요청 DTO 읽기
-            LoginRequestDto requestDto = objectMapper.readValue(request.getInputStream(), LoginRequestDto.class);
+            UserLoginRequestDto requestDto = objectMapper.readValue(request.getInputStream(), UserLoginRequestDto.class);
 
             // 로그인 시도하는 username 조회
             User user = userRepository.findByUsernameOrElseThrow(requestDto.getUsername());

@@ -38,7 +38,7 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<DataResponseDto<UserResponseDto>> signup(@RequestBody SignupRequestDto requestDto) {
+    public ResponseEntity<DataResponseDto<UserResponseDto>> signup(@RequestBody UserSignupRequestDto requestDto) {
         UserResponseDto responseDto = userService.signup(requestDto);
         return ResponseUtils.success(responseDto);
     }
@@ -68,7 +68,7 @@ public class UserController {
     @PutMapping("/password")
     public ResponseEntity<MessageResponseDto> updatePassword(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Valid @RequestBody PasswordUpdateRequestDto requestDto
+            @Valid @RequestBody UserPasswordUpdateRequestDto requestDto
     ) {
         userService.updatePassword(userDetails.getUser(), requestDto);
         return ResponseUtils.success();
@@ -78,7 +78,7 @@ public class UserController {
     @PutMapping("/profile")
     public ResponseEntity<MessageResponseDto> updateProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Valid @RequestPart("profileUpdateRequestDto") ProfileUpdateRequestDto requestDto,
+            @Valid @RequestPart("profileUpdateRequestDto") UserProfileUpdateRequestDto requestDto,
             @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture
     ) {
         userService.updateProfile(userDetails.getUser(), requestDto, profilePicture);
@@ -116,7 +116,7 @@ public class UserController {
     @DeleteMapping("/withdraw")
     public ResponseEntity<MessageResponseDto> deleteUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Valid @RequestBody AccountDeleteRequestDto requestDto,
+            @Valid @RequestBody UserDeleteRequestDto requestDto,
             HttpServletResponse response
     ) {
         userService.deleteUser(userDetails.getUser(), requestDto);
@@ -148,11 +148,11 @@ public class UserController {
 
     // 유저 상태별 조회 (관리자 기능)
     @GetMapping("/search/status")
-    public ResponseEntity<DataResponseDto<UserStatusResponseDto>> getUsersByStatus(
+    public ResponseEntity<DataResponseDto<UserStatusSearchResponseDto>> getUsersByStatus(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody UserStatusRequestDto userStatusRequestDto
+            @RequestBody UserStatusSearchRequestDto userStatusRequestDto
     ) {
-        UserStatusResponseDto users = userService.getUsersByStatus(userStatusRequestDto.getStatus(), userDetails.getUser());
+        UserStatusSearchResponseDto users = userService.getUsersByStatus(userStatusRequestDto.getStatus(), userDetails.getUser());
         return ResponseUtils.success(users);
     }
 
