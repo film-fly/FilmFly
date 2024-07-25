@@ -13,6 +13,7 @@ import com.sparta.filmfly.global.auth.JwtProvider;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -126,7 +127,8 @@ public class KakaoService {
     }
 
     // 사용자 생성 또는 업데이트 메서드
-    private UserResponseDto createOrUpdateUser(KakaoUserInfoDto kakaoUserInfo, HttpServletResponse response) {
+    @Transactional
+    public UserResponseDto createOrUpdateUser(KakaoUserInfoDto kakaoUserInfo, HttpServletResponse response) {
         String kakaoUsername = "kakao_" + kakaoUserInfo.getId();
         User user;
         boolean isNewUser = false;
