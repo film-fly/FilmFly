@@ -30,6 +30,10 @@ public enum ResponseCodeEnum {
     NOT_BLOCKED_TARGET(HttpStatus.NOT_FOUND, "차단된 상대가 아닙니다."),
     ALREADY_REPORTED(HttpStatus.BAD_REQUEST, "이미 신고 처리 되었습니다."),
 
+    //Board
+    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "보드를 찾을 수 없습니다."),
+    BOARD_NOT_OWNER(HttpStatus.FORBIDDEN, "보드의 주인이 아닙니다."),
+
     // Review
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     REVIEW_NOT_OWNER(HttpStatus.FORBIDDEN, "본인이 작성한 리뷰가 아닙니다."),
