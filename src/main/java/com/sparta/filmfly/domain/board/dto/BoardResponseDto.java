@@ -43,8 +43,9 @@ public class BoardResponseDto {
      * 보드가 미디어 정보를 가지고 있으면 추가
      */
     public void addMediaDto(MediaResponseDto media) {
-        if (mediaList == null)
+        if (mediaList == null) {
             mediaList = new ArrayList<>();
+        }
         mediaList.add(media);
     }
 

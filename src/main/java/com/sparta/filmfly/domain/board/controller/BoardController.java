@@ -29,7 +29,7 @@ public class BoardController {
     /**
      * 보드 생성
      */
-    @PostMapping(value = "/board", consumes = "multipart/form-data")
+    @PostMapping(value = "/boards", consumes = "multipart/form-data")
     public ResponseEntity<DataResponseDto<BoardResponseDto>> createBoard2(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestPart(value = "boardRequestDto") BoardRequestDto requestDto,
@@ -42,7 +42,7 @@ public class BoardController {
     /**
      * 보드 조회
      */
-    @GetMapping("/board/{boardId}")
+    @GetMapping("/boards/{boardId}")
     public ResponseEntity<DataResponseDto<BoardResponseDto>> getBoard(
             @PathVariable Long boardId
     ) {
@@ -66,7 +66,7 @@ public class BoardController {
     /**
      * 보드 수정
      */
-    @PatchMapping("/board/{boardId}")
+    @PatchMapping("/boards/{boardId}")
     public ResponseEntity<DataResponseDto<BoardResponseDto>> updateBoard(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestPart(value = "boardRequestDto") BoardRequestDto requestDto,
@@ -80,7 +80,7 @@ public class BoardController {
     /**
      * 보드 삭제
      */
-    @DeleteMapping("/board/{boardId}")
+    @DeleteMapping("/boards/{boardId}")
     public ResponseEntity<DataResponseDto<String>> deleteBoard(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long boardId

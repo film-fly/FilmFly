@@ -44,8 +44,9 @@ public class BoardService {
 
         BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(savedBoard);
 
-        if(files == null || files.isEmpty() || files.get(0).isEmpty()) //파일이 비어있으면 바로 종료
+        if(files == null || files.isEmpty() || files.get(0).isEmpty()) { //파일이 비어있으면 바로 종료
             return boardResponseDto;
+        }
 
         for (MultipartFile file : files) { //파일들 하나씩 s3로 올리기
             MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.BOARD,savedBoard.getId(),file);
@@ -136,8 +137,9 @@ public class BoardService {
         Board board = boardRepository.findByIdOrElseThrow(boardId);
 
         //관리자면 삭제 가능하게
-        if(user.getUserRole() == UserRoleEnum.ROLE_USER)
+        if(user.getUserRole() == UserRoleEnum.ROLE_USER) {
             board.validateOwner(user);
+        }
 
         boardRepository.delete(board);
 
