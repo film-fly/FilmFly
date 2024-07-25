@@ -26,6 +26,54 @@
   <div>
     html 작성
   </div>
+    <div id="mainDiv">
+        html 작성qwqeqwe
+        <button onclick="test()">
+            버튼버튼 눌러봐~
+        </button>
+    </div>
 </div>
 </body>
+<script>
+    $(document).ready(function () {
+    });
+    $.ajaxSetup({
+        contentType: 'application/json',
+        // beforeSend: function(xhr) {
+        //     xhr.withCredentials = true; // 필요한 경우 자격 증명 포함
+        // }
+    });
+    function test() {
+        $.ajax({
+            type: 'GET',
+            url: `http://localhost:8080/movie/test`,
+            success: function (response, status, xhr) {
+                console.log({
+                    msg: "요청 성공",
+                    상태: status + " : " + xhr.status
+                });
+
+                $("#mainDiv").append(
+                    `<div>
+                        ${response.body}
+                    </div>`
+                );
+            },
+            error: function (xhr, status, error) {
+                console.log({
+                    msg: "요청 실패" + error,
+                    상태: status + " : " + xhr.status
+                });
+                var msg = "상태: " + status + " : " + xhr.status
+                $("#mainDiv").append(
+                    `<div>
+                        요청 실패했으
+                        ${error}
+                        ${msg}
+                    </div>`
+                );
+            }
+        });
+    }
+</script>
 </html>

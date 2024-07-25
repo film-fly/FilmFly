@@ -18,6 +18,9 @@ repositories {
 }
 
 dependencies {
+    //API 요청
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     // Security
