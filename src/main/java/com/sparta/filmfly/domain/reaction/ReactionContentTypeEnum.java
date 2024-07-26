@@ -1,5 +1,7 @@
 package com.sparta.filmfly.domain.reaction;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import lombok.Getter;
@@ -15,6 +17,7 @@ public enum ReactionContentTypeEnum {
 
     private final String contentType;
 
+    @JsonCreator
     public static ReactionContentTypeEnum validateContentType(String contentType) {
         for (ReactionContentTypeEnum reactionContentTypeEnum : ReactionContentTypeEnum.values()) {
             if (reactionContentTypeEnum.getContentType().equalsIgnoreCase(contentType)) {
@@ -22,5 +25,9 @@ public enum ReactionContentTypeEnum {
             }
         }
         throw new NotFoundException(ResponseCodeEnum.REACTION_CONTENT_TYPE_NOT_FOUND);
+    }
+    @JsonValue
+    public String getContentType() {
+        return contentType;
     }
 }
