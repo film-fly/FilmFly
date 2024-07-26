@@ -1,5 +1,7 @@
 package com.sparta.filmfly.domain.collection.entity;
 
+import com.sparta.filmfly.domain.movie.entity.Movie;
+import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,14 +14,17 @@ public class MovieCollection extends TimeStampEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @JoinColumn(nullable = true, name = "collection_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Collection collection;
 
-    private String content;
+    @JoinColumn(nullable = true, name = "movie_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Movie movie;
 
     @Builder
-    public MovieCollection(String name, String content) {
-        this.name = name;
-        this.content = content;
+    public MovieCollection(Collection collection, Movie movie) {
+        this.collection = collection;
+        this.movie = movie;
     }
 }
