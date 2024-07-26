@@ -7,6 +7,9 @@ import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
+import com.sparta.filmfly.global.exception.custom.GlobalException;
+import com.sparta.filmfly.global.exception.custom.detail.InformationMismatchException;
+import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.Cookie;
@@ -67,9 +70,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                             null
                     )
             );
+        } catch (NotFoundException e) {
+            setCustomErrorResponse(response, ResponseCodeEnum.USER_NOT_FOUND);
+            return null;
+        } catch (InformationMismatchException e) {
+            setCustomErrorResponse(response, ResponseCodeEnum.PASSWORD_INCORRECT);
+            return null;
         } catch (IOException e) {
             // 요청 본문 읽기 실패 시 에러 응답 설정
             setErrorResponse(response, ResponseCodeEnum.INVALID__REQUEST);
+            return null;
+        } catch (Exception e) {
+            // 일반적인 예외 처리
+            setErrorResponse(response, ResponseCodeEnum.LOGIN_FAILED);
             return null;
         }
     }
@@ -139,6 +152,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             writeResponseBody(response, responseEntity);
         } catch (IOException e) {
             log.error("에러 응답 본문 쓰기 실패: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 사용자 정의 예외 응답 설정
+     */
+    private void setCustomErrorResponse(HttpServletResponse response, ResponseCodeEnum responseCode) {
+        ResponseEntity<MessageResponseDto> responseEntity = ResponseUtils.of(responseCode.getHttpStatus(), responseCode.getMessage());
+        try {
+            writeResponseBody(response, responseEntity);
+        } catch (IOException e) {
+            log.error("사용자 정의 예외 응답 본문 쓰기 실패: {}", e.getMessage());
         }
     }
 }
