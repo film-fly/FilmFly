@@ -3,7 +3,7 @@ package com.sparta.filmfly.domain.user.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.filmfly.domain.user.dto.KakaoUserInfoDto;
+import com.sparta.filmfly.domain.user.dto.UserKakaoInfoDto;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
@@ -13,6 +13,7 @@ import com.sparta.filmfly.global.auth.JwtProvider;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,13 +48,15 @@ public class KakaoService {
         String accessToken = getToken(code);
         log.info("Kakao access token: {}", accessToken);
 
-        KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
+        UserKakaoInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
         log.info("Kakao user info: {}", kakaoUserInfo);
 
         return createOrUpdateUser(kakaoUserInfo, response);
     }
 
-    // Access Token을 얻기 위한 메서드
+    /**
+     * Access Token 획득
+     */
     private String getToken(String code) throws JsonProcessingException {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kauth.kakao.com")
@@ -85,8 +88,10 @@ public class KakaoService {
         return jsonNode.get("access_token").asText();
     }
 
-    // Kakao 사용자 정보를 얻기 위한 메서드
-    private KakaoUserInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
+    /**
+     * Kakao 사용자 정보 획득
+     */
+    private UserKakaoInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kapi.kakao.com")
                 .path("/v2/user/me")
@@ -117,7 +122,7 @@ public class KakaoService {
         }
         String email = jsonNode.get("kakao_account").get("email").asText();
 
-        return KakaoUserInfoDto.builder()
+        return UserKakaoInfoDto.builder()
                 .id(id)
                 .nickname(nickname)
                 .pictureUrl(pictureUrl)
@@ -125,8 +130,11 @@ public class KakaoService {
                 .build();
     }
 
-    // 사용자 생성 또는 업데이트 메서드
-    private UserResponseDto createOrUpdateUser(KakaoUserInfoDto kakaoUserInfo, HttpServletResponse response) {
+    /**
+     * 사용자 생성 또는 업데이트
+     */
+    @Transactional
+    public UserResponseDto createOrUpdateUser(UserKakaoInfoDto kakaoUserInfo, HttpServletResponse response) {
         String kakaoUsername = "kakao_" + kakaoUserInfo.getId();
         User user;
         boolean isNewUser = false;
@@ -157,7 +165,6 @@ public class KakaoService {
         addCookie(response, "accessToken", accessToken);
         addCookie(response, "refreshToken", refreshToken);
 
-        // 새로운 사용자라면 UserResponseDto를 반환
         if (isNewUser) {
             return UserResponseDto.builder()
                     .id(user.getId())
@@ -174,9 +181,11 @@ public class KakaoService {
         return null;
     }
 
-    // 쿠키 추가 메서드
+    /**
+     * 쿠키 추가
+     */
     private void addCookie(HttpServletResponse response, String name, String value) {
-        Cookie cookie = new Cookie(name, value.replace(" ", "+")); // 공백 문자를 +로 대체
+        Cookie cookie = new Cookie(name, value.replace(" ", "+"));
         cookie.setPath("/");
         response.addCookie(cookie);
     }

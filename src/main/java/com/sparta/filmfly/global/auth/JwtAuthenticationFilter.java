@@ -1,7 +1,7 @@
 package com.sparta.filmfly.global.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.filmfly.domain.user.dto.LoginRequestDto;
+import com.sparta.filmfly.domain.user.dto.UserLoginRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
@@ -40,17 +40,20 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         setFilterProcessesUrl("/users/login");
     }
 
+    /**
+     * 인증 시도
+     */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         log.info("JwtAuthenticationFilter: 인증 시도 시작");
         try {
             // 요청 본문에서 로그인 요청 DTO 읽기
-            LoginRequestDto requestDto = objectMapper.readValue(request.getInputStream(), LoginRequestDto.class);
+            UserLoginRequestDto requestDto = objectMapper.readValue(request.getInputStream(), UserLoginRequestDto.class);
 
             // 로그인 시도하는 username 조회
             User user = userRepository.findByUsernameOrElseThrow(requestDto.getUsername());
 
-            // 사용자 상태(탈퇴,정지,인증) 검증
+            // 사용자 상태(탈퇴, 정지, 인증) 검증
             user.validateUserStatus();
 
             // 비밀번호 검증
@@ -66,11 +69,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             );
         } catch (IOException e) {
             // 요청 본문 읽기 실패 시 에러 응답 설정
-            setErrorResponse(response, ResponseCodeEnum.INVALID_TOKENS);
+            setErrorResponse(response, ResponseCodeEnum.INVALID__REQUEST);
             return null;
         }
     }
 
+    /**
+     * 인증 성공 시 처리
+     */
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         log.info("JwtAuthenticationFilter: 인증 성공");
@@ -87,10 +93,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         refreshTokenCookie.setPath("/");
         response.addCookie(refreshTokenCookie);
 
-
         // 사용자 정보 업데이트
         User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
-        user.updateRefreshToken(refreshToken); // 메서드를 사용하여 리프레시 토큰 업데이트
+        user.updateRefreshToken(refreshToken);
         userRepository.save(user);
 
         // 성공 응답 설정
@@ -99,6 +104,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         writeResponseBody(response, responseEntity);
     }
 
+    /**
+     * 인증 실패 시 처리
+     */
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         log.info("JwtAuthenticationFilter: 인증 실패");
@@ -106,23 +114,26 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         setErrorResponse(response, ResponseCodeEnum.LOGIN_FAILED);
     }
 
+    /**
+     * 응답 본문 작성
+     */
     private void writeResponseBody(HttpServletResponse response, ResponseEntity<MessageResponseDto> responseEntity) throws IOException {
-        // 응답 본문 작성
         response.setStatus(responseEntity.getStatusCode().value());
         response.setContentType("application/json");
         try (ServletOutputStream outputStream = response.getOutputStream()) {
             objectMapper.writeValue(outputStream, responseEntity.getBody());
             outputStream.flush();
         } catch (IOException e) {
-            // 응답 본문 작성 실패 시 에러 응답 설정
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setContentType("application/json");
             response.getWriter().write("{\"statusCode\": 500, \"message\": \"Internal Server Error\"}");
         }
     }
 
+    /**
+     * 에러 응답 설정
+     */
     private void setErrorResponse(HttpServletResponse response, ResponseCodeEnum responseCode) {
-        // 에러 응답 본문 작성
         ResponseEntity<MessageResponseDto> responseEntity = ResponseUtils.of(responseCode.getHttpStatus(), responseCode.getMessage());
         try {
             writeResponseBody(response, responseEntity);

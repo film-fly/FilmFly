@@ -35,7 +35,9 @@ public class EmailVerification extends TimeStampEntity {
     @Column(nullable = false)
     private LocalDateTime lastResendTime; // 마지막 재전송 시간
 
-    // 인증 이메일 생성
+    /**
+     * 인증 이메일 생성
+     */
     @Builder
     public EmailVerification(User user, String emailVerificationToken, LocalDateTime emailExpiryTime) {
         this.user = user;
@@ -45,32 +47,37 @@ public class EmailVerification extends TimeStampEntity {
         this.lastResendTime = LocalDateTime.now();
     }
 
-    // 이메일 인증 토큰 업데이트
+    /**
+     * 이메일 인증 토큰 업데이트
+     */
     public void updateEmailVerificationToken(String token) {
         this.emailVerificationToken = token;
     }
 
-    // 이메일 만료 시간 설정
+    /**
+     * 이메일 만료 시간 설정
+     */
     public void createEmailExpiryTime(LocalDateTime expiryTime) {
         this.emailExpiryTime = expiryTime;
     }
 
-    // 재전송 횟수 증가
+    /**
+     * 재전송 횟수 증가
+     */
     public void incrementResendCount() {
         this.resendCount++;
     }
 
-    // 재전송 횟수 초기화
-    public void resetResendCount() {
-        this.resendCount = 0;
-    }
-
-    // 마지막 재전송 시간 업데이트
+    /**
+     * 마지막 재전송 시간 업데이트
+     */
     public void updateLastResendTime(LocalDateTime time) {
         this.lastResendTime = time;
     }
 
-    // 재전송 가능 여부 검증
+    /**
+     * 재전송 가능 여부 검증
+     */
     public void validateResendLimit() {
         LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(this.lastResendTime.plusHours(1))) {

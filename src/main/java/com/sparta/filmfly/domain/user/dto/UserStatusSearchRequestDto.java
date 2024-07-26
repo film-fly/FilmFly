@@ -4,6 +4,6 @@ import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import lombok.Getter;
 
 @Getter
-public class UserStatusRequestDto {
+public class UserStatusSearchRequestDto {
     private UserStatusEnum status;
 }
