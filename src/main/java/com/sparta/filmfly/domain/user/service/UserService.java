@@ -122,9 +122,12 @@ public class UserService {
         userRepository.save(user);
 
         return UserResponseDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
                 .nickname(user.getNickname())
                 .introduce(user.getIntroduce())
                 .pictureUrl(user.getPictureUrl())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 
@@ -209,10 +212,10 @@ public class UserService {
     }
 
     /**
-     * 유저 정지
+     * 유저 정지 시키기
      */
     @Transactional
-    public void suspendUser(Long userId, User currentUser) {
+    public UserResponseDto suspendUser(Long userId, User currentUser) {
         currentUser.validateAdminRole();
 
         User user = userRepository.findByIdOrElseThrow(userId);
@@ -223,18 +226,32 @@ public class UserService {
 
         user.updateSuspended();
         userRepository.save(user);
+
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .userStatus(user.getUserStatus())
+                .updatedAt(user.getUpdatedAt())
+                .build();
     }
 
     /**
      * 유저 활성화 상태로 변경
      */
     @Transactional
-    public void activateUser(Long userId, User currentUser) {
+    public UserResponseDto activateUser(Long userId, User currentUser) {
         currentUser.validateAdminRole();
 
         User user = userRepository.findByIdOrElseThrow(userId);
 
         user.updateVerified();
         userRepository.save(user);
+
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .userStatus(user.getUserStatus())
+                .updatedAt(user.getUpdatedAt())
+                .build();
     }
 }
