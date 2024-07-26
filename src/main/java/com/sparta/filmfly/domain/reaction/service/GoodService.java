@@ -6,9 +6,6 @@ import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
 import com.sparta.filmfly.domain.reaction.entity.Good;
 import com.sparta.filmfly.domain.reaction.repository.GoodRepository;
 import com.sparta.filmfly.domain.user.entity.User;
-import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
-import com.sparta.filmfly.global.exception.custom.detail.AlreadyActionException;
-import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,14 +29,10 @@ public class GoodService {
 
         reactionService.checkContentExist(contentType,contentId);
 
-        Good findGood = goodRepository.findByTypeIdAndTypeAndUser(
-                contentId, contentType, loginUser
-        ).orElse(null);
-
         // 이미 좋아요가 등록되어 있으면 예외
-        if (findGood != null) {
-            throw new AlreadyActionException(ResponseCodeEnum.GOOD_ALREADY_ADD);
-        }
+        goodRepository.existsByTypeIdAndTypeAndUserIdOrElseThrow(
+                contentId, contentType, loginUser.getId()
+        );
 
         Good good = requestDto.toEntity(loginUser, contentType);
         goodRepository.save(good);
@@ -56,9 +49,9 @@ public class GoodService {
         reactionService.checkContentExist(contentType,contentId);
 
         // 좋아요가 없으면 예외
-        Good findGood = goodRepository.findByTypeIdAndTypeAndUser(
-                contentId, contentType, loginUser
-        ).orElseThrow(() -> new NotFoundException(ResponseCodeEnum.GOOD_ALREADY_REMOVE));
+        Good findGood = goodRepository.findByTypeIdAndTypeAndUserIdOrElseThrow(
+                contentId, contentType, loginUser.getId()
+        );
 
         goodRepository.delete(findGood);
     }
@@ -74,10 +67,8 @@ public class GoodService {
      * 좋아요한 유저인지 확인
      */
     public boolean checkGoodByUser(User loginUser, BadRequestDto requestDto) {
-        Good findGood = goodRepository.findByTypeIdAndTypeAndUser(
-                requestDto.getContentId(), requestDto.getContentType(), loginUser
-        ).orElse(null);
-
-        return findGood != null;
+        return goodRepository.existsByTypeIdAndTypeAndUserId(
+                requestDto.getContentId(), requestDto.getContentType(), loginUser.getId()
+        );
     }
 }
