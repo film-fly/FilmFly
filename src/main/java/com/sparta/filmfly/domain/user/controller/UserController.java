@@ -38,7 +38,7 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<DataResponseDto<UserResponseDto>> signup(@RequestBody UserSignupRequestDto requestDto) {
+    public ResponseEntity<DataResponseDto<UserResponseDto>> signup(@Valid @RequestBody UserSignupRequestDto requestDto) {
         UserResponseDto responseDto = userService.signup(requestDto);
         return ResponseUtils.success(responseDto);
     }
