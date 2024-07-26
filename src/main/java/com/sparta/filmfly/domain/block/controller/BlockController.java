@@ -22,7 +22,9 @@ public class BlockController {
 
     private final BlockService blockService;
 
-    // 유저 차단
+    /**
+     * 유저 차단
+     */
     @PostMapping
     public ResponseEntity<MessageResponseDto> blockUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -32,7 +34,9 @@ public class BlockController {
         return ResponseUtils.success();
     }
 
-    // 차단된 유저 목록 조회
+    /**
+     * 차단된 유저 목록 조회
+     */
     @GetMapping
     public ResponseEntity<DataResponseDto<List<BlockedUserResponseDto>>> getBlockedUsers(
             @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -41,7 +45,9 @@ public class BlockController {
         return ResponseUtils.success(blockedUsers);
     }
 
-    // 차단 해제
+    /**
+     * 차단 해제
+     */
     @DeleteMapping
     public ResponseEntity<MessageResponseDto> unblockUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,

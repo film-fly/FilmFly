@@ -20,7 +20,9 @@ public class BlockService {
     private final BlockRepository blockRepository;
     private final UserRepository userRepository;
 
-    // 차단 하기
+    /**
+     * 차단 하기
+     */
     @Transactional
     public void blockUser(Long blockerId, BlockRequestDto blockRequestDto) {
         User blocker = userRepository.findByIdOrElseThrow(blockerId);
@@ -37,7 +39,9 @@ public class BlockService {
         blockRepository.save(block);
     }
 
-    // 내가 차단한 유저 목록 조회
+    /**
+     * 내가 차단한 유저 목록 조회
+     */
     @Transactional(readOnly = true)
     public List<BlockedUserResponseDto> getBlockedUsers(User blocker) {
         List<Block> blockedUsers = blockRepository.findByBlocker(blocker);
@@ -47,11 +51,14 @@ public class BlockService {
                         .username(block.getBlocked().getUsername())
                         .nickname(block.getBlocked().getNickname())
                         .memo(block.getMemo())
+                        .createdAt(block.getCreatedAt())
                         .build())
                 .collect(Collectors.toList());
     }
 
-    // 차단 해제
+    /**
+     * 차단 해제
+     */
     @Transactional
     public void unblockUser(Long blockerId, Long blockedId) {
         User blocker = userRepository.findByIdOrElseThrow(blockerId);
