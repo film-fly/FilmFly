@@ -69,7 +69,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             );
         } catch (IOException e) {
             // 요청 본문 읽기 실패 시 에러 응답 설정
-            setErrorResponse(response, ResponseCodeEnum.INVALID_TOKENS);
+            setErrorResponse(response, ResponseCodeEnum.INVALID__REQUEST);
             return null;
         }
     }
