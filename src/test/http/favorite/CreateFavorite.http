@@ -1,0 +1,22 @@
+### ADMIN 회원가입
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "username": "admin123",
+  "password": "Test123!",
+  "email" : "adminTester123@gmail.com",
+  "adminPassword": "1234"
+}
+
+### ADMIN 로그인
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username" : "admin123",
+  "password": "Test123!"
+}
+
+### 찜 등록하기
+POST http://localhost:8080/favorite?movieId=10138
