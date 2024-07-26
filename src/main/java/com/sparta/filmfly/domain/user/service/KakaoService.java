@@ -54,7 +54,9 @@ public class KakaoService {
         return createOrUpdateUser(kakaoUserInfo, response);
     }
 
-    // Access Token을 얻기 위한 메서드
+    /**
+     * Access Token 획득
+     */
     private String getToken(String code) throws JsonProcessingException {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kauth.kakao.com")
@@ -86,7 +88,9 @@ public class KakaoService {
         return jsonNode.get("access_token").asText();
     }
 
-    // Kakao 사용자 정보를 얻기 위한 메서드
+    /**
+     * Kakao 사용자 정보 획득
+     */
     private UserKakaoInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kapi.kakao.com")
@@ -126,7 +130,9 @@ public class KakaoService {
                 .build();
     }
 
-    // 사용자 생성 또는 업데이트 메서드
+    /**
+     * 사용자 생성 또는 업데이트
+     */
     @Transactional
     public UserResponseDto createOrUpdateUser(UserKakaoInfoDto kakaoUserInfo, HttpServletResponse response) {
         String kakaoUsername = "kakao_" + kakaoUserInfo.getId();
@@ -159,7 +165,6 @@ public class KakaoService {
         addCookie(response, "accessToken", accessToken);
         addCookie(response, "refreshToken", refreshToken);
 
-        // 새로운 사용자라면 UserResponseDto를 반환
         if (isNewUser) {
             return UserResponseDto.builder()
                     .id(user.getId())
@@ -176,9 +181,11 @@ public class KakaoService {
         return null;
     }
 
-    // 쿠키 추가 메서드
+    /**
+     * 쿠키 추가
+     */
     private void addCookie(HttpServletResponse response, String name, String value) {
-        Cookie cookie = new Cookie(name, value.replace(" ", "+")); // 공백 문자를 +로 대체
+        Cookie cookie = new Cookie(name, value.replace(" ", "+"));
         cookie.setPath("/");
         response.addCookie(cookie);
     }

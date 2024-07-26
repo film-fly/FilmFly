@@ -15,14 +15,18 @@ public class EmailVerificationController {
 
     private final EmailVerificationService emailVerificationService;
 
-    // 이메일 인증 코드를 재전송
+    /**
+     * 이메일 인증 코드 재전송
+     */
     @PostMapping("/{userId}/resend")
     public ResponseEntity<MessageResponseDto> resendVerificationCode(@PathVariable Long userId) {
         emailVerificationService.resendVerificationCode(userId);
         return ResponseUtils.success();
     }
 
-    // 이메일 인증 코드를 검증
+    /**
+     * 이메일 인증 코드 검증
+     */
     @PostMapping("/verify")
     public ResponseEntity<MessageResponseDto> verifyCode(@RequestBody EmailVerificationRequestDto requestDto) {
         emailVerificationService.verifyEmail(requestDto.getCode());

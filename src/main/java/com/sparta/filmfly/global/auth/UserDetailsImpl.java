@@ -18,6 +18,9 @@ public class UserDetailsImpl implements UserDetails {
         this.user = user;
     }
 
+    /**
+     * 사용자 권한 목록 반환
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String authority = "default";
@@ -29,35 +32,51 @@ public class UserDetailsImpl implements UserDetails {
         return authorities;
     }
 
+    /**
+     * 사용자 비밀번호 반환
+     */
     @Override
     public String getPassword() {
         return user.getPassword();
     }
 
+    /**
+     * 사용자 이름 반환
+     */
     @Override
     public String getUsername() {
         return user.getUsername();
     }
 
-
+    /**
+     * 계정 만료 여부 반환
+     */
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    /**
+     * 계정 잠금 여부 반환
+     */
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    /**
+     * 자격 증명 만료 여부 반환
+     */
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    /**
+     * 계정 활성화 여부 반환
+     */
     @Override
     public boolean isEnabled() {
         return true;
     }
 }
-

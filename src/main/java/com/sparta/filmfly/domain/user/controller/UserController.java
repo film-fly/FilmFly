@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -36,14 +37,18 @@ public class UserController {
     @Value("${kakao.redirect-uri}")
     private String redirectUri;
 
-    // 회원가입
+    /**
+     * 회원가입
+     */
     @PostMapping("/signup")
     public ResponseEntity<DataResponseDto<UserResponseDto>> signup(@Valid @RequestBody UserSignupRequestDto requestDto) {
         UserResponseDto responseDto = userService.signup(requestDto);
         return ResponseUtils.success(responseDto);
     }
 
-    // 카카오 로그인 요청
+    /**
+     * 카카오 로그인 요청
+     */
     @GetMapping("/kakao/authorize")
     public void redirectToKakaoAuthorize(HttpServletResponse response) throws IOException {
         String requestUrl = String.format(
@@ -53,7 +58,9 @@ public class UserController {
         response.sendRedirect(requestUrl);
     }
 
-    // 카카오 콜백 처리 첫 로그인시 데이터 생성이 필요하므로 생성한 데이터 응답, 다음 로그인시는 데이터없이 응답
+    /**
+     * 카카오 콜백 처리
+     */
     @GetMapping("/kakao/callback")
     public ResponseEntity<?> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         UserResponseDto userResponseDto = kakaoService.kakaoLogin(code, response);
@@ -64,7 +71,9 @@ public class UserController {
         }
     }
 
-    // 비밀번호 변경
+    /**
+     * 비밀번호 변경
+     */
     @PutMapping("/password")
     public ResponseEntity<MessageResponseDto> updatePassword(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -74,7 +83,9 @@ public class UserController {
         return ResponseUtils.success();
     }
 
-    // 프로필 업로드
+    /**
+     * 프로필 업로드
+     */
     @PutMapping("/profile")
     public ResponseEntity<MessageResponseDto> updateProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -85,14 +96,18 @@ public class UserController {
         return ResponseUtils.success();
     }
 
-    // 프로필 조회
+    /**
+     * 프로필 조회
+     */
     @GetMapping("/{userId}/profile")
     public ResponseEntity<DataResponseDto<UserResponseDto>> getProfile(@PathVariable Long userId) {
         UserResponseDto profile = userService.getProfile(userId);
         return ResponseUtils.success(profile);
     }
 
-    // 로그아웃
+    /**
+     * 로그아웃
+     */
     @PostMapping("/logout")
     public ResponseEntity<MessageResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletResponse response) {
         userService.logout(userDetails.getUser());
@@ -112,7 +127,9 @@ public class UserController {
         return ResponseUtils.success();
     }
 
-    // 회원탈퇴
+    /**
+     * 회원탈퇴
+     */
     @DeleteMapping("/withdraw")
     public ResponseEntity<MessageResponseDto> deleteUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -136,7 +153,9 @@ public class UserController {
         return ResponseUtils.success();
     }
 
-    // 개인 유저 상세 조회 (관리자 기능)
+    /**
+     * 개인 유저 상세 조회 (관리자 기능)
+     */
     @GetMapping("/search/detail")
     public ResponseEntity<DataResponseDto<UserResponseDto>> getUserDetail(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -146,7 +165,9 @@ public class UserController {
         return ResponseUtils.success(userDetail);
     }
 
-    // 유저 상태별 조회 (관리자 기능)
+    /**
+     * 유저 상태별 조회 (관리자 기능)
+     */
     @GetMapping("/search/status")
     public ResponseEntity<DataResponseDto<UserStatusSearchResponseDto>> getUsersByStatus(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -156,7 +177,9 @@ public class UserController {
         return ResponseUtils.success(users);
     }
 
-    // 유저 정지 (관리자 기능)
+    /**
+     * 유저 정지 (관리자 기능)
+     */
     @PutMapping("/suspend/{userId}")
     public ResponseEntity<MessageResponseDto> suspendUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -166,7 +189,9 @@ public class UserController {
         return ResponseUtils.success();
     }
 
-    // 유저 활성화 상태로 만들기 (관리자 기능)
+    /**
+     * 유저 활성화 (관리자 기능)
+     */
     @PutMapping("/activate/{userId}")
     public ResponseEntity<MessageResponseDto> activateUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,

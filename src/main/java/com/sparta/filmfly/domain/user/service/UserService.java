@@ -31,23 +31,21 @@ public class UserService {
     @Value("${admin_password}")
     private String managerPassword;
 
-    // 회원가입
+    /**
+     * 회원가입
+     */
     @Transactional
     public UserResponseDto signup(UserSignupRequestDto requestDto) {
-        // 중복된 사용자 체크
         if (userRepository.findByUsername(requestDto.getUsername()).isPresent()) {
             throw new DuplicateException(ResponseCodeEnum.USER_ALREADY_EXISTS);
         }
 
-        // 비밀번호 인코딩
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
-        // 유저 상태 결정
         UserStatusEnum userStatus = (requestDto.getAdminPassword() != null && !requestDto.getAdminPassword().isEmpty() && managerPassword.equals(requestDto.getAdminPassword()))
                 ? UserStatusEnum.VERIFIED
                 : UserStatusEnum.UNVERIFIED;
 
-        // 유저 역할 결정
         UserRoleEnum userRole;
         if (requestDto.getAdminPassword() != null && !requestDto.getAdminPassword().isEmpty()) {
             if (!managerPassword.equals(requestDto.getAdminPassword())) {
@@ -58,25 +56,21 @@ public class UserService {
             userRole = UserRoleEnum.ROLE_USER;
         }
 
-        // User 엔티티 생성
         User user = User.builder()
                 .username(requestDto.getUsername())
                 .password(encodedPassword)
                 .email(requestDto.getEmail())
                 .nickname(requestDto.getNickname())
-                .userStatus(userStatus) // 유저 상태 설정
-                .userRole(userRole) // 유저 역할 설정
+                .userStatus(userStatus)
+                .userRole(userRole)
                 .build();
 
-        // User 엔티티 저장
         userRepository.save(user);
 
-        // 어드민이 아닌 경우에만 이메일 인증 코드 전송
         if (user.getUserRole() != UserRoleEnum.ROLE_ADMIN) {
             emailVerificationService.createVerificationCode(requestDto.getUsername());
         }
 
-        // UserResponseDto 반환
         return UserResponseDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -90,7 +84,9 @@ public class UserService {
                 .build();
     }
 
-    // 비밀번호 변경
+    /**
+     * 비밀번호 변경
+     */
     @Transactional
     public void updatePassword(User loginUser, UserPasswordUpdateRequestDto requestDto) {
         User user = userRepository.findByIdOrElseThrow(loginUser.getId());
@@ -103,10 +99,12 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // 프로필 업데이트
+    /**
+     * 프로필 업데이트
+     */
     @Transactional
     public void updateProfile(User user, UserProfileUpdateRequestDto requestDto, MultipartFile profilePicture) {
-        String pictureUrl = user.getPictureUrl(); // 기존 URL 유지
+        String pictureUrl = user.getPictureUrl();
 
         if (profilePicture != null && !profilePicture.isEmpty()) {
             try {
@@ -120,7 +118,9 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // 프로필 조회
+    /**
+     * 프로필 조회
+     */
     @Transactional(readOnly = true)
     public UserResponseDto getProfile(Long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
@@ -131,14 +131,18 @@ public class UserService {
                 .build();
     }
 
-    // 로그아웃
+    /**
+     * 로그아웃
+     */
     @Transactional
     public void logout(User user) {
         user.deleteRefreshToken();
         userRepository.save(user);
     }
 
-    // 회원 탈퇴
+    /**
+     * 회원 탈퇴
+     */
     @Transactional
     public void deleteUser(User user, UserDeleteRequestDto requestDto) {
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
@@ -150,10 +154,11 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // 유저 상세 조회 (관리자 기능)
+    /**
+     * 유저 상세 조회 (관리자 기능)
+     */
     @Transactional(readOnly = true)
     public UserResponseDto getUserDetail(UserSearchRequestDto userSearchRequestDto, User currentUser) {
-        // 현재 사용자가 어드민인지 확인
         currentUser.validateAdminRole();
 
         User user = userRepository.findByUsernameOrElseThrow(userSearchRequestDto.getUsername());
@@ -171,10 +176,11 @@ public class UserService {
                 .build();
     }
 
-    // 상태별 유저 조회
+    /**
+     * 상태별 유저 조회
+     */
     @Transactional(readOnly = true)
     public UserStatusSearchResponseDto getUsersByStatus(UserStatusEnum status, User currentUser) {
-        // 현재 사용자가 어드민인지 확인
         currentUser.validateAdminRole();
 
         List<User> users = userRepository.findAllByUserStatus(status);
@@ -192,33 +198,32 @@ public class UserService {
                 .build();
     }
 
-    // 유저 정지
+    /**
+     * 유저 정지
+     */
     @Transactional
     public void suspendUser(Long userId, User currentUser) {
-        // 현재 사용자가 어드민인지 확인
         currentUser.validateAdminRole();
 
         User user = userRepository.findByIdOrElseThrow(userId);
 
-        // 정지 대상이 일반 유저인지 확인
         if (user.getUserRole() != UserRoleEnum.ROLE_USER) {
             throw new InvalidTargetException(ResponseCodeEnum.INVALID_ADMIN_TARGET);
         }
 
-        // 유저 상태를 정지 상태로 변경
         user.updateSuspended();
         userRepository.save(user);
     }
 
-    // 유저 활성화 상태로 만들기
+    /**
+     * 유저 활성화 상태로 변경
+     */
     @Transactional
     public void activateUser(Long userId, User currentUser) {
-        // 현재 사용자가 어드민인지 확인
         currentUser.validateAdminRole();
 
         User user = userRepository.findByIdOrElseThrow(userId);
 
-        // 유저 상태를 인증된 상태로 변경
         user.updateVerified();
         userRepository.save(user);
     }
