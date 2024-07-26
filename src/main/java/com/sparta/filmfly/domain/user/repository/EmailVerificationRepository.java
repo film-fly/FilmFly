@@ -21,6 +21,6 @@ public interface EmailVerificationRepository extends JpaRepository<EmailVerifica
 
     default EmailVerification findByUserOrElseThrow(User user) {
         return findByUser(user)
-                .orElseThrow(() -> new NotFoundException(ResponseCodeEnum.INVALID_VERIFICATION_TARGET));
+                .orElseThrow(() -> new NotFoundException(ResponseCodeEnum.USER_ALREADY_VERIFIED));
     }
 }
