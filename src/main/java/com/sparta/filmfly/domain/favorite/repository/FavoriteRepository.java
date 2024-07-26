@@ -13,11 +13,16 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 
     boolean existsFavoriteByMovieIdAndUserId(Long movieId, Long userId);
 
+    Favorite findByUser_IdAndMovie_Id(Long userId, Long MovieId);
 
-    default void existsFavoriteByMovieIdAndUserIdOrElseThrouw(Long movieId, Long userId) {
+    default void existsFavoriteByMovieIdAndUserIdOrElseThrow(Long movieId, Long userId) {
         if (!existsFavoriteByMovieIdAndUserId(movieId, userId)) {
             throw new AlreadyExistsException(ResponseCodeEnum.FAVORITE_ALREADY_EXISTS);
         }
+    }
+
+    default Favorite findByUser_IdAndMovie_IdOrElseThrow(Long movieId, Long userId) {
+        return findByUser_IdAndMovie_Id(userId, movieId);
     }
 
 //    @Query("SELECT * FROM favorite f WHERE f.deleted_at IS NOT NULL", nativeQuery = true)

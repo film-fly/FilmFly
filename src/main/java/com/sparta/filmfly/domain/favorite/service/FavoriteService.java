@@ -29,7 +29,7 @@ public class FavoriteService {
         // DB 존재 검증
         Movie movie = movieRepository.findByIdOrElseThrow(movieId);
 
-        favoriteRepository.existsFavoriteByMovieIdAndUserIdOrElseThrouw(movieId, user.getId());
+        favoriteRepository.existsFavoriteByMovieIdAndUserIdOrElseThrow(movieId, user.getId());
 
         if(favoriteRepository.existsFavoriteByMovieIdAndUserId(movieId, user.getId())) {
             throw new AlreadyExistsException(ResponseCodeEnum.FAVORITE_ALREADY_EXISTS);
@@ -51,5 +51,13 @@ public class FavoriteService {
                 favorite -> movieRepository.findByIdOrElseThrow(favorite.getMovie().getId())
         ).toList();
         return movieList.stream().map(MovieResponseDto::fromEntity).toList();
+    }
+
+    /**
+    * 찜한 영화 취소하기
+    */
+    public void deleteFavorite(User user, Long movieId) {
+        Favorite favorite = favoriteRepository.findByUser_IdAndMovie_IdOrElseThrow(user.getId(), movieId);
+        favoriteRepository.delete(favorite);
     }
 }
