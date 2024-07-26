@@ -103,7 +103,7 @@ public class UserService {
      * 프로필 업데이트
      */
     @Transactional
-    public void updateProfile(User user, UserProfileUpdateRequestDto requestDto, MultipartFile profilePicture) {
+    public UserResponseDto updateProfile(User user, UserProfileUpdateRequestDto requestDto, MultipartFile profilePicture) {
         String pictureUrl = user.getPictureUrl();
 
         if (profilePicture != null && !profilePicture.isEmpty()) {
@@ -116,6 +116,12 @@ public class UserService {
 
         user.updateProfile(requestDto.getNickname(), requestDto.getIntroduce(), pictureUrl);
         userRepository.save(user);
+
+        return UserResponseDto.builder()
+                .nickname(user.getNickname())
+                .introduce(user.getIntroduce())
+                .pictureUrl(user.getPictureUrl())
+                .build();
     }
 
     /**

@@ -87,13 +87,13 @@ public class UserController {
      * 프로필 업로드
      */
     @PutMapping("/profile")
-    public ResponseEntity<MessageResponseDto> updateProfile(
+    public ResponseEntity<DataResponseDto<UserResponseDto>> updateProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestPart("profileUpdateRequestDto") UserProfileUpdateRequestDto requestDto,
             @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture
     ) {
-        userService.updateProfile(userDetails.getUser(), requestDto, profilePicture);
-        return ResponseUtils.success();
+        UserResponseDto responseDto = userService.updateProfile(userDetails.getUser(), requestDto, profilePicture);
+        return ResponseUtils.success(responseDto);
     }
 
     /**
