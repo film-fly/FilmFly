@@ -181,23 +181,23 @@ public class UserController {
      * 유저 정지 (관리자 기능)
      */
     @PutMapping("/suspend/{userId}")
-    public ResponseEntity<MessageResponseDto> suspendUser(
+    public ResponseEntity<DataResponseDto<UserResponseDto>> suspendUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long userId
     ) {
-        userService.suspendUser(userId, userDetails.getUser());
-        return ResponseUtils.success();
+        UserResponseDto userResponseDto = userService.suspendUser(userId, userDetails.getUser());
+        return ResponseUtils.success(userResponseDto);
     }
 
     /**
      * 유저 활성화 (관리자 기능)
      */
     @PutMapping("/activate/{userId}")
-    public ResponseEntity<MessageResponseDto> activateUser(
+    public ResponseEntity<DataResponseDto<UserResponseDto>> activateUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long userId
     ) {
-        userService.activateUser(userId, userDetails.getUser());
-        return ResponseUtils.success();
+        UserResponseDto userResponseDto = userService.activateUser(userId, userDetails.getUser());
+        return ResponseUtils.success(userResponseDto);
     }
 }
