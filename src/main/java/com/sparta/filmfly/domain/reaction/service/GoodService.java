@@ -1,13 +1,10 @@
 package com.sparta.filmfly.domain.reaction.service;
 
-import com.sparta.filmfly.domain.board.repository.BoardRepository;
-import com.sparta.filmfly.domain.comment.repository.CommentRepository;
-import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
+import com.sparta.filmfly.domain.reaction.dto.BadRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
 import com.sparta.filmfly.domain.reaction.entity.Good;
 import com.sparta.filmfly.domain.reaction.repository.GoodRepository;
-import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AlreadyActionException;
@@ -15,29 +12,28 @@ import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class GoodService {
 
+    private final ReactionService reactionService;
     private final GoodRepository goodRepository;
-    private final MovieRepository movieRepository;
-    private final ReviewRepository reviewRepository;
-    private final BoardRepository boardRepository;
-    private final CommentRepository commentRepository;
 
     /**
      * 좋아요 추가
      */
+    @Transactional
     public void addGood(User loginUser, GoodRequestDto requestDto) {
-        ReactionContentTypeEnum contentType = ReactionContentTypeEnum.validateContentType(requestDto.getContentType());
+        ReactionContentTypeEnum contentType = requestDto.getContentType();
+        Long contentId = requestDto.getContentId();
 
-        // 해당 컨텐츠가 있는지 없는지 확인
-        checkContentExist(requestDto);
+        reactionService.checkContentExist(contentType,contentId);
 
         Good findGood = goodRepository.findByTypeIdAndTypeAndUser(
-            requestDto.getContentId(), contentType, loginUser
+                contentId, contentType, loginUser
         ).orElse(null);
 
         // 이미 좋아요가 등록되어 있으면 예외
@@ -52,15 +48,16 @@ public class GoodService {
     /**
      * 좋아요 취소
      */
+    @Transactional
     public void removeGood(User loginUser, GoodRequestDto requestDto) {
-        ReactionContentTypeEnum contentType = ReactionContentTypeEnum.validateContentType(requestDto.getContentType());
+        ReactionContentTypeEnum contentType = requestDto.getContentType();
+        Long contentId = requestDto.getContentId();
 
-        // 해당 컨텐츠가 있는지 없는지 확인
-        checkContentExist(requestDto);
+        reactionService.checkContentExist(contentType,contentId);
 
         // 좋아요가 없으면 예외
         Good findGood = goodRepository.findByTypeIdAndTypeAndUser(
-            requestDto.getContentId(), contentType, loginUser
+                contentId, contentType, loginUser
         ).orElseThrow(() -> new NotFoundException(ResponseCodeEnum.GOOD_ALREADY_REMOVE));
 
         goodRepository.delete(findGood);
@@ -73,17 +70,14 @@ public class GoodService {
         return goodRepository.countByTypeAndTypeId(type,typeId);
     }
 
-    private void checkContentExist(GoodRequestDto requestDto) {
-        Long id = requestDto.getContentId();
-        if (requestDto.getContentType().equalsIgnoreCase(ReactionContentTypeEnum.MOVIE.getContentType())) {
-            movieRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("영화가 없음"));  // 각 기능 다 되면 삭제
-        } else if (requestDto.getContentType().equalsIgnoreCase(ReactionContentTypeEnum.REVIEW.getContentType())) {
-            reviewRepository.findByIdOrElseThrow(id);
-        } else if (requestDto.getContentType().equalsIgnoreCase(ReactionContentTypeEnum.BOARD.getContentType())) {
-            boardRepository.findByIdOrElseThrow(id);
-        } else if (requestDto.getContentType().equalsIgnoreCase(ReactionContentTypeEnum.COMMENT.getContentType())) {
-            commentRepository.findByIdOrElseThrow(id);
-        }
+    /**
+     * 좋아요한 유저인지 확인
+     */
+    public boolean checkGoodByUser(User loginUser, BadRequestDto requestDto) {
+        Good findGood = goodRepository.findByTypeIdAndTypeAndUser(
+                requestDto.getContentId(), requestDto.getContentType(), loginUser
+        ).orElse(null);
+
+        return findGood != null;
     }
 }
