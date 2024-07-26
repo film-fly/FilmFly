@@ -40,6 +40,10 @@ public class UserService {
             throw new DuplicateException(ResponseCodeEnum.USER_ALREADY_EXISTS);
         }
 
+        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
+            throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
+        }
+
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
         UserStatusEnum userStatus = (requestDto.getAdminPassword() != null && !requestDto.getAdminPassword().isEmpty() && managerPassword.equals(requestDto.getAdminPassword()))

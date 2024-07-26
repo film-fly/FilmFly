@@ -24,6 +24,7 @@ public enum ResponseCodeEnum {
     USER_DELETED(HttpStatus.BAD_REQUEST, "탈퇴한 사용자입니다."),
     USER_SUSPENDED(HttpStatus.FORBIDDEN, "정지된 사용자입니다."),
     USER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 존재하는 사용자입니다."),
+    EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
     INVALID_ADMIN_PASSWORD(HttpStatus.FORBIDDEN, "관리자 비밀번호가 일치하지 않습니다."),
     INVALID_ADMIN_TARGET(HttpStatus.FORBIDDEN, "관리자를 대상으로 할 수 없습니다."),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
