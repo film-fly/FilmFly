@@ -69,7 +69,8 @@ public class MediaService {
     public void deleteAllMedia(MediaTypeEnum mediaType, Long typeId) {
         List<Media> mediaList = getListMedia(mediaType,typeId);
         for (Media media : mediaList) {
-            s3Uploader.boardFileDelete(media.getTypeId(),media.getFileName());
+            s3Uploader.boardFileDelete(mediaType,media.getTypeId(),media.getFileName());
+            mediaRepository.delete(media);
         }
     }
 }
