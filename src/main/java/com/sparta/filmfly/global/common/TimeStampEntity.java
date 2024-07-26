@@ -18,7 +18,7 @@ public abstract class TimeStampEntity {
 
     @Column(updatable = false)
     @CreatedDate
-    public LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
@@ -30,4 +30,6 @@ public abstract class TimeStampEntity {
     public void setDeletedAt() {
         this.deletedAt = LocalDateTime.now();
     }
+
+
 }

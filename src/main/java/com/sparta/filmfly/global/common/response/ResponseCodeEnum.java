@@ -43,6 +43,9 @@ public enum ResponseCodeEnum {
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     REVIEW_NOT_OWNER(HttpStatus.FORBIDDEN, "본인이 작성한 리뷰가 아닙니다."),
 
+    // 호진 (Coupon)
+    COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 쿠폰을 찾을 수 없습니다"),
+    COUPON_EXHAUSTED(HttpStatus.NOT_FOUND, "이벤트 쿠폰이 모두 소진되었습니다."),
     ;
     private final HttpStatus httpStatus;
     private final String message;
