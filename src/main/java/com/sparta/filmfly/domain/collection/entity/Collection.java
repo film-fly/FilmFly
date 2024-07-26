@@ -2,6 +2,8 @@ package com.sparta.filmfly.domain.collection.entity;
 
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
+import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
+import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,6 +16,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -37,5 +41,13 @@ public class Collection extends TimeStampEntity {
         this.user = user;
         this.name = name;
         this.content = content;
+    }
+
+    /**
+     * 요청한 유저가 소유주인지 확인
+     */
+    public void validateOwner(User requestUser) {
+        if(!Objects.equals(this.user.getId(), requestUser.getId()))
+            throw new AccessDeniedException(ResponseCodeEnum.COLLECTION_NOT_OWNER);
     }
 }
