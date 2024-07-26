@@ -20,7 +20,9 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
 
-    // 신고 하기
+    /**
+     * 유저 신고
+     */
     @Transactional
     public void reportUser(Long reporterId, ReportRequestDto reportRequestDto) {
         User reporter = userRepository.findByIdOrElseThrow(reporterId);
@@ -41,7 +43,9 @@ public class ReportService {
         reportRepository.save(report);
     }
 
-    // 신고 목록 조회(어드민 권한)
+    /**
+     * 신고 목록 조회 (어드민 권한)
+     */
     @Transactional(readOnly = true)
     public List<ReportResponseDto> getAllReports(User currentUser) {
         // 현재 사용자가 어드민인지 확인
