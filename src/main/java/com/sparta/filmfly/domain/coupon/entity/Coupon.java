@@ -56,7 +56,7 @@ public class Coupon extends TimeStampEntity {
     // 관리자 권한 검증하는 메서드
     public void validUser(User user) {
         if (user.getUserRole() != ROLE_ADMIN) {
-            throw new UnAuthorizedException(ResponseCodeEnum.USER_UNAUTHORIZED);
+            throw new UnAuthorizedException(ResponseCodeEnum.ACCESS_DENIED);
         }
     }
 
