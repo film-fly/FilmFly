@@ -11,6 +11,7 @@ import com.sparta.filmfly.domain.media.entity.MediaTypeEnum;
 import com.sparta.filmfly.domain.media.service.MediaService;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
+import com.sparta.filmfly.global.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -44,13 +45,11 @@ public class BoardService {
 
         BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(savedBoard);
 
-        if(files == null || files.isEmpty() || files.get(0).isEmpty()) { //파일이 비어있으면 바로 종료
-            return boardResponseDto;
-        }
-
-        for (MultipartFile file : files) { //파일들 하나씩 s3로 올리기
-            MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.BOARD,savedBoard.getId(),file);
-            boardResponseDto.addMediaDto(mediaResponseDto);
+        if(!FileUtils.isEmpty(files)) { //파일이 존재하면
+            for (MultipartFile file : files) { //파일들 하나씩 s3로 올리기
+                MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.BOARD,savedBoard.getId(),file);
+                boardResponseDto.addMediaDto(mediaResponseDto);
+            }
         }
 
         return boardResponseDto;
@@ -117,12 +116,11 @@ public class BoardService {
         //수정 전 기존 미디어들 삭제 요청
         mediaService.deleteAllMedia(MediaTypeEnum.BOARD,board.getId());
 
-        if(files == null || files.isEmpty() || files.get(0).isEmpty())
-            return boardResponseDto;
-
-        for (MultipartFile file : files) {
-            MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.BOARD,boardId,file);
-            boardResponseDto.addMediaDto(mediaResponseDto);
+        if(!FileUtils.isEmpty(files)) {
+            for (MultipartFile file : files) {
+                MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.BOARD,boardId,file);
+                boardResponseDto.addMediaDto(mediaResponseDto);
+            }
         }
 
         return boardResponseDto;
