@@ -10,10 +10,11 @@ import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.auth.JwtProvider;
+import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
+import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +51,10 @@ public class KakaoService {
 
         UserKakaoInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
         log.info("Kakao user info: {}", kakaoUserInfo);
+
+        if (userRepository.findByEmail(kakaoUserInfo.getEmail()).isPresent()) {
+            throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
+        }
 
         return createOrUpdateUser(kakaoUserInfo, response);
     }
@@ -133,19 +138,18 @@ public class KakaoService {
     /**
      * 사용자 생성 또는 업데이트
      */
-    @Transactional
     public UserResponseDto createOrUpdateUser(UserKakaoInfoDto kakaoUserInfo, HttpServletResponse response) {
-        String kakaoUsername = "kakao_" + kakaoUserInfo.getId();
+        String email = kakaoUserInfo.getEmail();
         User user;
         boolean isNewUser = false;
 
         try {
-            user = userRepository.findByUsernameOrElseThrow(kakaoUsername);
+            user = userRepository.findByUsernameOrElseThrow(email);
         } catch (NotFoundException e) {
             user = User.builder()
-                    .username(kakaoUsername)
+                    .username(email)
                     .password("")
-                    .email(kakaoUserInfo.getEmail())
+                    .email(email)
                     .nickname(kakaoUserInfo.getNickname())
                     .pictureUrl(kakaoUserInfo.getPictureUrl())
                     .kakaoId(kakaoUserInfo.getId())
@@ -175,6 +179,7 @@ public class KakaoService {
                     .pictureUrl(user.getPictureUrl())
                     .userRole(user.getUserRole())
                     .userStatus(user.getUserStatus())
+                    .createdAt(user.getCreatedAt())
                     .build();
         }
 

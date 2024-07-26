@@ -24,6 +24,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 .orElseThrow(() -> new NotFoundException(ResponseCodeEnum.USER_NOT_FOUND));
     }
 
-    List<User> findAllByUserStatus(UserStatusEnum userStatus);
+    Optional<User> findByEmail(String email);
 
+    List<User> findAllByUserStatus(UserStatusEnum userStatus);
 }
