@@ -49,6 +49,8 @@ public enum ResponseCodeEnum {
     COLLECTION_ALREADY_EXISTS(HttpStatus.ALREADY_REPORTED, "같은 이름의 보관함이 이미 있습니다."),
     COLLECTION_NOT_FOUND(HttpStatus.NOT_FOUND, "보관함을 찾을 수 없습니다."),
     COLLECTION_NOT_OWNER(HttpStatus.FORBIDDEN, "보관함의 주인이 아닙니다."),
+    // MovieCollection
+    MOVIE_COLLECTION_ALREADY_EXISTS(HttpStatus.ALREADY_REPORTED, "이미 보관함에 등록된 영화입니다."),
 
     ;
     private final HttpStatus httpStatus;
