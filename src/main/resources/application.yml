@@ -40,6 +40,7 @@ spring:
           CharSet: utf-8
           characterEncoding: utf-8
           useUnicode: true
+#    defer-datasource-initialization: true
 
 logging.level:
   root: info
@@ -51,6 +52,17 @@ logging.level:
 
 jwt_secret_key: ${JWT_SECRET_KEY}
 admin_password: ${ADMIN_PASSWORD}
+
 kakao:
   client_id: ${CLIENT_ID}
   redirect_uri: http://localhost:8080/users/kakao/callback
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: us-east-2
+    s3:
+      bucket: sparta-storage

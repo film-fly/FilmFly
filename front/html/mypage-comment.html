@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>FilmFly</title>
+  <!-- 부트 스트랩 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- 공통 헤더 -->
+  <script src="../js/common.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="container">
+  <!-- 공통 헤더 -->
+  <header id="common-header"></header>
+
+  <div>작성한 댓글 목록</div>
+  <div id="comment-box" class="list-group list-group-flush">
+  </div>
+</div>
+
+<!-- The Modal -->
+<div id="editCommentModal" class="comment-modal">
+  <div class="comment-modal-content">
+    <div class="comment-modal-header">
+      <h2>댓글 수정</h2>
+      <span class="comment-close">&times;</span>
+    </div>
+    <div class="comment-modal-body">
+      <textarea id="editCommentText"></textarea>
+    </div>
+    <div class="comment-modal-footer">
+      <button class="btn btn-primary" id="btnUpdateComment">수정</button>
+    </div>
+  </div>
+</div>
+<script>
+  const comments = [
+    {
+      "boardId": 4,
+      "commentId": 1,
+      "content": "댓글 내용 1",
+      "nickname": "닉네임 1"
+    },
+    {
+      "boardId": 3,
+      "commentId": 2,
+      "content": "댓글 내용 2",
+      "nickname": "닉네임 2"
+    },
+    {
+      "boardId": 2,
+      "commentId": 3,
+      "content": "댓글 내용 3",
+      "nickname": "닉네임 3"
+    },
+    {
+      "boardId": 1,
+      "commentId": 4,
+      "content": "댓글 내용 4",
+      "nickname": "닉네임 4"
+    }
+  ]
+
+  comments.forEach(comment => {
+    const commentHtml = `
+      <div class="list-group-item d-flex p-3" data-comment-id="${comment.commentId}">
+        <a href="" class="d-flex justify-content-between align-items-center flex-grow-1">
+          <div>${comment.content}</div>
+          <div class="d-flex align-items-center gap-2">
+            <div>${comment.nickname}</div>
+          </div>
+        </a>
+        <div class="ms-3">
+          <button type="button" class="btn btn-primary" onclick="editComment(${comment.commentId})">수정</button>
+          <button type="button" class="btn btn-primary" onclick="deleteComment(${comment.commentId})">삭제</button>
+        </div>
+      </div>
+    `;
+    $('#comment-box').append(commentHtml);
+  });
+
+  function editComment(commentId) {
+    // 해당 commentId로 댓글 정보를 가져옵니다.
+    const comment = comments.find(c => c.commentId === commentId);
+
+    // 댓글 내용을 모달에 채워넣습니다.
+    $('#editCommentText').val(comment.content);
+    $('#editCommentModal').attr('data-comment-id', commentId);
+
+    $('#editCommentModal').show();
+  }
+
+  // Close the modal when the close button is clicked
+  $(".comment-close").click(function() {
+    $("#editCommentModal").hide();
+  });
+
+  // Close the modal when clicking outside of the modal content
+  $(window).click(function(event) {
+    if ($(event.target).is("#editCommentModal")) {
+      $("#editCommentModal").hide();
+    }
+  });
+
+  $('#btnUpdateComment').on('click', function () {
+    if (confirm("수정하시겠습니까?")) {
+      let commentId = $(this).closest('#editCommentModal').attr('data-comment-id');
+      alert('댓글 : ' + commentId);
+      // $.ajax({
+      //   type: 'PATCH',
+      //   url: ''
+      // })
+      // .done(function (result, status, xhr) {
+      //   // location.replace("./");
+      // })
+      // .fail(function (xhr, status, er) {
+      //   alert("댓글 삭제 실패");
+      // });
+    }
+  });
+
+  function deleteComment(commentId) {
+    if (confirm("삭제하시겠습니까?")) {
+      alert('댓글 : ' + commentId);
+      // $.ajax({
+      //   type: 'DELETE',
+      //   url: ''
+      // })
+      // .done(function (result, status, xhr) {
+      //   // location.replace("./");
+      // })
+      // .fail(function (xhr, status, er) {
+      //   alert("댓글 삭제 실패");
+      // });
+    }
+  }
+</script>
+</body>
+</html>
