@@ -30,7 +30,7 @@ public class BoardController {
      * 보드 생성
      */
     @PostMapping(value = "/boards", consumes = "multipart/form-data")
-    public ResponseEntity<DataResponseDto<BoardResponseDto>> createBoard2(
+    public ResponseEntity<DataResponseDto<BoardResponseDto>> createBoard(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestPart(value = "boardRequestDto") BoardRequestDto requestDto,
             @RequestPart(value = "files", required=false) List<MultipartFile> files
