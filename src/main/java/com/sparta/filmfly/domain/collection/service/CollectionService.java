@@ -31,4 +31,15 @@ public class CollectionService {
         collection = collectionRepository.save(collection);
         return CollectionResponseDto.fromEntity(collection);
     }
+
+    /**
+    * 보관함 목록 조회
+    */
+    public List<CollectionResponseDto> getAllCollection(User user) {
+        // 자신이 생성한 보관함들 조회
+        List<Collection> collectionList = collectionRepository.findAllByUser(user);
+        return collectionList.stream().map(
+                CollectionResponseDto::fromEntity
+        ).toList();
+    }
 }
