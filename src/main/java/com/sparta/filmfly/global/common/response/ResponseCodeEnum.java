@@ -39,6 +39,12 @@ public enum ResponseCodeEnum {
     // Review
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     REVIEW_NOT_OWNER(HttpStatus.FORBIDDEN, "본인이 작성한 리뷰가 아닙니다."),
+    //REACTION
+    REACTION_CONTENT_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "컨텐츠 타입을 찾을 수 없습니다."),
+    GOOD_ALREADY_ADD(HttpStatus.CONFLICT, "이미 좋아요를 등록했습니다."),
+    GOOD_ALREADY_REMOVE(HttpStatus.CONFLICT, "이미 좋아요를 취소했습니다."),
+    BAD_ALREADY_ADD(HttpStatus.CONFLICT, "이미 싫어요를 등록했습니다."),
+    BAD_ALREADY_REMOVE(HttpStatus.CONFLICT, "이미 싫어요를 취소했습니다."),
 
     ;
     private final HttpStatus httpStatus;
