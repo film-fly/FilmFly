@@ -10,11 +10,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
+@RequestMapping("/collection")
 @RequiredArgsConstructor
 public class CollectionController {
 
@@ -28,7 +29,18 @@ public class CollectionController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CollectionRequestDto collectionRequestDto
     ) {
-        CollectionResponseDto collectionResponseDtoList = collectionService.createCollection(userDetails.getUser(), collectionRequestDto);
+        CollectionResponseDto collectionResponseDto = collectionService.createCollection(userDetails.getUser(), collectionRequestDto);
+        return ResponseUtils.success(collectionResponseDto);
+    }
+
+    /**
+     * 보관함 목록 조회
+     */
+    @GetMapping
+    public ResponseEntity<DataResponseDto<List<CollectionResponseDto>>> getAllCollection(
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        List<CollectionResponseDto> collectionResponseDtoList= collectionService.getAllCollection(userDetails.getUser());
         return ResponseUtils.success(collectionResponseDtoList);
     }
 }
