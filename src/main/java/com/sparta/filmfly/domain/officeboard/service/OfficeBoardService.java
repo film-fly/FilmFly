@@ -40,16 +40,16 @@ public class OfficeBoardService {
         OfficeBoardResponseDto responseDto = OfficeBoardResponseDto.fromEntity(
                 officeBoard);
 
-        if (FileUtils.isEmpty(files)) {
-            return responseDto;
+        if (!FileUtils.isEmpty(files)) {
+            // responseDto에 요청 file들 추가
+            for (MultipartFile file : files) {
+                MediaResponseDto mediaResponseDto = mediaService.createMedia(
+                        MediaTypeEnum.OFFICE_BOARD,
+                        savedOfficeBoard.getId(), file);
+                responseDto.addMediaDto(mediaResponseDto);
+            }
         }
 
-        // responseDto에 요청 file들 추가
-        for (MultipartFile file : files) {
-            MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.OFFICE_BOARD,
-                    savedOfficeBoard.getId(), file);
-            responseDto.addMediaDto(mediaResponseDto);
-        }
         return responseDto;
     }
 
@@ -115,14 +115,13 @@ public class OfficeBoardService {
         mediaService.deleteAllMedia(MediaTypeEnum.OFFICE_BOARD, officeBoard.getId());
         officeBoard.updateOfficeBoard(requestDto);
 
-        if (FileUtils.isEmpty(files)) {
-            return responseDto;
-        }
-
-        for (MultipartFile file : files) {
-            MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.OFFICE_BOARD,
-                    officeBoard.getId(), file);
-            responseDto.addMediaDto(mediaResponseDto);
+        if (!FileUtils.isEmpty(files)) {
+            for (MultipartFile file : files) {
+                MediaResponseDto mediaResponseDto = mediaService.createMedia(
+                        MediaTypeEnum.OFFICE_BOARD,
+                        officeBoard.getId(), file);
+                responseDto.addMediaDto(mediaResponseDto);
+            }
         }
 
         return responseDto;

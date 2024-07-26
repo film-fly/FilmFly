@@ -2,7 +2,6 @@ package com.sparta.filmfly.domain.officeboard.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sparta.filmfly.domain.media.dto.MediaResponseDto;
 import com.sparta.filmfly.domain.officeboard.entity.OfficeBoard;
 import java.time.LocalDateTime;
