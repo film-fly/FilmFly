@@ -33,8 +33,8 @@ public class BoardResponseDto {
                 .content(board.getContent())
                 .nickname(board.getUser().getNickname())
                 .createdAt(board.getCreatedAt())
-                .goodCount(board.getGoodCount())
-                .badCount(board.getBadCount())
+                .goodCount(0L)
+                .badCount(0L)
                 .hits(board.getHits())
                 .build();
     }
@@ -47,6 +47,11 @@ public class BoardResponseDto {
             mediaList = new ArrayList<>();
         }
         mediaList.add(media);
+    }
+
+    public void updateReactionCount(Long goodCount, Long badCount) {
+        this.goodCount = goodCount;
+        this.badCount = badCount;
     }
 
 }

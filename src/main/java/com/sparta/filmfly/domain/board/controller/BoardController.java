@@ -25,7 +25,6 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
-
     /**
      * 보드 생성
      */

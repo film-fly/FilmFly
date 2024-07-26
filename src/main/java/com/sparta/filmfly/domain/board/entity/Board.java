@@ -43,12 +43,6 @@ public class Board extends TimeStampEntity {
     private String content;
 
     @Column(nullable = false)
-    private Long goodCount;
-
-    @Column(nullable = false)
-    private Long badCount;
-
-    @Column(nullable = false)
     private Long hits;
 
     private LocalDateTime deletedAt;
@@ -59,8 +53,6 @@ public class Board extends TimeStampEntity {
         this.title = title;
         this.content = content;
 
-        goodCount = 0L;
-        badCount = 0L;
         hits = 0L;
     }
 

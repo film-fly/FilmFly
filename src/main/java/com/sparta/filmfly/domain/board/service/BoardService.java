@@ -9,6 +9,9 @@ import com.sparta.filmfly.domain.media.dto.MediaResponseDto;
 import com.sparta.filmfly.domain.media.entity.Media;
 import com.sparta.filmfly.domain.media.entity.MediaTypeEnum;
 import com.sparta.filmfly.domain.media.service.MediaService;
+import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
+import com.sparta.filmfly.domain.reaction.service.BadService;
+import com.sparta.filmfly.domain.reaction.service.GoodService;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.global.util.FileUtils;
@@ -32,6 +35,8 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final MediaService mediaService;
+    private final GoodService goodService;
+    private final BadService badService;
 
     /**
      * 보드 생성
@@ -65,7 +70,10 @@ public class BoardService {
 
         board.addHits();
         Board savedBoard = boardRepository.save(board);
+
         BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(savedBoard);
+        updateDtoReactionCount(boardResponseDto,savedBoard.getId());
+
         for (Media media : mediaList) {
             boardResponseDto.addMediaDto(MediaResponseDto.fromEntity(media));
         }
@@ -88,6 +96,8 @@ public class BoardService {
         List<BoardResponseDto> boardsDto = new ArrayList<>();
         for (Board board : boards) {
             BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(board); //보드 기본 정보 Dto
+            updateDtoReactionCount(boardResponseDto,board.getId());
+
             List<Media> mediaList = mediaService.getListMedia(MediaTypeEnum.BOARD,board.getId()); //해당 보드의 미디어가 있으면 가지고 온다
             for (Media media : mediaList) {
                 boardResponseDto.addMediaDto(MediaResponseDto.fromEntity(media)); //미디어가 존재하면 보드dto에 정보를 넣어준다
@@ -112,6 +122,7 @@ public class BoardService {
         Board updatedBoard = boardRepository.save(board);
 
         BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(updatedBoard);
+        updateDtoReactionCount(boardResponseDto,updatedBoard.getId());
 
         //수정 전 기존 미디어들 삭제 요청
         mediaService.deleteAllMedia(MediaTypeEnum.BOARD,board.getId());
@@ -142,5 +153,14 @@ public class BoardService {
         boardRepository.delete(board);
 
         return "게시물이 삭제되었습니다.";
+    }
+
+    /**
+     * Dto에 goodCount, badCount 업데이트하는 함수
+     */
+    private void updateDtoReactionCount(BoardResponseDto boardResponseDto, Long boardId){
+        Long goodCount = goodService.getCountByTypeTypeId(ReactionContentTypeEnum.BOARD,boardId);
+        Long badCount = badService.getCountByTypeTypeId(ReactionContentTypeEnum.BOARD,boardId);
+        boardResponseDto.updateReactionCount(goodCount,badCount);
     }
 }
