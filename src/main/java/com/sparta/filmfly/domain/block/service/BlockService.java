@@ -47,6 +47,7 @@ public class BlockService {
                         .username(block.getBlocked().getUsername())
                         .nickname(block.getBlocked().getNickname())
                         .memo(block.getMemo())
+                        .createdAt(block.getCreatedAt())
                         .build())
                 .collect(Collectors.toList());
     }
