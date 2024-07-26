@@ -27,6 +27,9 @@ public class GoodService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
+    /**
+     * 좋아요 추가
+     */
     public void addGood(User loginUser, GoodRequestDto requestDto) {
         ReactionContentTypeEnum contentType = ReactionContentTypeEnum.validateContentType(requestDto.getContentType());
 
@@ -38,7 +41,7 @@ public class GoodService {
         ).orElse(null);
 
         // 이미 좋아요가 등록되어 있으면 예외
-        if (null != findGood) {
+        if (findGood != null) {
             throw new AlreadyActionException(ResponseCodeEnum.GOOD_ALREADY_ADD);
         }
 
@@ -46,37 +49,41 @@ public class GoodService {
         goodRepository.save(good);
     }
 
+    /**
+     * 좋아요 취소
+     */
     public void removeGood(User loginUser, GoodRequestDto requestDto) {
         ReactionContentTypeEnum contentType = ReactionContentTypeEnum.validateContentType(requestDto.getContentType());
 
         // 해당 컨텐츠가 있는지 없는지 확인
         checkContentExist(requestDto);
 
+        // 좋아요가 없으면 예외
         Good findGood = goodRepository.findByTypeIdAndTypeAndUser(
             requestDto.getContentId(), contentType, loginUser
-        ).orElse(null);
-
-        // 좋아요가 없으면 예외
-        if (null == findGood) {
-            throw new NotFoundException(ResponseCodeEnum.GOOD_ALREADY_REMOVE);
-        }
+        ).orElseThrow(() -> new NotFoundException(ResponseCodeEnum.GOOD_ALREADY_REMOVE));
 
         goodRepository.delete(findGood);
     }
 
+    /**
+     * 좋아요 카운트
+     */
+    public Long getCountByTypeTypeId(ReactionContentTypeEnum type, Long typeId) {
+        return goodRepository.countByTypeAndTypeId(type,typeId);
+    }
+
     private void checkContentExist(GoodRequestDto requestDto) {
+        Long id = requestDto.getContentId();
         if (requestDto.getContentType().equalsIgnoreCase(ReactionContentTypeEnum.MOVIE.getContentType())) {
-            movieRepository.findById(requestDto.getContentId())
+            movieRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("영화가 없음"));  // 각 기능 다 되면 삭제
         } else if (requestDto.getContentType().equalsIgnoreCase(ReactionContentTypeEnum.REVIEW.getContentType())) {
-            reviewRepository.findById(requestDto.getContentId())
-                .orElseThrow(() -> new IllegalArgumentException("리뷰가 없음"));  // 각 기능 다 되면 삭제
+            reviewRepository.findByIdOrElseThrow(id);
         } else if (requestDto.getContentType().equalsIgnoreCase(ReactionContentTypeEnum.BOARD.getContentType())) {
-            boardRepository.findById(requestDto.getContentId())
-                .orElseThrow(() -> new IllegalArgumentException("게시물이 없음"));  // 각 기능 다 되면 삭제
+            boardRepository.findByIdOrElseThrow(id);
         } else if (requestDto.getContentType().equalsIgnoreCase(ReactionContentTypeEnum.COMMENT.getContentType())) {
-            commentRepository.findById(requestDto.getContentId())
-                .orElseThrow(() -> new IllegalArgumentException("댓글이 없음"));  // 각 기능 다 되면 삭제
+            commentRepository.findByIdOrElseThrow(id);
         }
     }
 }

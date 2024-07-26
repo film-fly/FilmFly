@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface GoodRepository extends JpaRepository<Good, Long> {
 
     Optional<Good> findByTypeIdAndTypeAndUser(Long typeId, ReactionContentTypeEnum type, User user);
+    Long countByTypeAndTypeId(ReactionContentTypeEnum type, Long typeId);
 }

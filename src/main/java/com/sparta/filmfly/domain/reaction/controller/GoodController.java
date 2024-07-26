@@ -1,5 +1,6 @@
 package com.sparta.filmfly.domain.reaction.controller;
 
+import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
@@ -24,6 +25,9 @@ public class GoodController {
 
     private final GoodService goodService;
 
+    /**
+     * 좋아요 추가
+     */
     @PostMapping
     public ResponseEntity<MessageResponseDto> addGood(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -33,6 +37,9 @@ public class GoodController {
         return ResponseUtils.success();
     }
 
+    /**
+     * 좋아요 취소
+     */
     @DeleteMapping
     public ResponseEntity<MessageResponseDto> removeGood(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
