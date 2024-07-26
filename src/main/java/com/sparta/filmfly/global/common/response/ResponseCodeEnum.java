@@ -45,6 +45,8 @@ public enum ResponseCodeEnum {
     // Review
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     REVIEW_NOT_OWNER(HttpStatus.FORBIDDEN, "본인이 작성한 리뷰가 아닙니다."),
+    // Collection
+    COLLECTION_ALREADY_EXISTS(HttpStatus.ALREADY_REPORTED, "같은 이름의 보관함이 이미 있습니다."),
 
     ;
     private final HttpStatus httpStatus;
