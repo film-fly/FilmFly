@@ -5,6 +5,7 @@ import com.sparta.filmfly.domain.collection.dto.CollectionResponseDto;
 import com.sparta.filmfly.domain.collection.service.CollectionService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
+import com.sparta.filmfly.global.common.response.MessageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,5 +43,17 @@ public class CollectionController {
     ) {
         List<CollectionResponseDto> collectionResponseDtoList= collectionService.getAllCollection(userDetails.getUser());
         return ResponseUtils.success(collectionResponseDtoList);
+    }
+
+    /**
+    * 보관함 삭제
+    */
+    @DeleteMapping
+    public ResponseEntity<MessageResponseDto> deleteCollection(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam Long collectionId
+    ) {
+        collectionService.deleteCollection(userDetails.getUser(), collectionId);
+        return ResponseUtils.success();
     }
 }

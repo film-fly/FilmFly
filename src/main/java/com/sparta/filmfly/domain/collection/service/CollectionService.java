@@ -42,4 +42,13 @@ public class CollectionService {
                 CollectionResponseDto::fromEntity
         ).toList();
     }
+
+    /**
+    * 보관함 삭제
+    */
+    public void deleteCollection(User user, Long collectionId) {
+        Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
+        collection.validateOwner(user);
+        collectionRepository.delete(collection);
+    }
 }
