@@ -16,7 +16,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,7 +23,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Getter
@@ -72,22 +70,15 @@ public class OfficeBoard extends TimeStampEntity {
         setDeletedAt();
     }
 
-    public void validUser() {
+    public void checkAdmin() {
         if (this.user.getUserRole() != ROLE_ADMIN) {
-            throw new UnAuthorizedException(ResponseCodeEnum.USER_UNAUTHORIZED);
+            throw new UnAuthorizedException(ResponseCodeEnum.ACCESS_DENIED);
         }
     }
 
     public void checkOwnerUser(User requestUser) {
         if(!Objects.equals(this.user.getId(),requestUser.getId())){
-            throw new NotOwnerException(ResponseCodeEnum.OFFICEBOARD_NOT_OWNER);
+            throw new NotOwnerException(ResponseCodeEnum.BOARD_NOT_OWNER);
         }
-    }
-
-    public boolean isFilesNotNull(List<MultipartFile> files){
-        if (files == null || files.isEmpty() || files.get(0).isEmpty()) {
-            return false;
-        }
-        return true;
     }
 }

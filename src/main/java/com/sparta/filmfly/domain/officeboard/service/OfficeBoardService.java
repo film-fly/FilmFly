@@ -9,6 +9,7 @@ import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardResponseDto;
 import com.sparta.filmfly.domain.officeboard.entity.OfficeBoard;
 import com.sparta.filmfly.domain.officeboard.repository.OfficeBoardRepository;
 import com.sparta.filmfly.domain.user.entity.User;
+import com.sparta.filmfly.global.util.FileUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,23 +34,23 @@ public class OfficeBoardService {
     public OfficeBoardResponseDto createOfficeBoard(OfficeBoard officeBoard,
             List<MultipartFile> files) {
 
-        officeBoard.validUser();
+        officeBoard.checkAdmin();
         OfficeBoard savedOfficeBoard = officeBoardRepository.save(officeBoard);
 
-        OfficeBoardResponseDto officeBoardresponseDto = OfficeBoardResponseDto.fromEntity(
+        OfficeBoardResponseDto responseDto = OfficeBoardResponseDto.fromEntity(
                 officeBoard);
 
-        if (!officeBoard.isFilesNotNull(files)) {
-            return officeBoardresponseDto;
+        if (FileUtils.isEmpty(files)) {
+            return responseDto;
         }
 
         // responseDto에 요청 file들 추가
         for (MultipartFile file : files) {
             MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.OFFICE_BOARD,
                     savedOfficeBoard.getId(), file);
-            officeBoardresponseDto.addMediaDto(mediaResponseDto);
+            responseDto.addMediaDto(mediaResponseDto);
         }
-        return officeBoardresponseDto;
+        return responseDto;
     }
 
     /**
@@ -107,14 +108,14 @@ public class OfficeBoardService {
             OfficeBoardRequestDto requestDto, List<MultipartFile> files) {
 
         OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(id);
-        officeBoard.validUser();
+        officeBoard.checkAdmin();
         officeBoard.checkOwnerUser(user);
 
         OfficeBoardResponseDto responseDto = OfficeBoardResponseDto.fromEntity(officeBoard);
         mediaService.deleteAllMedia(MediaTypeEnum.OFFICE_BOARD, officeBoard.getId());
         officeBoard.updateOfficeBoard(requestDto);
 
-        if (!officeBoard.isFilesNotNull(files)) {
+        if (FileUtils.isEmpty(files)) {
             return responseDto;
         }
 
@@ -136,7 +137,7 @@ public class OfficeBoardService {
 
         OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(id);
 
-        officeBoard.validUser();
+        officeBoard.checkAdmin();
         officeBoard.checkOwnerUser(user);
         officeBoard.deleteOfficeBoard();
         return OfficeBoardResponseDto.fromEntity(officeBoard);
