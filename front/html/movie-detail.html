@@ -33,10 +33,10 @@
     <hr>
     <div class="d-flex justify-content-between">
       <button class="btnReaction btn btn-outline-primary fa-regular fa-face-smile fs-4 p-3"
-              data-content-id="" data-type="MOVIE" data-good="true">좋아요
+              data-content-id="" data-type="MOVIE" data-good>좋아요
       </button>
       <button class="btnReaction btn btn-outline-primary fa-regular fa-face-angry fs-4 p-3"
-              data-content-id="" data-type="MOVIE" data-bad="true">싫어요
+              data-content-id="" data-type="MOVIE" data-bad>싫어요
       </button>
       <button id="btnFavorite" class="btn btn-outline-primary fa-regular fa-bookmark fs-4 p-3">찜하기
       </button>
@@ -65,6 +65,7 @@
       </div>
       <div class="modal-body">
         <div id="collection-box">
+
 
         </div>
         <div class="modal-footer">
@@ -145,7 +146,7 @@
 
   initData.reviews.forEach(review => {
     let reviewHtml = `
-      <div class="profile-box list-group-item d-flex flex-column p-3">
+      <div class="profile-box list-group-item d-flex flex-column p-3" data-content-id="${review.id}" data-user-id="${review.userId}">
         <div class="d-flex align-items-center justify-content-between mb-3">
           <div class="me-3 d-flex flex-column">
             <div class="d-flex align-items-center gap-3">
@@ -153,13 +154,10 @@
               <div>${review.nickname}</div>
               <div>
                 <i class="fa-solid fa-gear fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
-                <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${review.userId}" data-content-id="${review.id}" data-content-type="REVIEW">
+                <ul class="dropdown-menu" aria-labelledby="settings-icon">
                   <li class="dropdown-item block-user">차단</li>
                   <li class="dropdown-item report-user">신고</li>
                 </ul>
-              </div>
-              <div>
-              $.....{review.createdAt}
               </div>
             </div>
           </div>
@@ -168,20 +166,20 @@
             `;
     if (review.goodId) {
       reviewHtml += `
-            <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>
+            <button class="btnReaction btn btn-primary fa-regular fa-face-smile" data-content-id="${review.id}" data-type="REVIEW" data-good>좋아요</button>
     `;
     } else {
       reviewHtml += `
-            <button class="btnReaction btn btn-outline-primary" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>
+            <button class="btnReaction btn btn-outline-primary fa-regular fa-face-smile" data-type="REVIEW" data-good>좋아요</button>
     `;
     }
     if (review.badId) {
       reviewHtml += `
-            <button class="btnReaction btn btn-primary" data-content-id="${review.badId}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>
+            <button class="btnReaction btn btn-primary fa-regular fa-face-angry" data-content-id="${review.badId}" data-type="REVIEW" data-bad>싫어요</button>
     `;
     } else {
       reviewHtml += `
-            <button class="btnReaction btn btn-outline-primary" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>
+            <button class="btnReaction btn btn-outline-primary fa-regular fa-face-angry" data-type="REVIEW" data-bad>싫어요</button>
     `;
     }
     const urlParams = new URL(location.href).searchParams;

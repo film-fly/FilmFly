@@ -33,45 +33,45 @@
         <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">
       </div>
       <div>
-        ${review.nickname}
+        닉네임 1
+      </div>
+      <div>
+        2024-07-26 11:11:11
       </div>
       <div>
         <i class="fa-solid fa-gear fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
-        <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${review.userId}" data-content-id="${review.boardId}" data-content-type="REVIEW">
+        <ul class="dropdown-menu" aria-labelledby="settings-icon">
           <li class="dropdown-item block-user">차단</li>
           <li class="dropdown-item block-user">신고</li>
         </ul>
-      </div>
-      <div>
-        ${review.createdAt}
       </div>
     </div>
     <div class="d-flex align-items-center">
       <img class="img-default-size me-3" src="../images/logo.png" alt="영화 프로필">
       <div class="d-flex flex-column gap-3">
         <div>
-          ${movie.title}
+          영화 제목
         </div>
         <div>
-          <i class="fa-solid fa-star align-content-center">${movie.rating}</i>
+          <i class="fa-solid fa-star align-content-center">4.2</i>
         </div>
       </div>
     </div>
     <hr>
     <div>
       <div class="fs-4 mb-3">
-        ${review.title}
+        리뷰 제목
       </div>
       <div>
-        ${review.content}
+        리뷰 내용
       </div>
     </div>
     <div class="d-flex gap-3">
-      <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true">
-        <i class="fa-regular fa-face-smile">좋아요</i>
+      <button class="btnReaction btn btn-outline-primary fa-regular fa-face-smile"
+              data-content-id="" data-type="REVIEW" data-good>좋아요
       </button>
-      <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true">
-        <i class="fa-regular fa-face-angry">싫어요</i>
+      <button class="btnReaction btn btn-outline-primary fa-regular fa-face-angry"
+              data-content-id="" data-type="REVIEW" data-bad>싫어요
       </button>
     </div>
   </div>
