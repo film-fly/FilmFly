@@ -70,14 +70,14 @@
 <!--        <button class="btnReaction btn btn-outline-primary" data-type="BOARD" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>-->
       </div>
       <div>
-        <button class="btn btn-primary">수정</button>
+        <button class="btn btn-primary" onclick="location.href='./create-board.html?edit=1'">수정</button>
         <button class="btn btn-primary">삭제</button>
       </div>
     </div>
   </div>
   <div id="comment-box">
     <ul class="list-group list-group-flush mb-5">
-      <li class="list-group-item">
+      <li class="list-group-item" data-content-id="${comment.commentId}">
         <div class="profile-box d-flex align-items-center justify-content-between">
           <div class="d-flex align-items-center gap-2">
             <div>
@@ -98,17 +98,23 @@
             </div>
           </div>
           <div>
-            <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>
-<!--            <button class="btnReaction btn btn-outline-primary" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>-->
-            <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>
-<!--            <button class="btnReaction btn btn-outline-primary" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>-->
+            <button class="btnReaction btn btn-primary" data-content-id="${comment.commentId}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>
+            <button class="btnReaction btn btn-primary" data-content-id="${comment.commentId}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>
+          </div>
+          <div>
+            <button class="btn btn-primary edit-comment">수정</button>
+            <button class="btn btn-primary delete-comment">삭제</button>
+            <button class="btn btn-primary save-comment" style="display:none;">저장</button>
+            <button class="btn btn-primary cancel-edit" style="display:none;">취소</button>
           </div>
         </div>
-        <div>
+        <div class="comment-content">
           ${comment.content}
         </div>
       </li>
     </ul>
+
+
     <div class="mb-3">
       <label for="inputComment" class="form-label">댓글 입력</label>
       <textarea class="form-control mb-3" id="inputComment" rows="3"></textarea>
@@ -116,6 +122,60 @@
     </div>
   </div>
 </div>
+<script>
+  $(document).ready(function () {
+    let originalContent = '';
+
+    // 수정 버튼 클릭 이벤트 핸들러
+    $(document).on('click', '.edit-comment', function () {
+      let commentBox = $(this).closest('.list-group-item');
+      originalContent = commentBox.find('.comment-content').text().trim();
+      commentBox.find('.comment-content').html(`<textarea class="form-control edit-textarea" rows="3">${originalContent}</textarea>`);
+      commentBox.find('.edit-comment').hide();
+      commentBox.find('.delete-comment').hide();
+      commentBox.find('.btnReaction').hide();
+      commentBox.find('.save-comment').show();
+      commentBox.find('.cancel-edit').show();
+    });
+
+    // 저장 버튼 클릭 이벤트 핸들러
+    $(document).on('click', '.save-comment', function () {
+      let commentBox = $(this).closest('.list-group-item');
+      let updatedContent = commentBox.find('.edit-textarea').val().trim();
+      let commentId = commentBox.data('content-id');
+
+      $.ajax({
+        type: 'POST',
+        url: '/update-comment', // 실제 서버의 댓글 수정 API URL로 변경
+        data: JSON.stringify({ commentId: commentId, content: updatedContent }),
+        contentType: 'application/json;charset=utf-8'
+      })
+      .done(function (result, status, xhr) {
+        commentBox.find('.comment-content').html(updatedContent);
+        commentBox.find('.edit-comment').show();
+        commentBox.find('.delete-comment').show();
+        commentBox.find('.btnReaction').show();
+        commentBox.find('.save-comment').hide();
+        commentBox.find('.cancel-edit').hide();
+      })
+      .fail(function (xhr, status, er) {
+        alert("댓글 수정 실패");
+      });
+    });
+
+    // 취소 버튼 클릭 이벤트 핸들러
+    $(document).on('click', '.cancel-edit', function () {
+      let commentBox = $(this).closest('.list-group-item');
+      commentBox.find('.comment-content').html(originalContent);
+      commentBox.find('.edit-comment').show();
+      commentBox.find('.delete-comment').show();
+      commentBox.find('.btnReaction').show();
+      commentBox.find('.save-comment').hide();
+      commentBox.find('.cancel-edit').hide();
+    });
+  });
+</script>
+
 
 <script>
   $('#btnSaveComment').on('click', function () {
