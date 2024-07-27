@@ -85,7 +85,7 @@ $(document).ready(function() {
   // 차단 버튼 클릭 이벤트 처리
   $(document).on('click', '.block-user', function(e) {
     e.preventDefault();
-    let userId = $(this).closest('.profile-box').attr('data-user-id');
+    let userId = $(this).closest('.dropdown-menu').attr('data-user-id');
     alert('user id : ' + userId);
     // 실제 차단 기능 구현 코드
   });
@@ -93,9 +93,10 @@ $(document).ready(function() {
   // 신고 버튼 클릭 이벤트 처리
   $(document).on('click', '.report-user', function(e) {
     e.preventDefault();
-    let userId = $(this).closest('.profile-box').attr('data-user-id');
-    let contentId = $(this).closest('.profile-box').attr('data-content-id');
-    alert('user id : ' + userId + "\n신고할 content id : " + contentId);
+    let userId = $(this).closest('.dropdown-menu').attr('data-user-id');
+    let contentId = $(this).closest('.dropdown-menu').attr('data-content-id');
+    let contentType = $(this).closest('.dropdown-menu').attr('data-content-type');
+    alert('user id : ' + userId + "\n신고할 content id : " + contentId + '\n컨텐츠 타입 : ' + contentType);
     // 실제 신고 기능 구현 코드
   });
 });
