@@ -1,6 +1,7 @@
 package com.sparta.filmfly.domain.comment.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sparta.filmfly.domain.comment.entity.Comment;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,8 +16,8 @@ public class CommentResponseDto {
     private String content;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime updatedAt;
-    private long goodCount;
-    private long badCount;
+    private Long goodCount;
+    private Long badCount;
 
     public static CommentResponseDto fromEntity(Comment comment) {
         return CommentResponseDto.builder()
@@ -24,9 +25,15 @@ public class CommentResponseDto {
                 .userName(comment.getUser().getNickname())
                 .content(comment.getContent())
                 .updatedAt(comment.getUpdatedAt())
-                .goodCount(comment.getGoodCount())
-                .badCount(comment.getBadCount())
+                .goodCount(0L)
+                .badCount(0L)
                 .build();
+    }
+
+
+    public void updateReactionCount(Long goodCount, Long badCount) {
+        this.goodCount = goodCount;
+        this.badCount = badCount;
     }
 
 }

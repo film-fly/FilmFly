@@ -38,12 +38,6 @@ public class Comment extends TimeStampEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private Long goodCount;
-
-    @Column(nullable = false)
-    private Long badCount;
-
     private LocalDateTime deletedAt;
 
     @Builder // 필요한 것만 생성자로
@@ -51,9 +45,6 @@ public class Comment extends TimeStampEntity {
         this.user = user;
         this.board = board;
         this.content = content;
-
-        this.goodCount = 0L;
-        this.badCount = 0L;
     }
 
     public void update(CommentRequestDto requestDto) {

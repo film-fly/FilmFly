@@ -20,14 +20,15 @@ public class CommentPageResponseDto {
      * totalPages,size,content,number 등 필요한 정보만 보내는 PageResponse
      */
     public static CommentPageResponseDto fromPage(Page<Comment> comment) {
-        List<CommentResponseDto> commentsDto = comment.stream().map(CommentResponseDto::fromEntity).toList();
-
         return CommentPageResponseDto.builder()
                 .totalPages(comment.getTotalPages())
                 .totalElements(comment.getTotalElements())
                 .currentPages(comment.getNumber()+1)
                 .size(comment.getSize())
-                .content(commentsDto)
                 .build();
+    }
+
+    public void addContent(List<CommentResponseDto> content) {
+        this.content = content;
     }
 }
