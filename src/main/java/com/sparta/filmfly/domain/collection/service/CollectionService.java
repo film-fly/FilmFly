@@ -3,6 +3,7 @@ package com.sparta.filmfly.domain.collection.service;
 import com.sparta.filmfly.domain.collection.dto.CollectionRequestDto;
 import com.sparta.filmfly.domain.collection.dto.CollectionResponseDto;
 import com.sparta.filmfly.domain.collection.dto.MovieCollectionRequestDto;
+import com.sparta.filmfly.domain.collection.dto.MovieCollectionResponseDto;
 import com.sparta.filmfly.domain.collection.entity.Collection;
 import com.sparta.filmfly.domain.collection.entity.MovieCollection;
 import com.sparta.filmfly.domain.collection.repository.CollectionRepository;
@@ -78,5 +79,18 @@ public class CollectionService {
                 .movie(movie)
                 .build();
         movieCollectionRepository.save(movieCollection);
+    }
+
+    public MovieCollectionResponseDto getMovieCollection(User user, Long collectionId) {
+        // 보관함 여부 확인
+        Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
+        // 보관함 주인 확인
+        collection.validateOwner(user);
+        // 보관함에서 영화목록 조회
+        List<MovieCollection> movieCollectionList = movieCollectionRepository.findByCollection_id(collection.getId());
+        //
+        return MovieCollectionResponseDto.fromEntity(collection, movieCollectionList.stream().map(
+                MovieCollection::getMovie
+        ).toList());
     }
 }
