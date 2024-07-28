@@ -1,9 +1,8 @@
 package com.sparta.filmfly.domain.collection.controller;
 
-import com.sparta.filmfly.domain.collection.dto.CollectionRequestDto;
-import com.sparta.filmfly.domain.collection.dto.CollectionResponseDto;
-import com.sparta.filmfly.domain.collection.dto.MovieCollectionRequestDto;
+import com.sparta.filmfly.domain.collection.dto.*;
 import com.sparta.filmfly.domain.collection.service.CollectionService;
+import com.sparta.filmfly.domain.movie.dto.MovieResponseDto;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
@@ -68,5 +67,17 @@ public class CollectionController {
     ) {
         collectionService.createMovieCollection(userDetails.getUser(), movieCollectionRequestDto);
         return ResponseUtils.success();
+    }
+
+    /**
+     * 보관함 상세 조회 _ 영화 목록 조회
+     */
+    @GetMapping("/detail")
+    public ResponseEntity<DataResponseDto<MovieCollectionResponseDto>> getMovieCollection(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam Long collectionId
+    ) {
+        MovieCollectionResponseDto movieCollectionResponseDto = collectionService.getMovieCollection(userDetails.getUser(), collectionId);
+        return ResponseUtils.success(movieCollectionResponseDto);
     }
 }
