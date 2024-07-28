@@ -29,13 +29,14 @@ function imageUploader(file, el) {
   $.ajax({
     data : formData,
     type : "POST",
-    url : '/image/upload',
+    url : 'http://localhost:8080/image/upload',
     contentType : false,
     processData : false,
     enctype : 'multipart/form-data',
     success : function(data) {
       console.log(data);
-      let imageUrl = window.location.origin + data;
+      // let imageUrl = window.location.origin + data;
+      let imageUrl = 'http://localhost:8080' + data;
       console.log('url: ' + imageUrl);
       $(el).summernote('insertImage', imageUrl, function($image) {
         $image.css('width', "25%");
