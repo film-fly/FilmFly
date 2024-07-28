@@ -24,6 +24,24 @@
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
+  <div class="mb-3">
+    <div class="d-flex align-items-center">
+      <div class="me-3">
+        <img src="../images/profileImg.png" class="img-profile-big-size" alt="프로필 사진">
+      </div>
+      <div>
+        ${user.nickname}
+      </div>
+      <div class="d-flex justify-content-end flex-grow-1">
+        <button class="btn btn-primary" onclick="location.href='./mypage-update-profile.html?user=1'">수정</button>
+      </div>
+    </div>
+    <div class="mt-2">
+      <p class="fs-5 fw-bold">한줄 소개</p>
+      <p class="p-3">${user.introduce}</p>
+    </div>
+  </div>
+
   <div class="card w-100 mb-3">
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
@@ -31,19 +49,6 @@
           <span>영화 보관함</span>
           <div>
 <!--            <span>12</span>-->
-            <i class="fa-solid fa-chevron-right"></i>
-          </div>
-        </a>
-      </li>
-    </ul>
-  </div>
-
-  <div class="card w-100 mb-3">
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">
-        <a href="mypage-coupon.html">
-          <span>받은 쿠폰 확인</span>
-          <div>
             <i class="fa-solid fa-chevron-right"></i>
           </div>
         </a>
@@ -101,6 +106,19 @@
       <li class="list-group-item">
         <a href="./mypage-comment.html">
           <span>작성한 댓글</span>
+          <div>
+            <i class="fa-solid fa-chevron-right"></i>
+          </div>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card w-100 mb-3">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        <a href="mypage-coupon.html">
+          <span>받은 쿠폰 확인</span>
           <div>
             <i class="fa-solid fa-chevron-right"></i>
           </div>
