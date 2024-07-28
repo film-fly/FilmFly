@@ -225,6 +225,7 @@ public class UserService {
         if (user.getUserRole() != UserRoleEnum.ROLE_USER) {
             throw new InvalidTargetException(ResponseCodeEnum.INVALID_ADMIN_TARGET);
         }
+        user.validateDeletedStatus();
 
         user.updateSuspended();
         userRepository.save(user);

@@ -86,6 +86,15 @@ public class User extends TimeStampEntity {
     }
 
     /**
+     * 삭제 상태 검증
+     */
+    public void validateDeletedStatus() {
+        if (this.userStatus == UserStatusEnum.DELETED) {
+            throw new DeletedException(ResponseCodeEnum.USER_DELETED);
+        }
+    }
+
+    /**
      * 비밀번호 검증
      */
     public void validatePassword(String rawPassword, PasswordEncoder passwordEncoder) {
