@@ -88,9 +88,22 @@ public class CollectionService {
         collection.validateOwner(user);
         // 보관함에서 영화목록 조회
         List<MovieCollection> movieCollectionList = movieCollectionRepository.findByCollection_id(collection.getId());
-        //
+        // 응답데이터 변환 및 반환
         return MovieCollectionResponseDto.fromEntity(collection, movieCollectionList.stream().map(
                 MovieCollection::getMovie
         ).toList());
+    }
+
+    public void deleteMovieCollection(User user, Long collectionId, Long movieId) {
+        // 보관함 존재 확인
+        Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
+        // 보관함 주인 확인
+        collection.validateOwner(user);
+        // 영화 존재 확인
+        Movie movie = movieRepository.findByIdOrElseThrow(movieId);
+        // 영화-보관함 존재 확인
+        MovieCollection movieCollection = movieCollectionRepository.findByCollection_idAndMovie_idOrElseThrow(collection.getId(), movie.getId());
+        // 보관함에서 영화 삭제
+        movieCollectionRepository.delete(movieCollection);
     }
 }

@@ -48,6 +48,7 @@ public enum ResponseCodeEnum {
     COLLECTION_NOT_OWNER(HttpStatus.FORBIDDEN, "보관함의 주인이 아닙니다."),
     // MovieCollection
     MOVIE_COLLECTION_ALREADY_EXISTS(HttpStatus.ALREADY_REPORTED, "이미 보관함에 등록된 영화입니다."),
+    MOVIE_COLLECTION_NOT_FOUND(HttpStatus.NOT_FOUND, "보관함에서 해당 영화를 찾을 수 없습니다."),
 
     // Coupon
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 쿠폰을 찾을 수 없습니다"),
