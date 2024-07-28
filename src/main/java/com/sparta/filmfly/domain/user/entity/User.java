@@ -75,14 +75,28 @@ public class User extends TimeStampEntity {
     }
 
     /**
-     * 사용자 상태 검증
+     * 사용자 정지 상태 검증
      */
-    public void validateUserStatus() {
+    public void validateUserSuspended() {
+        if (this.userStatus == UserStatusEnum.SUSPENDED) {
+            throw new AccessDeniedException(ResponseCodeEnum.USER_SUSPENDED);
+        }
+    }
+
+    /**
+     * 사용자 탈퇴 상태 검증
+     */
+    public void validateUserDeleted() {
         if (this.userStatus == UserStatusEnum.DELETED) {
             throw new AccessDeniedException(ResponseCodeEnum.USER_DELETED);
-        } else if (this.userStatus == UserStatusEnum.SUSPENDED) {
-            throw new AccessDeniedException(ResponseCodeEnum.USER_SUSPENDED);
-        } else if (this.userStatus == UserStatusEnum.UNVERIFIED) {
+        }
+    }
+
+    /**
+     * 사용자 인증 상태 검증
+     */
+    public void validateUserVerified() {
+        if (this.userStatus == UserStatusEnum.UNVERIFIED) {
             throw new AccessDeniedException(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
         }
     }
