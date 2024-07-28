@@ -13,7 +13,7 @@ public enum ResponseCodeEnum {
     UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
 
     // Auth
-    INVALID__REQUEST(HttpStatus.NOT_FOUND, "해당 요청을 처리 할 수 없습니다."),
+    INVALID_REQUEST(HttpStatus.NOT_FOUND, "해당 요청을 처리 할 수 없습니다."),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "로그인 실패"),
     INVALID_TOKENS(HttpStatus.BAD_REQUEST, "유효하지 않는 토큰입니다."),
 

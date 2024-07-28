@@ -163,7 +163,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 res.addHeader(JwtProvider.AUTHORIZATION_HEADER, newAccessToken);
                 setAuthentication(username);
             } else {
-                setErrorResponse(res, ResponseCodeEnum.INVALID__REQUEST);
+                setErrorResponse(res, ResponseCodeEnum.INVALID_REQUEST);
             }
         } else {
             setErrorResponse(res, ResponseCodeEnum.INVALID_TOKENS);
