@@ -80,4 +80,17 @@ public class CollectionController {
         MovieCollectionResponseDto movieCollectionResponseDto = collectionService.getMovieCollection(userDetails.getUser(), collectionId);
         return ResponseUtils.success(movieCollectionResponseDto);
     }
+
+    /**
+     * 보관함 상세 조회 _ 영화 목록 조회
+     */
+    @DeleteMapping("/")
+    public ResponseEntity<MessageResponseDto> deleteMovieCollection(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam Long collectionId,
+            @RequestParam Long movieId
+    ) {
+        collectionService.deleteMovieCollection(userDetails.getUser(), collectionId, movieId);
+        return ResponseUtils.success();
+    }
 }
