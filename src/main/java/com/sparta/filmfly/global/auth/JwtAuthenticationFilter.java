@@ -8,8 +8,7 @@ import com.sparta.filmfly.global.common.response.MessageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import com.sparta.filmfly.global.exception.custom.GlobalException;
-import com.sparta.filmfly.global.exception.custom.detail.InformationMismatchException;
-import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
+import com.sparta.filmfly.global.exception.custom.detail.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.Cookie;
@@ -75,6 +74,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             return null;
         } catch (InformationMismatchException e) {
             setCustomErrorResponse(response, ResponseCodeEnum.PASSWORD_INCORRECT);
+            return null;
+        } catch (DeletedException e) {
+            setCustomErrorResponse(response, ResponseCodeEnum.USER_DELETED);
+            return null;
+        } catch (SuspendedException e) {
+            setCustomErrorResponse(response, ResponseCodeEnum.USER_SUSPENDED);
+            return null;
+        } catch (VerificationException e) {
+            setCustomErrorResponse(response, ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
             return null;
         } catch (IOException e) {
             // 요청 본문 읽기 실패 시 에러 응답 설정

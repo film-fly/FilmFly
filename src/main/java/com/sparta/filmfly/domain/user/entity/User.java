@@ -2,9 +2,7 @@ package com.sparta.filmfly.domain.user.entity;
 
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
-import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
-import com.sparta.filmfly.global.exception.custom.detail.InformationMismatchException;
-import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
+import com.sparta.filmfly.global.exception.custom.detail.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -79,11 +77,11 @@ public class User extends TimeStampEntity {
      */
     public void validateUserStatus() {
         if (this.userStatus == UserStatusEnum.DELETED) {
-            throw new AccessDeniedException(ResponseCodeEnum.USER_DELETED);
+            throw new DeletedException(ResponseCodeEnum.USER_DELETED);
         } else if (this.userStatus == UserStatusEnum.SUSPENDED) {
-            throw new AccessDeniedException(ResponseCodeEnum.USER_SUSPENDED);
+            throw new SuspendedException(ResponseCodeEnum.USER_SUSPENDED);
         } else if (this.userStatus == UserStatusEnum.UNVERIFIED) {
-            throw new AccessDeniedException(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
+            throw new VerificationException(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
         }
     }
 

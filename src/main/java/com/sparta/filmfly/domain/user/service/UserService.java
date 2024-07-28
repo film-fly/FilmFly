@@ -186,6 +186,7 @@ public class UserService {
                 .userStatus(user.getUserStatus())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
+                .deletedAt(user.getDeletedAt())
                 .build();
     }
 
@@ -202,6 +203,7 @@ public class UserService {
                 .map(user -> UserResponseDto.builder()
                         .id(user.getId())
                         .username(user.getUsername())
+                        .deletedAt(user.getDeletedAt())
                         .build())
                 .collect(Collectors.toList());
 
