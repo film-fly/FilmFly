@@ -55,6 +55,11 @@
   height: 52px;
 }
 
+.img-profile-big-size {
+  width: 140px;
+  height: 140px;
+}
+
 .collection-form .collection-text-box {
   flex-grow: 1;
   display: flex;
