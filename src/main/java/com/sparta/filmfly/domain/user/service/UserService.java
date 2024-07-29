@@ -171,9 +171,7 @@ public class UserService {
      * 유저 상세 조회 (관리자 기능)
      */
     @Transactional(readOnly = true)
-    public UserResponseDto getUserDetail(UserSearchRequestDto userSearchRequestDto, User currentUser) {
-        currentUser.validateAdminRole();
-
+    public UserResponseDto getUserDetail(UserSearchRequestDto userSearchRequestDto) {
         User user = userRepository.findByUsernameOrElseThrow(userSearchRequestDto.getUsername());
         return UserResponseDto.builder()
                 .id(user.getId())
@@ -194,9 +192,7 @@ public class UserService {
      * 상태별 유저 조회
      */
     @Transactional(readOnly = true)
-    public UserStatusSearchResponseDto getUsersByStatus(UserStatusEnum status, User currentUser) {
-        currentUser.validateAdminRole();
-
+    public UserStatusSearchResponseDto getUsersByStatus(UserStatusEnum status) {
         List<User> users = userRepository.findAllByUserStatus(status);
 
         List<UserResponseDto> userResponseDtos = users.stream()
@@ -217,9 +213,7 @@ public class UserService {
      * 유저 정지 시키기
      */
     @Transactional
-    public UserResponseDto suspendUser(Long userId, User currentUser) {
-        currentUser.validateAdminRole();
-
+    public UserResponseDto suspendUser(Long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
 
         if (user.getUserRole() != UserRoleEnum.ROLE_USER) {
@@ -238,14 +232,19 @@ public class UserService {
                 .build();
     }
 
+
+
     /**
      * 유저 활성화 상태로 변경
      */
     @Transactional
     public UserResponseDto activateUser(Long userId, User currentUser) {
-        currentUser.validateAdminRole();
-
         User user = userRepository.findByIdOrElseThrow(userId);
+
+        // 어드민이거나 본인 계정(탈퇴 상태인) 경우에만 활성화 가능
+        if (currentUser.getUserRole() != UserRoleEnum.ROLE_ADMIN && (!currentUser.getId().equals(userId) || currentUser.getUserStatus() != UserStatusEnum.DELETED)) {
+            throw new AccessDeniedException(ResponseCodeEnum.ACCESS_DENIED);
+        }
 
         user.updateVerified();
         userRepository.save(user);

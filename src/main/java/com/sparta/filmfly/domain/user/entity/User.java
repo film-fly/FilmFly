@@ -73,26 +73,14 @@ public class User extends TimeStampEntity {
     }
 
     /**
-     * 사용자 상태 검증
-     */
-    public void validateUserStatus() {
-        if (this.userStatus == UserStatusEnum.DELETED) {
-            throw new DeletedException(ResponseCodeEnum.USER_DELETED);
-        } else if (this.userStatus == UserStatusEnum.SUSPENDED) {
-            throw new SuspendedException(ResponseCodeEnum.USER_SUSPENDED);
-        } else if (this.userStatus == UserStatusEnum.UNVERIFIED) {
-            throw new VerificationException(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
-        }
-    }
-
-    /**
-     * 삭제 상태 검증
+     * 탈퇴 상태 검증
      */
     public void validateDeletedStatus() {
         if (this.userStatus == UserStatusEnum.DELETED) {
             throw new DeletedException(ResponseCodeEnum.USER_DELETED);
         }
     }
+
 
     /**
      * 비밀번호 검증
