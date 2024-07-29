@@ -21,6 +21,15 @@
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .movie-actor div {
+      width: 70px;
+    }
+    .movie-actor-name {
+      word-break: break-all;
+      width: 70px;
+    }
+  </style>
 </head>
 <body>
 <div class="container">
@@ -28,6 +37,9 @@
   <header id="common-header"></header>
 
   <div class="d-flex flex-column">
+    <button type="button" class="btn btn-primary mb-3" onclick="location.href='./create-review.html'">
+      리뷰 작성하기
+    </button>
     <div id="movie-box">
     </div>
     <hr>
@@ -46,8 +58,24 @@
       </button>
     </div>
     <hr>
-    <div class="mt-4 mb-4">
-      줄거리
+    <div class="my-4">
+      <div class="mb-4">
+        줄거리
+        <div class="movie-description"></div>
+      </div>
+      <div>
+        출연진
+        <div class="movie-actor d-flex overflow-auto gap-3 pb-1">
+          <div>
+            <img src="../images/profileImg.png" class="img-actor-size" alt="영화배우사진">
+            <p class="movie-actor-name">${movie.actor}</p>
+          </div>
+          <div>
+            <img src="../images/profileImg.png" class="img-actor-size" alt="영화배우사진">
+            <p class="movie-actor-name">${movie.actor}</p>
+          </div>
+        </div>
+      </div>
     </div>
     <hr>
     <div id="review-box" class="list-group list-group-flush mb-5">
@@ -55,12 +83,12 @@
   </div>
 </div>
 
-<div class="modal fade" id="addCollection" tabindex="-1" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
+<!-- 보관함 모달 -->
+<div class="modal fade" id="addCollection" tabindex="-1" aria-labelledby="collectionModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">보관함 추가</h1>
+        <h1 class="modal-title fs-5" id="collectionModalLabel">보관함 추가</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -74,6 +102,26 @@
     </div>
   </div>
 </div>
+
+<!-- 신고, 차단 모달 -->
+<div class="modal fade" id="blockReportModal" tabindex="-1" aria-labelledby="blockReportModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="blockReportModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="inputBlockReport" class="mb-2">메모</label>
+        <textarea id="inputBlockReport" style="width: 100%;height: 200px;"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btnBlockReport">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   const initData = {
     "movieId": 1,
@@ -152,20 +200,30 @@
               <img class="img-profile-size" src="${review.profileImg}" alt="프로필사진">
               <div>${review.nickname}</div>
               <div>
-                <i class="fa-solid fa-gear fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
-                <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${review.userId}" data-content-id="${review.id}" data-content-type="REVIEW">
-                  <li class="dropdown-item block-user">차단</li>
-                  <li class="dropdown-item report-user">신고</li>
-                </ul>
-              </div>
-              <div>
               $.....{review.createdAt}
               </div>
+              <i class="fa-solid fa-star">${review.rating}</i>
             </div>
           </div>
-          <div class="d-flex gap-3">
-            <i class="fa-solid fa-star align-content-center">${review.rating}</i>
+          <div class="d-flex align-items-center gap-3">
+            <div class="dropstart">
+              <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
+              <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${review.userId}" data-content-id="${review.id}" data-content-type="REVIEW">
+                <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
+                <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
+              </ul>
+            </div>
             `;
+    const urlParams = new URL(location.href).searchParams;
+    const movieId = urlParams.get('movie');
+    reviewHtml += `
+          </div>
+        </div>
+        <a href="./review-detail.html?movie=${movieId}&review=${review.id}">
+          ${review.title}
+        </a>
+        <div class="mt-3">`;
+
     if (review.goodId) {
       reviewHtml += `
             <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>
@@ -184,15 +242,7 @@
             <button class="btnReaction btn btn-outline-primary" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>
     `;
     }
-    const urlParams = new URL(location.href).searchParams;
-    const movieId = urlParams.get('movie');
-    reviewHtml += `
-          </div>
-        </div>
-        <a href="./review-detail.html?movie=${movieId}&review=${review.id}">
-          ${review.title}
-        </a>
-      </div>
+      reviewHtml += `</div></div>
     `;
 
     if (review.isBlock) {
@@ -312,6 +362,17 @@
     //   alert("보관함 추가 실패");
     // });
   });
+
+  $(document).on('click', '.block-user', function () {
+    $('#blockReportModalLabel').text('차단하기');
+    $('#btnBlockReport').text('차단하기');
+  });
+
+  $(document).on('click', '.report-user', function () {
+    $('#blockReportModalLabel').text('신고하기');
+    $('#btnBlockReport').text('신고하기');
+  });
+
 </script>
 <script src="../js/reaction.js"></script>
 </body>
