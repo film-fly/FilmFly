@@ -12,6 +12,7 @@ import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +51,20 @@ public class CollectionService {
         return collectionList.stream().map(
                 CollectionResponseDto::fromEntity
         ).toList();
+    }
+
+    /**
+    * 보관함 내용 수정
+    */
+    @Transactional
+    public CollectionResponseDto updateCollection(User user, Long collectionId, CollectionRequestDto collectionRequestDto) {
+        // 보관함 존재 확인
+        Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
+        // 보관함 주인 확인
+        collection.validateOwner(user);
+        // 데이터 수정
+        collection.update(collectionRequestDto.getName(), collectionRequestDto.getContent());
+        return CollectionResponseDto.fromEntity(collection);
     }
 
     /**

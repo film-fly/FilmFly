@@ -47,4 +47,9 @@ public class Collection extends TimeStampEntity {
         if(!Objects.equals(this.user.getId(), requestUser.getId()))
             throw new AccessDeniedException(ResponseCodeEnum.COLLECTION_NOT_OWNER);
     }
+
+    public void update(String name, String content) {
+        this.name = name;
+        this.content = content;
+    }
 }
