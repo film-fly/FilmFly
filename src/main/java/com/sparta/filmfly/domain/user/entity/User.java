@@ -31,7 +31,7 @@ public class User extends TimeStampEntity {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String nickname;
 
     @Enumerated(EnumType.STRING)

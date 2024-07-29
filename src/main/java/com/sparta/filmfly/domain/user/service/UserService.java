@@ -45,6 +45,10 @@ public class UserService {
             throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
         }
 
+        if (userRepository.findByNickname(requestDto.getNickname()).isPresent()) {
+            throw new DuplicateException(ResponseCodeEnum.NICKNAME_ALREADY_EXISTS);
+        }
+
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
         UserStatusEnum userStatus = (requestDto.getAdminPassword() != null && !requestDto.getAdminPassword().isEmpty() && managerPassword.equals(requestDto.getAdminPassword()))
@@ -109,6 +113,11 @@ public class UserService {
      */
     @Transactional
     public UserResponseDto updateProfile(User user, UserProfileUpdateRequestDto requestDto, MultipartFile profilePicture) {
+        // 닉네임 중복 확인
+        if (!user.getNickname().equals(requestDto.getNickname())) {
+            checkNicknameDuplication(requestDto.getNickname());
+        }
+
         String pictureUrl = user.getPictureUrl();
 
         if (profilePicture != null && !profilePicture.isEmpty()) {
@@ -130,6 +139,16 @@ public class UserService {
                 .pictureUrl(user.getPictureUrl())
                 .updatedAt(user.getUpdatedAt())
                 .build();
+    }
+
+    /**
+     * 닉네임 중복 조회
+     */
+    @Transactional(readOnly = true)
+    public void checkNicknameDuplication(String nickname) {
+        if (userRepository.findByNickname(nickname).isPresent()) {
+            throw new DuplicateException(ResponseCodeEnum.NICKNAME_ALREADY_EXISTS);
+        }
     }
 
     /**
