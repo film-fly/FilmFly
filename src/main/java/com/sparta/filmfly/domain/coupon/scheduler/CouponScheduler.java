@@ -15,7 +15,7 @@ public class CouponScheduler {
 
     private CouponRepository couponRepository;
 
-    // 매일 1시에 쿠폰 만료 점검
+    // 매일 오전 1시에 쿠폰 만료 점검
     @Scheduled(cron = "0 0 1 * * *")
     @Transactional
     public void updateCoupon() {
