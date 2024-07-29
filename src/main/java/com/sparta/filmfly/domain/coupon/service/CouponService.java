@@ -29,6 +29,7 @@ public class CouponService {
     private static final int COUPON_CODE_LENGTH = 8;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private final Random random = new SecureRandom();
+
     /**
      * 쿠폰 발급
      */
@@ -71,7 +72,7 @@ public class CouponService {
 
         return list;
     }
-    
+
     /**
      * 쿠폰 조회
      */
@@ -106,7 +107,7 @@ public class CouponService {
                 () -> new NotFoundException(ResponseCodeEnum.COUPON_EXHAUSTED)
         );
 
-        coupon.update();
+        coupon.updateStatusFalse();
 
         UserCoupon userCoupon = UserCoupon.builder()
                 .user(user)
@@ -118,7 +119,9 @@ public class CouponService {
         return CouponResponseDto.fromEntity(coupon);
     }
 
-    // 쿠폰 번호 랜덤 배정하는 메서드
+    /**
+     * 쿠폰 번호 랜덤 배정하는 메서드
+     */
     public String generateRandomCouponCode() {
         StringBuilder code = new StringBuilder(COUPON_CODE_LENGTH);
         for (int i = 0; i < COUPON_CODE_LENGTH; i++) {

@@ -3,6 +3,8 @@ package com.sparta.filmfly.global.common;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
@@ -20,6 +22,14 @@ public abstract class TimeStampEntity {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime deletedAt;
+
+    public void setDeletedAt() {
+        this.deletedAt = LocalDateTime.now();
+    }
 
 
 }
