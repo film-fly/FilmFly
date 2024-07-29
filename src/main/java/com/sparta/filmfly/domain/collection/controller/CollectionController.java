@@ -35,6 +35,29 @@ public class CollectionController {
     }
 
     /**
+     * 보관함 목록 조회
+     */
+    @GetMapping
+    public ResponseEntity<DataResponseDto<List<CollectionResponseDto>>> getAllCollection(
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        List<CollectionResponseDto> collectionResponseDtoList = collectionService.getAllCollection(userDetails.getUser());
+        return ResponseUtils.success(collectionResponseDtoList);
+    }
+
+    /**
+     * 보관함 상세 조회 _ 영화 목록 조회
+     */
+    @GetMapping("/{collectionId}/detail")
+    public ResponseEntity<DataResponseDto<MovieCollectionResponseDto>> getMovieCollection(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long collectionId
+    ) {
+        MovieCollectionResponseDto movieCollectionResponseDto = collectionService.getMovieCollection(userDetails.getUser(), collectionId);
+        return ResponseUtils.success(movieCollectionResponseDto);
+    }
+
+    /**
      * 보관함 수정
      */
     @PatchMapping("/{collectionId}")
@@ -47,24 +70,14 @@ public class CollectionController {
         return ResponseUtils.success(collectionResponseDto);
     }
 
-    /**
-     * 보관함 목록 조회
-     */
-    @GetMapping
-    public ResponseEntity<DataResponseDto<List<CollectionResponseDto>>> getAllCollection(
-            @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        List<CollectionResponseDto> collectionResponseDtoList = collectionService.getAllCollection(userDetails.getUser());
-        return ResponseUtils.success(collectionResponseDtoList);
-    }
 
     /**
      * 보관함 삭제
      */
-    @DeleteMapping
+    @DeleteMapping("/{collectionId}")
     public ResponseEntity<MessageResponseDto> deleteCollection(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam Long collectionId
+            @PathVariable Long collectionId
     ) {
         collectionService.deleteCollection(userDetails.getUser(), collectionId);
         return ResponseUtils.success();
@@ -73,35 +86,24 @@ public class CollectionController {
     /**
      * 보관함에 영화 등록
      */
-    @PostMapping("/addMovie")
+    @PostMapping("/{collectionId}/addMovie/{movieId}")
     public ResponseEntity<MessageResponseDto> createMovieCollection(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody MovieCollectionRequestDto movieCollectionRequestDto
+            @PathVariable Long collectionId,
+            @PathVariable Long movieId
     ) {
-        collectionService.createMovieCollection(userDetails.getUser(), movieCollectionRequestDto);
+        collectionService.createMovieCollection(userDetails.getUser(), collectionId, movieId);
         return ResponseUtils.success();
     }
 
     /**
-     * 보관함 상세 조회 _ 영화 목록 조회
+     * 보관함에서 영화 삭제
      */
-    @GetMapping("/detail")
-    public ResponseEntity<DataResponseDto<MovieCollectionResponseDto>> getMovieCollection(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam Long collectionId
-    ) {
-        MovieCollectionResponseDto movieCollectionResponseDto = collectionService.getMovieCollection(userDetails.getUser(), collectionId);
-        return ResponseUtils.success(movieCollectionResponseDto);
-    }
-
-    /**
-     * 보관함 상세 조회 _ 영화 목록 조회
-     */
-    @DeleteMapping("/")
+    @DeleteMapping("/{collectionId}/deleteMovie/{movieId}")
     public ResponseEntity<MessageResponseDto> deleteMovieCollection(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam Long collectionId,
-            @RequestParam Long movieId
+            @PathVariable Long collectionId,
+            @PathVariable Long movieId
     ) {
         collectionService.deleteMovieCollection(userDetails.getUser(), collectionId, movieId);
         return ResponseUtils.success();

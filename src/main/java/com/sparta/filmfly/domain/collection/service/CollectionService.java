@@ -79,15 +79,15 @@ public class CollectionService {
     /**
      * 보관함에 영화 등록
      */
-    public void createMovieCollection(User user, MovieCollectionRequestDto movieCollectionRequestDto) {
+    public void createMovieCollection(User user, Long collectionId, Long movieId) {
         // 컬랙션 유무확인
-        Collection collection = collectionRepository.findByIdOrElseThrow(movieCollectionRequestDto.getCollectionId());
+        Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
         // 보관함 주인 확인
         collection.validateOwner(user);
         // 영화 유무확인
-        Movie movie = movieRepository.findByIdOrElseThrow(movieCollectionRequestDto.getMovieId());
+        Movie movie = movieRepository.findByIdOrElseThrow(movieId);
         // 영화 보관함 사전등록 여부 확인
-        movieCollectionRepository.existsByCollection_idAndMovie_idOrElseThrow(movieCollectionRequestDto.getCollectionId(), movie.getId());
+        movieCollectionRepository.existsByCollection_idAndMovie_idOrElseThrow(collectionId, movie.getId());
         // 객체 생성 및 저장
         MovieCollection movieCollection = MovieCollection.builder()
                 .collection(collection)
