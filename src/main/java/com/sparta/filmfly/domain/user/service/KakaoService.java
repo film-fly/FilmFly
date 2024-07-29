@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.security.SecureRandom;
 
 @Slf4j(topic = "KAKAO Login")
 @Service
@@ -120,16 +121,15 @@ public class KakaoService {
 
         JsonNode jsonNode = objectMapper.readTree(response.getBody());
         Long id = jsonNode.get("id").asLong();
-        String nickname = jsonNode.get("properties").get("nickname").asText();
+        String email = jsonNode.get("kakao_account").get("email").asText();
         String pictureUrl = null;
         if (jsonNode.get("properties").get("profile_image") != null) {
             pictureUrl = jsonNode.get("properties").get("profile_image").asText();
         }
-        String email = jsonNode.get("kakao_account").get("email").asText();
 
         return UserKakaoInfoDto.builder()
                 .id(id)
-                .nickname(nickname)
+                .nickname(generateRandomNickname(email))
                 .pictureUrl(pictureUrl)
                 .email(email)
                 .build();
@@ -193,5 +193,26 @@ public class KakaoService {
         Cookie cookie = new Cookie(name, value.replace(" ", "+"));
         cookie.setPath("/");
         response.addCookie(cookie);
+    }
+
+    /**
+     * 랜덤 닉네임 생성
+     */
+    private String generateRandomNickname(String email) {
+        String randomString = generateRandomString(8);
+        return email.split("@")[0] + "_" + randomString;
+    }
+
+    /**
+     * 랜덤 문자열 생성
+     */
+    private String generateRandomString(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(characters.charAt(random.nextInt(characters.length())));
+        }
+        return sb.toString();
     }
 }
