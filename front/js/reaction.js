@@ -89,6 +89,8 @@ $(document).ready(function() {
   // 차단 버튼 클릭 이벤트 처리
   $(document).on('click', '.block-user', function(e) {
     e.preventDefault();
+    $('#blockReportModal').removeAttr('data-block');
+    $('#blockReportModal').removeAttr('data-report');
     selectedUserId = $(this).closest('.dropdown-menu').attr('data-user-id');
 
     $('#inputBlockReport').val('');
@@ -102,6 +104,8 @@ $(document).ready(function() {
   // 신고 버튼 클릭 이벤트 처리
   $(document).on('click', '.report-user', function(e) {
     e.preventDefault();
+    $('#blockReportModal').removeAttr('data-block');
+    $('#blockReportModal').removeAttr('data-report');
     selectedUserId = $(this).closest('.dropdown-menu').attr('data-user-id');
     selectedContentId = $(this).closest('.dropdown-menu').attr('data-content-id');
     selectedContentType = $(this).closest('.dropdown-menu').attr('data-content-type');
