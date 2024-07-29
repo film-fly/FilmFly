@@ -25,10 +25,10 @@ public class FavoriteController {
     /**
     * 찜 등록하기
     */
-    @PostMapping
+    @PostMapping("/{movieId}")
     public ResponseEntity<MessageResponseDto> createFavorite(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam Long movieId
+            @PathVariable Long movieId
     ) {
         log.info("create favorite");
         favoriteService.createFavorite(userDetails.getUser(), movieId);
@@ -50,10 +50,10 @@ public class FavoriteController {
     /**
     * 찜 취소하기
     */
-    @DeleteMapping
+    @DeleteMapping("/{movieId}")
     public ResponseEntity<MessageResponseDto> deleteFavorite(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam Long movieId
+            @PathVariable Long movieId
     ) {
         log.info("delete favorite");
         favoriteService.deleteFavorite(userDetails.getUser(), movieId);
