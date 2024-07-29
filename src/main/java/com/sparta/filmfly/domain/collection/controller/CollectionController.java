@@ -35,6 +35,19 @@ public class CollectionController {
     }
 
     /**
+     * 보관함 수정
+     */
+    @PatchMapping("/{collectionId}")
+    public ResponseEntity<DataResponseDto<CollectionResponseDto>> updateCollection(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long collectionId,
+            @Valid @RequestBody CollectionRequestDto collectionRequestDto
+    ) {
+        CollectionResponseDto collectionResponseDto = collectionService.updateCollection(userDetails.getUser(), collectionId, collectionRequestDto);
+        return ResponseUtils.success(collectionResponseDto);
+    }
+
+    /**
      * 보관함 목록 조회
      */
     @GetMapping
