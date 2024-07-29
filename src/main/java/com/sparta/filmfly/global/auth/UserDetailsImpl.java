@@ -12,6 +12,10 @@ import java.util.Collection;
 @Getter
 public class UserDetailsImpl implements UserDetails {
 
+    /**
+     * -- GETTER --
+     *  사용자 객체 반환
+     */
     private final User user;
 
     public UserDetailsImpl(User user) {
@@ -23,8 +27,7 @@ public class UserDetailsImpl implements UserDetails {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String authority = "default";
-
+        String authority = user.getUserRole().name();
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(simpleGrantedAuthority);    // 권한목록에 권한 추가
@@ -79,4 +82,5 @@ public class UserDetailsImpl implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

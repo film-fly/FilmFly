@@ -19,8 +19,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
 
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/users")
@@ -158,10 +158,9 @@ public class UserController {
      */
     @GetMapping("/search/detail")
     public ResponseEntity<DataResponseDto<UserResponseDto>> getUserDetail(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody UserSearchRequestDto userSearchRequestDto
     ) {
-        UserResponseDto userDetail = userService.getUserDetail(userSearchRequestDto, userDetails.getUser());
+        UserResponseDto userDetail = userService.getUserDetail(userSearchRequestDto);
         return ResponseUtils.success(userDetail);
     }
 
@@ -170,10 +169,9 @@ public class UserController {
      */
     @GetMapping("/search/status")
     public ResponseEntity<DataResponseDto<UserStatusSearchResponseDto>> getUsersByStatus(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody UserStatusSearchRequestDto userStatusRequestDto
     ) {
-        UserStatusSearchResponseDto users = userService.getUsersByStatus(userStatusRequestDto.getStatus(), userDetails.getUser());
+        UserStatusSearchResponseDto users = userService.getUsersByStatus(userStatusRequestDto.getStatus());
         return ResponseUtils.success(users);
     }
 
@@ -182,10 +180,9 @@ public class UserController {
      */
     @PutMapping("/suspend/{userId}")
     public ResponseEntity<DataResponseDto<UserResponseDto>> suspendUser(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long userId
     ) {
-        UserResponseDto userResponseDto = userService.suspendUser(userId, userDetails.getUser());
+        UserResponseDto userResponseDto = userService.suspendUser(userId);
         return ResponseUtils.success(userResponseDto);
     }
 

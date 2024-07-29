@@ -2,23 +2,19 @@ package com.sparta.filmfly.domain.user.entity;
 
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
-import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
-import com.sparta.filmfly.global.exception.custom.detail.InformationMismatchException;
-import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
+import com.sparta.filmfly.global.exception.custom.detail.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLRestriction("deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE user SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 public class User extends TimeStampEntity {
 
@@ -77,17 +73,14 @@ public class User extends TimeStampEntity {
     }
 
     /**
-     * 사용자 상태 검증
+     * 탈퇴 상태 검증
      */
-    public void validateUserStatus() {
+    public void validateDeletedStatus() {
         if (this.userStatus == UserStatusEnum.DELETED) {
-            throw new AccessDeniedException(ResponseCodeEnum.USER_DELETED);
-        } else if (this.userStatus == UserStatusEnum.SUSPENDED) {
-            throw new AccessDeniedException(ResponseCodeEnum.USER_SUSPENDED);
-        } else if (this.userStatus == UserStatusEnum.UNVERIFIED) {
-            throw new AccessDeniedException(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
+            throw new DeletedException(ResponseCodeEnum.USER_DELETED);
         }
     }
+
 
     /**
      * 비밀번호 검증
