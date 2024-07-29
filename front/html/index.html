@@ -19,10 +19,20 @@
   <link rel="stylesheet" href="../css/style.css">
 
   <style>
+    .movie-fixed-size {
+      width: 200px;
+    }
+    .card-img-top {
+      width: 174px;
+      height: 240px;
+    }
     .card-fixed-size {
       width: 250px;
-      height: 100px;
       overflow: hidden;
+    }
+    .card-fixed-size .card-body {
+      width: 250px;
+      height: 108px;
     }
     .card-title {
       white-space: wrap;
@@ -31,15 +41,6 @@
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 4; /* number of lines to show */
-    }
-    .scroll-container {
-      display: flex;
-      overflow-x: auto;
-      white-space: nowrap;
-    }
-    .scroll-container .card {
-      display: inline-block;
-      flex: 0 0 auto;
     }
   </style>
 </head>
@@ -71,14 +72,24 @@
     </button>
   </div>
 
-  <!-- 영화 포스터와 제목 카드 슬라이드 -->
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#searchOptionModal">
+    검색
+  </button>
+
+  <!-- 영화 -->
   <div class="my-4">
-    <h2 class="mb-2">추천 영화</h2>
+    <a href="./movie.html" class="d-flex gap-3 py-2">
+      <span>추천 영화</span>
+      <div>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+    </a>
     <div class="row flex-row flex-nowrap overflow-auto">
 
-      <div class="col-3">
+      <div class="movie-fixed-size">
         <div class="card">
-          <img src="../images/logo.png" class="card-img-top img-big-size" alt="Movie 1">
+          <img src="../images/logo.png" class="card-img-top" alt="...">
           <div class="card-body">
             <h5 class="card-title">${movie.title}</h5>
           </div>
@@ -88,37 +99,104 @@
     </div>
   </div>
 
-  <!-- 게시물 제목과 내용 카드 슬라이드 -->
+  <!-- 게시물 -->
   <div class="my-4">
-    <h2 class="mb-2">최신 게시물</h2>
-    <div class="scroll-container">
+    <a href="./board.html" class="d-flex gap-3 py-2">
+    <span class="mb-2">최신 게시물</span>
+      <div>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+    </a>
+    <div class="row flex-row flex-nowrap overflow-auto">
 
-      <div class="card card-fixed-size me-2">
+      <div class="card-fixed-size">
+      <div class="card">
         <div class="card-body">
           <h5 class="card-title fw-bold">${board.title}</h5>
         </div>
       </div>
-      <div class="card card-fixed-size me-2">
-        <div class="card-body">
-          <h5 class="card-title fw-bold">${board.title}</h5>
-        </div>
-      </div>
-      <div class="card card-fixed-size me-2">
-        <div class="card-body">
-          <h5 class="card-title fw-bold">${board.title}</h5>
-        </div>
-      </div>
-      <div class="card card-fixed-size me-2">
-        <div class="card-body">
-          <h5 class="card-title fw-bold">${board.title}</h5>
-        </div>
-      </div>
-      <div class="card card-fixed-size me-2">
-        <div class="card-body">
-          <h5 class="card-title fw-bold">${board.title}</h5>
-        </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- 리뷰 -->
+  <div class="my-4">
+    <a href="./review-recently.html" class="d-flex gap-3 py-2">
+    <span class="mb-2">최신 리뷰</span>
+      <div>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+    </a>
+    <div class="row flex-row flex-nowrap overflow-auto">
+
+      <div class="card-fixed-size">
+        <div class="card">
+          <div class="card-body">
+            <p class="card-text">${board.title}</p>
+            <h5 class="card-title fw-bold">${review.title}</h5>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="searchOptionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header gap-2">
+        <div class="d-flex input-group align-items-center">
+          <label for="inputMovieSearch">
+            <span class="input-group-text" id="basic-addon1">
+              <i class="fa-solid fa-magnifying-glass fs-4"></i>
+            </span>
+          </label>
+          <input type="text" id="inputMovieSearch" class="form-control" placeholder="영화제목, 영화배우 검색">
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <p>장르</p>
+          <div class="d-flex flex-wrap justify-content-between mt-1">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined1" autocomplete="off" name="1">
+            <label class="btn btn-outline-primary" for="btn-check-outlined1">장르 1</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined2" autocomplete="off" name="2">
+            <label class="btn btn-outline-primary" for="btn-check-outlined2">장르 2</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined3" autocomplete="off" name="3">
+            <label class="btn btn-outline-primary" for="btn-check-outlined3">장르 3</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined4" autocomplete="off" name="4">
+            <label class="btn btn-outline-primary" for="btn-check-outlined4">장르 4</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined5" autocomplete="off" name="5">
+            <label class="btn btn-outline-primary" for="btn-check-outlined5">장르 5</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined6" autocomplete="off" name="6">
+            <label class="btn btn-outline-primary" for="btn-check-outlined6">장르 6</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined7" autocomplete="off" name="7">
+            <label class="btn btn-outline-primary" for="btn-check-outlined7">장르 7</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined8" autocomplete="off" name="8">
+            <label class="btn btn-outline-primary invisible" for="btn-check-outlined8">장르 8</label>
+          </div>
+        </div>
+        <div>
+          <p>옵션 아무거나</p>
+          <div class="d-flex flex-wrap justify-content-between mt-1">
+            <input type="checkbox" class="btn-check" id="searchOption1" autocomplete="off" name="9">
+            <label class="btn btn-outline-primary" for="searchOption1">옵션 1</label>
+            <input type="checkbox" class="btn-check" id="searchOption2" autocomplete="off" name="10">
+            <label class="btn btn-outline-primary" for="searchOption2">옵션 2</label>
+            <input type="checkbox" class="btn-check" id="searchOption3" autocomplete="off" name="11">
+            <label class="btn btn-outline-primary" for="searchOption3">옵션 3</label>
+            <input type="checkbox" class="btn-check" id="searchOption4" autocomplete="off" name="12">
+            <label class="btn btn-outline-primary" for="searchOption4">옵션 4</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btnMovieSearch" type="button" class="btn btn-primary">적용</button>
+      </div>
     </div>
   </div>
 </div>
