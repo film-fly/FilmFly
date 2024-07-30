@@ -22,8 +22,8 @@ public class OfficeBoardRequestDto {
     public OfficeBoard toEntity(User user, OfficeBoardRequestDto requestDto) {
         return OfficeBoard.builder()
                 .user(user)
-                .title(title)
-                .content(content)
+                .title(requestDto.getTitle())
+                .content(requestDto.content)
                 .build();
     }
 

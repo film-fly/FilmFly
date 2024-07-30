@@ -40,6 +40,9 @@ public class OfficeBoard extends TimeStampEntity {
     private User user;
 
     @Column(nullable = false)
+    String nickName;
+
+    @Column(nullable = false)
     String title;
 
     @Column(nullable = false)
@@ -55,6 +58,7 @@ public class OfficeBoard extends TimeStampEntity {
     @Builder
     public OfficeBoard(User user, String title, String content) {
         this.user = user;
+        this.nickName = user.getNickname();
         this.title = title;
         this.content = content;
         this.hits = 0L;
