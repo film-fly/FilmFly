@@ -42,10 +42,24 @@
     </div>
   </div>
 
+  <div class="card w-100 my-5">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        <div id="btnActiveUser" class="d-flex justify-content-between" style="padding: 12px 0; cursor:pointer;">
+          <span style="font-size: 20px; color: red">탈퇴한 계정 복구하기</span>
+          <div>
+            <!--            <span>12</span>-->
+            <i class="fa-solid fa-chevron-right"></i>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
   <div class="card w-100 mb-3">
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
-        <a href="mypage-collection.html">
+        <a href="./mypage-collection.html">
           <span>영화 보관함</span>
           <div>
 <!--            <span>12</span>-->
@@ -88,7 +102,7 @@
   <div class="card w-100 mb-3">
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
-        <a href="mypage-favorite-movie.html">
+        <a href="./mypage-favorite-movie.html">
           <span>찜한 영화 목록</span>
           <div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -96,7 +110,7 @@
         </a>
       </li>
       <li class="list-group-item">
-        <a href="mypage-good.html">
+        <a href="./mypage-good.html">
           <span>좋아요</span>
           <div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -104,7 +118,7 @@
         </a>
       </li>
       <li class="list-group-item">
-        <a href="mypage-bad.html">
+        <a href="./mypage-bad.html">
           <span>싫어요</span>
           <div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -117,7 +131,7 @@
   <div class="card w-100 mb-3">
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
-        <a href="mypage-coupon.html">
+        <a href="./mypage-coupon.html">
           <span>받은 쿠폰 확인</span>
           <div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -139,6 +153,29 @@
       </li>
     </ul>
   </div>
+
+  <div class="card w-100 mb-3">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        <div id="btnWithdraw" class="d-flex justify-content-between" style="padding: 12px 0; cursor:pointer;">
+          <span>회원탈퇴</span>
+          <div>
+            <i class="fa-solid fa-chevron-right"></i>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
 </div>
+
+<script>
+  $('#btnWithdraw').on('click', function () {
+    alert('탈퇴 하시겠습니까?');
+  });
+
+  $('#btnActiveUser').on('click', function () {
+    alert('복구 하시겠습니까?');
+  });
+</script>
 </body>
 </html>
