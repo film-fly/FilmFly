@@ -60,6 +60,7 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests(authorizeHttpRequests ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/email/verify", "/email/*/resend").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/*/profile").permitAll()
                         .anyRequest().authenticated()

@@ -1,0 +1,21 @@
+### Coupon 생성(관리자 전용)
+POST http://localhost:8080/coupon
+Content-Type: application/json
+
+{
+  "quantity" : 10,
+  "description" : "테스트 쿠폰 발급",
+  "discountRate" : 10.0
+}
+
+### Coupon 전체 조회
+GET http://localhost:8080/coupon
+
+### Coupon 단일 조회
+GET http://localhost:8080/coupon/200
+
+### Coupon 삭제
+DELETE http://localhost:8080/coupon/200
+
+### 유저에게 Coupon 발급
+POST http://localhost:8080/coupon/event

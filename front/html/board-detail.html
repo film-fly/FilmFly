@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>FilmFly</title>
+  <!-- 부트 스트랩 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous">
+  <!-- 부트스트랩 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+          crossorigin="anonymous"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- 공통 헤더 -->
+  <script src="../js/common.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="container">
+  <!-- 공통 헤더 -->
+  <header id="common-header"></header>
+
+  <div id="board-box" class="d-flex flex-column gap-3">
+    <div class="d-flex align-items-center gap-3">
+      <div class="profile-box d-flex align-items-center gap-2">
+        <div>
+          <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">
+        </div>
+        <div>
+          ${board.nickname}
+        </div>
+      </div>
+      <div>
+        ${board.createdAt}
+      </div>
+      <div>
+        ${board.hits}
+      </div>
+      <div class="d-flex justify-content-end flex-grow-1">
+        <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
+        <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${board.userId}" data-content-id="${board.boardId}" data-content-type="BOARD">
+          <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
+          <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="mb-3">
+        ${board.title}
+      </div>
+      <div class="mb-3">
+        ${board.content}
+      </div>
+    </div>
+    <div class="d-flex justify-content-between mb-3">
+      <div>
+        <button class="btnReaction btn btn-primary" data-content-id="${board.id}" data-type="BOARD" data-good="true">
+          <i class="fa-regular fa-face-smile">좋아요</i>
+        </button>
+        <!--      <button class="btnReaction btn btn-outline-primary" data-type="BOARD" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>-->
+        <button class="btnReaction btn btn-primary" data-content-id="${board.id}" data-type="BOARD" data-bad="true">
+          <i class="fa-regular fa-face-angry">싫어요</i>
+        </button>
+<!--        <button class="btnReaction btn btn-outline-primary" data-type="BOARD" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>-->
+      </div>
+      <div>
+        <button class="btn btn-primary" onclick="location.href='./create-board.html?edit=1'">수정</button>
+        <button class="btn btn-primary">삭제</button>
+      </div>
+    </div>
+  </div>
+  <div id="comment-box">
+    <ul class="list-group list-group-flush mb-5">
+      <li class="list-group-item" data-content-id="${comment.commentId}">
+        <div class="profile-box d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div>
+              <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">
+            </div>
+            <div>
+              ${comment.nickname}
+            </div>
+            <div>
+              ${comment.createdAt}
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="d-flex justify-content-end flex-grow-1">
+              <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
+              <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${comment.userId}" data-content-id="${comment.commentId}" data-content-type="COMMENT">
+                <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
+                <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
+              </ul>
+            </div>
+            <div>
+              <button class="btn btn-primary edit-comment">수정</button>
+              <button class="btn btn-primary delete-comment">삭제</button>
+              <button class="btn btn-primary save-comment" style="display:none;">저장</button>
+              <button class="btn btn-primary cancel-edit" style="display:none;">취소</button>
+            </div>
+          </div>
+        </div>
+        <div class="comment-content mb-3">
+          ${comment.content}
+        </div>
+        <div>
+          <button class="btnReaction btn btn-primary" data-content-id="${comment.commentId}" data-type="COMMENT" data-good="true">
+            <i class="fa-regular fa-face-smile">좋아요</i>
+          </button>
+          <button class="btnReaction btn btn-primary" data-content-id="${comment.commentId}" data-type="COMMENT" data-bad="true">
+            <i class="fa-regular fa-face-angry">싫어요</i>
+          </button>
+        </div>
+      </li>
+    </ul>
+
+
+    <div class="mb-3">
+      <label for="inputComment" class="form-label">댓글 입력</label>
+      <textarea class="form-control mb-3" id="inputComment" rows="3"></textarea>
+      <button id="btnSaveComment" class="btn btn-primary">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 신고, 차단 모달 -->
+<div class="modal fade" id="blockReportModal" tabindex="-1" aria-labelledby="blockReportModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="blockReportModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="inputBlockReport" class="mb-2">메모</label>
+        <textarea id="inputBlockReport" style="width: 100%;height: 200px;"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btnBlockReport">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    let originalContent = '';
+
+    // 수정 버튼 클릭 이벤트 핸들러
+    $(document).on('click', '.edit-comment', function () {
+      let commentBox = $(this).closest('.list-group-item');
+      originalContent = commentBox.find('.comment-content').text().trim();
+      commentBox.find('.comment-content').html(`<textarea class="form-control edit-textarea" rows="3">${originalContent}</textarea>`);
+      commentBox.find('.edit-comment').hide();
+      commentBox.find('.delete-comment').hide();
+      commentBox.find('.btnReaction').hide();
+      commentBox.find('.save-comment').show();
+      commentBox.find('.cancel-edit').show();
+    });
+
+    // 저장 버튼 클릭 이벤트 핸들러
+    $(document).on('click', '.save-comment', function () {
+      let commentBox = $(this).closest('.list-group-item');
+      let updatedContent = commentBox.find('.edit-textarea').val().trim();
+      let commentId = commentBox.data('content-id');
+
+      $.ajax({
+        type: 'POST',
+        url: '/update-comment', // 실제 서버의 댓글 수정 API URL로 변경
+        data: JSON.stringify({ commentId: commentId, content: updatedContent }),
+        contentType: 'application/json;charset=utf-8'
+      })
+      .done(function (result, status, xhr) {
+        commentBox.find('.comment-content').html(updatedContent);
+        commentBox.find('.edit-comment').show();
+        commentBox.find('.delete-comment').show();
+        commentBox.find('.btnReaction').show();
+        commentBox.find('.save-comment').hide();
+        commentBox.find('.cancel-edit').hide();
+      })
+      .fail(function (xhr, status, er) {
+        alert("댓글 수정 실패");
+      });
+    });
+
+    // 취소 버튼 클릭 이벤트 핸들러
+    $(document).on('click', '.cancel-edit', function () {
+      let commentBox = $(this).closest('.list-group-item');
+      commentBox.find('.comment-content').html(originalContent);
+      commentBox.find('.edit-comment').show();
+      commentBox.find('.delete-comment').show();
+      commentBox.find('.btnReaction').show();
+      commentBox.find('.save-comment').hide();
+      commentBox.find('.cancel-edit').hide();
+    });
+  });
+</script>
+
+
+<script>
+  $('#btnSaveComment').on('click', function () {
+    let content = $('#inputComment').val();
+
+    const data = {
+      content: content
+    };
+
+    // $.ajax({
+    //   type: 'POST',
+    //   url: '',
+    //   data: JSON.stringify(data),
+    //   contentType: "application/json;charset=utf-8"
+    // })
+    // .done(function (result, status, xhr) {
+    //
+    // })
+    // .fail(function (xhr, status, er) {
+    //   alert("댓글 등록 실패");
+    // });
+  });
+</script>
+<script src="../js/reaction.js"></script>
+</body>
+</html>

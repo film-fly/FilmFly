@@ -29,6 +29,19 @@
     <input type="text" id="inputReviewTitle" class="form-control">
     <label for="inputReviewDescription">리뷰 설명</label>
     <textarea id="inputReviewDescription" class="form-control" style="height: 200px;"></textarea>
+    <label for="inputReviewRating">별점</label>
+    <select id="inputReviewRating" class="form-select" aria-label="별점 선택">
+      <option value="0.5">0.5</option>
+      <option value="1">1.0</option>
+      <option value="1.5">1.5</option>
+      <option value="2">2.0</option>
+      <option value="2.5">2.5</option>
+      <option value="3">3.0</option>
+      <option value="3.5">3.5</option>
+      <option value="4">4.0</option>
+      <option value="4.5">4.5</option>
+      <option value="5">5.0</option>
+    </select>
   </div>
   <button id="btnCreateReview" class="btn btn-primary mt-3">저장</button>
 </div>
@@ -55,26 +68,28 @@
   }
 
   $('#btnCreateReview').on('click', function () {
-    const title = $('#inputCollectionTitle').val();
-    const description = $('#inputCollectionDescription').val();
+    const title = $('#inputReviewTitle').val();
+    const description = $('#inputReviewDescription').val();
+    const rating = $('#inputReviewRating').val();
 
     const data = {
       title: title,
-      description: description
+      description: description,
+      rating: rating
     };
 
-    $.ajax({
-      type: 'POST',
-      url: '',
-      data: JSON.stringify(data),
-      contentType: "application/json;charset=utf-8"
-    })
-    .done(function (result, status, xhr) {
-      // location.replace("./");
-    })
-    .fail(function (xhr, status, er) {
-      alert("리뷰 수정 실패");
-    });
+    // $.ajax({
+    //   type: 'POST',
+    //   url: '',
+    //   data: JSON.stringify(data),
+    //   contentType: "application/json;charset=utf-8"
+    // })
+    // .done(function (result, status, xhr) {
+    //   // location.replace("./");
+    // })
+    // .fail(function (xhr, status, er) {
+    //   alert("리뷰 수정 실패");
+    // });
   });
 </script>
 </body>
