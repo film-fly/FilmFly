@@ -36,6 +36,8 @@ public class CouponService {
     @Transactional
     public List<CouponResponseDto> createCoupon(User user, CouponRequestDto requestDto) {
 
+        requestDto.validateExpirationDate();
+
         List<CouponResponseDto> list = new ArrayList<>();
 
         // 임의 객체 쿠폰 만든 후, 관리자 유저 검증
@@ -103,11 +105,12 @@ public class CouponService {
     public CouponResponseDto distributeCoupons(User user) {
 
         // 쿠폰 발급이 더이상 불가능하면 예외처리
-        Coupon coupon = couponRepository.findTopByStatusTrueOrderByCreatedAtAsc().orElseThrow(
+        Coupon coupon = couponRepository.findTopByIssuedFalseOrderByCreatedAtAsc().orElseThrow(
                 () -> new NotFoundException(ResponseCodeEnum.COUPON_EXHAUSTED)
         );
 
-        coupon.updateStatusFalse();
+        // 발급 완료되면 Issued = true
+        coupon.updateIssuedTrue();
 
         UserCoupon userCoupon = UserCoupon.builder()
                 .user(user)

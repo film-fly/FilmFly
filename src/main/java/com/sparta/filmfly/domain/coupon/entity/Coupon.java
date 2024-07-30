@@ -40,6 +40,9 @@ public class Coupon extends TimeStampEntity {
     @Column(nullable = false)
     LocalDateTime expirationDate;
 
+    // 발급 됐는지 안됐는지 확인하는 Column
+    @Column(nullable = false)
+    Boolean issued;
 
     @Column(nullable = false)
     Boolean status;
@@ -52,6 +55,7 @@ public class Coupon extends TimeStampEntity {
         this.title = title;
         this.description = requestDto.getDescription();
         this.expirationDate = requestDto.getExpirationDate();
+        this.issued = false;
         this.status = true;
     }
 
@@ -60,6 +64,10 @@ public class Coupon extends TimeStampEntity {
         if (user.getUserRole() != ROLE_ADMIN) {
             throw new UnAuthorizedException(ResponseCodeEnum.ACCESS_DENIED);
         }
+    }
+
+    public void updateIssuedTrue(){
+        this.issued = true;
     }
 
     public void updateStatusFalse() {

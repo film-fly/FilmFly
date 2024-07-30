@@ -5,6 +5,7 @@ import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import java.util.List;
 import java.util.Optional;
+import javax.swing.text.html.Option;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
@@ -14,8 +15,7 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     }
 
     Boolean existsByTitle(String title);
-    Optional<Coupon> findTopByStatusTrueOrderByCreatedAtAsc();
-    
+    Optional<Coupon> findTopByIssuedFalseOrderByCreatedAtAsc();
     // Status가 True(사용가능한 쿠폰) 이면서, 만료기간 오름차순으로 정렬
     List<Coupon> findAllByStatusTrueOrderByExpirationDateAsc();
 }

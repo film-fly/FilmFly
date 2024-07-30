@@ -53,6 +53,7 @@ public enum ResponseCodeEnum {
     // Coupon
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 쿠폰을 찾을 수 없습니다"),
     COUPON_EXHAUSTED(HttpStatus.NOT_FOUND, "이벤트 쿠폰이 모두 소진되었습니다."),
+    COUPON_EXPIRATION_DATE_NOT_CORRECT(HttpStatus.FORBIDDEN, "만료일은 오늘 이후여야 합니다.")
     ;
     private final HttpStatus httpStatus;
     private final String message;
