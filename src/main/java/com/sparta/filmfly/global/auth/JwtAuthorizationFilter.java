@@ -50,8 +50,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             "/users/kakao/authorize",
             "/users/kakao/callback",
             "/emails/verify",
-            "/emails/[0-9]+/resend",
-            "/users/suspend"
+            "/emails/[0-9]+/resend"
     );
 
     private final List<String> getMethodWhiteList = List.of(
@@ -60,7 +59,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final List<String> deletedUserAllowedPaths = List.of(
             "/users/logout", "/users/activate"
-//                    .requestMatchers(HttpMethod.PUT, "/users/activate/*", "/users/logout").hasAnyAuthority("ROLE_ADMIN", "ROLE_DELETED_USER")
     );
 
     public JwtAuthorizationFilter(JwtProvider jwtProvider, UserDetailsServiceImpl userDetailsService,
