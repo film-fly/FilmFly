@@ -78,4 +78,8 @@ public class OfficeBoard extends TimeStampEntity {
             throw new NotOwnerException(ResponseCodeEnum.BOARD_NOT_OWNER);
         }
     }
+
+    public void addHits(){
+        this.hits += 1;
+    }
 }

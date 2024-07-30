@@ -83,10 +83,13 @@ public class OfficeBoardService {
     /**
      * 운영보드 단일 조회
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public OfficeBoardResponseDto getOfficeBoard(Long id) {
 
         OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(id);
+
+        // 조회수 + 1
+        officeBoard.addHits();
         List<Media> mediaList = mediaService.getListMedia(MediaTypeEnum.OFFICE_BOARD,
                 officeBoard.getId());
 
