@@ -39,7 +39,7 @@ public class OfficeBoard extends TimeStampEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
+    @Column
     String nickName;
 
     @Column(nullable = false)
@@ -56,11 +56,11 @@ public class OfficeBoard extends TimeStampEntity {
 
 
     @Builder
-    public OfficeBoard(User user, String title, String content) {
+    public OfficeBoard(User user, OfficeBoardRequestDto requestDto) {
         this.user = user;
         this.nickName = user.getNickname();
-        this.title = title;
-        this.content = content;
+        this.title = requestDto.getTitle();
+        this.content = requestDto.getContent();
         this.hits = 0L;
         this.goodCount = 0L;
     }
