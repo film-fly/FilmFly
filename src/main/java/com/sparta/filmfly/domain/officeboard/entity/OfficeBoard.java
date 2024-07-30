@@ -66,9 +66,6 @@ public class OfficeBoard extends TimeStampEntity {
         this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
     }
 
-    public void deleteOfficeBoard() {
-        setDeletedAt();
-    }
 
     public void checkAdmin() {
         if (this.user.getUserRole() != ROLE_ADMIN) {

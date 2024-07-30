@@ -138,7 +138,7 @@ public class OfficeBoardService {
 
         officeBoard.checkAdmin();
         officeBoard.checkOwnerUser(user);
-        officeBoard.deleteOfficeBoard();
+        officeBoardRepository.delete(officeBoard);
         return OfficeBoardResponseDto.fromEntity(officeBoard);
     }
 
