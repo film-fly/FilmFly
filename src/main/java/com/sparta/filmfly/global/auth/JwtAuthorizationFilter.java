@@ -25,6 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -42,7 +43,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
 
     private final List<String> anyMethodWhiteList = List.of(
-            "/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/emails/verify", "/emails/[0-9]+/resend"
+            "/",
+            "/error",
+            "/users/signup",
+            "/users/login",
+            "/users/kakao/authorize",
+            "/users/kakao/callback",
+            "/emails/verify",
+            "/emails/[0-9]+/resend",
+            "/users/suspend"
     );
 
     private final List<String> getMethodWhiteList = List.of(
@@ -50,7 +59,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     );
 
     private final List<String> deletedUserAllowedPaths = List.of(
-            "/users/logout", "/users/activate/[0-9]+"
+            "/users/logout", "/users/activate"
+//                    .requestMatchers(HttpMethod.PUT, "/users/activate/*", "/users/logout").hasAnyAuthority("ROLE_ADMIN", "ROLE_DELETED_USER")
     );
 
     public JwtAuthorizationFilter(JwtProvider jwtProvider, UserDetailsServiceImpl userDetailsService,
@@ -68,6 +78,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String uri = req.getRequestURI();
         log.info("요청된 URI: {}", uri);
 
+        // 인증 불필요
         if (isWhiteListed(uri) || isGetMethodWhiteListed(req.getMethod(), uri)) {
             log.info("인증이 필요 없는 요청: {}", uri);
             filterChain.doFilter(req, res);
@@ -87,6 +98,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             if (user == null || user.getRefreshToken() == null) {
                 setErrorResponse(res, ResponseCodeEnum.USER_NOT_FOUND);
+                return;
+            }
+
+            if(user.getUserStatus() == UserStatusEnum.UNVERIFIED) {
+                // 탈퇴 유저, 인증전 유저가 로그인하면 기존 쿠키 삭제
+                setErrorResponse(res, ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
                 return;
             }
 
@@ -224,6 +241,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private boolean isDeletedUserAllowedPath(String uri) {
-        return deletedUserAllowedPaths.stream().anyMatch(pattern -> Pattern.matches(pattern, uri));
+        return deletedUserAllowedPaths.stream().anyMatch(uri::startsWith);
     }
 }

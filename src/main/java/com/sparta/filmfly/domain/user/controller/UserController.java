@@ -146,6 +146,7 @@ public class UserController {
             @Valid @RequestBody UserDeleteRequestDto requestDto,
             HttpServletResponse response
     ) {
+        log.info("deleteUser");
         userService.deleteUser(userDetails.getUser(), requestDto);
 
         // 쿠키를 무효화하여 삭제
@@ -192,6 +193,7 @@ public class UserController {
     public ResponseEntity<DataResponseDto<UserResponseDto>> suspendUser(
             @PathVariable Long userId
     ) {
+        log.info("suspendUser");
         UserResponseDto userResponseDto = userService.suspendUser(userId);
         return ResponseUtils.success(userResponseDto);
     }
@@ -204,6 +206,7 @@ public class UserController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long userId
     ) {
+        log.info("activateUser");
         UserResponseDto userResponseDto = userService.activateUser(userId, userDetails.getUser());
         return ResponseUtils.success(userResponseDto);
     }
