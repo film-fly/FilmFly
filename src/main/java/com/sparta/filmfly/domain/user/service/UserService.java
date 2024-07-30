@@ -9,6 +9,7 @@ import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.*;
 import com.sparta.filmfly.global.common.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -122,7 +124,14 @@ public class UserService {
 
         if (profilePicture != null && !profilePicture.isEmpty()) {
             try {
-                pictureUrl = s3Uploader.upload(profilePicture, "profile-pictures");
+                if (!s3Uploader.isFileSame(profilePicture, pictureUrl)) {
+                    if (pictureUrl != null && !pictureUrl.isEmpty()) {
+                        s3Uploader.delete(pictureUrl); // 기존 프로필 사진 삭제
+                        log.info("Old profile picture deleted: {}", pictureUrl);
+                    }
+                    pictureUrl = s3Uploader.upload(profilePicture, "profile-pictures");
+                    log.info("New profile picture uploaded: {}", pictureUrl);
+                }
             } catch (IOException e) {
                 throw new UploadException(ResponseCodeEnum.UPLOAD_FAILED);
             }
@@ -193,8 +202,13 @@ public class UserService {
     @Transactional
     public void deleteOldSoftDeletedUsers() {
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30); // 30일 지나면 하드 삭제
+
+        // 이메일 인증 삭제
+        userRepository.deleteOldSoftDeletedEmailVerifications(cutoffDate);
+        // 유저 삭제
         userRepository.deleteOldSoftDeletedUsers(cutoffDate);
     }
+
 
     /**
      * 유저 상세 조회 (관리자 기능)
