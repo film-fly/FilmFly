@@ -57,6 +57,9 @@ public class User extends TimeStampEntity {
     @Column
     private LocalDateTime deletedAt;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private EmailVerification emailVerification;
+
     /**
      * 사용자 생성
      */
