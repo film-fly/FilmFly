@@ -164,42 +164,9 @@ public class UserController {
         return ResponseUtils.success();
     }
 
-    /**
-     * 개인 유저 상세 조회 (관리자 기능)
-     */
-    @GetMapping("/search/detail")
-    public ResponseEntity<DataResponseDto<UserResponseDto>> getUserDetail(
-            @RequestBody UserSearchRequestDto userSearchRequestDto
-    ) {
-        UserResponseDto userDetail = userService.getUserDetail(userSearchRequestDto);
-        return ResponseUtils.success(userDetail);
-    }
 
     /**
-     * 유저 상태별 조회 (관리자 기능)
-     */
-    @GetMapping("/search/status")
-    public ResponseEntity<DataResponseDto<UserStatusSearchResponseDto>> getUsersByStatus(
-            @RequestBody UserStatusSearchRequestDto userStatusRequestDto
-    ) {
-        UserStatusSearchResponseDto users = userService.getUsersByStatus(userStatusRequestDto.getStatus());
-        return ResponseUtils.success(users);
-    }
-
-    /**
-     * 유저 정지 (관리자 기능)
-     */
-    @PutMapping("/suspend/{userId}")
-    public ResponseEntity<DataResponseDto<UserResponseDto>> suspendUser(
-            @PathVariable Long userId
-    ) {
-        log.info("suspendUser");
-        UserResponseDto userResponseDto = userService.suspendUser(userId);
-        return ResponseUtils.success(userResponseDto);
-    }
-
-    /**
-     * 유저 활성화 (관리자 기능)
+     * 유저 활성화 (관리자 + 탈퇴 본인 가능)
      */
     @PutMapping("/activate/{userId}")
     public ResponseEntity<DataResponseDto<UserResponseDto>> activateUser(
