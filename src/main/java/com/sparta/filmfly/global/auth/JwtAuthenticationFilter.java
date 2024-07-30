@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             if (user.getUserStatus() == UserStatusEnum.UNVERIFIED) {
                 List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_UNVERIFIED_USER"));
                 Authentication auth = new UsernamePasswordAuthenticationToken(new UserDetailsImpl(user), null, authorities);
-                clearCookies(response); // 쿠키 삭제 추가
+                handleTokenGeneration(response, user); // 토큰 생성 및 쿠키 추가
                 response.setStatus(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED.getHttpStatus().value());
                 ResponseEntity<MessageResponseDto> responseEntity = ResponseUtils.of(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED.getHttpStatus(), ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED.getMessage());
                 writeResponseBody(response, responseEntity);
@@ -82,7 +82,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     ? List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
                     : List.of(new SimpleGrantedAuthority("ROLE_USER"));
 
-            return new UsernamePasswordAuthenticationToken(new UserDetailsImpl(user), null, authorities);
+            Authentication auth = new UsernamePasswordAuthenticationToken(new UserDetailsImpl(user), null, authorities);
+            handleTokenGeneration(response, user); // 토큰 생성 및 쿠키 추가
+            return auth;
         } catch (NotFoundException e) {
             setCustomErrorResponse(response, ResponseCodeEnum.USER_NOT_FOUND);
             return null;
@@ -106,14 +108,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("JwtAuthenticationFilter: 인증 성공");
         UserDetailsImpl userDetails = (UserDetailsImpl) authResult.getPrincipal();
         User user = userDetails.getUser();
-
-        if (user.getUserStatus() == UserStatusEnum.UNVERIFIED) {
-            clearCookies(response);
-            response.setStatus(HttpServletResponse.SC_OK);
-            ResponseEntity<MessageResponseDto> responseEntity = ResponseUtils.success();
-            writeResponseBody(response, responseEntity);
-            return;
-        }
 
         handleTokenGeneration(response, user);
 

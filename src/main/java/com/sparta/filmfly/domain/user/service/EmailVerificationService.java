@@ -29,6 +29,11 @@ public class EmailVerificationService {
     @Transactional
     public void createVerificationCode(String username) {
         User user = userRepository.findByUsernameOrElseThrow(username);
+
+        // 유저 상태 검증
+        user.validateDeletedStatus();
+        user.validateSuspendedStatus();
+
         String token = generateVerificationToken();
 
         EmailVerification verification = EmailVerification.builder()
@@ -46,11 +51,16 @@ public class EmailVerificationService {
     }
 
     /**
-     * 기존 인증 코드를 재전송
+     * 인증 코드 재전송
      */
     @Transactional
     public void resendVerificationCode(Long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
+
+        // 유저 상태 검증
+        user.validateDeletedStatus();
+        user.validateSuspendedStatus();
+
         String token = generateVerificationToken();
 
         EmailVerification verification = verificationRepository.findByUserOrElseThrow(user);
@@ -82,6 +92,7 @@ public class EmailVerificationService {
         }
 
         User user = verification.getUser();
+
         user.updateVerified();
         userRepository.save(user);
 
@@ -109,3 +120,4 @@ public class EmailVerificationService {
         return String.valueOf(token);
     }
 }
+

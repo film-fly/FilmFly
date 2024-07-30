@@ -81,6 +81,14 @@ public class User extends TimeStampEntity {
         }
     }
 
+    /**
+     * 정지 상태 검증
+     */
+    public void validateSuspendedStatus() {
+        if (this.userStatus == UserStatusEnum.SUSPENDED) {
+            throw new SuspendedException(ResponseCodeEnum.USER_SUSPENDED);
+        }
+    }
 
     /**
      * 비밀번호 검증
