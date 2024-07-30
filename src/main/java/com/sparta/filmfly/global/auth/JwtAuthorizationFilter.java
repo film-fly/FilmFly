@@ -25,7 +25,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -50,8 +49,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             "/users/kakao/authorize",
             "/users/kakao/callback",
             "/emails/verify",
-            "/emails/[0-9]+/resend",
-            "/users/suspend"
+            "/emails/[0-9]+/resend"
     );
 
     private final List<String> getMethodWhiteList = List.of(
@@ -60,7 +58,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final List<String> deletedUserAllowedPaths = List.of(
             "/users/logout", "/users/activate"
-//                    .requestMatchers(HttpMethod.PUT, "/users/activate/*", "/users/logout").hasAnyAuthority("ROLE_ADMIN", "ROLE_DELETED_USER")
+    );
+
+    private final List<String> unverifiedUserAllowedPaths = List.of(
+            "/users/logout"
     );
 
     public JwtAuthorizationFilter(JwtProvider jwtProvider, UserDetailsServiceImpl userDetailsService,
@@ -101,10 +102,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            if(user.getUserStatus() == UserStatusEnum.UNVERIFIED) {
-                // 탈퇴 유저, 인증전 유저가 로그인하면 기존 쿠키 삭제
-                setErrorResponse(res, ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
-                return;
+            if (user.getUserStatus() == UserStatusEnum.UNVERIFIED) {
+                if (isUnverifiedUserAllowedPath(uri)) {
+                    handleValidAccessToken(accessToken);
+                    filterChain.doFilter(req, res);
+                    return;
+                } else {
+                    setErrorResponse(res, ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
+                    return;
+                }
             }
 
             if (user.getUserStatus() == UserStatusEnum.DELETED) {
@@ -238,6 +244,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private boolean isGetMethodWhiteListed(String method, String uri) {
         return HttpMethod.GET.matches(method) && getMethodWhiteList.stream().anyMatch(pattern -> Pattern.compile(pattern).matcher(uri).matches());
+    }
+
+    private boolean isUnverifiedUserAllowedPath(String uri) {
+        return unverifiedUserAllowedPaths.stream().anyMatch(uri::startsWith);
     }
 
     private boolean isDeletedUserAllowedPath(String uri) {
