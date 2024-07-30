@@ -7,7 +7,7 @@ import lombok.Getter;
 
 
 @Getter
-public class PasswordUpdateRequestDto {
+public class UserPasswordUpdateRequestDto {
 
     @NotBlank(message = "현재 비밀번호는 필수 입력 값입니다.")
     private String currentPassword;
