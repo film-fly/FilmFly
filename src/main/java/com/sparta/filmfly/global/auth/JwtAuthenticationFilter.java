@@ -16,6 +16,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseCookie.ResponseCookieBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -120,13 +122,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = jwtProvider.createAccessToken(user.getUsername(), user.getId());
         String refreshToken = jwtProvider.createRefreshToken(user.getUsername(), user.getId());
 
-        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-        accessTokenCookie.setPath("/");
-        response.addCookie(accessTokenCookie);
+//        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+//        accessTokenCookie.setPath("/");
+//        response.addCookie(accessTokenCookie);
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setPath("/");
         response.addCookie(refreshTokenCookie);
-
+        ResponseCookie accessCookieBuilder = ResponseCookie.from("accessToken", accessToken)
+            .domain("localhost")
+            .path("/")
+            .sameSite("None")
+            .secure(true)
+            .build();
+        response.addHeader("Set-Cookie", accessCookieBuilder.toString());
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
     }

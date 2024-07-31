@@ -13,7 +13,8 @@
   <!-- 공통 헤더 -->
   <script src="../js/common.js"></script>
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -34,8 +35,8 @@
   </div>
 
   <div class="d-flex my-4 gap-3">
-    <input type="checkbox" class="btn-check" id="btnFilterGoods" autocomplete="off">
-    <label class="btn btn-outline-primary" for="btnFilterGoods">좋아요 수 20개 이상</label>
+    <input type="checkbox" class="btn-check" id="btnFilterGoodCount" autocomplete="off">
+    <label class="btn btn-outline-primary" for="btnFilterGoodCount">좋아요 수 20개 이상</label>
     <input type="checkbox" class="btn-check" id="btnFilterHits" autocomplete="off">
     <label class="btn btn-outline-primary" for="btnFilterHits">조회 수 20개 이상</label>
   </div>
@@ -43,87 +44,104 @@
     <ul id="board-box" class="list-group list-group-flush">
     </ul>
   </div>
+
+  <nav aria-label="Page navigation example" class="my-5">
+    <ul id="pagination" class="pagination justify-content-center">
+      <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+      <li class="page-item"><a class="page-link" href="#">1</a></li>
+      <li class="page-item"><a class="page-link" href="#">2</a></li>
+      <li class="page-item"><a class="page-link" href="#">3</a></li>
+      <li class="page-item"><a class="page-link" href="#">Next</a></li>
+    </ul>
+  </nav>
 </div>
 
+<!-- init -->
 <script>
-  const boards = [
-    {
-      "id": 1,
-      "title": "게시물 제목1",
-      "createdAt": "2024-07-26 11:11:11",
-      "nickname": "닉네임 1",
-      "hits": 12
-    },
-    {
-      "id": 2,
-      "title": "게시물 제목2",
-      "createdAt": "2024-07-26 11:11:11",
-      "nickname": "닉네임 2",
-      "hits": 22
-    },
-    {
-      "id": 3,
-      "title": "게시물 제목3",
-      "createdAt": "2024-07-26 11:11:11",
-      "nickname": "닉네임 3",
-      "hits": 33
-    },
-  ];
+  $(document).ready(function () {
+    loadBoards(1); // 첫 페이지 로드 (1페이지부터 시작)
 
-  boards.forEach(board => {
-    let boardHtml = `
-      <li class="list-group-item">
-        <div class="d-flex flex-column">
-          <a href="./board-detail.html?board=${board.id}" class="fs-5 fw-bold py-3">${board.title}</a>
-        </div>
-        <div class="d-flex align-items-center gap-3">
-          <div class="profile-box d-flex align-items-center gap-2">
-<!--            <div>-->
-<!--              <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">-->
-<!--            </div>-->
-            <div>
-              ${board.nickname}
-            </div>
-          </div>
-          <div class="d-flex gap-3">
-            <p>조회수(${board.hits})</p>
-            <p>좋아요 수($.{board.goods})</p>
-            <p>싫어요 수($.{board.bads})</p>
-            <p>${board.createdAt}</p>
-          </div>
-        </div>
-      </li>
-    `;
-    $('#board-box').append(boardHtml);
+    $('#btnMovieSearch').on('click', function () {
+      loadBoards(1); // 검색 시 첫 페이지부터 로드
+    });
+
+    $('.btn-check').on('change', function() {
+      loadBoards(1); // 필터 변경 시 첫 페이지부터 로드
+    });
   });
 
-  $('#btnMovieSearch').on('click', function () {
+  function loadBoards(pageNum) {
     let searchText = $('#inputMovieSearch').val();
-    // let selectedGenres = [];
-    // $('input[type="checkbox"]:checked').each(function() {
-    //   selectedGenres.push($(this).attr('name'));
-    // });
-
-    const data = {
-      searchText: searchText
-    };
-    alert(JSON.stringify(data));
-  });
-
-  $('.btn-check').on('change', function() {
-    const filterGoods = $('#btnFilterGoods').is(':checked');
+    const filterGoodCount = $('#btnFilterGoodCount').is(':checked');
     const filterHits = $('#btnFilterHits').is(':checked');
 
-    console.log('좋아요 수 20개 이상:', filterGoods);
-    console.log('조회 수 20개 이상:', filterHits);
-
     const data = {
-      filterGoods: filterGoods,
-      filterHits: filterHits
+      searchText: searchText,
+      filterGoodCount: filterGoodCount ? true : false,
+      filterHits: filterHits ? true : false,
+      pageNum: pageNum
     };
 
-    alert(JSON.stringify(data));
-  });
+    console.log(JSON.stringify(data));
+
+    $.ajax({
+      type: 'GET',
+      url: 'http://localhost:8080/boards',
+      data: data
+    })
+    .done(function (result, status, xhr) {
+      const boards = result.data.content;
+      $('#board-box').empty();
+      boards.forEach(board => {
+        let boardHtml = `
+          <li class="list-group-item">
+            <div class="d-flex flex-column">
+              <a href="./board-detail.html?board=${board.id}" class="fs-5 fw-bold py-3">${board.title}</a>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <div class="profile-box d-flex align-items-center gap-2">
+                <div>
+                  ${board.nickname}
+                </div>
+              </div>
+              <div class="d-flex gap-3">
+                <p>조회수(${board.hits})</p>
+                <p>좋아요 수(${board.goodCount})</p>
+                <p>싫어요 수(${board.badCount})</p>
+                <p>${board.createdAt}</p>
+              </div>
+            </div>
+          </li>
+        `;
+        $('#board-box').append(boardHtml);
+      });
+
+      // 페이징 처리
+      $('#pagination').empty();
+      if (result.data.totalPages > 1) {
+        if (!result.data.first) {
+          $('#pagination').append(
+              `<li class="page-item"><a class="page-link" href="#" onclick="loadBoards(${pageNum - 1})">Previous</a></li>`
+          );
+        }
+        for (let i = 1; i <= result.data.totalPages; i++) {
+          $('#pagination').append(
+              `<li class="page-item"><a class="page-link" href="#" onclick="loadBoards(${i})">${i}</a></li>`
+          );
+        }
+        if (!result.data.last) {
+          $('#pagination').append(
+              `<li class="page-item"><a class="page-link" href="#" onclick="loadBoards(${pageNum + 1})">Next</a></li>`
+          );
+        }
+      }
+
+    })
+    .fail(function (xhr, status, er) {
+      alert("데이터를 불러오는데 실패했습니다.");
+    });
+  }
 </script>
+
 </body>
 </html>

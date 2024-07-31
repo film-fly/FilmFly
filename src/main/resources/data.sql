@@ -1,7 +1,12 @@
 INSERT INTO user (created_at, updated_at, email, introduce, kakao_id, nickname, password,
                   picture_url, refresh_token, user_role, user_status, username)
-VALUES (now(), now(), 'email@gmail.com', '안녕', 12345, '닉네임', '$2a$12$u48yj1bNay/ordPp//pX9OVd7DdFaNQfbvesn0ME6PAVfl/dicjdC',
-        '사진URL', 'refresh', 'ROLE_USER', 'VERIFIED', 'testId1');
+VALUES (now(), now(), 'email@gmail.com', '안녕', 12345, '닉네임', '$2a$12$ivaBRmVBrqDiO4cQC7nzrefW/gawAmTiS9jPh7piWSYPpEiLN3dvW',
+        '사진URL', 'refresh', 'ROLE_ADMIN', 'VERIFIED', 'admin1');
+INSERT INTO user (created_at, updated_at, email, introduce, kakao_id, nickname, password,
+                  picture_url, refresh_token, user_role, user_status, username)
+VALUES (now(), now(), 'email@gmail.com', '안녕', 12345, '닉네임', '$2a$12$ivaBRmVBrqDiO4cQC7nzrefW/gawAmTiS9jPh7piWSYPpEiLN3dvW',
+        '사진URL', 'refresh', 'ROLE_ADMIN', 'VERIFIED', 'admin2');
+# 비밀번호 Admin1!
 
 INSERT INTO movie (content, rating, summary, title)
 VALUES ('영화 내용', 3.3, '요약', '제목');

@@ -1,5 +1,5 @@
 ### 테스트에 사용할 데이터
-@username1 = user1
+@username1 = admin1
 @password1 = Test123!
 
 ### USER 로그인
@@ -12,7 +12,7 @@ Content-Type: application/json
 }
 
 ### 댓글 생성
-POST http://localhost:8080/boards/1/comments
+POST http://localhost:8080/boards/11/comments
 Content-Type: application/json
 Authorization:{{USER_TOKEN}}
 

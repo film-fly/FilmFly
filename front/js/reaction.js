@@ -59,12 +59,12 @@ $(document).on('click', '.btnReaction', function () {
   //   contentType: "application/json;charset=utf-8"
   // })
   // .done(function (result, status, xhr) {
-  //   let reactionType = '';
-  //   isGood ? reactionType = 'data-good-id' : reactionType = 'data-bad-id';
+  //   let reactionIdAttr = '';
+  //   isGood ? reactionIdAttr = 'data-good-id' : reactionIdAttr = 'data-bad-id';
   //   if (isAdding) {
-  //     button.attr(reactionType, result.goodId);
+  //     button.attr(reactionIdAttr, result.goodId);
   //   } else {
-  //     button.removeAttr(reactionType);
+  //     button.removeAttr(reactionIdAttr);
   //   }
   // })
   // .fail(function (xhr, status, er) {

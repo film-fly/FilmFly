@@ -37,7 +37,7 @@ public class BoardService {
      */
     @Transactional
     public BoardResponseDto createBoard(BoardRequestDto requestDto, List<MultipartFile> files, User user) {
-        user.validateUserStatus();
+        
 
         Board entity = requestDto.toEntity(user);
         Board savedBoard = boardRepository.save(entity);
@@ -105,7 +105,7 @@ public class BoardService {
      */
     @Transactional
     public BoardResponseDto updateBoard(User user, BoardRequestDto requestDto, List<MultipartFile> files, Long boardId) {
-        user.validateUserStatus();
+        
         Board board = boardRepository.findByIdOrElseThrow(boardId);
         board.validateOwner(user);
 
@@ -133,7 +133,7 @@ public class BoardService {
      */
     @Transactional
     public String deleteBoard(User user, Long boardId) {
-        user.validateUserStatus();
+        
         Board board = boardRepository.findByIdOrElseThrow(boardId);
 
         //관리자면 삭제 가능하게
