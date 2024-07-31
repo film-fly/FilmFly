@@ -7,18 +7,20 @@ import com.sparta.filmfly.domain.user.service.UserService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
+import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 
 @RestController
@@ -36,14 +38,18 @@ public class UserController {
     @Value("${kakao.redirect-uri}")
     private String redirectUri;
 
-    // 회원가입
+    /**
+     * 회원가입
+     */
     @PostMapping("/signup")
-    public ResponseEntity<DataResponseDto<UserResponseDto>> signup(@RequestBody SignupRequestDto requestDto) {
+    public ResponseEntity<DataResponseDto<UserResponseDto>> signup(@Valid @RequestBody UserSignupRequestDto requestDto) {
         UserResponseDto responseDto = userService.signup(requestDto);
         return ResponseUtils.success(responseDto);
     }
 
-    // 카카오 로그인 요청
+    /**
+     * 카카오 로그인 요청
+     */
     @GetMapping("/kakao/authorize")
     public void redirectToKakaoAuthorize(HttpServletResponse response) throws IOException {
         String requestUrl = String.format(
@@ -53,7 +59,9 @@ public class UserController {
         response.sendRedirect(requestUrl);
     }
 
-    // 카카오 콜백 처리 첫 로그인시 데이터 생성이 필요하므로 생성한 데이터 응답, 다음 로그인시는 데이터없이 응답
+    /**
+     * 카카오 콜백 처리
+     */
     @GetMapping("/kakao/callback")
     public ResponseEntity<?> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         UserResponseDto userResponseDto = kakaoService.kakaoLogin(code, response);
@@ -64,35 +72,52 @@ public class UserController {
         }
     }
 
-    // 비밀번호 변경
+    /**
+     * 비밀번호 변경
+     */
     @PutMapping("/password")
     public ResponseEntity<MessageResponseDto> updatePassword(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Validated @RequestBody PasswordUpdateRequestDto requestDto
+            @Valid @RequestBody UserPasswordUpdateRequestDto requestDto
     ) {
         userService.updatePassword(userDetails.getUser(), requestDto);
         return ResponseUtils.success();
     }
 
-    // 프로필 업로드
+    /**
+     * 프로필 업로드
+     */
     @PutMapping("/profile")
-    public ResponseEntity<MessageResponseDto> updateProfile(
+    public ResponseEntity<DataResponseDto<UserResponseDto>> updateProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Validated @RequestPart("profileUpdateRequestDto") ProfileUpdateRequestDto requestDto,
+            @Valid @RequestPart("profileUpdateRequestDto") UserProfileUpdateRequestDto requestDto,
             @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture
     ) {
-        userService.updateProfile(userDetails.getUser(), requestDto, profilePicture);
+        UserResponseDto responseDto = userService.updateProfile(userDetails.getUser(), requestDto, profilePicture);
+        return ResponseUtils.success(responseDto);
+    }
+
+    /**
+     * 닉네임 중복 확인
+     */
+    @PostMapping("/check-nickname")
+    public ResponseEntity<MessageResponseDto> checkNicknameDuplication(@RequestBody UserNicknameCheckRequestDto requestDto) {
+        userService.checkNicknameDuplication(requestDto.getNickname());
         return ResponseUtils.success();
     }
 
-    // 프로필 조회
+    /**
+     * 프로필 조회
+     */
     @GetMapping("/{userId}/profile")
     public ResponseEntity<DataResponseDto<UserResponseDto>> getProfile(@PathVariable Long userId) {
         UserResponseDto profile = userService.getProfile(userId);
         return ResponseUtils.success(profile);
     }
 
-    // 로그아웃
+    /**
+     * 로그아웃
+     */
     @PostMapping("/logout")
     public ResponseEntity<MessageResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletResponse response) {
         userService.logout(userDetails.getUser());
@@ -112,13 +137,16 @@ public class UserController {
         return ResponseUtils.success();
     }
 
-    // 회원탈퇴
+    /**
+     * 회원탈퇴
+     */
     @DeleteMapping("/withdraw")
     public ResponseEntity<MessageResponseDto> deleteUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Validated @RequestBody AccountDeleteRequestDto requestDto,
+            @Valid @RequestBody UserDeleteRequestDto requestDto,
             HttpServletResponse response
     ) {
+        log.info("deleteUser");
         userService.deleteUser(userDetails.getUser(), requestDto);
 
         // 쿠키를 무효화하여 삭제
@@ -136,43 +164,17 @@ public class UserController {
         return ResponseUtils.success();
     }
 
-    // 개인 유저 상세 조회 (관리자 기능)
-    @GetMapping("/search/detail")
-    public ResponseEntity<DataResponseDto<UserResponseDto>> getUserDetail(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody UserSearchRequestDto userSearchRequestDto
-    ) {
-        UserResponseDto userDetail = userService.getUserDetail(userSearchRequestDto, userDetails.getUser());
-        return ResponseUtils.success(userDetail);
-    }
 
-    // 유저 상태별 조회 (관리자 기능)
-    @GetMapping("/search/status")
-    public ResponseEntity<DataResponseDto<UserStatusResponseDto>> getUsersByStatus(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody UserStatusRequestDto userStatusRequestDto
-    ) {
-        UserStatusResponseDto users = userService.getUsersByStatus(userStatusRequestDto.getStatus(), userDetails.getUser());
-        return ResponseUtils.success(users);
-    }
-
-    // 유저 정지 (관리자 기능)
-    @PutMapping("/suspend/{userId}")
-    public ResponseEntity<MessageResponseDto> suspendUser(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long userId
-    ) {
-        userService.suspendUser(userId, userDetails.getUser());
-        return ResponseUtils.success();
-    }
-
-    // 유저 활성화 상태로 만들기 (관리자 기능)
+    /**
+     * 유저 활성화 (관리자 + 탈퇴 본인 가능)
+     */
     @PutMapping("/activate/{userId}")
-    public ResponseEntity<MessageResponseDto> activateUser(
+    public ResponseEntity<DataResponseDto<UserResponseDto>> activateUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long userId
     ) {
-        userService.activateUser(userId, userDetails.getUser());
-        return ResponseUtils.success();
+        log.info("activateUser");
+        UserResponseDto userResponseDto = userService.activateUser(userId, userDetails.getUser());
+        return ResponseUtils.success(userResponseDto);
     }
 }

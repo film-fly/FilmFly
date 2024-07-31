@@ -36,12 +36,4 @@ public class ReportController {
         return ResponseUtils.success();
     }
 
-    // 신고 목록 조회 (어드민 권한)
-    @GetMapping
-    public ResponseEntity<DataResponseDto<List<ReportResponseDto>>> getAllReports(
-            @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        List<ReportResponseDto> reports = reportService.getAllReports(userDetails.getUser());
-        return ResponseUtils.success(reports);
-    }
 }

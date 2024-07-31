@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.AccessLevel;
@@ -37,7 +38,11 @@ public class Coupon extends TimeStampEntity {
     String description;
 
     @Column(nullable = false)
-    double discountRate;
+    LocalDateTime expirationDate;
+
+    // 발급 됐는지 안됐는지 확인하는 Column
+    @Column(nullable = false)
+    Boolean issued;
 
     @Column(nullable = false)
     Boolean status;
@@ -49,7 +54,8 @@ public class Coupon extends TimeStampEntity {
     public Coupon(String title, CouponRequestDto requestDto) {
         this.title = title;
         this.description = requestDto.getDescription();
-        this.discountRate = requestDto.getDiscountRate();
+        this.expirationDate = requestDto.getExpirationDate();
+        this.issued = false;
         this.status = true;
     }
 
@@ -60,7 +66,11 @@ public class Coupon extends TimeStampEntity {
         }
     }
 
-    public void update() {
+    public void updateIssuedTrue(){
+        this.issued = true;
+    }
+
+    public void updateStatusFalse() {
         this.status = false;
     }
 }

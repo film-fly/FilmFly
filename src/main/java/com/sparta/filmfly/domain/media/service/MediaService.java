@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.List;
 
 @Slf4j
@@ -31,9 +32,11 @@ public class MediaService {
     public MediaResponseDto createMedia(MediaTypeEnum mediaType, Long typeId, MultipartFile file) {
         try {
             String mediaUrl = s3Uploader.boardFileUpload(mediaType,typeId,file);
+            mediaUrl = URLDecoder.decode(mediaUrl, "UTF-8");
             Media media = Media.builder()
                                 .s3Url(mediaUrl)
                                 .fileName(file.getOriginalFilename())
+                                .size(file.getSize())
                                 .type(mediaType)
                                 .typeId(typeId)
                                 .build();
@@ -51,6 +54,15 @@ public class MediaService {
     @Transactional(readOnly = true)
     public List<Media> getListMedia(MediaTypeEnum mediaType, Long typeId) {
         return mediaRepository.findAllByTypeAndTypeId(mediaType,typeId);
+    }
+
+    /**
+     * 해당 미디어 레포 및 S3 삭제
+     */
+    @Transactional
+    public void deleteMediaAndS3(Media media) {
+        s3Uploader.boardFileDelete(media.getType(),media.getTypeId(),media.getFileName());
+        mediaRepository.delete(media);
     }
 
     /**

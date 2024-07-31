@@ -35,6 +35,16 @@
   <button id="btnSaveBoard" class="btn btn-primary mt-3">저장</button>
 </div>
 
+<!--
+Spring Security 설정
+.requestMatchers("/temp/**", "/image/upload").permitAll()
+
+if (uri.startsWith("/temp") || uri.startsWith("/image/upload")) {
+    filterChain.doFilter(req, res);
+    return;
+}
+-->
+
 <script src="../js/summernote.js"></script>
 <script>
   const urlParams = new URL(location.href).searchParams;

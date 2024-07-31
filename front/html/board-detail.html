@@ -8,6 +8,7 @@
         rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
         crossorigin="anonymous">
+  <!-- 부트스트랩 JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
           integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
           crossorigin="anonymous"></script>
@@ -27,7 +28,7 @@
   <header id="common-header"></header>
 
   <div id="board-box" class="d-flex flex-column gap-3">
-    <div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-3">
       <div class="profile-box d-flex align-items-center gap-2">
         <div>
           <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">
@@ -35,19 +36,19 @@
         <div>
           ${board.nickname}
         </div>
-        <div>
-          <i class="fa-solid fa-gear fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
-          <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${board.userId}" data-content-id="${board.boardId}" data-content-type="BOARD">
-            <li class="dropdown-item block-user">차단</li>
-            <li class="dropdown-item report-user">신고</li>
-          </ul>
-        </div>
       </div>
       <div>
         ${board.createdAt}
       </div>
       <div>
         ${board.hits}
+      </div>
+      <div class="d-flex justify-content-end flex-grow-1">
+        <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
+        <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${board.userId}" data-content-id="${board.boardId}" data-content-type="BOARD">
+          <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
+          <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
+        </ul>
       </div>
     </div>
     <div>
@@ -87,29 +88,35 @@
               ${comment.nickname}
             </div>
             <div>
-              <i class="fa-solid fa-gear fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
-              <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${comment.userId}" data-content-id="${comment.commentId}" data-content-type="COMMENT">
-                <li class="dropdown-item block-user">차단</li>
-                <li class="dropdown-item report-user">신고</li>
-              </ul>
-            </div>
-            <div>
               ${comment.createdAt}
             </div>
           </div>
-          <div>
-            <button class="btnReaction btn btn-primary" data-content-id="${comment.commentId}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>
-            <button class="btnReaction btn btn-primary" data-content-id="${comment.commentId}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>
-          </div>
-          <div>
-            <button class="btn btn-primary edit-comment">수정</button>
-            <button class="btn btn-primary delete-comment">삭제</button>
-            <button class="btn btn-primary save-comment" style="display:none;">저장</button>
-            <button class="btn btn-primary cancel-edit" style="display:none;">취소</button>
+          <div class="d-flex align-items-center gap-3">
+            <div class="d-flex justify-content-end flex-grow-1">
+              <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
+              <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${comment.userId}" data-content-id="${comment.commentId}" data-content-type="COMMENT">
+                <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
+                <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
+              </ul>
+            </div>
+            <div>
+              <button class="btn btn-primary edit-comment">수정</button>
+              <button class="btn btn-primary delete-comment">삭제</button>
+              <button class="btn btn-primary save-comment" style="display:none;">저장</button>
+              <button class="btn btn-primary cancel-edit" style="display:none;">취소</button>
+            </div>
           </div>
         </div>
-        <div class="comment-content">
+        <div class="comment-content mb-3">
           ${comment.content}
+        </div>
+        <div>
+          <button class="btnReaction btn btn-primary" data-content-id="${comment.commentId}" data-type="COMMENT" data-good="true">
+            <i class="fa-regular fa-face-smile">좋아요</i>
+          </button>
+          <button class="btnReaction btn btn-primary" data-content-id="${comment.commentId}" data-type="COMMENT" data-bad="true">
+            <i class="fa-regular fa-face-angry">싫어요</i>
+          </button>
         </div>
       </li>
     </ul>
@@ -122,6 +129,26 @@
     </div>
   </div>
 </div>
+
+<!-- 신고, 차단 모달 -->
+<div class="modal fade" id="blockReportModal" tabindex="-1" aria-labelledby="blockReportModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="blockReportModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="inputBlockReport" class="mb-2">메모</label>
+        <textarea id="inputBlockReport" style="width: 100%;height: 200px;"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btnBlockReport">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   $(document).ready(function () {
     let originalContent = '';
