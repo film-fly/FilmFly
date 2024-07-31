@@ -36,14 +36,14 @@ function imageUploader(file, el) {
   $.ajax({
     data : formData,
     type : "POST",
-    url : 'http://localhost:8080/image/upload',
+    url : 'https://localhost/image/upload',
     contentType : false,
     processData : false,
     enctype : 'multipart/form-data',
     success : function(data) {
       console.log(data);
       // let imageUrl = window.location.origin + data;
-      let imageUrl = 'http://localhost:8080' + data;
+      let imageUrl = 'https://localhost' + data;
       console.log('url: ' + imageUrl);
       $(el).summernote('insertImage', imageUrl, function($image) {
         $image.css('width', "25%");
@@ -59,7 +59,7 @@ function imageDelete(imageName) {
   $.ajax({
     data: data,
     type: 'DELETE',
-    url: 'http://localhost:8080/image/delete',
+    url: 'https://localhost/image/delete',
     contentType: false,
     enctype: 'multipart/form-data',
     processData: false,
