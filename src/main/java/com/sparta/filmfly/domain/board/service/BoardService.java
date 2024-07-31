@@ -34,7 +34,6 @@ public class BoardService {
     private final MediaService mediaService;
     private final GoodService goodService;
     private final BadService badService;
-    private final UserRepository userRepository;
 
     private final FileService fileService;
     /**
@@ -73,39 +72,9 @@ public class BoardService {
         return boardResponseDto;
     }
 
-    /**
-     * 보드 페이징 조회
-     */
-//    @Transactional(readOnly = true)
-//    public BoardPageResponseDto getPageBoard(Integer pageNum, Integer size, Boolean filterGoodCount, Boolean filterHits) {
-//        Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-//
-//        //QueryDSL 최적화로 변경하기
-//        Page<Board> boards = boardRepository.findAll(pageable);
-//        //List 형식 totalPages,size,content,number 등 필요한 정보만 보내는 PageResponse
-//        BoardPageResponseDto boardPageResponseDto = BoardPageResponseDto.fromPage(boards);
-//
-//        List<BoardResponseDto> boardsDto = new ArrayList<>();
-//        for (Board board : boards) {
-//            BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(board); //보드 기본 정보 Dto
-//            updateDtoReactionCount(boardResponseDto,board.getId());
-//
-//            /*
-//            List<Media> mediaList = mediaService.getListMedia(MediaTypeEnum.BOARD,board.getId()); //해당 보드의 미디어가 있으면 가지고 온다
-//            for (Media media : mediaList) {
-//                boardResponseDto.addMediaDto(MediaResponseDto.fromEntity(media)); //미디어가 존재하면 보드dto에 정보를 넣어준다
-//            }*/
-//            boardsDto.add(boardResponseDto); //보드pageDto content에 넣을 보드 정보 추가
-//        }
-//
-//        boardPageResponseDto.addContent(boardsDto);
-//        return boardPageResponseDto;
-//    }
-
     public BoardPageResponseDto getPageBoard(int pageNum, int size, Long filterGoodCount, Long filterHits, String title) {
         Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-//        Page<BoardPageQueryDslDto> boardPage = boardRepository.findAllWithFilters(pageable, filterGoodCount, filterHits, title);
-//        return BoardPageResponseDto.fromPage(boardPage);
+
         return boardRepository.findAllWithFilters(pageable, filterGoodCount, filterHits, title);
     }
 
