@@ -50,6 +50,7 @@ public enum ResponseCodeEnum {
     //Board
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "보드를 찾을 수 없습니다."),
     BOARD_NOT_OWNER(HttpStatus.FORBIDDEN, "보드의 주인이 아닙니다."),
+    BOARD_FILE_PROCESSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "보드 파일 처리 중 오류가 발생했습니다."),
     //Comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
     COMMENT_NOT_OWNER(HttpStatus.FORBIDDEN, "댓글의 주인이 아닙니다."),
