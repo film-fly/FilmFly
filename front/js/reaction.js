@@ -82,21 +82,50 @@ $(document).ready(function () {
 
 // 닉네임 옆 톱니바퀴의 차단, 신고를 클릭했을 때
 $(document).ready(function() {
+  let selectedUserId = null;
+  let selectedContentId = null;
+  let selectedContentType = null;
+
   // 차단 버튼 클릭 이벤트 처리
   $(document).on('click', '.block-user', function(e) {
     e.preventDefault();
-    let userId = $(this).closest('.dropdown-menu').attr('data-user-id');
-    alert('user id : ' + userId);
+    $('#blockReportModal').removeAttr('data-block');
+    $('#blockReportModal').removeAttr('data-report');
+    selectedUserId = $(this).closest('.dropdown-menu').attr('data-user-id');
+
+    $('#inputBlockReport').val('');
+    $('#blockReportModalLabel').text('차단하기');
+    $('#btnBlockReport').text('차단하기');
+    $('#blockReportModal').attr('data-block', true);
+    // alert('user id : ' + selectedUserId);
     // 실제 차단 기능 구현 코드
   });
 
   // 신고 버튼 클릭 이벤트 처리
   $(document).on('click', '.report-user', function(e) {
     e.preventDefault();
-    let userId = $(this).closest('.dropdown-menu').attr('data-user-id');
-    let contentId = $(this).closest('.dropdown-menu').attr('data-content-id');
-    let contentType = $(this).closest('.dropdown-menu').attr('data-content-type');
-    alert('user id : ' + userId + "\n신고할 content id : " + contentId + '\n컨텐츠 타입 : ' + contentType);
+    $('#blockReportModal').removeAttr('data-block');
+    $('#blockReportModal').removeAttr('data-report');
+    selectedUserId = $(this).closest('.dropdown-menu').attr('data-user-id');
+    selectedContentId = $(this).closest('.dropdown-menu').attr('data-content-id');
+    selectedContentType = $(this).closest('.dropdown-menu').attr('data-content-type');
+
+    $('#inputBlockReport').val('');
+    $('#blockReportModalLabel').text('신고하기');
+    $('#btnBlockReport').text('신고하기');
+    $('#blockReportModal').attr('data-report', true);
+    // alert('user id : ' + selectedUserId + "\n신고할 content id : " + selectedContentId + '\n컨텐츠 타입 : ' + selectedContentType);
     // 실제 신고 기능 구현 코드
+  });
+
+  // btnBlockReport 버튼 클릭 이벤트 처리
+  $('#btnBlockReport').on('click', function() {
+    if ($('#blockReportModal').attr('data-block')) {
+      alert('차단하기\nuser id : ' + selectedUserId);
+    } else if ($('#blockReportModal').attr('data-report')) {
+      alert('신고하기\nuser id : ' + selectedUserId + '\ncontent id : '
+          + selectedContentId + '\ncontent type : ' + selectedContentType);
+    }
+    // 실제 저장 기능 구현 코드
   });
 });

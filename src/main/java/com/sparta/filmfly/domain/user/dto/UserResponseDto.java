@@ -21,4 +21,5 @@ public class UserResponseDto {
     private UserStatusEnum userStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 }

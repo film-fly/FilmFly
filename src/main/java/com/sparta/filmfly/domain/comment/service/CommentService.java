@@ -30,7 +30,7 @@ public class CommentService {
      */
     @Transactional
     public CommentResponseDto createComment(User user, CommentRequestDto requestDto, Long boardId) {
-        user.validateUserStatus();
+        
 
         Board board = boardRepository.findByIdOrElseThrow(boardId);
         Comment entity = requestDto.toEntity(user,board);
@@ -69,7 +69,7 @@ public class CommentService {
      */
     @Transactional
     public CommentResponseDto updateComment(User user, CommentRequestDto requestDto, Long boardId, Long commentId) {
-        user.validateUserStatus();
+        
         Board board = boardRepository.findByIdOrElseThrow(boardId);
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
         comment.validateOwner(user);
@@ -85,7 +85,7 @@ public class CommentService {
      */
     @Transactional
     public String deleteComment(User user, Long boardId, Long commentId) {
-        user.validateUserStatus();
+        
         Board board = boardRepository.findByIdOrElseThrow(boardId);
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
         if(user.getUserRole() == UserRoleEnum.ROLE_USER) { //관리자면 삭제 가능하게

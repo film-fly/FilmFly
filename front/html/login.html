@@ -49,6 +49,10 @@
     const username = $('#username').val();
     const password = $('#password').val();
 
+    if (!username || !password) {
+      alert('아이디와 비밀번호를 입력하세요');
+    }
+
     const data = {
       username: username,
       password: password
@@ -56,15 +60,23 @@
 
     $.ajax({
       type: 'POST',
-      url: '',
+      url: 'https://localhost:443/users/login',
       data: JSON.stringify(data),
-      contentType: "application/json;charset=utf-8"
+      contentType: "application/json;charset=utf-8",
+      xhrFields: {
+        withCredentials: true
+      }
     })
     .done(function (result, status, xhr) {
-      location.replace("/");
+      location.replace("./index.html");
+    //   회원탈퇴한 계정입니다. 쓰기, 수정, 삭제 작업은 할 수 없습니다.
+    //   회원탈퇴를 한 날짜기준 30일 뒤 삭제가 이루어 지며
+    //   원치 않으신다면 마이페이지에서 복구해주세요.
     })
     .fail(function (xhr, status, er) {
-      alert("로그인 실패");
+      console.log(er);
+      console.log(xhr);
+      alert('로그인 실패');
     });
   });
 </script>
