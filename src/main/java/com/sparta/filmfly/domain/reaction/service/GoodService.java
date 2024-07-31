@@ -3,7 +3,9 @@ package com.sparta.filmfly.domain.reaction.service;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.dto.BadRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
+import com.sparta.filmfly.domain.reaction.dto.GoodResponseDto;
 import com.sparta.filmfly.domain.reaction.entity.Good;
+import com.sparta.filmfly.domain.reaction.repository.BadRepository;
 import com.sparta.filmfly.domain.reaction.repository.GoodRepository;
 import com.sparta.filmfly.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +20,13 @@ public class GoodService {
 
     private final ReactionService reactionService;
     private final GoodRepository goodRepository;
-
+    private final BadRepository badRepository;
+    
     /**
      * 좋아요 추가
      */
     @Transactional
-    public void addGood(User loginUser, GoodRequestDto requestDto) {
+    public GoodResponseDto addGood(User loginUser, GoodRequestDto requestDto) {
         ReactionContentTypeEnum contentType = requestDto.getContentType();
         Long contentId = requestDto.getContentId();
 
@@ -34,15 +37,21 @@ public class GoodService {
                 contentId, contentType, loginUser.getId()
         );
 
+        // 좋아요와 싫어요를 동시에 누를 수 없음 => 싫어요 등록한 상태면 좋아요 추가X
+        badRepository.existsByTypeIdAndTypeAndUserIdOrElseThrow(
+                contentId, contentType, loginUser.getId()
+        );
+
         Good good = requestDto.toEntity(loginUser, contentType);
         goodRepository.save(good);
+        return GoodResponseDto.fromEntity(good);
     }
 
     /**
      * 좋아요 취소
      */
     @Transactional
-    public void removeGood(User loginUser, GoodRequestDto requestDto) {
+    public GoodResponseDto removeGood(User loginUser, GoodRequestDto requestDto) {
         ReactionContentTypeEnum contentType = requestDto.getContentType();
         Long contentId = requestDto.getContentId();
 
@@ -54,6 +63,7 @@ public class GoodService {
         );
 
         goodRepository.delete(findGood);
+        return GoodResponseDto.fromEntity(findGood);
     }
 
     /**
