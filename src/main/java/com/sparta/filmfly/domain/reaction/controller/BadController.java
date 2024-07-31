@@ -1,6 +1,7 @@
 package com.sparta.filmfly.domain.reaction.controller;
 
 import com.sparta.filmfly.domain.reaction.dto.BadRequestDto;
+import com.sparta.filmfly.domain.reaction.dto.BadResponseDto;
 import com.sparta.filmfly.domain.reaction.service.BadService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
@@ -25,24 +26,24 @@ public class BadController {
      * 싫어요 추가
      */
     @PostMapping
-    public ResponseEntity<MessageResponseDto> addBad(
+    public ResponseEntity<DataResponseDto<BadResponseDto>> addBad(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @Valid @RequestBody BadRequestDto requestDto
     ) {
-        badService.addBad(userDetails.getUser(), requestDto);
-        return ResponseUtils.success();
+        BadResponseDto responseDto = badService.addBad(userDetails.getUser(), requestDto);
+        return ResponseUtils.success(responseDto);
     }
 
     /**
      * 싫어요 취소
      */
     @DeleteMapping
-    public ResponseEntity<MessageResponseDto> removeBad(
+    public ResponseEntity<DataResponseDto<BadResponseDto>> removeBad(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @Valid @RequestBody BadRequestDto requestDto
     ) {
-        badService.removeBad(userDetails.getUser(), requestDto);
-        return ResponseUtils.success();
+        BadResponseDto responseDto = badService.removeBad(userDetails.getUser(), requestDto);
+        return ResponseUtils.success(responseDto);
     }
 
     /**

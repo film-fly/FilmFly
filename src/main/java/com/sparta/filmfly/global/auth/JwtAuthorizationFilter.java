@@ -41,15 +41,29 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
 
-    // 화이트 리스트에 포함된 URI 패턴은 인증을 생략
     private final List<String> anyMethodWhiteList = List.of(
-            "/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/email/verify", "/email/[0-9]+/resend", "/1", "/2", "/testcode"
+            "/",
+            "/error",
+            "/users/signup",
+            "/users/login",
+            "/users/kakao/authorize",
+            "/users/kakao/callback",
+            "/emails/verify",
+            "/emails/[0-9]+/resend",
+            "/users/check-nickname"
     );
 
-   // GET 메서드 화이트 리스트
     private final List<String> getMethodWhiteList = List.of(
-           "/users/[0-9]+/profile"
-   );
+            "/users/[0-9]+/profile"
+    );
+
+    private final List<String> deletedUserAllowedPaths = List.of(
+            "/users/logout", "/users/activate"
+    );
+
+    private final List<String> unverifiedUserAllowedPaths = List.of(
+            "/users/logout"
+    );
 
     public JwtAuthorizationFilter(JwtProvider jwtProvider, UserDetailsServiceImpl userDetailsService,
                                   UserRepository userRepository, ObjectMapper objectMapper) {
@@ -66,7 +80,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String uri = req.getRequestURI();
         log.info("요청된 URI: {}", uri);
 
-        // 화이트 리스트에 포함된 URI는 인증을 생략
+        // 인증 불필요
         if (isWhiteListed(uri) || isGetMethodWhiteListed(req.getMethod(), uri)) {
             log.info("인증이 필요 없는 요청: {}", uri);
             filterChain.doFilter(req, res);
@@ -74,7 +88,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
 
         try {
-            // 쿠키에서 액세스 토큰과 리프레시 토큰 추출
             String accessToken = getTokenFromCookie(req, "accessToken");
             if (!StringUtils.hasText(accessToken)) {
                 setErrorResponse(res, ResponseCodeEnum.INVALID_TOKENS);
@@ -90,28 +103,43 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // 사용자 상태 확인
+            if (user.getUserStatus() == UserStatusEnum.UNVERIFIED) {
+                if (isUnverifiedUserAllowedPath(uri)) {
+                    handleValidAccessToken(accessToken, user);
+                    filterChain.doFilter(req, res);
+                    return;
+                } else {
+                    setErrorResponse(res, ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
+                    return;
+                }
+            }
+
             if (user.getUserStatus() == UserStatusEnum.DELETED) {
-                setErrorResponse(res, ResponseCodeEnum.USER_DELETED);
-                return;
+                if (isDeletedUserAllowedPath(uri)) {
+                    handleValidAccessToken(accessToken, user);
+                    filterChain.doFilter(req, res);
+                    return;
+                } else {
+                    setErrorResponse(res, ResponseCodeEnum.USER_DELETED);
+                    return;
+                }
             } else if (user.getUserStatus() == UserStatusEnum.SUSPENDED) {
                 setErrorResponse(res, ResponseCodeEnum.USER_SUSPENDED);
                 return;
             }
 
-            // 액세스 토큰 검증
             boolean accessTokenValid = jwtProvider.validateToken(accessToken);
             if (accessTokenValid) {
                 log.info("유효한 액세스 토큰 처리");
-                handleValidAccessToken(accessToken);
+                handleValidAccessToken(accessToken, user);
             } else {
                 log.info("액세스 토큰 만료, 리프레시 토큰으로 재발급");
-                handleExpiredAccessToken(req, res);
+                handleExpiredAccessToken(req, res, user);
                 return;
             }
         } catch (ExpiredJwtException e) {
             log.info("만료된 액세스 토큰 처리");
-            handleExpiredAccessToken(req, res);
+            handleExpiredAccessToken(req, res, null);
             return;
         } catch (JwtException | IllegalArgumentException | AuthenticationServiceException e) {
             setErrorResponse(res, ResponseCodeEnum.INVALID_TOKENS);
@@ -121,7 +149,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         filterChain.doFilter(req, res);
     }
 
-    // 쿠키에서 토큰 추출
     private String getTokenFromCookie(HttpServletRequest request, String tokenName) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -134,59 +161,64 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         return null;
     }
 
-    // 유효한 액세스 토큰을 처리하여 인증을 설정
-    private void handleValidAccessToken(String accessToken) {
+    private void handleValidAccessToken(String accessToken, User user) {
         Claims accessTokenClaims = jwtProvider.getUserInfoFromToken(accessToken);
         String username = accessTokenClaims.getSubject();
-        setAuthentication(username);
+        setAuthentication(username, user.getId());
     }
 
-    // 액세스 토큰이 만료된 경우 리프레시 토큰을 통해 새로운 액세스 토큰을 발급
-    private void handleExpiredAccessToken(HttpServletRequest req, HttpServletResponse res) {
-        // 쿠키에서 리프레시 토큰 추출
+    private void handleExpiredAccessToken(HttpServletRequest req, HttpServletResponse res, User user) {
         String refreshToken = getTokenFromCookie(req, "refreshToken");
         if (StringUtils.hasText(refreshToken) && jwtProvider.validateToken(refreshToken)) {
             Claims refreshTokenClaims = jwtProvider.getUserInfoFromToken(refreshToken);
             String username = refreshTokenClaims.getSubject();
 
-            User user = userRepository.findByUsername(username).orElse(null);
+            if (user == null) {
+                user = userRepository.findByUsername(username).orElse(null);
+            }
+
             if (user != null && refreshToken.equals(user.getRefreshToken())) {
-                // 사용자 상태 확인
                 if (user.getUserStatus() == UserStatusEnum.DELETED) {
-                    setErrorResponse(res, ResponseCodeEnum.USER_DELETED);
-                    return;
+                    if (isDeletedUserAllowedPath(req.getRequestURI())) {
+                        String newAccessToken = jwtProvider.createAccessToken(username, user.getId());
+                        res.addHeader(JwtProvider.AUTHORIZATION_HEADER, newAccessToken);
+                        setAuthentication(username, user.getId());
+                        return;
+                    } else {
+                        setErrorResponse(res, ResponseCodeEnum.USER_DELETED);
+                        return;
+                    }
                 } else if (user.getUserStatus() == UserStatusEnum.SUSPENDED) {
                     setErrorResponse(res, ResponseCodeEnum.USER_SUSPENDED);
                     return;
                 }
 
-                // 새로운 액세스 토큰 생성
-                String newAccessToken = jwtProvider.createAccessToken(username);
+                String newAccessToken = jwtProvider.createAccessToken(username, user.getId());
                 res.addHeader(JwtProvider.AUTHORIZATION_HEADER, newAccessToken);
-                setAuthentication(username);
+                setAuthentication(username, user.getId());
             } else {
-                setErrorResponse(res, ResponseCodeEnum.INVALID_TOKENS);
+                setErrorResponse(res, ResponseCodeEnum.INVALID_REQUEST);
             }
         } else {
             setErrorResponse(res, ResponseCodeEnum.INVALID_TOKENS);
         }
     }
 
-    // SecurityContext에 인증 객체를 설정
-    public void setAuthentication(String username) {
+    public void setAuthentication(String username, Long userId) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
-        Authentication authentication = createAuthentication(username);
+        Authentication authentication = createAuthentication(username, userId);
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
     }
 
-    // Username을 통해 Authentication 객체 생성
-    private Authentication createAuthentication(String username) {
+    private Authentication createAuthentication(String username, Long userId) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        // 사용자 ID를 Principal로 설정
+        authToken.setDetails(userId);
+        return authToken;
     }
 
-    // HTTP 응답 본문 작성
     private void writeResponseBody(HttpServletResponse res, ResponseEntity<MessageResponseDto> responseEntity) throws IOException {
         res.setStatus(responseEntity.getStatusCode().value());
         res.setContentType("application/json");
@@ -200,13 +232,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
     }
 
-    // 에러 응답 설정
     private void setErrorResponse(HttpServletResponse response, ResponseCodeEnum responseCode) {
         ResponseEntity<MessageResponseDto> responseEntity = ResponseUtils.of(responseCode.getHttpStatus(), responseCode.getMessage());
         writeErrorResponse(response, responseEntity);
     }
 
-    // 에러 응답 본문 작성
     private void writeErrorResponse(HttpServletResponse response, ResponseEntity<MessageResponseDto> responseEntity) {
         try {
             writeResponseBody(response, responseEntity);
@@ -215,12 +245,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
     }
 
-    // 화이트 리스트 검사
     private boolean isWhiteListed(String uri) {
         return anyMethodWhiteList.stream().anyMatch(pattern -> Pattern.matches(pattern, uri));
     }
-    // GET 메서드 화이트 리스트 검사
+
     private boolean isGetMethodWhiteListed(String method, String uri) {
         return HttpMethod.GET.matches(method) && getMethodWhiteList.stream().anyMatch(pattern -> Pattern.compile(pattern).matcher(uri).matches());
+    }
+
+    private boolean isUnverifiedUserAllowedPath(String uri) {
+        return unverifiedUserAllowedPaths.stream().anyMatch(uri::startsWith);
+    }
+
+    private boolean isDeletedUserAllowedPath(String uri) {
+        return deletedUserAllowedPaths.stream().anyMatch(uri::startsWith);
     }
 }
