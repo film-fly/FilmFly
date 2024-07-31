@@ -62,6 +62,9 @@
     })
     .done(function (result, status, xhr) {
       location.replace("/");
+    //   회원탈퇴한 계정입니다. 쓰기, 수정, 삭제 작업은 할 수 없습니다.
+    //   회원탈퇴를 한 날짜기준 30일 뒤 삭제가 이루어 지며
+    //   원치 않으신다면 마이페이지에서 복구해주세요.
     })
     .fail(function (xhr, status, er) {
       alert("로그인 실패");

@@ -16,6 +16,7 @@ import java.util.Date;
 public class JwtProvider {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String USER_ID_CLAIM = "userId";
 
     @Value("${jwt_secret_key}")
     private String secretKey;
@@ -23,6 +24,9 @@ public class JwtProvider {
 
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
+    /**
+     * 비밀 키 초기화
+     */
     @PostConstruct
     public void initializeSecretKey() {
         try {
@@ -35,39 +39,49 @@ public class JwtProvider {
         }
     }
 
-    private String createToken(String username, long expirationTime) {
+    /**
+     * JWT 토큰 생성
+     */
+    private String createToken(String username, Long userId, long expirationTime) {
         Date now = new Date();
         JwtBuilder builder = Jwts.builder()
                 .setSubject(username)
+                .claim(USER_ID_CLAIM, userId)
                 .setExpiration(new Date(now.getTime() + expirationTime))
                 .setIssuedAt(now)
                 .signWith(key, signatureAlgorithm);
 
-        String token = builder.compact();
-        // Base64 URL-safe encoding
-//        String encodingToken = Base64.getUrlEncoder().encodeToString(token.getBytes());
-//        log.info("encodingToken : {}", encodingToken);
-        return token;
+        return builder.compact();
     }
 
-    public String createAccessToken(String username) {
+    /**
+     * 액세스 토큰 생성
+     */
+    public String createAccessToken(String username, Long userId) {
         long ACCESS_TOKEN_TIME = 30 * 60 * 1000L;
-        return createToken(username, ACCESS_TOKEN_TIME);
+        return createToken(username, userId, ACCESS_TOKEN_TIME);
     }
 
-    public String createRefreshToken(String username) {
+    /**
+     * 리프레시 토큰 생성
+     */
+    public String createRefreshToken(String username, Long userId) {
         long REFRESH_TOKEN_TIME = 14 * 24 * 60 * 60 * 1000L;
-        return createToken(username, REFRESH_TOKEN_TIME);
+        return createToken(username, userId, REFRESH_TOKEN_TIME);
     }
 
+    /**
+     * JWT 토큰에서 사용자 정보 추출
+     */
     public Claims getUserInfoFromToken(String token) {
-//        String decodedToken = new String(Base64.getUrlDecoder().decode(token));
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
+    /**
+     * JWT 토큰 검증
+     */
     public boolean validateToken(String token) {
         try {
-//            String decodedToken = new String(Base64.getUrlDecoder().decode(token));
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {

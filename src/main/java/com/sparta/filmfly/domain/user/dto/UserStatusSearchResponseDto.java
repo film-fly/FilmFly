@@ -7,7 +7,7 @@ import java.util.List;
 
 @Builder
 @Getter
-public class UserStatusResponseDto {
+public class UserStatusSearchResponseDto {
     private List<UserResponseDto> users;
     private long userCount;
 }

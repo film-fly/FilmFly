@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,4 +36,11 @@ public class Bad {
 
     @Column(nullable = false)
     private Long typeId;
+
+    @Builder
+    public Bad(User user, ReactionContentTypeEnum type, Long typeId) {
+        this.user = user;
+        this.type = type;
+        this.typeId = typeId;
+    }
 }

@@ -60,11 +60,14 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests(authorizeHttpRequests ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/**").permitAll()
-                        .requestMatchers("/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/email/verify", "/email/*/resend").permitAll()
+                        .requestMatchers("/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/emails/verify", "/emails/*/resend","/users/check-nickname").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/*/profile").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/admins/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/admins/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/users/activate/*").hasAnyAuthority("ROLE_DELETED_USER", "ROLE_ADMIN")
                         .anyRequest().authenticated()
         );
+
 
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

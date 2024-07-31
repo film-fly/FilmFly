@@ -13,11 +13,15 @@ public class CouponResponseDto {
     private Long id;
     private String title;
     private String description;
-    private double discountRate;
+
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime expirationDate;
+
+    Boolean issued;
     Boolean status;
 
     public static CouponResponseDto fromEntity(Coupon coupon) {
@@ -25,9 +29,10 @@ public class CouponResponseDto {
                 .id(coupon.getId())
                 .title(coupon.getTitle())
                 .description(coupon.getDescription())
-                .discountRate(coupon.getDiscountRate())
+                .issued(coupon.getIssued())
                 .status(coupon.getStatus())
                 .createdAt(LocalDateTime.now())
+                .expirationDate(coupon.getExpirationDate())
                 .build();
     }
 

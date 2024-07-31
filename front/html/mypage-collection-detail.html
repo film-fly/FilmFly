@@ -18,6 +18,18 @@
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .card {
+      position: relative;
+    }
+    .delete-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: red;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 <div class="container">
@@ -69,6 +81,7 @@
     <div class="col" data-movie-id="${movie.movieId}">
       <div class="card h-100">
         <img src="${movie.movieUrl}" class="card-img-top img-big-size" alt="영화 포스터">
+        <i class="fa-solid fa-trash-can delete-icon" data-movie-id="${movie.movieId}"></i>
         <div class="card-body">
           <h5 class="card-title">${movie.title}</h5>
         </div>
@@ -107,10 +120,34 @@
     }
   });
 
-  $('.col').on('click', function () {
+  $('.col').on('click', function (e) {
+    if ($(e.target).hasClass('delete-icon')) {
+      return;
+    }
     const movieId = $(this).attr('data-movie-id');
     const url = `/movie/${movieId}`;
     alert(`영화 번호 : ${url}`);
+  });
+
+  $(document).on('click', '.delete-icon', function (e) {
+    e.stopPropagation();
+    const movieId = $(this).data('movie-id');
+    if (confirm("해당 영화를 삭제하시겠습니까?")) {
+      $(`[data-movie-id="${movieId}"]`).remove();
+      // AJAX 요청을 보내서 영화를 삭제합니다.
+      // $.ajax({
+      //   type: 'DELETE',
+      //   url: `/movies/${movieId}`,
+      //   success: function (result) {
+      //     alert("영화가 삭제되었습니다.");
+      //     // 삭제가 완료되면 영화 카드도 삭제합니다.
+      //     $(`[data-movie-id="${movieId}"]`).remove();
+      //   },
+      //   error: function (xhr, status, er) {
+      //     alert("영화 삭제 실패");
+      //   }
+      // });
+    }
   });
 </script>
 </body>
