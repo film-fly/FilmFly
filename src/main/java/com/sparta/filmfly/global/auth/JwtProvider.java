@@ -16,6 +16,8 @@ import java.util.Date;
 public class JwtProvider {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final long ACCESS_TOKEN_TIME = 30 * 60 * 1000L;
+    public static final long REFRESH_TOKEN_TIME = 14 * 24 * 60 * 60 * 1000L;
     private static final String USER_ID_CLAIM = "userId";
 
     @Value("${jwt_secret_key}")
@@ -58,7 +60,6 @@ public class JwtProvider {
      * 액세스 토큰 생성
      */
     public String createAccessToken(String username, Long userId) {
-        long ACCESS_TOKEN_TIME = 30 * 60 * 1000L;
         return createToken(username, userId, ACCESS_TOKEN_TIME);
     }
 
@@ -66,7 +67,6 @@ public class JwtProvider {
      * 리프레시 토큰 생성
      */
     public String createRefreshToken(String username, Long userId) {
-        long REFRESH_TOKEN_TIME = 14 * 24 * 60 * 60 * 1000L;
         return createToken(username, userId, REFRESH_TOKEN_TIME);
     }
 

@@ -16,6 +16,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -109,8 +110,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         UserDetailsImpl userDetails = (UserDetailsImpl) authResult.getPrincipal();
         User user = userDetails.getUser();
 
-        handleTokenGeneration(response, user);
-
         response.setStatus(HttpServletResponse.SC_OK);
         ResponseEntity<MessageResponseDto> responseEntity = ResponseUtils.success();
         writeResponseBody(response, responseEntity);
@@ -120,12 +119,21 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = jwtProvider.createAccessToken(user.getUsername(), user.getId());
         String refreshToken = jwtProvider.createRefreshToken(user.getUsername(), user.getId());
 
-        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-        accessTokenCookie.setPath("/");
-        response.addCookie(accessTokenCookie);
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setPath("/");
-        response.addCookie(refreshTokenCookie);
+        ResponseCookie accessCookieBuilder = ResponseCookie.from("accessToken", accessToken)
+            .path("/")
+            .sameSite("None")
+            .secure(true)
+            .maxAge(JwtProvider.ACCESS_TOKEN_TIME)
+            .build();
+        ResponseCookie refreshCookieBuilder = ResponseCookie.from("refreshToken", refreshToken)
+            .path("/")
+            .sameSite("None")
+            .secure(true)
+            .maxAge(JwtProvider.REFRESH_TOKEN_TIME)
+            .build();
+
+        response.addHeader("Set-Cookie", accessCookieBuilder.toString());
+        response.addHeader("Set-Cookie", refreshCookieBuilder.toString());
 
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
