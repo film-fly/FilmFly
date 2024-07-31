@@ -27,6 +27,9 @@ public class Media {
     private String fileName;
 
     @Column(nullable = false)
+    private Long size;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MediaTypeEnum type;
 
@@ -34,9 +37,10 @@ public class Media {
     private Long typeId;
 
     @Builder
-    public Media(String s3Url, String fileName, MediaTypeEnum type, Long typeId) {
+    public Media(String s3Url, String fileName, Long size, MediaTypeEnum type, Long typeId) {
         this.s3Url = s3Url;
         this.fileName = fileName;
+        this.size = size;
         this.type = type;
         this.typeId = typeId;
     }

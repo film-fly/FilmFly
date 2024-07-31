@@ -14,21 +14,18 @@ public class BoardPageResponseDto {
     Long totalElements;
     int currentPages;
     int size;
-    List<BoardResponseDto> content;
+    List<BoardPageDto> content;
 
     /**
      * content 제외한 기본 페이지 정보  정적 팩토리
      */
-    public static BoardPageResponseDto fromPage(Page<Board> boards) {
+    public static BoardPageResponseDto fromDslPage(Page<BoardPageDto> boards) {
         return BoardPageResponseDto.builder()
                 .totalPages(boards.getTotalPages())
                 .totalElements(boards.getTotalElements())
-                .currentPages(boards.getNumber()+1)
+                .currentPages(boards.getNumber() + 1)
                 .size(boards.getSize())
+                .content(boards.getContent())
                 .build();
-    }
-
-    public void addContent(List<BoardResponseDto> content) {
-        this.content = content;
     }
 }

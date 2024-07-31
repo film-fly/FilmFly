@@ -8,12 +8,10 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-@Builder
-public class BoardResponseDto {
+public class BoardPageDto {
     private Long id;
     private Long userId;
     private String title;
-    private String content;
     private String nickname;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
@@ -21,33 +19,28 @@ public class BoardResponseDto {
     private Long badCount;
     private Long hits;
 
-    public static BoardResponseDto fromEntity(Board board) {
-        return BoardResponseDto.builder()
+    @Builder
+    public BoardPageDto(Long id, Long userId, String title, String nickname, LocalDateTime createdAt, Long goodCount, Long badCount, Long hits) {
+        this.id = id;
+        this.userId = userId;
+        this.title = title;
+        this.nickname = nickname;
+        this.createdAt = createdAt;
+        this.goodCount = goodCount;
+        this.badCount = badCount;
+        this.hits = hits;
+    }
+
+    public static BoardPageDto fromEntity(Board board, Long goodCount) {
+        return BoardPageDto.builder()
                 .id(board.getId())
                 .userId(board.getUser().getId())
                 .title(board.getTitle())
-                .content(board.getContent())
                 .nickname(board.getUser().getNickname())
                 .createdAt(board.getCreatedAt())
-                .goodCount(0L)
-                .badCount(0L)
-                .hits(board.getHits())
+                .goodCount(goodCount)
+                .badCount(goodCount)
+                .hits(goodCount)
                 .build();
     }
-
-    /**
-     * 보드가 미디어 정보를 가지고 있으면 추가
-     */
-    /*public void addMediaDto(MediaResponseDto media) {
-        if (mediaList == null) {
-            mediaList = new ArrayList<>();
-        }
-        mediaList.add(media);
-    }*/
-
-    public void updateReactionCount(Long goodCount, Long badCount) {
-        this.goodCount = goodCount;
-        this.badCount = badCount;
-    }
-
 }
