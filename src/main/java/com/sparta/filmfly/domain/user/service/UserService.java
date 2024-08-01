@@ -167,6 +167,7 @@ public class UserService {
     public UserResponseDto getProfile(Long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
         return UserResponseDto.builder()
+                .id(user.getId())
                 .nickname(user.getNickname())
                 .introduce(user.getIntroduce())
                 .pictureUrl(user.getPictureUrl())
