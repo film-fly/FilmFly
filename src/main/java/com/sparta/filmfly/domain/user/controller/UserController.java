@@ -166,9 +166,9 @@ public class UserController {
 
 
     /**
-     * 유저 활성화 (관리자 + 탈퇴 본인 가능)
+     * 본인 활성화 시키기(탈퇴 상태일때)
      */
-    @PatchMapping("/{userId}/activate")
+    @PatchMapping("/activate")
     public ResponseEntity<DataResponseDto<UserResponseDto>> activateUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long userId
