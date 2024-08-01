@@ -109,7 +109,7 @@ public class UserController {
     /**
      * 프로필 조회
      */
-    @GetMapping("/{userId}/profile")
+    @GetMapping("/{userId}")
     public ResponseEntity<DataResponseDto<UserResponseDto>> getProfile(@PathVariable Long userId) {
         UserResponseDto profile = userService.getProfile(userId);
         return ResponseUtils.success(profile);
@@ -168,7 +168,7 @@ public class UserController {
     /**
      * 유저 활성화 (관리자 + 탈퇴 본인 가능)
      */
-    @PutMapping("/activate/{userId}")
+    @PutMapping("/{userId}/activate")
     public ResponseEntity<DataResponseDto<UserResponseDto>> activateUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long userId
