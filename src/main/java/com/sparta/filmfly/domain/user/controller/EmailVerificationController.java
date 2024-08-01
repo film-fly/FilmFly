@@ -19,7 +19,7 @@ public class EmailVerificationController {
     /**
      * 이메일 인증 코드 재전송
      */
-    @PostMapping("/{userId}/resend")
+    @PostMapping("/code-send")
     public ResponseEntity<MessageResponseDto> resendVerificationCode(@PathVariable Long userId) {
         emailVerificationService.resendVerificationCode(userId);
         return ResponseUtils.success();
