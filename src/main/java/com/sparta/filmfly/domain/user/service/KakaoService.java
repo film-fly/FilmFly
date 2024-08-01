@@ -53,10 +53,6 @@ public class KakaoService {
         UserKakaoInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
         log.info("Kakao user info: {}", kakaoUserInfo);
 
-        if (userRepository.findByEmail(kakaoUserInfo.getEmail()).isPresent()) {
-            throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
-        }
-
         return createOrUpdateUser(kakaoUserInfo, response);
     }
 
@@ -146,6 +142,11 @@ public class KakaoService {
         try {
             user = userRepository.findByUsernameOrElseThrow(email);
         } catch (NotFoundException e) {
+            // 신규 사용자 생성 시에만 이메일 중복 체크 수행
+            if (userRepository.findByEmail(kakaoUserInfo.getEmail()).isPresent()) {
+                throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
+            }
+
             user = User.builder()
                     .username(email)
                     .password("")
@@ -199,14 +200,15 @@ public class KakaoService {
      * 랜덤 닉네임 생성
      */
     private String generateRandomNickname(String email) {
-        String randomString = generateRandomString(8);
+        String randomString = generateRandomString();
         return email.split("@")[0] + "_" + randomString;
     }
 
     /**
      * 랜덤 문자열 생성
      */
-    private String generateRandomString(int length) {
+    private String generateRandomString() {
+        int length = 8;
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         SecureRandom random = new SecureRandom();
         StringBuilder sb = new StringBuilder(length);
