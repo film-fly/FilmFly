@@ -5,9 +5,11 @@ import lombok.Getter;
 
 import java.util.List;
 
-@Builder
 @Getter
-public class UserStatusSearchResponseDto {
+@Builder
+public class UserSearchResponseDto {
     private List<UserResponseDto> users;
     private long userCount;
+    private int currentPage;
+    private int totalPages;
 }
