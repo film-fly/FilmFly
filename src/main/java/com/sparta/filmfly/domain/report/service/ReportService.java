@@ -32,7 +32,6 @@ public class ReportService {
         Report report = Report.builder()
                 .reporterId(reporter)
                 .reportedId(reported)
-                .content(reportRequestDto.getContent())
                 .typeId(reportRequestDto.getTypeId())
                 .type(reportRequestDto.getType())
                 .reason(reportRequestDto.getReason())

@@ -11,6 +11,9 @@ import com.sparta.filmfly.global.common.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -212,11 +215,11 @@ public class UserService {
 
 
     /**
-     * 유저 상세 조회 (관리자 기능)
+     * 유저 상세 조회(관리자 기능)
      */
     @Transactional(readOnly = true)
-    public UserResponseDto getUserDetail(UserSearchRequestDto userSearchRequestDto) {
-        User user = userRepository.findByUsernameOrElseThrow(userSearchRequestDto.getUsername());
+    public UserResponseDto getUserDetail(Long userId) {
+        User user = userRepository.findByIdOrElseThrow(userId);
         return UserResponseDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -232,29 +235,44 @@ public class UserService {
                 .build();
     }
 
+
     /**
-     * 상태별 유저 조회
+     *  유저 검색 조회(관리자 기능)
      */
     @Transactional(readOnly = true)
-    public UserStatusSearchResponseDto getUsersByStatus(UserStatusEnum status) {
-        List<User> users = userRepository.findAllByUserStatus(status);
+    public UserSearchResponseDto getUsersBySearch(String search, UserStatusEnum status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> usersPage;
 
-        List<UserResponseDto> userResponseDtos = users.stream()
+        if (search != null && !search.isEmpty() && status != null) {
+            usersPage = userRepository.findBySearchAndStatus(search, status, pageable);
+        } else if (search != null && !search.isEmpty()) {
+            usersPage = userRepository.findByUsernameOrNicknameContaining(search, pageable);
+        } else if (status != null) {
+            usersPage = userRepository.findAllByUserStatus(status, pageable);
+        } else {
+            usersPage = userRepository.findAll(pageable);
+        }
+
+        List<UserResponseDto> userResponseDtos = usersPage.getContent().stream()
                 .map(user -> UserResponseDto.builder()
                         .id(user.getId())
                         .username(user.getUsername())
-                        .deletedAt(user.getDeletedAt())
+                        .nickname(user.getNickname())
+                        .userRole(user.getUserRole())
                         .build())
                 .collect(Collectors.toList());
 
-        return UserStatusSearchResponseDto.builder()
+        return UserSearchResponseDto.builder()
                 .users(userResponseDtos)
-                .userCount(users.size())
+                .userCount(usersPage.getTotalElements())
+                .currentPage(usersPage.getNumber())
+                .totalPages(usersPage.getTotalPages())
                 .build();
     }
 
     /**
-     * 유저 정지 시키기
+     * 유저 정지 시키기(관리자 기능)
      */
     @Transactional
     public UserResponseDto suspendUser(Long userId) {

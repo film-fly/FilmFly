@@ -3,9 +3,8 @@ package com.sparta.filmfly.domain.user.controller;
 import com.sparta.filmfly.domain.report.dto.ReportResponseDto;
 import com.sparta.filmfly.domain.report.service.ReportService;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
-import com.sparta.filmfly.domain.user.dto.UserSearchRequestDto;
-import com.sparta.filmfly.domain.user.dto.UserStatusSearchRequestDto;
-import com.sparta.filmfly.domain.user.dto.UserStatusSearchResponseDto;
+import com.sparta.filmfly.domain.user.dto.UserSearchResponseDto;
+import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import com.sparta.filmfly.domain.user.service.UserService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
@@ -29,10 +28,13 @@ public class AdminController {
      * 유저 검색 조회
      */
     @GetMapping("/users")
-    public ResponseEntity<DataResponseDto<UserStatusSearchResponseDto>> getUsersByStatus(
-            @RequestBody UserStatusSearchRequestDto userStatusRequestDto
+    public ResponseEntity<DataResponseDto<UserSearchResponseDto>> getUsersBySearch(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) UserStatusEnum status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        UserStatusSearchResponseDto users = userService.getUsersByStatus(userStatusRequestDto.getStatus());
+        UserSearchResponseDto users = userService.getUsersBySearch(search, status, page, size);
         return ResponseUtils.success(users);
     }
 
@@ -41,9 +43,9 @@ public class AdminController {
      */
     @GetMapping("/users/{userId}")
     public ResponseEntity<DataResponseDto<UserResponseDto>> getUserDetail(
-            @RequestBody UserSearchRequestDto userSearchRequestDto
+            @PathVariable Long userId
     ) {
-        UserResponseDto userDetail = userService.getUserDetail(userSearchRequestDto);
+        UserResponseDto userDetail = userService.getUserDetail(userId);
         return ResponseUtils.success(userDetail);
     }
 
