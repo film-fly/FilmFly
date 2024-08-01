@@ -26,20 +26,9 @@ public class AdminController {
     private final ReportService reportService;
 
     /**
-     * 개인 유저 상세 조회 (관리자 기능)
+     * 유저 검색 조회
      */
-    @GetMapping("/search/detail")
-    public ResponseEntity<DataResponseDto<UserResponseDto>> getUserDetail(
-            @RequestBody UserSearchRequestDto userSearchRequestDto
-    ) {
-        UserResponseDto userDetail = userService.getUserDetail(userSearchRequestDto);
-        return ResponseUtils.success(userDetail);
-    }
-
-    /**
-     * 유저 상태별 조회 (관리자 기능)
-     */
-    @GetMapping("/search/status")
+    @GetMapping("/users")
     public ResponseEntity<DataResponseDto<UserStatusSearchResponseDto>> getUsersByStatus(
             @RequestBody UserStatusSearchRequestDto userStatusRequestDto
     ) {
@@ -48,9 +37,29 @@ public class AdminController {
     }
 
     /**
-     * 유저 정지 (관리자 기능)
+     * 개인 유저 상세 조회
      */
-    @PutMapping("/suspend/{userId}")
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<DataResponseDto<UserResponseDto>> getUserDetail(
+            @RequestBody UserSearchRequestDto userSearchRequestDto
+    ) {
+        UserResponseDto userDetail = userService.getUserDetail(userSearchRequestDto);
+        return ResponseUtils.success(userDetail);
+    }
+
+    /**
+     * 신고 목록 조회
+     */
+    @GetMapping("/reports")
+    public ResponseEntity<DataResponseDto<List<ReportResponseDto>>> getAllReports() {
+        List<ReportResponseDto> reports = reportService.getAllReports();
+        return ResponseUtils.success(reports);
+    }
+
+    /**
+     * 유저 정지
+     */
+    @PatchMapping("/suspend")
     public ResponseEntity<DataResponseDto<UserResponseDto>> suspendUser(
             @PathVariable Long userId
     ) {
@@ -58,12 +67,18 @@ public class AdminController {
         return ResponseUtils.success(userResponseDto);
     }
 
+
     /**
-     * 신고 목록 조회 (관리자 권한)
+     * 유저 활성화 시키기
      */
-    @GetMapping("/report")
-    public ResponseEntity<DataResponseDto<List<ReportResponseDto>>> getAllReports() {
-        List<ReportResponseDto> reports = reportService.getAllReports();
-        return ResponseUtils.success(reports);
+    @PatchMapping("/activate")
+    public ResponseEntity<DataResponseDto<UserResponseDto>> activateUser(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long userId
+    ) {
+        UserResponseDto userResponseDto = userService.activateUser(userId, userDetails.getUser());
+        return ResponseUtils.success(userResponseDto);
     }
+
+
 }

@@ -75,7 +75,7 @@ public class UserController {
     /**
      * 비밀번호 변경
      */
-    @PutMapping("/password")
+    @PatchMapping("/password")
     public ResponseEntity<MessageResponseDto> updatePassword(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody UserPasswordUpdateRequestDto requestDto
@@ -87,7 +87,7 @@ public class UserController {
     /**
      * 프로필 업로드
      */
-    @PutMapping("/profile")
+    @PatchMapping("/profile")
     public ResponseEntity<DataResponseDto<UserResponseDto>> updateProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestPart("profileUpdateRequestDto") UserProfileUpdateRequestDto requestDto,
@@ -166,9 +166,9 @@ public class UserController {
 
 
     /**
-     * 유저 활성화 (관리자 + 탈퇴 본인 가능)
+     * 본인 활성화 시키기(탈퇴 상태일때)
      */
-    @PutMapping("/{userId}/activate")
+    @PatchMapping("/activate")
     public ResponseEntity<DataResponseDto<UserResponseDto>> activateUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long userId
