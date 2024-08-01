@@ -49,16 +49,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             "/users/kakao/authorize",
             "/users/kakao/callback",
             "/emails/verify",
-            "/emails/[0-9]+/resend",
+            "/emails/code-send",
             "/users/check-nickname"
     );
 
     private final List<String> getMethodWhiteList = List.of(
-            "/users/[0-9]+/profile"
+            "/users/[0-9]+"
     );
 
     private final List<String> deletedUserAllowedPaths = List.of(
-            "/users/logout", "/users/activate"
+            "/users/logout", "/users/[0-9]+/activate"
     );
 
     private final List<String> unverifiedUserAllowedPaths = List.of(
