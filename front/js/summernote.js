@@ -17,8 +17,15 @@ $('#summernote').summernote({
       // 다중 이미지 처리를 위해 for문을 사용했습니다.
       for (var i = 0; i < files.length; i++) {
         imageUploader(files[i], this);
+        //if(files[i].size > 1024*1024*5){alert("이미지는 5MB 미만입니다.")}
       }
-    }
+    },
+    onMediaDelete: function ($target, editor, $editable) {
+      // 삭제된 이미지의 파일 이름을 알아내기 위해 split 활용
+      //if (confirm('이미지를 삭제하시겠습니까?')) { 확인 누르면 삭제됨 취소 누르면 섬머보드에서만 지워지고 서버에는 남음
+        var deletedImageUrl = $target.attr('src').split('/').pop()
+        imageDelete(deletedImageUrl)
+    },
   }
 });
 
@@ -29,18 +36,32 @@ function imageUploader(file, el) {
   $.ajax({
     data : formData,
     type : "POST",
-    url : 'http://localhost:8080/image/upload',
+    url : 'https://localhost/image/upload',
     contentType : false,
     processData : false,
     enctype : 'multipart/form-data',
     success : function(data) {
       console.log(data);
       // let imageUrl = window.location.origin + data;
-      let imageUrl = 'http://localhost:8080' + data;
+      let imageUrl = 'https://localhost' + data;
       console.log('url: ' + imageUrl);
       $(el).summernote('insertImage', imageUrl, function($image) {
         $image.css('width', "25%");
       });
     }
   });
+}
+
+// 이미지 삭제 ajax
+function imageDelete(imageName) {
+  data = new FormData()
+  data.append('imageName', imageName)
+  $.ajax({
+    data: data,
+    type: 'DELETE',
+    url: 'https://localhost/image/delete',
+    contentType: false,
+    enctype: 'multipart/form-data',
+    processData: false,
+  })
 }

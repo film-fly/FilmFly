@@ -2,6 +2,7 @@ package com.sparta.filmfly.domain.reaction.controller;
 
 import com.sparta.filmfly.domain.reaction.dto.BadRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
+import com.sparta.filmfly.domain.reaction.dto.GoodResponseDto;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
@@ -26,24 +27,24 @@ public class GoodController {
      * 좋아요 추가
      */
     @PostMapping
-    public ResponseEntity<MessageResponseDto> addGood(
+    public ResponseEntity<DataResponseDto<GoodResponseDto>> addGood(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @Valid @RequestBody GoodRequestDto requestDto
     ) {
-        goodService.addGood(userDetails.getUser(), requestDto);
-        return ResponseUtils.success();
+        GoodResponseDto responseDto = goodService.addGood(userDetails.getUser(), requestDto);
+        return ResponseUtils.success(responseDto);
     }
 
     /**
      * 좋아요 취소
      */
     @DeleteMapping
-    public ResponseEntity<MessageResponseDto> removeGood(
+    public ResponseEntity<DataResponseDto<GoodResponseDto>> removeGood(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @Valid @RequestBody GoodRequestDto requestDto
     ) {
-        goodService.removeGood(userDetails.getUser(), requestDto);
-        return ResponseUtils.success();
+        GoodResponseDto responseDto = goodService.removeGood(userDetails.getUser(), requestDto);
+        return ResponseUtils.success(responseDto);
     }
 
     /**

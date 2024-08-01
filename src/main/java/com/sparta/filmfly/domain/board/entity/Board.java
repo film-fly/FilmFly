@@ -39,14 +39,8 @@ public class Board extends TimeStampEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false,columnDefinition = "TEXT")
     private String content;
-
-    @Column(nullable = false)
-    private Long goodCount;
-
-    @Column(nullable = false)
-    private Long badCount;
 
     @Column(nullable = false)
     private Long hits;
@@ -59,14 +53,12 @@ public class Board extends TimeStampEntity {
         this.title = title;
         this.content = content;
 
-        goodCount = 0L;
-        badCount = 0L;
         hits = 0L;
     }
 
-    public void update(BoardRequestDto requestDto) {
-        this.title = requestDto.getTitle() != null ? requestDto.getTitle() : title;
-        this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
+    public void updateContent(String title, String content) {
+        this.title = title != null ? title : this.title;
+        this.content = content != null ? content : this.content;
     }
 
     public void addHits(){
