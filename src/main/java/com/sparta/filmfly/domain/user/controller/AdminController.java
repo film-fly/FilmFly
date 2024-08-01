@@ -50,7 +50,7 @@ public class AdminController {
     /**
      * 유저 정지 (관리자 기능)
      */
-    @PutMapping("/suspend/{userId}")
+    @PatchMapping("/suspend/{userId}")
     public ResponseEntity<DataResponseDto<UserResponseDto>> suspendUser(
             @PathVariable Long userId
     ) {
