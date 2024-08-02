@@ -83,6 +83,15 @@ public class User extends TimeStampEntity {
     }
 
     /**
+     * 활성화 상태 검증
+     */
+    public void validateActiveStatus() {
+        if (this.userStatus == UserStatusEnum.ACTIVE) {
+            throw new AccessDeniedException(ResponseCodeEnum.USER_ACTIVE);
+        }
+    }
+
+    /**
      * 정지 상태 검증
      */
     public void validateSuspendedStatus() {

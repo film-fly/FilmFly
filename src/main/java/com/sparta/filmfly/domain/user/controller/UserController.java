@@ -169,11 +169,8 @@ public class UserController {
      */
     @PatchMapping("/activate")
     public ResponseEntity<DataResponseDto<UserResponseDto>> activateUser(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long userId
-    ) {
-        log.info("activateUser");
-        UserResponseDto userResponseDto = userService.activateUser(userId, userDetails.getUser());
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserResponseDto userResponseDto = userService.activateUser(userDetails.getUser());
         return ResponseUtils.success(userResponseDto);
     }
 }

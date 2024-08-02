@@ -11,5 +11,6 @@ public class EmailVerificationRequestDto {
     @Email(message = "올바른 이메일 형식이어야 합니다.")
     private String email;
 
+    @NotBlank(message = "인증코드를 입력해주세요")
     private String code;
 }

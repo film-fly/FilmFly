@@ -60,13 +60,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             }
 
             if (user.getUserStatus() == UserStatusEnum.DELETED) {
-                List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_DELETED_USER"));
-                Authentication auth = new UsernamePasswordAuthenticationToken(new UserDetailsImpl(user), null, authorities);
-                handleTokenGeneration(response, user);
                 response.setStatus(ResponseCodeEnum.USER_DELETED.getHttpStatus().value());
                 ResponseEntity<MessageResponseDto> responseEntity = ResponseUtils.of(ResponseCodeEnum.USER_DELETED.getHttpStatus(), ResponseCodeEnum.USER_DELETED.getMessage());
                 writeResponseBody(response, responseEntity);
-                return auth;
             }
 
             List<SimpleGrantedAuthority> authorities = (user.getUserRole() == UserRoleEnum.ROLE_ADMIN)
