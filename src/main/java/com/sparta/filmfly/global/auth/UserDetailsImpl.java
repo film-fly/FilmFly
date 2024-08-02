@@ -1,0 +1,73 @@
+package com.sparta.filmfly.global.auth;
+
+import com.sparta.filmfly.domain.user.entity.User;
+import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
+import lombok.Getter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+@Getter
+public class UserDetailsImpl implements UserDetails {
+
+    private final User user;
+
+    public UserDetailsImpl(User user) {
+        this.user = user;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        // 사용자 상태에 따라 권한 설정
+        if (user.getUserStatus() == UserStatusEnum.DELETED) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_DELETED_USER"));
+        } else if (user.getUserStatus() == UserStatusEnum.UNVERIFIED) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_UNVERIFIED_USER"));
+        } else {
+            String authority = user.getUserRole().name();
+            authorities.add(new SimpleGrantedAuthority(authority));
+        }
+
+        return authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return user.getPassword();
+    }
+
+    @Override
+    public String getUsername() {
+        return user.getUsername();
+    }
+
+    public Long getUserId() {
+        return user.getId();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+}

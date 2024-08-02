@@ -1,0 +1,20 @@
+### ADMIN 회원가입
+POST https://localhost:443/users/signup
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "Admin12345!",
+  "email" : "Admin1@gmail.com",
+  "nickname": "Admin12345",
+  "adminPassword": "1234"
+}
+
+### ADMIN 로그인
+POST https://localhost:443/users/login
+Content-Type: application/json
+
+{
+  "username" : "admin1",
+  "password": "Admin12345!"
+}
