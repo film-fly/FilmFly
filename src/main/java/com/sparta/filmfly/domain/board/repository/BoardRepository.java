@@ -10,4 +10,9 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
         return findById(boardId)
                 .orElseThrow(() -> new NotFoundException(ResponseCodeEnum.BOARD_NOT_FOUND));
     }
+    default void existsByIdOrElseThrow(Long commentId) {
+        if (!existsById(commentId)) {
+            throw new NotFoundException(ResponseCodeEnum.BOARD_NOT_FOUND);
+        }
+    }
 }

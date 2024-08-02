@@ -6,13 +6,13 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class BoardEditResponseDto {
+public class BoardUpdateResponseDto {
     private Long id;
     private String title;
     private String content;
 
-    public static BoardEditResponseDto fromEntity(Board board) {
-        return BoardEditResponseDto.builder()
+    public static BoardUpdateResponseDto fromEntity(Board board) {
+        return BoardUpdateResponseDto.builder()
                 .id(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())
