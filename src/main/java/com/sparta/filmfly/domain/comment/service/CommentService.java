@@ -7,6 +7,9 @@ import com.sparta.filmfly.domain.comment.dto.CommentRequestDto;
 import com.sparta.filmfly.domain.comment.dto.CommentResponseDto;
 import com.sparta.filmfly.domain.comment.entity.Comment;
 import com.sparta.filmfly.domain.comment.repository.CommentRepository;
+import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
+import com.sparta.filmfly.domain.reaction.service.BadService;
+import com.sparta.filmfly.domain.reaction.service.GoodService;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final GoodService goodService;
+    private final BadService badService;
 
     /**
      * 댓글 생성
@@ -36,7 +41,7 @@ public class CommentService {
         Comment entity = requestDto.toEntity(user,board);
         Comment savedComment = commentRepository.save(entity);
 
-        return CommentResponseDto.fromEntity(savedComment);
+        return CommentResponseDto.fromEntity(savedComment,0L,0L);
     }
 
     /**
@@ -46,8 +51,9 @@ public class CommentService {
     public CommentResponseDto getComment(Long boardId, Long commentId) {
         Board board = boardRepository.findByIdOrElseThrow(boardId); //게시판 경로 확인
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
-
-        return CommentResponseDto.fromEntity(comment);
+        Long goodCount = goodService.getCountByTypeTypeId(ReactionContentTypeEnum.COMMENT,boardId);
+        Long badCount = badService.getCountByTypeTypeId(ReactionContentTypeEnum.COMMENT,boardId);
+        return CommentResponseDto.fromEntity(comment,goodCount,badCount);
     }
 
     /**
@@ -76,8 +82,10 @@ public class CommentService {
 
         comment.update(requestDto);
         Comment updatedComment = commentRepository.save(comment);
+        Long goodCount = goodService.getCountByTypeTypeId(ReactionContentTypeEnum.COMMENT,boardId);
+        Long badCount = badService.getCountByTypeTypeId(ReactionContentTypeEnum.COMMENT,boardId);
 
-        return CommentResponseDto.fromEntity(updatedComment);
+        return CommentResponseDto.fromEntity(updatedComment,goodCount,badCount);
     }
 
     /**

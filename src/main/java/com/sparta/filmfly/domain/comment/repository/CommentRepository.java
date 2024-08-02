@@ -10,4 +10,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
         return findById(commentId)
                 .orElseThrow(() -> new NotFoundException(ResponseCodeEnum.COMMENT_NOT_FOUND));
     }
+    default void existsByIdOrElseThrow(Long commentId) {
+        if (!existsById(commentId)) {
+            throw new NotFoundException(ResponseCodeEnum.COMMENT_NOT_FOUND);
+        }
+    }
 }

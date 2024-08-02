@@ -10,22 +10,24 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class CommentResponseDto {
-    private Long id;
-    private String userName;
+    private Long commentId;
+    private Long userId;
+    private String username;
     private String content;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime updatedAt;
     private long goodCount;
     private long badCount;
 
-    public static CommentResponseDto fromEntity(Comment comment) {
+    public static CommentResponseDto fromEntity(Comment comment,Long goodCount, Long badCount) {
         return CommentResponseDto.builder()
-                .id(comment.getId())
-                .userName(comment.getUser().getNickname())
+                .commentId(comment.getId())
+                .userId(comment.getUser().getId())
+                .username(comment.getUser().getNickname())
                 .content(comment.getContent())
                 .updatedAt(comment.getUpdatedAt())
-                .goodCount(comment.getGoodCount())
-                .badCount(comment.getBadCount())
+                .goodCount(goodCount)
+                .badCount(badCount)
                 .build();
     }
 
