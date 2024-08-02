@@ -52,14 +52,15 @@ public class UserService {
      */
     @Transactional
     public UserResponseDto signup(UserSignupRequestDto requestDto) {
-        if (userRepository.findByUsername(requestDto.getUsername()).isPresent()) {
+        // 사용자 이름 중복 확인
+        if (userRepository.existsByUsername(requestDto.getUsername())) {
             throw new DuplicateException(ResponseCodeEnum.USER_ALREADY_EXISTS);
         }
 
-        if (userRepository.findByNickname(requestDto.getNickname()).isPresent()) {
+        // 닉네임 중복 확인
+        if (userRepository.existsByNickname(requestDto.getNickname())) {
             throw new DuplicateException(ResponseCodeEnum.NICKNAME_ALREADY_EXISTS);
         }
-
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
         UserRoleEnum userRole;
@@ -160,7 +161,7 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public void checkNicknameDuplication(String nickname) {
-        if (userRepository.findByNickname(nickname).isPresent()) {
+        if (userRepository.existsByNickname(nickname)) {
             throw new DuplicateException(ResponseCodeEnum.NICKNAME_ALREADY_EXISTS);
         }
     }

@@ -143,7 +143,7 @@ public class KakaoService {
             user = userRepository.findByUsernameOrElseThrow(email);
         } catch (NotFoundException e) {
             // 신규 사용자 생성 시에만 이메일 중복 체크 수행
-            if (userRepository.findByEmail(kakaoUserInfo.getEmail()).isPresent()) {
+            if (userRepository.existsByEmail(kakaoUserInfo.getEmail())) {
                 throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
             }
 
