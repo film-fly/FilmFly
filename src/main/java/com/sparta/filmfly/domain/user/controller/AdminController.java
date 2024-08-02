@@ -10,6 +10,8 @@ import com.sparta.filmfly.domain.user.service.UserService;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,10 +32,10 @@ public class AdminController {
     public ResponseEntity<DataResponseDto<UserSearchResponseDto>> getUsersBySearch(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) UserStatusEnum status,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        UserSearchResponseDto users = userService.getUsersBySearch(search, status, page, size);
+        UserSearchResponseDto users = userService.getUsersBySearch(search, status, page-1, size);
         return ResponseUtils.success(users);
     }
 
