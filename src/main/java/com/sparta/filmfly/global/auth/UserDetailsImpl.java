@@ -27,8 +27,6 @@ public class UserDetailsImpl implements UserDetails {
         // 사용자 상태에 따라 권한 설정
         if (user.getUserStatus() == UserStatusEnum.DELETED) {
             authorities.add(new SimpleGrantedAuthority("ROLE_DELETED_USER"));
-        } else if (user.getUserStatus() == UserStatusEnum.UNVERIFIED) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_UNVERIFIED_USER"));
         } else {
             String authority = user.getUserRole().name();
             authorities.add(new SimpleGrantedAuthority(authority));

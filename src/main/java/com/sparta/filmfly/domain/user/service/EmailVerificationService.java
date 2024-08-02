@@ -21,6 +21,9 @@ public class EmailVerificationService {
     private final UserRepository userRepository;
     private final JavaMailSender mailSender;
 
+    /**
+     * 이메일 인증 코드를 전송
+     */
     @Transactional
     public void sendVerificationEmail(String email) {
         // 사용자 테이블에서 이메일 중복 확인
@@ -44,6 +47,9 @@ public class EmailVerificationService {
         sendEmail(email, "이메일 인증 코드는 다음과 같습니다: " + emailVerification.getEmailVerificationToken());
     }
 
+    /**
+     * 이메일을 전송
+     */
     private void sendEmail(String to, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
@@ -53,6 +59,9 @@ public class EmailVerificationService {
         mailSender.send(message);
     }
 
+    /**
+     * 이메일 인증 코드를 검증
+     */
     @Transactional
     public void verifyEmailCode(String email, String code) {
         EmailVerification emailVerification = emailVerificationRepository.findByEmailOrElseThrow(email);
@@ -62,17 +71,21 @@ public class EmailVerificationService {
         emailVerificationRepository.save(emailVerification);
     }
 
+    /**
+     * 이메일이 인증되었는지 확인
+     */
     @Transactional
     public void checkIfEmailVerified(String email) {
         EmailVerification emailVerification = emailVerificationRepository.findByEmailOrElseThrow(email);
         emailVerification.validateVerifiedStatus();
     }
 
+    /**
+     * 이메일 인증 데이터를 삭제
+     */
     @Transactional
     public void deleteEmailVerificationByEmail(String email) {
         EmailVerification emailVerification = emailVerificationRepository.findByEmailOrElseThrow(email);
         emailVerificationRepository.delete(emailVerification);
     }
 }
-
-

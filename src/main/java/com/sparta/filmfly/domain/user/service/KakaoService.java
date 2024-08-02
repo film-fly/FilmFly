@@ -154,7 +154,7 @@ public class KakaoService {
                     .nickname(kakaoUserInfo.getNickname())
                     .pictureUrl(kakaoUserInfo.getPictureUrl())
                     .kakaoId(kakaoUserInfo.getId())
-                    .userStatus(UserStatusEnum.VERIFIED)
+                    .userStatus(UserStatusEnum.ACTIVE)
                     .userRole(UserRoleEnum.ROLE_USER)
                     .build();
             userRepository.save(user);

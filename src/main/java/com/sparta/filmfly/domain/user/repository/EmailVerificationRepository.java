@@ -1,6 +1,7 @@
 package com.sparta.filmfly.domain.user.repository;
 
 import com.sparta.filmfly.domain.user.entity.EmailVerification;
+import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
 import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +14,7 @@ public interface EmailVerificationRepository extends JpaRepository<EmailVerifica
 
     default EmailVerification findByEmailOrElseThrow(String email) {
         return findByEmail(email)
-                .orElseThrow(() -> new DuplicateException(ResponseCodeEnum.EMAIL_NOT_FOUND));
+                .orElseThrow(() -> new AccessDeniedException(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED));
     }
 
     default EmailVerification findByEmailOrCreateNew(String email) {
