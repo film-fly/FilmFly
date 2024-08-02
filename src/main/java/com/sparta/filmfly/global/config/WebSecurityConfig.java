@@ -63,10 +63,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/emails/verify", "/emails/code-send","/users/check-nickname").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/admins/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/admins/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/users/activate/*").hasAnyAuthority("ROLE_DELETED_USER", "ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/admins/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/movie/genres/api").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/users/activate").hasAnyAuthority("ROLE_DELETED_USER", "ROLE_ADMIN")
                         .anyRequest().authenticated()
         );
 

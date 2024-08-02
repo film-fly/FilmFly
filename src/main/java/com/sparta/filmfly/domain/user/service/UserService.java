@@ -193,6 +193,24 @@ public class UserService {
     }
 
     /**
+     * 유저 본인 탈퇴 계정 복구
+     */
+    @Transactional
+    public UserResponseDto activateUser(User user) {
+        // 활성화 상태 검증
+        user.validateActiveStatus();
+        user.updateVerified();
+        userRepository.save(user);
+
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .userStatus(user.getUserStatus())
+                .updatedAt(user.getUpdatedAt())
+                .build();
+    }
+
+    /**
      * 오래된 소프트 딜리트된 유저 삭제
      */
     @Transactional
@@ -265,11 +283,8 @@ public class UserService {
     @Transactional
     public UserResponseDto suspendUser(Long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
-
-        if (user.getUserRole() != UserRoleEnum.ROLE_USER) {
-            throw new InvalidTargetException(ResponseCodeEnum.INVALID_ADMIN_TARGET);
-        }
         user.validateDeletedStatus();
+        user.validateSuspendedStatus();
 
         user.updateSuspended();
         userRepository.save(user);
@@ -283,16 +298,12 @@ public class UserService {
     }
 
     /**
-     * 유저 활성화 상태로 변경
+     * 유저 활성화 시키기(관리자 기능)
      */
     @Transactional
-    public UserResponseDto activateUser(Long userId, User currentUser) {
+    public UserResponseDto activateUserAsAdmin(Long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
-
-        // 어드민이거나 본인 계정(탈퇴 상태인) 경우에만 활성화 가능
-        if (currentUser.getUserRole() != UserRoleEnum.ROLE_ADMIN && (!currentUser.getId().equals(userId) || currentUser.getUserStatus() != UserStatusEnum.DELETED)) {
-            throw new AccessDeniedException(ResponseCodeEnum.ACCESS_DENIED);
-        }
+        user.validateActiveStatus();
 
         user.updateVerified();
         userRepository.save(user);
@@ -304,4 +315,5 @@ public class UserService {
                 .updatedAt(user.getUpdatedAt())
                 .build();
     }
+
 }

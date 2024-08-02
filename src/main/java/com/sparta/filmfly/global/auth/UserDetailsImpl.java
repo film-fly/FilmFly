@@ -1,7 +1,6 @@
 package com.sparta.filmfly.global.auth;
 
 import com.sparta.filmfly.domain.user.entity.User;
-import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,13 +23,8 @@ public class UserDetailsImpl implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        // 사용자 상태에 따라 권한 설정
-        if (user.getUserStatus() == UserStatusEnum.DELETED) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_DELETED_USER"));
-        } else {
-            String authority = user.getUserRole().name();
-            authorities.add(new SimpleGrantedAuthority(authority));
-        }
+        String authority = user.getUserRole().name();
+        authorities.add(new SimpleGrantedAuthority(authority));
 
         return authorities;
     }

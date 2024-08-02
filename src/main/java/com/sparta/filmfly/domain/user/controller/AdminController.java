@@ -4,14 +4,13 @@ import com.sparta.filmfly.domain.report.dto.ReportResponseDto;
 import com.sparta.filmfly.domain.report.service.ReportService;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
 import com.sparta.filmfly.domain.user.dto.UserSearchResponseDto;
+import com.sparta.filmfly.domain.user.dto.UserStateChangeRequestDto;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import com.sparta.filmfly.domain.user.service.UserService;
-import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,9 +62,9 @@ public class AdminController {
      */
     @PatchMapping("/suspend")
     public ResponseEntity<DataResponseDto<UserResponseDto>> suspendUser(
-            @PathVariable Long userId
+            @RequestBody UserStateChangeRequestDto userStateChangeRequestDto
     ) {
-        UserResponseDto userResponseDto = userService.suspendUser(userId);
+        UserResponseDto userResponseDto = userService.suspendUser(userStateChangeRequestDto.getUserId());
         return ResponseUtils.success(userResponseDto);
     }
 
@@ -75,10 +74,9 @@ public class AdminController {
      */
     @PatchMapping("/activate")
     public ResponseEntity<DataResponseDto<UserResponseDto>> activateUser(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long userId
+            @RequestBody UserStateChangeRequestDto userStateChangeRequestDto
     ) {
-        UserResponseDto userResponseDto = userService.activateUser(userId, userDetails.getUser());
+        UserResponseDto userResponseDto = userService.activateUserAsAdmin(userStateChangeRequestDto.getUserId());
         return ResponseUtils.success(userResponseDto);
     }
 
