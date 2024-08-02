@@ -8,7 +8,6 @@ import com.sparta.filmfly.global.common.response.ResponseUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -47,35 +46,23 @@ public class BoardController {
 
     /**
      * 보드 페이징 조회
-     * http://localhost:8080/boards?pageNum=1&filterGoodCount=0&filterHits=0&title=제목
+     * https://localhost/boards?pageNum=1&filterGoodCount=0&filterHits=0&search=제목
      */
-    /*@GetMapping("/boards")
-    public ResponseEntity<DataResponseDto<BoardPageResponseDto>> getPageBoard(
-            @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum,
-            @RequestParam(value = "filterGoodCount", required = false, defaultValue = "false") final Boolean filterGoodCount,
-            @RequestParam(value = "filterHits ", required = false, defaultValue = "false") final Boolean filterHits
-            //@RequestParam(value = "size", required = false, defaultValue = "10") final Integer size
-    ) {
-        log.error("test : {} ///  {}",filterGoodCount,filterHits);
-        Integer size = 10;
-        BoardPageResponseDto responseDto = boardService.getPageBoard(pageNum,size,filterGoodCount,filterHits);
-        return ResponseUtils.success(responseDto);
-    }*/
     @GetMapping
     public ResponseEntity<DataResponseDto<BoardPageResponseDto >> getPageBoard(
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum,
             @RequestParam(value = "filterGoodCount", required = false) final Long filterGoodCount,
             @RequestParam(value = "filterHits", required = false) final Long filterHits,
-            @RequestParam(value = "title", required = false) final String title
+            @RequestParam(value = "search", required = false) final String search
             //@RequestParam(value = "size", required = false, defaultValue = "10") final Integer size
     ) {
         Integer size = 10;
-        BoardPageResponseDto  responseDto = boardService.getPageBoard(pageNum,size,filterGoodCount,filterHits,title);
+        BoardPageResponseDto  responseDto = boardService.getPageBoard(pageNum,size,filterGoodCount,filterHits,search);
         return ResponseUtils.success(responseDto);
     }
 
     /**
-     * 보드 수정 권한 체크
+     * 보드 수정 권한 확인
      */
     @GetMapping("/{boardId}/edit-permission")
     public ResponseEntity<DataResponseDto<Boolean>> checkEditBoardPermission(
@@ -89,12 +76,12 @@ public class BoardController {
     /**
      * 보드 수정 페이지 정보
      */
-    @PostMapping("/{boardId}/edit")
-    public ResponseEntity<DataResponseDto<BoardEditResponseDto>> editBoard(
+    @GetMapping("/{boardId}/for-update")
+    public ResponseEntity<DataResponseDto<BoardUpdateResponseDto>> forUpdateBoard(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long boardId
     ) {
-        BoardEditResponseDto responseDto = boardService.editBoard(userDetails.getUser(),boardId);
+        BoardUpdateResponseDto responseDto = boardService.forUpdateBoard(userDetails.getUser(),boardId);
         return ResponseUtils.success(responseDto);
     }
 
@@ -123,6 +110,9 @@ public class BoardController {
         return ResponseUtils.success(responseDto);
     }
 
+    /**
+     * 유저의 보드 목록
+     */
     @GetMapping("/users/{userId}")
     public ResponseEntity<DataResponseDto<BoardPageResponseDto>> getUsersBoard(
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum,

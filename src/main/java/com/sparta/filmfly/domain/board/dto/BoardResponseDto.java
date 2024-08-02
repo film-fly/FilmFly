@@ -21,7 +21,7 @@ public class BoardResponseDto {
     private Long badCount;
     private Long hits;
 
-    public static BoardResponseDto fromEntity(Board board) {
+    public static BoardResponseDto fromEntity(Board board,Long goodCount,Long badCount) {
         return BoardResponseDto.builder()
                 .id(board.getId())
                 .userId(board.getUser().getId())
@@ -29,25 +29,9 @@ public class BoardResponseDto {
                 .content(board.getContent())
                 .nickname(board.getUser().getNickname())
                 .createdAt(board.getCreatedAt())
-                .goodCount(0L)
-                .badCount(0L)
+                .goodCount(goodCount)
+                .badCount(badCount)
                 .hits(board.getHits())
                 .build();
     }
-
-    /**
-     * 보드가 미디어 정보를 가지고 있으면 추가
-     */
-    /*public void addMediaDto(MediaResponseDto media) {
-        if (mediaList == null) {
-            mediaList = new ArrayList<>();
-        }
-        mediaList.add(media);
-    }*/
-
-    public void updateReactionCount(Long goodCount, Long badCount) {
-        this.goodCount = goodCount;
-        this.badCount = badCount;
-    }
-
 }
