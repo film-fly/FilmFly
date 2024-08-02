@@ -50,7 +50,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             "/users/kakao/callback",
             "/emails/verify",
             "/emails/[0-9]+/resend",
-            "/users/check-nickname"
+            "/users/check-nickname",
+            "/movie/genres/api"
     );
 
     private final List<String> getMethodWhiteList = List.of(
