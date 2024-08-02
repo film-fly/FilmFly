@@ -16,7 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users/block")
+@RequestMapping("/blocks")
 @RequiredArgsConstructor
 public class BlockController {
 

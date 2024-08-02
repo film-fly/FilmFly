@@ -57,8 +57,6 @@ public class User extends TimeStampEntity {
     @Column
     private LocalDateTime deletedAt;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private EmailVerification emailVerification;
 
     /**
      * 사용자 생성
@@ -81,6 +79,15 @@ public class User extends TimeStampEntity {
     public void validateDeletedStatus() {
         if (this.userStatus == UserStatusEnum.DELETED) {
             throw new DeletedException(ResponseCodeEnum.USER_DELETED);
+        }
+    }
+
+    /**
+     * 활성화 상태 검증
+     */
+    public void validateActiveStatus() {
+        if (this.userStatus == UserStatusEnum.ACTIVE) {
+            throw new AccessDeniedException(ResponseCodeEnum.USER_ACTIVE);
         }
     }
 
@@ -111,14 +118,6 @@ public class User extends TimeStampEntity {
         }
     }
 
-    /**
-     * 어드민 검증
-     */
-    public void validateAdminRole() {
-        if (this.userRole != UserRoleEnum.ROLE_ADMIN) {
-            throw new AccessDeniedException(ResponseCodeEnum.ACCESS_DENIED);
-        }
-    }
 
     /**
      * 리프레시 토큰 업데이트
@@ -138,7 +137,7 @@ public class User extends TimeStampEntity {
      * 인증된 상태로 변경
      */
     public void updateVerified() {
-        this.userStatus = UserStatusEnum.VERIFIED;
+        this.userStatus = UserStatusEnum.ACTIVE;
     }
 
     /**

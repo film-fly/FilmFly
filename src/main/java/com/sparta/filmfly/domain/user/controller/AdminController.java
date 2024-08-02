@@ -3,16 +3,14 @@ package com.sparta.filmfly.domain.user.controller;
 import com.sparta.filmfly.domain.report.dto.ReportResponseDto;
 import com.sparta.filmfly.domain.report.service.ReportService;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
-import com.sparta.filmfly.domain.user.dto.UserSearchRequestDto;
-import com.sparta.filmfly.domain.user.dto.UserStatusSearchRequestDto;
-import com.sparta.filmfly.domain.user.dto.UserStatusSearchResponseDto;
+import com.sparta.filmfly.domain.user.dto.UserSearchResponseDto;
+import com.sparta.filmfly.domain.user.dto.UserStateChangeRequestDto;
+import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import com.sparta.filmfly.domain.user.service.UserService;
-import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,44 +24,61 @@ public class AdminController {
     private final ReportService reportService;
 
     /**
-     * 개인 유저 상세 조회 (관리자 기능)
+     * 유저 검색 조회
      */
-    @GetMapping("/search/detail")
-    public ResponseEntity<DataResponseDto<UserResponseDto>> getUserDetail(
-            @RequestBody UserSearchRequestDto userSearchRequestDto
+    @GetMapping("/users")
+    public ResponseEntity<DataResponseDto<UserSearchResponseDto>> getUsersBySearch(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) UserStatusEnum status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        UserResponseDto userDetail = userService.getUserDetail(userSearchRequestDto);
-        return ResponseUtils.success(userDetail);
-    }
-
-    /**
-     * 유저 상태별 조회 (관리자 기능)
-     */
-    @GetMapping("/search/status")
-    public ResponseEntity<DataResponseDto<UserStatusSearchResponseDto>> getUsersByStatus(
-            @RequestBody UserStatusSearchRequestDto userStatusRequestDto
-    ) {
-        UserStatusSearchResponseDto users = userService.getUsersByStatus(userStatusRequestDto.getStatus());
+        UserSearchResponseDto users = userService.getUsersBySearch(search, status, page, size);
         return ResponseUtils.success(users);
     }
 
     /**
-     * 유저 정지 (관리자 기능)
+     * 개인 유저 상세 조회
      */
-    @PutMapping("/suspend/{userId}")
-    public ResponseEntity<DataResponseDto<UserResponseDto>> suspendUser(
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<DataResponseDto<UserResponseDto>> getUserDetail(
             @PathVariable Long userId
     ) {
-        UserResponseDto userResponseDto = userService.suspendUser(userId);
-        return ResponseUtils.success(userResponseDto);
+        UserResponseDto userDetail = userService.getUserDetail(userId);
+        return ResponseUtils.success(userDetail);
     }
 
     /**
-     * 신고 목록 조회 (관리자 권한)
+     * 신고 목록 조회
      */
-    @GetMapping("/report")
+    @GetMapping("/reports")
     public ResponseEntity<DataResponseDto<List<ReportResponseDto>>> getAllReports() {
         List<ReportResponseDto> reports = reportService.getAllReports();
         return ResponseUtils.success(reports);
     }
+
+    /**
+     * 유저 정지
+     */
+    @PatchMapping("/suspend")
+    public ResponseEntity<DataResponseDto<UserResponseDto>> suspendUser(
+            @RequestBody UserStateChangeRequestDto userStateChangeRequestDto
+    ) {
+        UserResponseDto userResponseDto = userService.suspendUser(userStateChangeRequestDto.getUserId());
+        return ResponseUtils.success(userResponseDto);
+    }
+
+
+    /**
+     * 유저 활성화 시키기
+     */
+    @PatchMapping("/activate")
+    public ResponseEntity<DataResponseDto<UserResponseDto>> activateUser(
+            @RequestBody UserStateChangeRequestDto userStateChangeRequestDto
+    ) {
+        UserResponseDto userResponseDto = userService.activateUserAsAdmin(userStateChangeRequestDto.getUserId());
+        return ResponseUtils.success(userResponseDto);
+    }
+
+
 }

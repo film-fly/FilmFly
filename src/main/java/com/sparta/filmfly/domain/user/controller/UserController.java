@@ -7,7 +7,6 @@ import com.sparta.filmfly.domain.user.service.UserService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
-import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -75,7 +74,7 @@ public class UserController {
     /**
      * 비밀번호 변경
      */
-    @PutMapping("/password")
+    @PatchMapping("/password")
     public ResponseEntity<MessageResponseDto> updatePassword(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody UserPasswordUpdateRequestDto requestDto
@@ -87,7 +86,7 @@ public class UserController {
     /**
      * 프로필 업로드
      */
-    @PutMapping("/profile")
+    @PatchMapping("/profile")
     public ResponseEntity<DataResponseDto<UserResponseDto>> updateProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestPart("profileUpdateRequestDto") UserProfileUpdateRequestDto requestDto,
@@ -109,7 +108,7 @@ public class UserController {
     /**
      * 프로필 조회
      */
-    @GetMapping("/{userId}/profile")
+    @GetMapping("/{userId}")
     public ResponseEntity<DataResponseDto<UserResponseDto>> getProfile(@PathVariable Long userId) {
         UserResponseDto profile = userService.getProfile(userId);
         return ResponseUtils.success(profile);
@@ -166,15 +165,12 @@ public class UserController {
 
 
     /**
-     * 유저 활성화 (관리자 + 탈퇴 본인 가능)
+     * 본인 활성화 시키기(탈퇴 상태일때)
      */
-    @PutMapping("/activate/{userId}")
+    @PatchMapping("/activate")
     public ResponseEntity<DataResponseDto<UserResponseDto>> activateUser(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long userId
-    ) {
-        log.info("activateUser");
-        UserResponseDto userResponseDto = userService.activateUser(userId, userDetails.getUser());
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserResponseDto userResponseDto = userService.activateUser(userDetails.getUser());
         return ResponseUtils.success(userResponseDto);
     }
 }
