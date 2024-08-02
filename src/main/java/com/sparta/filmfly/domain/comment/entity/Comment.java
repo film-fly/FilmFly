@@ -65,4 +65,13 @@ public class Comment extends TimeStampEntity {
             throw new AccessDeniedException(ResponseCodeEnum.COMMENT_NOT_OWNER);
         }
     }
+
+    /**
+     * 요청한 유저가 해당 댓글 소유주인지 유효성 검사
+     */
+    public void validateBoardId(Long boardId) {
+        if(this.board.getId() != boardId) {
+            throw new AccessDeniedException(ResponseCodeEnum.COMMENT_PATH_MISMATCH);
+        }
+    }
 }

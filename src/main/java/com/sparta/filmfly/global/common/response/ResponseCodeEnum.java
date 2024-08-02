@@ -53,6 +53,7 @@ public enum ResponseCodeEnum {
     //Comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
     COMMENT_NOT_OWNER(HttpStatus.FORBIDDEN, "댓글의 주인이 아닙니다."),
+    COMMENT_PATH_MISMATCH(HttpStatus.BAD_REQUEST, "댓글의 보드 경로가 일치하지 않습니다."),
     // Review
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     REVIEW_NOT_OWNER(HttpStatus.FORBIDDEN, "본인이 작성한 리뷰가 아닙니다."),

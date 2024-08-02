@@ -8,7 +8,6 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-@Builder
 public class CommentResponseDto {
     private Long commentId;
     private Long userId;
@@ -18,6 +17,17 @@ public class CommentResponseDto {
     private LocalDateTime updatedAt;
     private long goodCount;
     private long badCount;
+
+    @Builder
+    public CommentResponseDto(Long commentId, Long userId, String username, String content, LocalDateTime updatedAt, long goodCount, long badCount) {
+        this.commentId = commentId;
+        this.userId = userId;
+        this.username = username;
+        this.content = content;
+        this.updatedAt = updatedAt;
+        this.goodCount = goodCount;
+        this.badCount = badCount;
+    }
 
     public static CommentResponseDto fromEntity(Comment comment,Long goodCount, Long badCount) {
         return CommentResponseDto.builder()
@@ -30,5 +40,4 @@ public class CommentResponseDto {
                 .badCount(badCount)
                 .build();
     }
-
 }
