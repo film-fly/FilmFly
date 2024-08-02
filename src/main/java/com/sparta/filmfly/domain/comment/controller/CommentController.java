@@ -3,6 +3,7 @@ package com.sparta.filmfly.domain.comment.controller;
 import com.sparta.filmfly.domain.comment.dto.CommentPageResponseDto;
 import com.sparta.filmfly.domain.comment.dto.CommentRequestDto;
 import com.sparta.filmfly.domain.comment.dto.CommentResponseDto;
+import com.sparta.filmfly.domain.comment.dto.CommentUpdateResponseDto;
 import com.sparta.filmfly.domain.comment.service.CommentService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
@@ -18,14 +19,14 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/boards/{boardId}")
+@RequestMapping
 public class CommentController {
     private final CommentService commentService;
 
     /**
      * 댓글 생성
      */
-    @PostMapping("/comments")
+    @PostMapping("/boards/{boardId}/comments")
     public ResponseEntity<DataResponseDto<CommentResponseDto>> createComment(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CommentRequestDto requestDto,
@@ -40,10 +41,9 @@ public class CommentController {
      */
     @GetMapping("/comments/{commentId}")
     public ResponseEntity<DataResponseDto<CommentResponseDto>> getComment(
-            @PathVariable Long boardId,
             @PathVariable Long commentId
     ) {
-        CommentResponseDto responseDto = commentService.getComment(boardId, commentId);
+        CommentResponseDto responseDto = commentService.getComment(commentId);
         return ResponseUtils.success(responseDto);
     }
 
@@ -51,14 +51,39 @@ public class CommentController {
      * 댓글 페이지 조회
      * http://localhost:8080/boards/{boardId}/comments?pageNum=1&size=50
      */
-    @GetMapping("/comments")
+    @GetMapping("/boards/{boardId}/comments")
     public ResponseEntity<DataResponseDto<CommentPageResponseDto>> gerPageComment(
             @PathVariable Long boardId,
-            @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum,
-            @RequestParam(value = "size", required = false, defaultValue = "50") final Integer size
+            @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum
+            //@RequestParam(value = "size", required = false, defaultValue = "50") final Integer size
     ) {
+        Integer size = 50;
         CommentPageResponseDto responseDto = commentService.gerPageComment(pageNum,size,boardId);
         return ResponseUtils.success(responseDto);
+    }
+
+    /**
+     * 유저의 댓글 목록
+     */
+    @GetMapping("/comments/users/{userId}")
+    public ResponseEntity<DataResponseDto<CommentPageResponseDto>> getUsersComments(
+            @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum,
+            //@RequestParam(value = "size", required = false, defaultValue = "10") final Integer size
+            @PathVariable Long userId) {
+        Integer size = 10;
+        CommentPageResponseDto  responseDto = commentService.getUsersComments(pageNum,size,userId);
+        return ResponseUtils.success(responseDto);
+    }
+
+    /**
+     * 댓글 수정 권한 확인
+     */
+    @GetMapping("/comments/{commentId}/for-update")
+    public ResponseEntity<DataResponseDto<CommentUpdateResponseDto>> forUpdateComment(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long commentId) {
+        CommentUpdateResponseDto response = commentService.forUpdateComment(userDetails.getUser(),commentId);
+        return ResponseUtils.success(response);
     }
 
     /**
@@ -68,10 +93,9 @@ public class CommentController {
     public ResponseEntity<DataResponseDto<CommentResponseDto>> updateComment(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CommentRequestDto requestDto,
-            @PathVariable Long boardId,
             @PathVariable Long commentId
     ) {
-        CommentResponseDto responseDto = commentService.updateComment(userDetails.getUser(),requestDto,boardId,commentId);
+        CommentResponseDto responseDto = commentService.updateComment(userDetails.getUser(),requestDto,commentId);
         return ResponseUtils.success(responseDto);
     }
 
@@ -81,11 +105,9 @@ public class CommentController {
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<DataResponseDto<String>> deleteComment(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long boardId,
             @PathVariable Long commentId
     ) {
-        String responseDto = commentService.deleteComment(userDetails.getUser(),boardId,commentId);
+        String responseDto = commentService.deleteComment(userDetails.getUser(),commentId);
         return ResponseUtils.success(responseDto);
     }
-
 }
