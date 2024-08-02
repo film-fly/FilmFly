@@ -1,5 +1,6 @@
 package com.sparta.filmfly.domain.favorite.service;
 
+import com.sparta.filmfly.domain.favorite.dto.FavoriteResponseDto;
 import com.sparta.filmfly.domain.favorite.entity.Favorite;
 import com.sparta.filmfly.domain.favorite.repository.FavoriteRepository;
 import com.sparta.filmfly.domain.movie.dto.MovieResponseDto;
@@ -23,7 +24,7 @@ public class FavoriteService {
     /**
     * 영화 찜 등록하기
     */
-    public void createFavorite(User user, Long movieId) {
+    public FavoriteResponseDto createFavorite(User user, Long movieId) {
         // DB 존재 검증
         Movie movie = movieRepository.findByIdOrElseThrow(movieId);
 
@@ -33,7 +34,8 @@ public class FavoriteService {
                 .movie(movie)
                 .user(user)
                 .build();
-        favoriteRepository.save(favorite);
+        Favorite savedFavorite = favoriteRepository.save(favorite);
+        return FavoriteResponseDto.fromEntity(savedFavorite);
     }
 
     /**
