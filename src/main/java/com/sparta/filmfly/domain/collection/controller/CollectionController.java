@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/collection")
+@RequestMapping("/collections")
 @RequiredArgsConstructor
 public class CollectionController {
 
@@ -48,10 +48,10 @@ public class CollectionController {
     /**
      * 보관함 삭제
      */
-    @DeleteMapping
+    @DeleteMapping("/{collectionId}")
     public ResponseEntity<MessageResponseDto> deleteCollection(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam Long collectionId
+            @PathVariable Long collectionId
     ) {
         collectionService.deleteCollection(userDetails.getUser(), collectionId);
         return ResponseUtils.success();
@@ -60,10 +60,10 @@ public class CollectionController {
     /**
      * 보관함에 영화 등록
      */
-    @PostMapping("/addMovie")
+    @PostMapping("/add-movie")
     public ResponseEntity<MessageResponseDto> createMovieCollection(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody MovieCollectionRequestDto movieCollectionRequestDto
+            @Valid @RequestBody MovieCollectionRequestDto movieCollectionRequestDto
     ) {
         collectionService.createMovieCollection(userDetails.getUser(), movieCollectionRequestDto);
         return ResponseUtils.success();
@@ -72,25 +72,24 @@ public class CollectionController {
     /**
      * 보관함 상세 조회 _ 영화 목록 조회
      */
-    @GetMapping("/detail")
+    @GetMapping("/{collectionId}")
     public ResponseEntity<DataResponseDto<MovieCollectionResponseDto>> getMovieCollection(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam Long collectionId
+            @PathVariable Long collectionId
     ) {
         MovieCollectionResponseDto movieCollectionResponseDto = collectionService.getMovieCollection(userDetails.getUser(), collectionId);
         return ResponseUtils.success(movieCollectionResponseDto);
     }
 
     /**
-     * 보관함 상세 조회 _ 영화 목록 조회
+     * 보관함 상세 조회 _ 영화 삭제
      */
-    @DeleteMapping("/")
+    @DeleteMapping("/delete-movie")
     public ResponseEntity<MessageResponseDto> deleteMovieCollection(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam Long collectionId,
-            @RequestParam Long movieId
+            @Valid @RequestBody MovieCollectionRequestDto movieCollectionRequestDto
     ) {
-        collectionService.deleteMovieCollection(userDetails.getUser(), collectionId, movieId);
+        collectionService.deleteMovieCollection(userDetails.getUser(), movieCollectionRequestDto);
         return ResponseUtils.success();
     }
 }
