@@ -21,7 +21,7 @@ import java.util.List;
 public class BoardRepositoryImpl implements BoardRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
-    public BoardPageResponseDto findAllWithFilters(Pageable pageable, Long filterGoodCount, Long filterHits, String title) {
+    public BoardPageResponseDto findAllWithFilters(Pageable pageable, Long filterGoodCount, Long filterHits, String search) {
         QBoard board = QBoard.board;
         QGood good = QGood.good;
         QBad bad = QBad.bad;
@@ -50,8 +50,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
         if (filterHits != null) {
             query.having(board.hits.goe(filterHits));
         }
-        if (title != null && !title.isEmpty()) {
-            query.where(board.title.containsIgnoreCase(title));
+        if (search != null && !search.isEmpty()) {
+            query.where(board.title.containsIgnoreCase(search));
         }
 
         query.orderBy(board.createdAt.desc()); // 기본 정렬 조건: 생성 일자 최신순
