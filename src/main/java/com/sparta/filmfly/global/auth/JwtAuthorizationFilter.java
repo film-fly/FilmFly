@@ -51,6 +51,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             "/emails/verify",
             "/emails/code-send",
             "/users/check-nickname"
+            "/emails/[0-9]+/resend",
+            "/users/check-nickname",
+            "/movie/genres/api"
     );
 
     private final List<String> getMethodWhiteList = List.of(
