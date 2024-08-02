@@ -46,11 +46,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM EmailVerification ev WHERE ev.user.id IN (SELECT u.id FROM User u WHERE u.deletedAt IS NOT NULL AND u.deletedAt < :cutoffDate AND u.userStatus = 'DELETED')")
-    void deleteOldSoftDeletedEmailVerifications(@Param("cutoffDate") LocalDateTime cutoffDate);
-
-    @Modifying
-    @Transactional
     @Query("DELETE FROM User u WHERE u.deletedAt IS NOT NULL AND u.deletedAt < :cutoffDate AND u.userStatus = 'DELETED'")
     void deleteOldSoftDeletedUsers(@Param("cutoffDate") LocalDateTime cutoffDate);
+
+    boolean existsByEmail(String email);
+
 }

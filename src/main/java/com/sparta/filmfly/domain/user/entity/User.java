@@ -57,8 +57,6 @@ public class User extends TimeStampEntity {
     @Column
     private LocalDateTime deletedAt;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private EmailVerification emailVerification;
 
     /**
      * 사용자 생성
@@ -111,14 +109,6 @@ public class User extends TimeStampEntity {
         }
     }
 
-    /**
-     * 어드민 검증
-     */
-    public void validateAdminRole() {
-        if (this.userRole != UserRoleEnum.ROLE_ADMIN) {
-            throw new AccessDeniedException(ResponseCodeEnum.ACCESS_DENIED);
-        }
-    }
 
     /**
      * 리프레시 토큰 업데이트

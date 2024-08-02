@@ -58,7 +58,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     );
 
     private final List<String> deletedUserAllowedPaths = List.of(
-            "/users/logout", "/users/[0-9]+/activate"
+            "/users/logout", "/users/activate"
     );
 
     private final List<String> unverifiedUserAllowedPaths = List.of(
