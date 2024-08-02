@@ -1,5 +1,6 @@
 package com.sparta.filmfly.domain.favorite.controller;
 
+import com.sparta.filmfly.domain.favorite.dto.FavoriteResponseDto;
 import com.sparta.filmfly.domain.favorite.service.FavoriteService;
 import com.sparta.filmfly.domain.movie.dto.MovieResponseDto;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
@@ -26,13 +27,13 @@ public class FavoriteController {
     * 찜 등록하기
     */
     @PostMapping("/movies/{movieId}")
-    public ResponseEntity<MessageResponseDto> createFavorite(
+    public ResponseEntity<DataResponseDto<FavoriteResponseDto>> createFavorite(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long movieId
     ) {
         log.info("create favorite");
-        favoriteService.createFavorite(userDetails.getUser(), movieId);
-        return ResponseUtils.success();
+        FavoriteResponseDto responseDto = favoriteService.createFavorite(userDetails.getUser(), movieId);
+        return ResponseUtils.success(responseDto);
     }
 
     /**
