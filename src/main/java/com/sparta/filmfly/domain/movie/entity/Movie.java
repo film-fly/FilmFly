@@ -62,7 +62,4 @@ public class Movie {
         this.voteCount = voteCount;
     }
 
-    public void updateMovieCreditList(List<MovieCredit> movieCreditList) {
-        this.movieCreditList = movieCreditList;
-    }
 }

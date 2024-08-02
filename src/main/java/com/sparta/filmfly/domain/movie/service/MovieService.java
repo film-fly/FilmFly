@@ -2,10 +2,9 @@ package com.sparta.filmfly.domain.movie.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.filmfly.domain.movie.dto.*;
-import com.sparta.filmfly.domain.movie.entity.Credit;
-import com.sparta.filmfly.domain.movie.entity.Movie;
-import com.sparta.filmfly.domain.movie.entity.MovieCredit;
+import com.sparta.filmfly.domain.movie.entity.*;
 import com.sparta.filmfly.domain.movie.repository.CreditRepository;
+import com.sparta.filmfly.domain.movie.repository.GenreRepository;
 import com.sparta.filmfly.domain.movie.repository.MovieCreditRepository;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
@@ -19,6 +18,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -38,37 +40,32 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final CreditRepository creditRepository;
     private final MovieCreditRepository movieCreditRepository;
+    private final GenreRepository genreRepository;
     private final OkHttpClient httpClient;
+
+    // 이미지 경로 : https://image.tmdb.org/t/p/w220_and_h330_face/이미지.jpg
+    // 크기 : w220_and_h330_face , w600_and_h900_bestv2 , w1280
+    private final String baseUrl = "https://api.themoviedb.org";
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${TMDB_API_AUTHORIZATION}")
     private String TMDB_API_AUTHORIZATION;
 
-    public List<MovieGetResponseDto> getMovieList(MovieGetRequestDto movieGetRequestDto) {
-        List<Movie> movieList;
-        switch (movieGetRequestDto.getSearchType()) {
-            case TITLE -> {
-                movieList = movieRepository.findMoviesByTitle(movieGetRequestDto.getKeyword());
-            }
-//            case ACTOR -> {
-//                movieList = movieRepository.findMoviesByTitle(movieGetRequestDto.getKeyword());
-//            }
-//            case PRODUCTION_COMPANY ->{
-//                movieList = movieRepository.findMoviesByTitle(movieGetRequestDto.getKeyword());
-//            }
-            default -> System.out.println("default");
-        }
-        // 입력 가능 요소 :
-        // DB 에 있는 데이터인지 확인
-        // api 요청
-        return null;
+    public Page<Movie> getMovieList(String keyword, Pageable pageable) {
+        // 제목에 키워드가 포함된 영화 목록을 조회
+        List<Movie> movieList = movieRepository.findMoviesByTitleContaining(keyword, pageable);
+        // 총 영화 수 산출
+        long total = movieRepository.countByTitleContaining(keyword);
+        // PageImpl 을 사용하여 List<Movie> 를 Page<Movie> 로 변환
+        return new PageImpl<>(movieList, pageable, total);
+    }
+
+    public Page<Movie> getMovieTrendList(Pageable pageable) {
+        return movieRepository.findAllByOrderByPopularityDesc(pageable);
     }
 
     @Transactional
     public List<ApiMovieResponseDto> apiRequestForSearchMovie(ApiMovieRequestDto apiMovieRequestDto) {
-
-        // 이미지 경로 : https://image.tmdb.org/t/p/w220_and_h330_face/이미지.jpg
-        // 크기 : w220_and_h330_face , w600_and_h900_bestv2 , w1280
-        String baseUrl = "https://api.themoviedb.org";
         String movieUrl = "/3/discover/movie";
 //        String credits = "/3/movie/{movieId}/credits";
 
@@ -106,7 +103,6 @@ public class MovieService {
             // log.info(format);
 
             // body 를 ApiMovieResponse 객체로 변환
-            ObjectMapper objectMapper = new ObjectMapper();
             ApiMovieResponse apiMovieResponse = objectMapper.readValue(body, ApiMovieResponse.class);
             // 영화 api 조회 > 영화 목록 저장 및 업데이트 > 각 영화 > 배우 목록 저장 및 업데이트 > 중간 테이블 최신화 > 영화, 배우 테이블 동기화
             List<ApiMovieResponseDto> apiMovieResponseDtoList = apiMovieResponse.getResults();
@@ -170,7 +166,7 @@ public class MovieService {
         credit.updateMovieCreditList(movieCreditList);
     }
 
-    // C
+    //
     public void creditSyncTest(Long creditId) {
         Credit credit = creditRepository.findById(creditId).orElseThrow(
                 () -> new NotFoundException(ResponseCodeEnum.CREDIT_NOT_FOUND)
@@ -179,4 +175,53 @@ public class MovieService {
         List<MovieCredit> movieCreditList2 = movieCreditRepository.findByCredit(credit);
         System.out.println(movieCreditList.size() + " & " + movieCreditList2.size());
     }
+
+    /**
+     * 장르 API 요청, DB 갱신
+     */
+    public void apiGenresRequest(OriginLanguageEnum language) {
+        // 장르 API 요청
+        try {
+            Request genresRequest = requestBuilder(String.format("%s/3/genre/movie/list?language=%s", baseUrl, language.getValue()));
+            Response genresResponse = httpClient.newCall(genresRequest).execute();
+            if (!genresResponse.isSuccessful()) {
+                throw new ApiRequestFailedException(ResponseCodeEnum.API_REQUEST_FAILED);
+            }
+            // 장르 데이터 parsing
+            assert genresResponse.body() != null;
+            String genres = genresResponse.body().string();
+            log.info(JsonFormatter.formatJson(genres));
+            ApiGenresResponse apiGenresResponse = objectMapper.readValue(genres, ApiGenresResponse.class);
+            List<GenresResponseDto> genresResponseDtoList = apiGenresResponse.getGenres();
+            List<Genre> genreList = genresResponseDtoList.stream()
+                    .map(GenresResponseDto::toEntity)
+                    .collect(Collectors.toList());
+            // 장르 DB 갱신
+            genreRepository.saveAll(genreList);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /*
+    * 배우 검색
+    */
+//    public Page<Credit> getCreditList(String keyword, Pageable pageable) {
+//
+//    }
+
+    /*
+    * 영화 단건 조회
+    */
+    public MovieDetailResponseDto getMovie(Long movieId) {
+        Movie movie = movieRepository.findByIdOrElseThrow(movieId);
+        List<Credit> creditList = creditRepository.findByMovieId(movieId);
+        return MovieDetailResponseDto.builder()
+                .movie(MovieResponseDto.fromEntity(movie))
+                .creditList(creditList.stream()
+                        .map(CreditResponseDto::fromEntity)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
 }

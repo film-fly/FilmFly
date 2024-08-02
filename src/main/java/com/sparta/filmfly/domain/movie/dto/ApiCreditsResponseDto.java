@@ -42,7 +42,6 @@ public class ApiCreditsResponseDto {
                 .id(id)
                 .adult(adult)
                 .gender(gender)
-                .actorId(id) // Assuming actorId is the same as id in this case
                 .knownForDepartment(knownForDepartment)
                 .name(name)
                 .originalName(originalName)
