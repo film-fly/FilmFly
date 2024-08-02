@@ -15,4 +15,6 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
             throw new NotFoundException(ResponseCodeEnum.BOARD_NOT_FOUND);
         }
     }
+
+    boolean existsByIdAndUserId(Long id, Long userId);
 }
