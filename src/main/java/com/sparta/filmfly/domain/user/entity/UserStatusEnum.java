@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum UserStatusEnum {
-    VERIFIED("ACTIVE"), // 활성화 상태
+    ACTIVE("ACTIVE"), // 활성화 상태
     SUSPENDED("SUSPENDED"), // 정지된 상태
     DELETED("DELETED"); // 탈퇴한 상태
 

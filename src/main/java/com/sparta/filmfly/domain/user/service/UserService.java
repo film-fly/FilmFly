@@ -69,7 +69,7 @@ public class UserService {
                 .password(encodedPassword)
                 .email(requestDto.getEmail())
                 .nickname(requestDto.getNickname())
-                .userStatus(UserStatusEnum.VERIFIED)
+                .userStatus(UserStatusEnum.ACTIVE)
                 .userRole(userRole)
                 .build();
 
@@ -89,7 +89,6 @@ public class UserService {
                 .userRole(user.getUserRole())
                 .build();
     }
-
 
     /**
      * 비밀번호 변경
@@ -204,7 +203,6 @@ public class UserService {
         userRepository.deleteOldSoftDeletedUsers(cutoffDate);
     }
 
-
     /**
      * 유저 상세 조회(관리자 기능)
      */
@@ -226,9 +224,8 @@ public class UserService {
                 .build();
     }
 
-
     /**
-     *  유저 검색 조회(관리자 기능)
+     * 유저 검색 조회(관리자 기능)
      */
     @Transactional(readOnly = true)
     public UserSearchResponseDto getUsersBySearch(String search, UserStatusEnum status, int page, int size) {
@@ -285,8 +282,6 @@ public class UserService {
                 .build();
     }
 
-
-
     /**
      * 유저 활성화 상태로 변경
      */
@@ -309,5 +304,4 @@ public class UserService {
                 .updatedAt(user.getUpdatedAt())
                 .build();
     }
-
 }

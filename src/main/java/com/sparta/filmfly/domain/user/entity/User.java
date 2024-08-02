@@ -128,7 +128,7 @@ public class User extends TimeStampEntity {
      * 인증된 상태로 변경
      */
     public void updateVerified() {
-        this.userStatus = UserStatusEnum.VERIFIED;
+        this.userStatus = UserStatusEnum.ACTIVE;
     }
 
     /**
