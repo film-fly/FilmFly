@@ -60,23 +60,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             }
 
             if (user.getUserStatus() == UserStatusEnum.DELETED) {
-                List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_DELETED_USER"));
-                Authentication auth = new UsernamePasswordAuthenticationToken(new UserDetailsImpl(user), null, authorities);
-                handleTokenGeneration(response, user);
                 response.setStatus(ResponseCodeEnum.USER_DELETED.getHttpStatus().value());
                 ResponseEntity<MessageResponseDto> responseEntity = ResponseUtils.of(ResponseCodeEnum.USER_DELETED.getHttpStatus(), ResponseCodeEnum.USER_DELETED.getMessage());
                 writeResponseBody(response, responseEntity);
-                return auth;
-            }
-
-            if (user.getUserStatus() == UserStatusEnum.UNVERIFIED) {
-                List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_UNVERIFIED_USER"));
-                Authentication auth = new UsernamePasswordAuthenticationToken(new UserDetailsImpl(user), null, authorities);
-                handleTokenGeneration(response, user); // 토큰 생성 및 쿠키 추가
-                response.setStatus(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED.getHttpStatus().value());
-                ResponseEntity<MessageResponseDto> responseEntity = ResponseUtils.of(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED.getHttpStatus(), ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED.getMessage());
-                writeResponseBody(response, responseEntity);
-                return auth;
             }
 
             List<SimpleGrantedAuthority> authorities = (user.getUserRole() == UserRoleEnum.ROLE_ADMIN)
@@ -120,17 +106,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String refreshToken = jwtProvider.createRefreshToken(user.getUsername(), user.getId());
 
         ResponseCookie accessCookieBuilder = ResponseCookie.from("accessToken", accessToken)
-            .path("/")
-            .sameSite("None")
-            .secure(true)
-            .maxAge(JwtProvider.ACCESS_TOKEN_TIME)
-            .build();
+                .path("/")
+                .sameSite("None")
+                .secure(true)
+                .maxAge(JwtProvider.ACCESS_TOKEN_TIME)
+                .build();
         ResponseCookie refreshCookieBuilder = ResponseCookie.from("refreshToken", refreshToken)
-            .path("/")
-            .sameSite("None")
-            .secure(true)
-            .maxAge(JwtProvider.REFRESH_TOKEN_TIME)
-            .build();
+                .path("/")
+                .sameSite("None")
+                .secure(true)
+                .maxAge(JwtProvider.REFRESH_TOKEN_TIME)
+                .build();
 
         response.addHeader("Set-Cookie", accessCookieBuilder.toString());
         response.addHeader("Set-Cookie", refreshCookieBuilder.toString());

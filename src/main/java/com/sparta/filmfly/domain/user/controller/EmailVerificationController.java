@@ -17,11 +17,11 @@ public class EmailVerificationController {
     private final EmailVerificationService emailVerificationService;
 
     /**
-     * 이메일 인증 코드 재전송
+     * 이메일 인증 코드 전송
      */
-    @PostMapping("/{userId}/resend")
-    public ResponseEntity<MessageResponseDto> resendVerificationCode(@PathVariable Long userId) {
-        emailVerificationService.resendVerificationCode(userId);
+    @PostMapping("/code-send")
+    public ResponseEntity<MessageResponseDto> sendVerificationCode(@Valid @RequestBody EmailVerificationRequestDto requestDto) {
+        emailVerificationService.sendVerificationEmail(requestDto.getEmail());
         return ResponseUtils.success();
     }
 
@@ -30,7 +30,7 @@ public class EmailVerificationController {
      */
     @PostMapping("/verify")
     public ResponseEntity<MessageResponseDto> verifyCode(@Valid @RequestBody EmailVerificationRequestDto requestDto) {
-        emailVerificationService.verifyEmail(requestDto.getCode());
+        emailVerificationService.verifyEmailCode(requestDto.getEmail(), requestDto.getCode());
         return ResponseUtils.success();
     }
 }

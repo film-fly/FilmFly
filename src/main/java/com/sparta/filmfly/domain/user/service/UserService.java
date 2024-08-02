@@ -11,6 +11,9 @@ import com.sparta.filmfly.global.common.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,19 +46,11 @@ public class UserService {
             throw new DuplicateException(ResponseCodeEnum.USER_ALREADY_EXISTS);
         }
 
-        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
-            throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
-        }
-
         if (userRepository.findByNickname(requestDto.getNickname()).isPresent()) {
             throw new DuplicateException(ResponseCodeEnum.NICKNAME_ALREADY_EXISTS);
         }
 
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
-
-        UserStatusEnum userStatus = (requestDto.getAdminPassword() != null && !requestDto.getAdminPassword().isEmpty() && managerPassword.equals(requestDto.getAdminPassword()))
-                ? UserStatusEnum.VERIFIED
-                : UserStatusEnum.UNVERIFIED;
 
         UserRoleEnum userRole;
         if (requestDto.getAdminPassword() != null && !requestDto.getAdminPassword().isEmpty()) {
@@ -64,6 +59,8 @@ public class UserService {
             }
             userRole = UserRoleEnum.ROLE_ADMIN;
         } else {
+            // 이메일 인증 확인 (일반 유저의 경우)
+            emailVerificationService.checkIfEmailVerified(requestDto.getEmail());
             userRole = UserRoleEnum.ROLE_USER;
         }
 
@@ -72,14 +69,15 @@ public class UserService {
                 .password(encodedPassword)
                 .email(requestDto.getEmail())
                 .nickname(requestDto.getNickname())
-                .userStatus(userStatus)
+                .userStatus(UserStatusEnum.ACTIVE)
                 .userRole(userRole)
                 .build();
 
         userRepository.save(user);
 
-        if (user.getUserRole() != UserRoleEnum.ROLE_ADMIN) {
-            emailVerificationService.createVerificationCode(requestDto.getUsername());
+        // 일반 유저일 경우 이메일 인증 데이터 삭제
+        if (userRole == UserRoleEnum.ROLE_USER) {
+            emailVerificationService.deleteEmailVerificationByEmail(requestDto.getEmail());
         }
 
         return UserResponseDto.builder()
@@ -87,11 +85,8 @@ public class UserService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
-                .introduce(user.getIntroduce())
-                .pictureUrl(user.getPictureUrl())
-                .userRole(user.getUserRole())
                 .userStatus(user.getUserStatus())
-                .createdAt(user.getCreatedAt())
+                .userRole(user.getUserRole())
                 .build();
     }
 
@@ -167,6 +162,7 @@ public class UserService {
     public UserResponseDto getProfile(Long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
         return UserResponseDto.builder()
+                .id(user.getId())
                 .nickname(user.getNickname())
                 .introduce(user.getIntroduce())
                 .pictureUrl(user.getPictureUrl())
@@ -197,25 +193,40 @@ public class UserService {
     }
 
     /**
+     * 유저 본인 탈퇴 계정 복구
+     */
+    @Transactional
+    public UserResponseDto activateUser(User user) {
+        // 활성화 상태 검증
+        user.validateActiveStatus();
+        user.updateVerified();
+        userRepository.save(user);
+
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .userStatus(user.getUserStatus())
+                .updatedAt(user.getUpdatedAt())
+                .build();
+    }
+
+    /**
      * 오래된 소프트 딜리트된 유저 삭제
      */
     @Transactional
     public void deleteOldSoftDeletedUsers() {
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30); // 30일 지나면 하드 삭제
 
-        // 이메일 인증 삭제
-        userRepository.deleteOldSoftDeletedEmailVerifications(cutoffDate);
         // 유저 삭제
         userRepository.deleteOldSoftDeletedUsers(cutoffDate);
     }
 
-
     /**
-     * 유저 상세 조회 (관리자 기능)
+     * 유저 상세 조회(관리자 기능)
      */
     @Transactional(readOnly = true)
-    public UserResponseDto getUserDetail(UserSearchRequestDto userSearchRequestDto) {
-        User user = userRepository.findByUsernameOrElseThrow(userSearchRequestDto.getUsername());
+    public UserResponseDto getUserDetail(Long userId) {
+        User user = userRepository.findByIdOrElseThrow(userId);
         return UserResponseDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -232,37 +243,48 @@ public class UserService {
     }
 
     /**
-     * 상태별 유저 조회
+     * 유저 검색 조회(관리자 기능)
      */
     @Transactional(readOnly = true)
-    public UserStatusSearchResponseDto getUsersByStatus(UserStatusEnum status) {
-        List<User> users = userRepository.findAllByUserStatus(status);
+    public UserSearchResponseDto getUsersBySearch(String search, UserStatusEnum status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> usersPage;
 
-        List<UserResponseDto> userResponseDtos = users.stream()
+        if (search != null && !search.isEmpty() && status != null) {
+            usersPage = userRepository.findBySearchAndStatus(search, status, pageable);
+        } else if (search != null && !search.isEmpty()) {
+            usersPage = userRepository.findByUsernameOrNicknameContaining(search, pageable);
+        } else if (status != null) {
+            usersPage = userRepository.findAllByUserStatus(status, pageable);
+        } else {
+            usersPage = userRepository.findAll(pageable);
+        }
+
+        List<UserResponseDto> userResponseDtos = usersPage.getContent().stream()
                 .map(user -> UserResponseDto.builder()
                         .id(user.getId())
                         .username(user.getUsername())
-                        .deletedAt(user.getDeletedAt())
+                        .nickname(user.getNickname())
+                        .userRole(user.getUserRole())
                         .build())
                 .collect(Collectors.toList());
 
-        return UserStatusSearchResponseDto.builder()
+        return UserSearchResponseDto.builder()
                 .users(userResponseDtos)
-                .userCount(users.size())
+                .userCount(usersPage.getTotalElements())
+                .currentPage(usersPage.getNumber())
+                .totalPages(usersPage.getTotalPages())
                 .build();
     }
 
     /**
-     * 유저 정지 시키기
+     * 유저 정지 시키기(관리자 기능)
      */
     @Transactional
     public UserResponseDto suspendUser(Long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
-
-        if (user.getUserRole() != UserRoleEnum.ROLE_USER) {
-            throw new InvalidTargetException(ResponseCodeEnum.INVALID_ADMIN_TARGET);
-        }
         user.validateDeletedStatus();
+        user.validateSuspendedStatus();
 
         user.updateSuspended();
         userRepository.save(user);
@@ -275,19 +297,13 @@ public class UserService {
                 .build();
     }
 
-
-
     /**
-     * 유저 활성화 상태로 변경
+     * 유저 활성화 시키기(관리자 기능)
      */
     @Transactional
-    public UserResponseDto activateUser(Long userId, User currentUser) {
+    public UserResponseDto activateUserAsAdmin(Long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
-
-        // 어드민이거나 본인 계정(탈퇴 상태인) 경우에만 활성화 가능
-        if (currentUser.getUserRole() != UserRoleEnum.ROLE_ADMIN && (!currentUser.getId().equals(userId) || currentUser.getUserStatus() != UserStatusEnum.DELETED)) {
-            throw new AccessDeniedException(ResponseCodeEnum.ACCESS_DENIED);
-        }
+        user.validateActiveStatus();
 
         user.updateVerified();
         userRepository.save(user);
