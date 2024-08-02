@@ -46,19 +46,11 @@ public class UserService {
             throw new DuplicateException(ResponseCodeEnum.USER_ALREADY_EXISTS);
         }
 
-        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
-            throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
-        }
-
         if (userRepository.findByNickname(requestDto.getNickname()).isPresent()) {
             throw new DuplicateException(ResponseCodeEnum.NICKNAME_ALREADY_EXISTS);
         }
 
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
-
-        UserStatusEnum userStatus = (requestDto.getAdminPassword() != null && !requestDto.getAdminPassword().isEmpty() && managerPassword.equals(requestDto.getAdminPassword()))
-                ? UserStatusEnum.VERIFIED
-                : UserStatusEnum.UNVERIFIED;
 
         UserRoleEnum userRole;
         if (requestDto.getAdminPassword() != null && !requestDto.getAdminPassword().isEmpty()) {
@@ -67,6 +59,8 @@ public class UserService {
             }
             userRole = UserRoleEnum.ROLE_ADMIN;
         } else {
+            // 이메일 인증 확인 (일반 유저의 경우)
+            emailVerificationService.checkIfEmailVerified(requestDto.getEmail());
             userRole = UserRoleEnum.ROLE_USER;
         }
 
@@ -75,14 +69,15 @@ public class UserService {
                 .password(encodedPassword)
                 .email(requestDto.getEmail())
                 .nickname(requestDto.getNickname())
-                .userStatus(userStatus)
+                .userStatus(UserStatusEnum.VERIFIED)
                 .userRole(userRole)
                 .build();
 
         userRepository.save(user);
 
-        if (user.getUserRole() != UserRoleEnum.ROLE_ADMIN) {
-            emailVerificationService.createVerificationCode(requestDto.getUsername());
+        // 일반 유저일 경우 이메일 인증 데이터 삭제
+        if (userRole == UserRoleEnum.ROLE_USER) {
+            emailVerificationService.deleteEmailVerificationByEmail(requestDto.getEmail());
         }
 
         return UserResponseDto.builder()
@@ -90,13 +85,11 @@ public class UserService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
-                .introduce(user.getIntroduce())
-                .pictureUrl(user.getPictureUrl())
-                .userRole(user.getUserRole())
                 .userStatus(user.getUserStatus())
-                .createdAt(user.getCreatedAt())
+                .userRole(user.getUserRole())
                 .build();
     }
+
 
     /**
      * 비밀번호 변경
@@ -207,8 +200,6 @@ public class UserService {
     public void deleteOldSoftDeletedUsers() {
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30); // 30일 지나면 하드 삭제
 
-        // 이메일 인증 삭제
-        userRepository.deleteOldSoftDeletedEmailVerifications(cutoffDate);
         // 유저 삭제
         userRepository.deleteOldSoftDeletedUsers(cutoffDate);
     }
