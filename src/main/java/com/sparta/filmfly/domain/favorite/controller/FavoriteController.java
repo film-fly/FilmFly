@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-//@RequestMapping("")
+@RequestMapping("/favorites")
 @RequiredArgsConstructor
 public class FavoriteController {
 
@@ -25,7 +25,7 @@ public class FavoriteController {
     /**
     * 찜 등록하기
     */
-    @PostMapping("/{movieId}")
+    @PostMapping("/movies/{movieId}")
     public ResponseEntity<MessageResponseDto> createFavorite(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long movieId
@@ -50,7 +50,7 @@ public class FavoriteController {
     /**
     * 찜 취소하기
     */
-    @DeleteMapping("/{movieId}")
+    @DeleteMapping("/movies/{movieId}")
     public ResponseEntity<MessageResponseDto> deleteFavorite(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long movieId

@@ -6,8 +6,6 @@ import com.sparta.filmfly.domain.movie.dto.MovieResponseDto;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.user.entity.User;
-import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
-import com.sparta.filmfly.global.exception.custom.detail.AlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,11 +27,7 @@ public class FavoriteService {
         // DB 존재 검증
         Movie movie = movieRepository.findByIdOrElseThrow(movieId);
 
-        favoriteRepository.existsFavoriteByMovieIdAndUserIdOrElseThrow(movieId, user.getId());
-
-        if(favoriteRepository.existsFavoriteByMovieIdAndUserId(movieId, user.getId())) {
-            throw new AlreadyExistsException(ResponseCodeEnum.FAVORITE_ALREADY_EXISTS);
-        }
+        favoriteRepository.existsByMovieIdAndUserIdOrElseThrow(movieId, user.getId());
 
         Favorite favorite = Favorite.builder()
                 .movie(movie)
@@ -46,7 +40,7 @@ public class FavoriteService {
     * 자신이 찜한 영화 조회
     */
     public List<MovieResponseDto> getFavorite(User user) {
-        List<Favorite> favoriteList = favoriteRepository.findAllByUser_Id(user.getId());
+        List<Favorite> favoriteList = favoriteRepository.findAllByUserId(user.getId());
         List<Movie> movieList = favoriteList.stream().map(
                 favorite -> movieRepository.findByIdOrElseThrow(favorite.getMovie().getId())
         ).toList();
@@ -57,7 +51,7 @@ public class FavoriteService {
     * 찜한 영화 취소하기
     */
     public void deleteFavorite(User user, Long movieId) {
-        Favorite favorite = favoriteRepository.findByUser_IdAndMovie_IdOrElseThrow(user.getId(), movieId);
+        Favorite favorite = favoriteRepository.findByMovieIdAndUserIdOrElseThrow(movieId, user.getId());
         favoriteRepository.delete(favorite);
     }
 }
