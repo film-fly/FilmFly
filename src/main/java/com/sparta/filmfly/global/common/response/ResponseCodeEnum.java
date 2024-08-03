@@ -42,6 +42,7 @@ public enum ResponseCodeEnum {
     //Block
     USER_ALREADY_BLOCKED(HttpStatus.BAD_REQUEST, "이미 차단된 사용자입니다."),
     NOT_BLOCKED_TARGET(HttpStatus.NOT_FOUND, "차단된 상대가 아닙니다."),
+    INVALID_SELF_TARGET(HttpStatus.BAD_REQUEST, "본인을 차단 할 수 없습니다."),
 
     // Favorite
     FAVORITE_ALREADY_EXISTS(HttpStatus.ALREADY_REPORTED, "찜이 이미 등록되어있습니다."),
