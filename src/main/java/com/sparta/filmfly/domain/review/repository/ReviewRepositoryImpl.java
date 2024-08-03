@@ -1,7 +1,6 @@
 package com.sparta.filmfly.domain.review.repository;
 
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.filmfly.domain.movie.dto.PageResponseDto;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
@@ -9,7 +8,6 @@ import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;
 import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
 import com.sparta.filmfly.domain.review.entity.QReview;
-import com.sparta.filmfly.domain.user.entity.QUser;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,18 +28,8 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         QGood qGood = QGood.good;
         QBad qBad = QBad.bad;
 
-//        private Long id;
-//private String nickname;
-//private String pictureUrl;
-//private Float rating;
-//private String title;
-//private String content;
-//private Long goodCount;
-//private Long badCount;
-//private LocalDateTime createdAt;
-
         List<ReviewResponseDto> fetch = queryFactory.select(Projections.constructor(
-                ReviewResponseDto.class,
+            ReviewResponseDto.class,
                 qReview.id,
                 qReview.user.nickname,
                 qReview.user.pictureUrl,
@@ -78,5 +66,19 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
             .pageSize(page.getSize())
             .data(fetch)
             .build();
+    }
+
+    @Override
+    public Float getAverageRatingByMovieId(Long movieId) {
+        QReview qReview = QReview.review;
+
+        Double averageRating = queryFactory
+            .select(qReview.rating.avg())
+            .from(qReview)
+            .where(qReview.movie.id.eq(movieId)
+                .and(qReview.deletedAt.isNull())) // 조건을 추가하여 삭제된 리뷰를 제외
+            .fetchOne();
+
+        return Math.round(averageRating * 10) / 10.0f;
     }
 }
