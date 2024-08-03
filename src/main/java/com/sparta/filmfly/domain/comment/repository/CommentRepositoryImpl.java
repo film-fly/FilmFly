@@ -57,8 +57,8 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
         return CommentPageResponseDto.builder()
                 .totalPages(page.getTotalPages())
                 .totalElements(page.getTotalElements())
-                .currentPages(page.getNumber() + 1)
-                .size(page.getSize())
+                .currentPage(page.getNumber() + 1)
+                .pageSize(page.getSize())
                 .content(content)
                 .build();
     }
@@ -97,8 +97,8 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
         return CommentPageResponseDto.builder()
                 .totalPages(page.getTotalPages())
                 .totalElements(page.getTotalElements())
-                .currentPages(page.getNumber() + 1)
-                .size(page.getSize())
+                .currentPage(page.getNumber() + 1)
+                .pageSize(page.getSize())
                 .content(content)
                 .build();
     }
