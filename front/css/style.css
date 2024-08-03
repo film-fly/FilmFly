@@ -2,3 +2,216 @@
   width: 800px;
   margin: 0 auto;
 }
+
+.auth-form {
+  width: 500px;
+  height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-form h2 {
+  font-size: 32px;
+}
+
+.auth-form #auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.card .list-group-item a {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+/*.collection-form {*/
+/*  border: 1px solid black;*/
+/*}*/
+
+.collection-form img {
+  width: 100px;
+  height: 120px;
+}
+
+.img-default-size {
+  width: 100px;
+  height: 140px;
+}
+
+.img-big-size {
+  width: 170px;
+  height: 240px;
+}
+
+.img-profile-size {
+  width: 52px;
+  height: 52px;
+}
+
+.img-actor-size {
+  width: 70px;
+  height: 70px;
+}
+
+.img-profile-big-size {
+  width: 140px;
+  height: 140px;
+}
+
+.collection-form .collection-text-box {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px;
+  gap: 10px;
+}
+
+.collection-form .collection-text-box div {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.create-collection-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row .col {
+  cursor: pointer;
+}
+
+/* 탭 전체 스타일 */
+.tabs {
+  margin-top: 50px;
+  padding-bottom: 40px;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* 탭 스타일 */
+.tab_item {
+  width: calc(100% / 4);
+  height: 50px;
+  border-bottom: 3px solid #0D6EFD;
+  background-color: #f8f8f8;
+  line-height: 50px;
+  font-size: 16px;
+  text-align: center;
+  color: #333333;
+  display: block;
+  float: left;
+  text-align: center;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.tab_item:hover {
+  opacity: 0.75;
+}
+
+/* 라디오 버튼 UI삭제*/
+input[name="tab_item"] {
+  display: none;
+}
+
+/* 탭 컨텐츠 스타일 */
+.tab_content {
+  display: none;
+  padding: 40px 40px 0;
+  clear: both;
+  overflow: hidden;
+}
+
+/* 선택 된 탭 콘텐츠를 표시 */
+#movie:checked ~ #movie_content,
+#review:checked ~ #review_content,
+#board:checked ~ #board_content,
+#comment:checked ~ #comment_content {
+  display: block;
+}
+
+/* 선택된 탭 스타일 */
+.tabs input:checked + .tab_item {
+  background-color: #0D6EFD;
+  color: #fff;
+}
+
+/* Modal container */
+.comment-modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal content box */
+.comment-modal-content {
+  background-color: #333;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 40%; /* Could be more or less, depending on screen size */
+  color: white;
+}
+
+/* Modal header */
+.comment-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #888;
+}
+
+/* Modal body */
+.comment-modal-body {
+  margin: 20px 0;
+}
+
+/* Modal footer */
+.comment-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* The Close Button */
+.comment-close {
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.comment-close:hover,
+.comment-close:focus {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#editCommentModal #editCommentText {
+  width: 100%;
+  height: 100px;
+}
+
+#searchOptionModal .modal-body label {
+  width: 24%;
+  margin-bottom: 10px;
+}

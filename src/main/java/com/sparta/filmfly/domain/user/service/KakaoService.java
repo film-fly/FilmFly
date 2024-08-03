@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.security.SecureRandom;
 
 @Slf4j(topic = "KAKAO Login")
 @Service
@@ -51,10 +52,6 @@ public class KakaoService {
 
         UserKakaoInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
         log.info("Kakao user info: {}", kakaoUserInfo);
-
-        if (userRepository.findByEmail(kakaoUserInfo.getEmail()).isPresent()) {
-            throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
-        }
 
         return createOrUpdateUser(kakaoUserInfo, response);
     }
@@ -120,16 +117,15 @@ public class KakaoService {
 
         JsonNode jsonNode = objectMapper.readTree(response.getBody());
         Long id = jsonNode.get("id").asLong();
-        String nickname = jsonNode.get("properties").get("nickname").asText();
+        String email = jsonNode.get("kakao_account").get("email").asText();
         String pictureUrl = null;
         if (jsonNode.get("properties").get("profile_image") != null) {
             pictureUrl = jsonNode.get("properties").get("profile_image").asText();
         }
-        String email = jsonNode.get("kakao_account").get("email").asText();
 
         return UserKakaoInfoDto.builder()
                 .id(id)
-                .nickname(nickname)
+                .nickname(generateRandomNickname(email))
                 .pictureUrl(pictureUrl)
                 .email(email)
                 .build();
@@ -146,6 +142,11 @@ public class KakaoService {
         try {
             user = userRepository.findByUsernameOrElseThrow(email);
         } catch (NotFoundException e) {
+            // 신규 사용자 생성 시에만 이메일 중복 체크 수행
+            if (userRepository.findByEmail(kakaoUserInfo.getEmail()).isPresent()) {
+                throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
+            }
+
             user = User.builder()
                     .username(email)
                     .password("")
@@ -153,15 +154,15 @@ public class KakaoService {
                     .nickname(kakaoUserInfo.getNickname())
                     .pictureUrl(kakaoUserInfo.getPictureUrl())
                     .kakaoId(kakaoUserInfo.getId())
-                    .userStatus(UserStatusEnum.VERIFIED)
+                    .userStatus(UserStatusEnum.ACTIVE)
                     .userRole(UserRoleEnum.ROLE_USER)
                     .build();
             userRepository.save(user);
             isNewUser = true;
         }
 
-        String accessToken = jwtProvider.createAccessToken(user.getUsername());
-        String refreshToken = jwtProvider.createRefreshToken(user.getUsername());
+        String accessToken = jwtProvider.createAccessToken(user.getUsername(), user.getId());
+        String refreshToken = jwtProvider.createRefreshToken(user.getUsername(), user.getId());
 
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
@@ -193,5 +194,27 @@ public class KakaoService {
         Cookie cookie = new Cookie(name, value.replace(" ", "+"));
         cookie.setPath("/");
         response.addCookie(cookie);
+    }
+
+    /**
+     * 랜덤 닉네임 생성
+     */
+    private String generateRandomNickname(String email) {
+        String randomString = generateRandomString();
+        return email.split("@")[0] + "_" + randomString;
+    }
+
+    /**
+     * 랜덤 문자열 생성
+     */
+    private String generateRandomString() {
+        int length = 8;
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(characters.charAt(random.nextInt(characters.length())));
+        }
+        return sb.toString();
     }
 }

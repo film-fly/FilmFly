@@ -1,8 +1,13 @@
 package com.sparta.filmfly.domain.officeboard.entity;
 
+import static com.sparta.filmfly.domain.user.entity.UserRoleEnum.ROLE_ADMIN;
+
 import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
+import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
+import com.sparta.filmfly.global.exception.custom.detail.NotOwnerException;
+import com.sparta.filmfly.global.exception.custom.detail.UnAuthorizedException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,16 +16,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE office_board SET deleted_at = CURRENT_TIMESTAMP where id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class OfficeBoard extends TimeStampEntity {
 
     @Id
@@ -43,14 +51,34 @@ public class OfficeBoard extends TimeStampEntity {
     @Column(nullable = false)
     Long goodCount;
 
+
     @Builder
-    public OfficeBoard(String title, String content){
+    public OfficeBoard(User user, String title, String content) {
+        this.user = user;
         this.title = title;
         this.content = content;
+        this.hits = 0L;
+        this.goodCount = 0L;
     }
 
-    public void update(OfficeBoardRequestDto requestDto) {
+    public void updateOfficeBoard(OfficeBoardRequestDto requestDto) {
         this.title = requestDto.getTitle() != null ? requestDto.getTitle() : title;
         this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
+    }
+
+    public void deleteOfficeBoard() {
+        setDeletedAt();
+    }
+
+    public void checkAdmin() {
+        if (this.user.getUserRole() != ROLE_ADMIN) {
+            throw new UnAuthorizedException(ResponseCodeEnum.ACCESS_DENIED);
+        }
+    }
+
+    public void checkOwnerUser(User requestUser) {
+        if(!Objects.equals(this.user.getId(),requestUser.getId())){
+            throw new NotOwnerException(ResponseCodeEnum.BOARD_NOT_OWNER);
+        }
     }
 }

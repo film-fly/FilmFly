@@ -34,7 +34,6 @@ public class ReportService {
         Report report = Report.builder()
                 .reporterId(reporter)
                 .reportedId(reported)
-                .content(reportRequestDto.getContent())
                 .typeId(reportRequestDto.getTypeId())
                 .type(reportRequestDto.getType())
                 .reason(reportRequestDto.getReason())
@@ -47,10 +46,7 @@ public class ReportService {
      * 신고 목록 조회 (어드민 권한)
      */
     @Transactional(readOnly = true)
-    public List<ReportResponseDto> getAllReports(User currentUser) {
-        // 현재 사용자가 어드민인지 확인
-        currentUser.validateAdminRole();
-
+    public List<ReportResponseDto> getAllReports() {
         List<Report> reports = reportRepository.findAll();
         return reports.stream()
                 .map(report -> ReportResponseDto.builder()

@@ -19,8 +19,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
 
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/users")
@@ -74,7 +74,7 @@ public class UserController {
     /**
      * 비밀번호 변경
      */
-    @PutMapping("/password")
+    @PatchMapping("/password")
     public ResponseEntity<MessageResponseDto> updatePassword(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody UserPasswordUpdateRequestDto requestDto
@@ -86,7 +86,7 @@ public class UserController {
     /**
      * 프로필 업로드
      */
-    @PutMapping("/profile")
+    @PatchMapping("/profile")
     public ResponseEntity<DataResponseDto<UserResponseDto>> updateProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestPart("profileUpdateRequestDto") UserProfileUpdateRequestDto requestDto,
@@ -97,9 +97,18 @@ public class UserController {
     }
 
     /**
+     * 닉네임 중복 확인
+     */
+    @PostMapping("/check-nickname")
+    public ResponseEntity<MessageResponseDto> checkNicknameDuplication(@RequestBody UserNicknameCheckRequestDto requestDto) {
+        userService.checkNicknameDuplication(requestDto.getNickname());
+        return ResponseUtils.success();
+    }
+
+    /**
      * 프로필 조회
      */
-    @GetMapping("/{userId}/profile")
+    @GetMapping("/{userId}")
     public ResponseEntity<DataResponseDto<UserResponseDto>> getProfile(@PathVariable Long userId) {
         UserResponseDto profile = userService.getProfile(userId);
         return ResponseUtils.success(profile);
@@ -136,6 +145,7 @@ public class UserController {
             @Valid @RequestBody UserDeleteRequestDto requestDto,
             HttpServletResponse response
     ) {
+        log.info("deleteUser");
         userService.deleteUser(userDetails.getUser(), requestDto);
 
         // 쿠키를 무효화하여 삭제
@@ -153,51 +163,14 @@ public class UserController {
         return ResponseUtils.success();
     }
 
-    /**
-     * 개인 유저 상세 조회 (관리자 기능)
-     */
-    @GetMapping("/search/detail")
-    public ResponseEntity<DataResponseDto<UserResponseDto>> getUserDetail(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody UserSearchRequestDto userSearchRequestDto
-    ) {
-        UserResponseDto userDetail = userService.getUserDetail(userSearchRequestDto, userDetails.getUser());
-        return ResponseUtils.success(userDetail);
-    }
 
     /**
-     * 유저 상태별 조회 (관리자 기능)
+     * 본인 활성화 시키기(탈퇴 상태일때)
      */
-    @GetMapping("/search/status")
-    public ResponseEntity<DataResponseDto<UserStatusSearchResponseDto>> getUsersByStatus(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody UserStatusSearchRequestDto userStatusRequestDto
-    ) {
-        UserStatusSearchResponseDto users = userService.getUsersByStatus(userStatusRequestDto.getStatus(), userDetails.getUser());
-        return ResponseUtils.success(users);
-    }
-
-    /**
-     * 유저 정지 (관리자 기능)
-     */
-    @PutMapping("/suspend/{userId}")
-    public ResponseEntity<MessageResponseDto> suspendUser(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long userId
-    ) {
-        userService.suspendUser(userId, userDetails.getUser());
-        return ResponseUtils.success();
-    }
-
-    /**
-     * 유저 활성화 (관리자 기능)
-     */
-    @PutMapping("/activate/{userId}")
-    public ResponseEntity<MessageResponseDto> activateUser(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long userId
-    ) {
-        userService.activateUser(userId, userDetails.getUser());
-        return ResponseUtils.success();
+    @PatchMapping("/activate")
+    public ResponseEntity<DataResponseDto<UserResponseDto>> activateUser(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserResponseDto userResponseDto = userService.activateUser(userDetails.getUser());
+        return ResponseUtils.success(userResponseDto);
     }
 }

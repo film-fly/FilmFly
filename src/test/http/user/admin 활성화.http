@@ -1,0 +1,23 @@
+### ADMIN 회원가입 2
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "username": "admin1212",
+  "password": "Test12345!212",
+  "email" : "dmarb0313212@gmail.com",
+  "adminPassword": "1234",
+  "nickname": "admin212"
+}
+
+### ADMIN 로그인 2
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username" : "admin1212",
+  "password": "Test12345!212"
+}
+
+### 사용자 활성화
+PUT http://localhost:8080/users/activate/1

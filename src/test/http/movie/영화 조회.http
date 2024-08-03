@@ -1,0 +1,12 @@
+### 영화 단건 조회
+@movieId = 280180
+GET https://localhost:443/movies/{{movieId}}
+
+
+### 인기 영화 조회
+GET https://localhost:443/movies/trend
+
+
+# https://localhost/boards?page=&size=10&sortBy=&isAsc=&search=
+### 영화 검색 (페이징)
+GET https://localhost/movies/search

@@ -11,9 +11,6 @@ public class ReportRequestDto {
     private Long reportedId;
 
     @NotNull
-    private String content;
-
-    @NotNull
     private Long typeId;
 
     @NotNull
