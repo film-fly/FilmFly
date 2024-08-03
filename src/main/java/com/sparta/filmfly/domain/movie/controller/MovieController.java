@@ -1,12 +1,12 @@
 package com.sparta.filmfly.domain.movie.controller;
 
 import com.sparta.filmfly.domain.movie.dto.*;
-import com.sparta.filmfly.domain.movie.entity.Credit;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.entity.OriginLanguageEnum;
 import com.sparta.filmfly.domain.movie.service.MovieService;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,20 +51,10 @@ public class MovieController {
         return ResponseUtils.success();
     }
 
-
-
-    // TODO 영화 기능 확인하기
-    // TODO 검색 확인하기
-
-
-
-
-
-
     /**
     * 영화 검색
     */
-    @GetMapping("/movies/search")
+    @GetMapping("/movies")
     public ResponseEntity<DataResponseDto<PageResponseDto<List<MovieResponseDto>>>> getListMovie(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size,
@@ -106,7 +96,7 @@ public class MovieController {
                         .collect(Collectors.toList()))
                 .totalElements(moviePage.getTotalElements())
                 .totalPages(moviePage.getTotalPages())
-                .pageNumber(moviePage.getNumber())
+                .currentPage(moviePage.getNumber() + 1)
                 .pageSize(moviePage.getSize())
                 .build();
         return ResponseUtils.success(response);

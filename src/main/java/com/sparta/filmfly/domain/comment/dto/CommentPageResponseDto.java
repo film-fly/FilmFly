@@ -10,7 +10,7 @@ import java.util.List;
 public class CommentPageResponseDto {
     int totalPages;
     Long totalElements;
-    int currentPages;
-    int size;
+    int currentPage;
+    int pageSize;
     List<CommentResponseDto> content;
 }
