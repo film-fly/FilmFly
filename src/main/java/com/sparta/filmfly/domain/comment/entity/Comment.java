@@ -38,12 +38,6 @@ public class Comment extends TimeStampEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private Long goodCount;
-
-    @Column(nullable = false)
-    private Long badCount;
-
     private LocalDateTime deletedAt;
 
     @Builder // 필요한 것만 생성자로
@@ -51,9 +45,6 @@ public class Comment extends TimeStampEntity {
         this.user = user;
         this.board = board;
         this.content = content;
-
-        this.goodCount = 0L;
-        this.badCount = 0L;
     }
 
     public void update(CommentRequestDto requestDto) {
@@ -72,6 +63,15 @@ public class Comment extends TimeStampEntity {
     public void validateOwner(User requestUser) {
         if(this.user.getId() != requestUser.getId()) {
             throw new AccessDeniedException(ResponseCodeEnum.COMMENT_NOT_OWNER);
+        }
+    }
+
+    /**
+     * 요청한 유저가 해당 댓글 소유주인지 유효성 검사
+     */
+    public void validateBoardId(Long boardId) {
+        if(this.board.getId() != boardId) {
+            throw new AccessDeniedException(ResponseCodeEnum.COMMENT_PATH_MISMATCH);
         }
     }
 }

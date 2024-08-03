@@ -1,5 +1,5 @@
 ### ADMIN 회원가입
-POST http://localhost:8080/users/signup
+POST https://localhost/users/signup
 Content-Type: application/json
 
 {
@@ -10,13 +10,22 @@ Content-Type: application/json
 }
 
 ### ADMIN 로그인
-POST http://localhost:8080/users/login
+POST https://localhost/users/login
 Content-Type: application/json
 
 {
-  "username" : "admin123",
+  "username": "admin123",
   "password": "Test123!"
 }
 
+### 테스트에 사용할 데이터
+@movieId=155
+
 ### 찜 등록하기
-POST http://localhost:8080/favorite?movieId=10138
+POST https://localhost/favorites/movies/{{movieId}}
+
+### 찜 목록 조회
+GET https://localhost/favorites
+
+### 찜 삭제
+DELETE https://localhost/favorites/movies/{{movieId}}

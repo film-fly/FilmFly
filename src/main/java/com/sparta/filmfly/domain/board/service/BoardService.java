@@ -3,26 +3,23 @@ package com.sparta.filmfly.domain.board.service;
 import com.sparta.filmfly.domain.board.dto.BoardPageResponseDto;
 import com.sparta.filmfly.domain.board.dto.BoardRequestDto;
 import com.sparta.filmfly.domain.board.dto.BoardResponseDto;
+import com.sparta.filmfly.domain.board.dto.BoardUpdateResponseDto;
 import com.sparta.filmfly.domain.board.entity.Board;
 import com.sparta.filmfly.domain.board.repository.BoardRepository;
-import com.sparta.filmfly.domain.media.dto.MediaResponseDto;
-import com.sparta.filmfly.domain.media.entity.Media;
+import com.sparta.filmfly.domain.file.service.FileService;
 import com.sparta.filmfly.domain.media.entity.MediaTypeEnum;
-import com.sparta.filmfly.domain.media.service.MediaService;
+import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
+import com.sparta.filmfly.domain.reaction.service.BadService;
+import com.sparta.filmfly.domain.reaction.service.GoodService;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -30,30 +27,26 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final MediaService mediaService;
+    private final GoodService goodService;
+    private final BadService badService;
 
+    private final FileService fileService;
     /**
      * 보드 생성
      */
     @Transactional
-    public BoardResponseDto createBoard(BoardRequestDto requestDto, List<MultipartFile> files, User user) {
-        user.validateUserStatus();
-
+    public BoardResponseDto createBoard(User user, BoardRequestDto requestDto) {
         Board entity = requestDto.toEntity(user);
-        Board savedBoard = boardRepository.save(entity);
+        Board savedBoard = boardRepository.save(entity); // 일단 저장 후 boardId를 생성
 
-        BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(savedBoard);
+        //이미지 올릴때 검사, 이미지 전부 합쳐서 20MB 못넘게 하기 필요할까??
+        String content = requestDto.getContent();
+        String modifiedContent = fileService.uploadLocalImageToS3(MediaTypeEnum.BOARD,savedBoard.getId(), content);
 
-        if(files == null || files.isEmpty() || files.get(0).isEmpty()) { //파일이 비어있으면 바로 종료
-            return boardResponseDto;
-        }
+        savedBoard.updateContent(null, modifiedContent);
+        Board updatedBoard = boardRepository.save(savedBoard);
 
-        for (MultipartFile file : files) { //파일들 하나씩 s3로 올리기
-            MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.BOARD,savedBoard.getId(),file);
-            boardResponseDto.addMediaDto(mediaResponseDto);
-        }
-
-        return boardResponseDto;
+        return BoardResponseDto.fromEntity(updatedBoard,0L,0L);
     }
 
     /**
@@ -62,70 +55,57 @@ public class BoardService {
     @Transactional
     public BoardResponseDto getBoard(Long boardId) {
         Board board = boardRepository.findByIdOrElseThrow(boardId);
-        List<Media> mediaList = mediaService.getListMedia(MediaTypeEnum.BOARD,board.getId());
 
         board.addHits();
         Board savedBoard = boardRepository.save(board);
-        BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(savedBoard);
-        for (Media media : mediaList) {
-            boardResponseDto.addMediaDto(MediaResponseDto.fromEntity(media));
-        }
 
-        return boardResponseDto;
+        Long goodCount = goodService.getCountByTypeTypeId(ReactionContentTypeEnum.BOARD,boardId);
+        Long badCount = badService.getCountByTypeTypeId(ReactionContentTypeEnum.BOARD,boardId);
+        return BoardResponseDto.fromEntity(savedBoard,goodCount,badCount);
+    }
+
+    public BoardPageResponseDto getPageBoard(int pageNum, int size, Long filterGoodCount, Long filterHits, String search) {
+        Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        return boardRepository.findAllWithFilters(pageable, filterGoodCount, filterHits, search);
     }
 
     /**
-     * 보드 페이징 조회
+     * 보드 수정 권한 체크
      */
-    @Transactional(readOnly = true)
-    public BoardPageResponseDto getPageBoard(Integer pageNum, Integer size) {
-        Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+    public Boolean checkEditBoardPermission(User user, Long boardId) {
+        Board board = boardRepository.findByIdOrElseThrow(boardId);
+        board.validateOwner(user);
+        return true; //수정 권한 없으면 에러?
+    }
 
-        //QueryDSL 최적화로 변경하기
-        Page<Board> boards = boardRepository.findAll(pageable);
-        //List 형식 totalPages,size,content,number 등 필요한 정보만 보내는 PageResponse
-        BoardPageResponseDto boardPageResponseDto = BoardPageResponseDto.fromPage(boards);
-
-        List<BoardResponseDto> boardsDto = new ArrayList<>();
-        for (Board board : boards) {
-            BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(board); //보드 기본 정보 Dto
-            List<Media> mediaList = mediaService.getListMedia(MediaTypeEnum.BOARD,board.getId()); //해당 보드의 미디어가 있으면 가지고 온다
-            for (Media media : mediaList) {
-                boardResponseDto.addMediaDto(MediaResponseDto.fromEntity(media)); //미디어가 존재하면 보드dto에 정보를 넣어준다
-            }
-            boardsDto.add(boardResponseDto); //보드pageDto content에 넣을 보드 정보 추가
-        }
-
-        boardPageResponseDto.addContent(boardsDto);
-        return boardPageResponseDto;
+    /**
+     * 보드 수정 페이지 정보
+     */
+    public BoardUpdateResponseDto forUpdateBoard(User user, Long boardId) {
+        Board board = boardRepository.findByIdOrElseThrow(boardId);
+        board.validateOwner(user);
+        return BoardUpdateResponseDto.fromEntity(board);
     }
 
     /**
      * 보드 수정
      */
     @Transactional
-    public BoardResponseDto updateBoard(User user, BoardRequestDto requestDto, List<MultipartFile> files, Long boardId) {
-        user.validateUserStatus();
+    public BoardResponseDto updateBoard(User user, BoardRequestDto requestDto, Long boardId) {
         Board board = boardRepository.findByIdOrElseThrow(boardId);
         board.validateOwner(user);
 
-        board.update(requestDto);
+        String content = requestDto.getContent();
+        fileService.checkModifiedImageFile(MediaTypeEnum.BOARD, board.getId(), content); //이미지 변경 확인
+        String modifiedContent = fileService.uploadLocalImageToS3(MediaTypeEnum.BOARD,board.getId(),content); //이미지 S3 변환
+
+        board.updateContent(requestDto.getTitle(),modifiedContent);
         Board updatedBoard = boardRepository.save(board);
 
-        BoardResponseDto boardResponseDto = BoardResponseDto.fromEntity(updatedBoard);
-
-        //수정 전 기존 미디어들 삭제 요청
-        mediaService.deleteAllMedia(MediaTypeEnum.BOARD,board.getId());
-
-        if(files == null || files.isEmpty() || files.get(0).isEmpty())
-            return boardResponseDto;
-
-        for (MultipartFile file : files) {
-            MediaResponseDto mediaResponseDto = mediaService.createMedia(MediaTypeEnum.BOARD,boardId,file);
-            boardResponseDto.addMediaDto(mediaResponseDto);
-        }
-
-        return boardResponseDto;
+        Long goodCount = goodService.getCountByTypeTypeId(ReactionContentTypeEnum.BOARD,boardId);
+        Long badCount = badService.getCountByTypeTypeId(ReactionContentTypeEnum.BOARD,boardId);
+        return BoardResponseDto.fromEntity(updatedBoard,goodCount,badCount);
     }
 
     /**
@@ -133,7 +113,6 @@ public class BoardService {
      */
     @Transactional
     public String deleteBoard(User user, Long boardId) {
-        user.validateUserStatus();
         Board board = boardRepository.findByIdOrElseThrow(boardId);
 
         //관리자면 삭제 가능하게
@@ -144,5 +123,14 @@ public class BoardService {
         boardRepository.delete(board);
 
         return "게시물이 삭제되었습니다.";
+    }
+
+    /**
+     * 유저의 보드 조회
+     */
+    public BoardPageResponseDto getUsersBoard(Integer pageNum, Integer size, Long userId) {
+        Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        return boardRepository.findAllByUserId(userId,pageable);
     }
 }

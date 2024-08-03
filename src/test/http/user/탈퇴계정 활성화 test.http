@@ -1,0 +1,72 @@
+### ADMIN 회원가입 1
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "Test12345!",
+  "email" : "dmarb0313@gmail.com",
+  "adminPassword": "1234",
+  "nickname": "admin"
+}
+
+### ADMIN 로그인 1
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username" : "admin1",
+  "password": "Test12345!"
+}
+
+### 회원탈퇴
+DELETE http://localhost:8080/users/withdraw
+Content-Type: application/json
+
+{
+  "password": "Test12345!"
+}
+
+### ADMIN 로그인
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username" : "admin1",
+  "password": "Test12345!"
+}
+
+### 활성화 시키기
+PUT http://localhost:8080/users/activate/1
+
+### ADMIN 회원가입 2
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "username": "admin12",
+  "password": "Test12345!2",
+  "email" : "dmarb03132@gmail.com",
+  "adminPassword": "1234",
+  "nickname": "admin2"
+}
+
+### ADMIN 로그인 2
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username" : "admin12",
+  "password": "Test12345!2"
+}
+
+### 회원탈퇴 2
+DELETE http://localhost:8080/users/withdraw
+Content-Type: application/json
+
+{
+  "password": "Test12345!2"
+}
+
+### 활성화 시키기
+PUT http://localhost:8080/users/activate/1

@@ -1,0 +1,73 @@
+### ADMIN 회원가입
+POST https://localhost/users/signup
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "Test123!",
+  "email" : "dmarb0313@gmail.com",
+  "adminPassword": "1234"
+}
+
+### ADMIN 로그인
+POST https://localhost/users/login
+Content-Type: application/json
+
+{
+  "username": "admin5",
+  "password": "Admin12345!"
+}
+
+### 좋아요 등록
+POST https://localhost/good
+Content-Type: application/json
+
+{
+  "contentId": 1,
+  "contentType": "review"
+}
+
+### 좋아요 취소
+DELETE https://localhost/good
+Content-Type: application/json
+
+{
+  "contentId": 1,
+  "contentType": "review"
+}
+
+### 좋아요 눌렀는지 확인
+POST https://localhost/good/check
+Content-Type: application/json
+
+{
+  "contentId": 1,
+  "contentType": "review"
+}
+
+### 싫어요 등록
+POST https://localhost/bad
+Content-Type: application/json
+
+{
+  "contentId": 1,
+  "contentType": "review"
+}
+
+### 싫어요 취소
+DELETE https://localhost/bad
+Content-Type: application/json
+
+{
+  "contentId": 1,
+  "contentType": "review"
+}
+
+### 싫어요 눌렀는지 확인
+POST https://localhost/bad/check
+Content-Type: application/json
+
+{
+  "contentId": 1,
+  "contentType": "review"
+}

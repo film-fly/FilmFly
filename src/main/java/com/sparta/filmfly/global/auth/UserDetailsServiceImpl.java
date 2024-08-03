@@ -14,13 +14,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    /**
+     * 사용자 이름으로 사용자 정보를 로드
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
         // 사용자 조회
         User user = userRepository.findByUsernameOrElseThrow(username);
-
-        // 사용자 상태 검증
-        user.validateUserStatus();
 
         // UserDetails 객체 생성 후 반환
         return new UserDetailsImpl(user);
