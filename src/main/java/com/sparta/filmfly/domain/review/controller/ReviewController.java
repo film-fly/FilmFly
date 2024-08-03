@@ -1,8 +1,10 @@
 package com.sparta.filmfly.domain.review.controller;
 
+import com.sparta.filmfly.domain.movie.dto.PageResponseDto;
 import com.sparta.filmfly.domain.review.dto.ReviewCreateRequestDto;
 import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
 import com.sparta.filmfly.domain.review.dto.ReviewUpdateRequestDto;
+import com.sparta.filmfly.domain.review.dto.ReviewUpdateResponseDto;
 import com.sparta.filmfly.domain.review.service.ReviewService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
@@ -29,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/reviews")
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -37,19 +38,20 @@ public class ReviewController {
     /**
      * 리뷰 저장
      */
-    @PostMapping
+    @PostMapping("/movies/{movieId}/reviews")
     public ResponseEntity<DataResponseDto<ReviewResponseDto>> createReview(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long movieId,
         @Valid @RequestBody ReviewCreateRequestDto requestDto
     ) {
-        ReviewResponseDto responseDto = reviewService.createReview(userDetails.getUser(), requestDto);
+        ReviewResponseDto responseDto = reviewService.createReview(userDetails.getUser(), movieId, requestDto);
         return ResponseUtils.success(responseDto);
     }
 
     /**
      * 리뷰 단일 조회
      */
-    @GetMapping("/{reviewId}")
+    @GetMapping("/reviews/{reviewId}")
     public ResponseEntity<DataResponseDto<ReviewResponseDto>> getReview(
         @PathVariable Long reviewId
     ) {
@@ -60,36 +62,36 @@ public class ReviewController {
     /**
      * 특정 영화에 대한 리뷰 전체 조회
      */
-    @GetMapping
-    public ResponseEntity<DataResponseDto<List<ReviewResponseDto>>> getPageReview(
-        @RequestParam Long movieId,
+    @GetMapping("/movies/{movieId}/reviews")
+    public ResponseEntity<DataResponseDto<PageResponseDto<List<ReviewResponseDto>>>> getPageReview(
+        @PathVariable Long movieId,
         @RequestParam(required = false, defaultValue = "1") int page,
-        @RequestParam(required = false, defaultValue = "5") int size,
+        @RequestParam(required = false, defaultValue = "10") int size,
         @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
         @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        List<ReviewResponseDto> responseDtos = reviewService.getPageReview(movieId, pageable);
-        return ResponseUtils.success(responseDtos);
+        PageResponseDto<List<ReviewResponseDto>> responseDto = reviewService.getPageReview(movieId, pageable);
+        return ResponseUtils.success(responseDto);
     }
 
     /**
      * 리뷰 수정
      */
-    @PatchMapping("/{reviewId}")
-    public ResponseEntity<DataResponseDto<ReviewResponseDto>> updateReview(
+    @PatchMapping("/reviews/{reviewId}")
+    public ResponseEntity<DataResponseDto<ReviewUpdateResponseDto>> updateReview(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @Valid @RequestBody ReviewUpdateRequestDto requestDto,
         @PathVariable Long reviewId
     ) {
-        ReviewResponseDto responseDto = reviewService.updateReview(userDetails.getUser(), requestDto, reviewId);
+        ReviewUpdateResponseDto responseDto = reviewService.updateReview(userDetails.getUser(), requestDto, reviewId);
         return ResponseUtils.success(responseDto);
     }
 
     /**
      * 리뷰 삭제
      */
-    @DeleteMapping("/{reviewId}")
+    @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<MessageResponseDto> deleteReview(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @PathVariable Long reviewId
