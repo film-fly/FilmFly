@@ -1,6 +1,6 @@
 package com.sparta.filmfly.domain.user.controller;
 
-import com.sparta.filmfly.domain.report.dto.ReportResponseDto;
+import com.sparta.filmfly.domain.report.dto.ReportPageResponseDto;
 import com.sparta.filmfly.domain.report.service.ReportService;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
 import com.sparta.filmfly.domain.user.dto.UserSearchResponseDto;
@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/admins")
@@ -52,8 +51,11 @@ public class AdminController {
      * 신고 목록 조회
      */
     @GetMapping("/reports")
-    public ResponseEntity<DataResponseDto<List<ReportResponseDto>>> getAllReports() {
-        List<ReportResponseDto> reports = reportService.getAllReports();
+    public ResponseEntity<DataResponseDto<ReportPageResponseDto>> getAllReports(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        ReportPageResponseDto reports = reportService.getAllReports(page-1, size);
         return ResponseUtils.success(reports);
     }
 
