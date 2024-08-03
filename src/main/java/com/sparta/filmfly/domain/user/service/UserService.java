@@ -294,6 +294,11 @@ public class UserService {
     @Transactional
     public UserResponseDto suspendUser(Long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
+
+        if (user.getUserRole() != UserRoleEnum.ROLE_USER) {
+            throw new InvalidTargetException(ResponseCodeEnum.INVALID_ADMIN_TARGET);
+        }
+
         user.validateDeletedStatus();
         user.validateSuspendedStatus();
 
