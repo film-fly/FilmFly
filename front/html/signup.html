@@ -43,8 +43,19 @@
     <label for="email">이메일</label>
     <div class="input-group mb-3">
       <input type="text" class="form-control" id="email" placeholder="email 입력">
-      <button type="button" class="btn btn-secondary" onclick="checkEmail()">번호 확인</button>
+      <button type="button" class="btn btn-secondary" onclick="sendEmail()">인증번호 전송</button>
       <div id="emailFeedback" class="mt-2"></div>
+    </div>
+
+    <label for="emailCheck">
+      인증번호 입력 -
+      <span id="countDown">3:00</span>
+      <span id="feedbackResult"></span>
+    </label>
+    <div class="input-group mb-3">
+      <input type="text" class="form-control" id="emailCheck" placeholder="인증번호 입력">
+      <button type="button" class="btn btn-secondary" onclick="checkEmail()">인증번호 확인</button>
+      <div id="inputEmailCheck" class="mt-2"></div>
     </div>
 
     <div>
@@ -69,6 +80,8 @@
 
 <script>
   let flagNickname = false;
+  let intervalCall; // intervalCall 변수를 전역으로 이동
+  let feedbackResult = false;
 
   $('#btnSignup').on('click', function () {
     if (!flagNickname) {
@@ -129,31 +142,75 @@
 
   function checkEmail() {
     const email = $('#email').val();
+    const emailCheck = $('#emailCheck').val();
 
     const data = {
-      email: email
+      email: email,
+      emailCheck: emailCheck
     }
 
     // $.ajax({
-    //   type: 'GET',
-    //   url: '',
-    //   data: data
+    //   type: 'POST',
+    //   url: '', // 인증번호 확인 요청 URL
+    //   data: JSON.stringify(data),
+    //   contentType: "application/json;charset=utf-8"
     // })
     // .done(function (result, status, xhr) {
-    //   const feedback = $('#emailFeedback');
-    //   if (result) {
-    //     feedback.text('사용 가능한 이메일입니다.').css('color', 'green');
-    //     번호 확인 성공
-    //     flagNickname = true;
-    //   } else {
-    //     더 해봐야됨
-    //     feedback.text('이미 사용 중인 이메일입니다.').css('color', 'red');
-    //     번호가 일치하지 않습니다.
+    //   const feedback = $('#feedbackResult');
+    //   if (result.success) { // 성공 시
+    //     feedback.text('성공').css('color', 'green');
+    //     feedbackResult = true;
+    //     $.closeTime(); // 타이머 중지
+    //   } else { // 실패 시
+    //     feedback.text('실패').css('color', 'red');
+    //     feedbackResult = false;
     //   }
     // })
     // .fail(function (xhr, status, er) {
+    //   const feedback = $('#feedbackResult');
+    //   feedback.text('실패').css('color', 'red');
+    //   feedbackResult = false;
     // });
   }
+
+  let countTime = 180; // 3분 (180초)
+
+  $.time = function(time){
+    countTime = time;
+    intervalCall = setInterval(alertFunc, 1000);
+  }
+
+  $.closeTime = function(){
+    clearInterval(intervalCall);
+  }
+
+  function alertFunc() {
+    if (countTime <= 0) {
+      $.closeTime();
+      alert("인증 시간이 만료되었습니다.");
+      $('#countDown').text("0:00");
+      return;
+    }
+
+    countTime--;
+
+    const minutes = Math.floor(countTime / 60);
+    const seconds = countTime % 60;
+    $('#countDown').text(`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`);
+  }
+
+  function sendEmail() {
+    // 기존 타이머가 있을 경우 중지
+    if (intervalCall) {
+      $.closeTime();
+    }
+
+    // 이메일 인증 요청 코드를 여기에 추가합니다.
+
+    // 타이머 시작
+    $.time(180);
+  }
 </script>
+
 </body>
 </html>
