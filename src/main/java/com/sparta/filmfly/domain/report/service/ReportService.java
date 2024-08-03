@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 @RequiredArgsConstructor
 public class ReportService {
@@ -47,7 +48,8 @@ public class ReportService {
         }
 
         // 원본 내용 가져오기
-        String content = fetchContent(reportRequestDto.getType(), reportRequestDto.getTypeId());
+        String[] contentAndTitle = fetchContent(reportRequestDto.getType(), reportRequestDto.getTypeId());
+        String content = "Title: " + contentAndTitle[1] + "\nContent: " + contentAndTitle[0];
 
         Report report = Report.builder()
                 .reporterId(reporter)
@@ -93,17 +95,27 @@ public class ReportService {
     /**
      * 원본 내용 가져오기
      */
-    private String fetchContent(ReportTypeEnum type, Long typeId) {
+    private String[] fetchContent(ReportTypeEnum type, Long typeId) {
+        String[] result = new String[2];
         switch (type) {
             case BOARD:
-                return boardRepository.findByIdOrElseThrow(typeId).getContent();
+                var board = boardRepository.findByIdOrElseThrow(typeId);
+                result[0] = board.getContent();
+                result[1] = board.getTitle();
+                break;
             case COMMENT:
-                return commentRepository.findByIdOrElseThrow(typeId).getContent();
+                var comment = commentRepository.findByIdOrElseThrow(typeId);
+                result[0] = comment.getContent();
+                result[1] = null;
+                break;
             case REVIEW:
-                return reviewRepository.findByIdOrElseThrow(typeId).getContent();
+                var review = reviewRepository.findByIdOrElseThrow(typeId);
+                result[0] = review.getContent();
+                result[1] = review.getTitle();
+                break;
             default:
                 throw new IllegalArgumentException("Unknown report type: " + type);
         }
+        return result;
     }
 }
-
