@@ -91,9 +91,9 @@ public class FileUtils {
      */
     public void deleteFileToLocal(String imageName) {
         // 주어진 파일 경로와 이름을 기반으로 파일 경로 객체 생성
-        log.error("1 : {} \n 2 : {}",getAbsoluteUploadFolder(),imageName);
+        //log.error("1 : {} \n 2 : {}",getAbsoluteUploadFolder(),imageName);
         Path path = Paths.get(getAbsoluteUploadFolder(), imageName);
-        log.error("3 : {}",path);
+        //log.error("3 : {}",path);
         try {
             // 파일 삭제
             Files.delete(path);
