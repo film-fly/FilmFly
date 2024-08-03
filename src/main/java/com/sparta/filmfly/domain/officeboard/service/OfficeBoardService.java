@@ -56,7 +56,6 @@ public class OfficeBoardService {
         OfficeBoard savedofficeBoard = officeBoardRepository.save(officeBoard);
 
         return OfficeBoardResponseDto.fromEntity(savedofficeBoard);
-
     }
 
     /**
@@ -92,7 +91,7 @@ public class OfficeBoardService {
     @Transactional
     public OfficeBoardResponseDto updateOfficeBoard(User user, OfficeBoardRequestDto requestDto, Long boardId) {
         OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(boardId);
-        officeBoard.checkOwnerUser(user);
+        //officeBoard.checkOwnerUser(user);
 
         String content = requestDto.getContent();
         fileService.checkModifiedImageFile(MediaTypeEnum.OFFICE_BOARD, officeBoard.getId(), content); //이미지 변경 확인
@@ -103,7 +102,6 @@ public class OfficeBoardService {
 
         return OfficeBoardResponseDto.fromEntity(updatedOfficeBoard);
     }
-
 
     /**
      * 운영보드 삭제
