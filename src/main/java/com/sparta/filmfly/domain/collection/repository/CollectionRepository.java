@@ -10,12 +10,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CollectionRepository extends JpaRepository<Collection, Long> {
-    boolean existsByUser_IdAndName(Long userId, String name);
 
     List<Collection> findAllByUser(User user);
 
-    default void existsByUser_IdAndNameOrElseThrow(Long userId, String name) {
-        if(existsByUser_IdAndName(userId, name)) {
+    boolean existsByUserIdAndName(Long userId, String name);
+    default void existsByUserIdAndNameOrElseThrow(Long userId, String name) {
+        if (existsByUserIdAndName(userId, name)) {
             throw new AlreadyExistsException(ResponseCodeEnum.COLLECTION_ALREADY_EXISTS);
         }
     }
