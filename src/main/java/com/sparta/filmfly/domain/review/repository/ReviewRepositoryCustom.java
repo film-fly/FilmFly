@@ -7,4 +7,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface ReviewRepositoryCustom {
     PageResponseDto<List<ReviewResponseDto>> getPageReviewByMovieId(Long movieId, Pageable pageable);
+    Float getAverageRatingByMovieId(Long movieId);
 }
