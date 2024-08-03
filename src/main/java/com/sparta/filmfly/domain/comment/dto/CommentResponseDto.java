@@ -1,31 +1,43 @@
 package com.sparta.filmfly.domain.comment.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.filmfly.domain.comment.entity.Comment;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
-@Getter
-@Builder
-public class CommentResponseDto {
-    @NotBlank
-    private String userName;
-    @NotBlank
-    private String content;
-    @NotNull
-    private LocalDateTime updatedAt;
-    @NotNull
-    private long goodCount;
+import java.time.LocalDateTime;
 
-    public CommentResponseDto fromEntity(Comment comment) {
-        return CommentResponseDto.builder()
-            .userName(comment.getUser().getNickname())
-            .content(comment.getContent())
-            .updatedAt(comment.getUpdatedAt())
-            .goodCount(comment.getGoodCount())
-            .build();
+@Getter
+public class CommentResponseDto {
+    private Long commentId;
+    private Long userId;
+    private String username;
+    private String content;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime updatedAt;
+    private long goodCount;
+    private long badCount;
+
+    @Builder
+    public CommentResponseDto(Long commentId, Long userId, String username, String content, LocalDateTime updatedAt, long goodCount, long badCount) {
+        this.commentId = commentId;
+        this.userId = userId;
+        this.username = username;
+        this.content = content;
+        this.updatedAt = updatedAt;
+        this.goodCount = goodCount;
+        this.badCount = badCount;
     }
 
+    public static CommentResponseDto fromEntity(Comment comment,Long goodCount, Long badCount) {
+        return CommentResponseDto.builder()
+                .commentId(comment.getId())
+                .userId(comment.getUser().getId())
+                .username(comment.getUser().getNickname())
+                .content(comment.getContent())
+                .updatedAt(comment.getUpdatedAt())
+                .goodCount(goodCount)
+                .badCount(badCount)
+                .build();
+    }
 }

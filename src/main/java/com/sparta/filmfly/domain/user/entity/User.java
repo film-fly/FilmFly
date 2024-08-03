@@ -2,23 +2,19 @@ package com.sparta.filmfly.domain.user.entity;
 
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
-import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
-import com.sparta.filmfly.global.exception.custom.detail.InformationMismatchException;
-import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
+import com.sparta.filmfly.global.exception.custom.detail.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLRestriction("deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE user SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 public class User extends TimeStampEntity {
 
@@ -35,7 +31,7 @@ public class User extends TimeStampEntity {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
@@ -61,6 +57,7 @@ public class User extends TimeStampEntity {
     @Column
     private LocalDateTime deletedAt;
 
+
     /**
      * 사용자 생성
      */
@@ -77,15 +74,29 @@ public class User extends TimeStampEntity {
     }
 
     /**
-     * 사용자 상태 검증
+     * 탈퇴 상태 검증
      */
-    public void validateUserStatus() {
+    public void validateDeletedStatus() {
         if (this.userStatus == UserStatusEnum.DELETED) {
-            throw new AccessDeniedException(ResponseCodeEnum.USER_DELETED);
-        } else if (this.userStatus == UserStatusEnum.SUSPENDED) {
-            throw new AccessDeniedException(ResponseCodeEnum.USER_SUSPENDED);
-        } else if (this.userStatus == UserStatusEnum.UNVERIFIED) {
-            throw new AccessDeniedException(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
+            throw new DeletedException(ResponseCodeEnum.USER_DELETED);
+        }
+    }
+
+    /**
+     * 활성화 상태 검증
+     */
+    public void validateActiveStatus() {
+        if (this.userStatus == UserStatusEnum.ACTIVE) {
+            throw new AccessDeniedException(ResponseCodeEnum.USER_ACTIVE);
+        }
+    }
+
+    /**
+     * 정지 상태 검증
+     */
+    public void validateSuspendedStatus() {
+        if (this.userStatus == UserStatusEnum.SUSPENDED) {
+            throw new SuspendedException(ResponseCodeEnum.USER_SUSPENDED);
         }
     }
 
@@ -107,14 +118,6 @@ public class User extends TimeStampEntity {
         }
     }
 
-    /**
-     * 어드민 검증
-     */
-    public void validateAdminRole() {
-        if (this.userRole != UserRoleEnum.ROLE_ADMIN) {
-            throw new AccessDeniedException(ResponseCodeEnum.ACCESS_DENIED);
-        }
-    }
 
     /**
      * 리프레시 토큰 업데이트
@@ -134,7 +137,7 @@ public class User extends TimeStampEntity {
      * 인증된 상태로 변경
      */
     public void updateVerified() {
-        this.userStatus = UserStatusEnum.VERIFIED;
+        this.userStatus = UserStatusEnum.ACTIVE;
     }
 
     /**

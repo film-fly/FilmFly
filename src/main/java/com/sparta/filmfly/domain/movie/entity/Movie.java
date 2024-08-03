@@ -1,33 +1,65 @@
 package com.sparta.filmfly.domain.movie.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Movie {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long movieId;
+    private Long id;
+    private boolean adult;
+    private String backdropPath;
+    @ElementCollection
+    private List<Integer> genreIds;
+    private String originalLanguage;
+    private String originalTitle;
+    @Lob    // 대용량 객체로 전환 : DB 에선 TEXT 타입으로 저장
+    @Column(length = 1000)
+    private String overview;
+    private double popularity;
+    private String posterPath;
+    private String releaseDate;
     private String title;
-    private String summary;
-    private String content;
-    private Integer rating;
+    private boolean video;
+    private double voteAverage;
+    private int voteCount;
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MovieCredit> movieCreditList;
 
-    @Builder
-    public Movie(String title, String summary, String content, Integer rating) {
+    // DTO로부터 엔티티를 업데이트하는 메서드
+    public void update(
+            boolean adult,
+            String backdropPath,
+            List<Integer> genreIds,
+            String originalLanguage,
+            String originalTitle,
+            String overview,
+            double popularity,
+            String posterPath,
+            String releaseDate,
+            String title,
+            boolean video,
+            double voteAverage,
+            int voteCount) {
+        this.adult = adult;
+        this.backdropPath = backdropPath;
+        this.genreIds = genreIds;
+        this.originalLanguage = originalLanguage;
+        this.originalTitle = originalTitle;
+        this.overview = overview;
+        this.popularity = popularity;
+        this.posterPath = posterPath;
+        this.releaseDate = releaseDate;
         this.title = title;
-        this.summary = summary;
-        this.content = content;
-        this.rating = rating;
+        this.video = video;
+        this.voteAverage = voteAverage;
+        this.voteCount = voteCount;
     }
+
 }
