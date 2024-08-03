@@ -67,7 +67,7 @@ public class FileService {
 
             //img의 src 값의 앞 부분이 임시 이미지면 http://localhost:8080/temp ?
             if(src.startsWith(currentUrl+"/temp/")) {
-                log.error("temp 이미지 확인");
+                //log.error("temp 이미지 확인");
                 try {
                     String filePath = fileUtils.getAbsoluteUploadFolder() + srcFileName;
 
@@ -103,19 +103,29 @@ public class FileService {
      * 변경된 이미지 파일 검사
      * 사라진 s3 경로는 s3에서 삭제
      */
-    public void checkModifiedImageFile(MediaTypeEnum mediaType,Long boardId,String content) {
+    public void checkModifiedImageFile(MediaTypeEnum mediaType,Long mediaId,String content) {
         content = fileUtils.decodeUrlsInContent(content);
 
-        List<Media> mediaList = mediaService.getListMedia(mediaType,boardId);
+        List<Media> mediaList = mediaService.getListMedia(mediaType,mediaId);
         List<Boolean> mediaExists = new ArrayList<>(Collections.nCopies(mediaList.size(), false));
 
         Matcher matcher = pattern.matcher(content);
         while (matcher.find()){
             String src = matcher.group(2).trim();
-            String s3Url = "https://sparta-storage.s3.us-east-2.amazonaws.com/boards/"+boardId; // 팀플용 은규님 S3
-            String s3Url2 = "https://outsourcing-profile.s3.ap-northeast-2.amazonaws.com/boards/"+boardId; //테스트용 JunMo S3
-            log.error("src = {}",src);
-            log.error("s3Url2 = {}",s3Url2);
+            String mediaText;
+            if(mediaType == MediaTypeEnum.BOARD) { //S3Uploader.createMediaPath 랑 내용 비슷함
+                mediaText = "boards/";
+            }
+            else if(mediaType == MediaTypeEnum.OFFICE_BOARD) {
+                mediaText = "officeBoards/";
+            }
+            else {
+                mediaText = "etc/";
+            }
+            String s3Url = "https://sparta-storage.s3.us-east-2.amazonaws.com/+"+mediaText+mediaId; // 팀플용 은규님 S3
+            String s3Url2 = "https://outsourcing-profile.s3.ap-northeast-2.amazonaws.com/"+mediaText+mediaId; //테스트용 JunMo S3
+            //log.error("src = {}",src);
+            //log.error("s3Url2 = {}",s3Url2);
             //s3 url로 시작하는지 확인
             if(src.startsWith(s3Url) || src.startsWith(s3Url2)) {
                 log.error("s3 이미지 확인 + size : {}",mediaList.size());

@@ -225,7 +225,7 @@ public class MovieService {
             .creditList(creditList.stream()
                 .map(CreditResponseDto::fromEntity)
                 .collect(Collectors.toList()))
-            .rating(avgRating)
+            .avgRating(avgRating)
             .build();
     }
 
