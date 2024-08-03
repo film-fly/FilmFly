@@ -26,6 +26,9 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
             .orElseThrow(() -> new NotFoundException(ResponseCodeEnum.FAVORITE_NOT_FOUND));
     }
 
+    boolean existsByIdAndUserId(Long id, Long userId);
+
+
 //    @Query("SELECT * FROM favorite f WHERE f.deleted_at IS NOT NULL", nativeQuery = true)
 //    List<Favorite> findAllByDeletedAtIsNotNull();
 //

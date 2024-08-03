@@ -25,4 +25,7 @@ public interface GoodRepository extends JpaRepository<Good, Long> {
     }
 
     Long countByTypeAndTypeId(ReactionContentTypeEnum type, Long typeId);
+
+    boolean existsByIdAndUserId(Long id, Long userId);
+
 }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -172,5 +173,17 @@ public class UserController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         UserResponseDto userResponseDto = userService.activateUser(userDetails.getUser());
         return ResponseUtils.success(userResponseDto);
+    }
+
+    /**
+     * 본인 데이터인지 확인
+     */
+    @PostMapping("/check-owner")
+    public ResponseEntity<DataResponseDto<List<UserOwnerCheckResponseDto>>> checkOwner(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody UserOwnerCheckRequestDto requestDto
+    ) {
+        List<UserOwnerCheckResponseDto> responseDtos = userService.checkOwner(userDetails.getUser(), requestDto);
+        return ResponseUtils.success(responseDtos);
     }
 }

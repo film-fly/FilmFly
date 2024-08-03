@@ -1,6 +1,13 @@
 package com.sparta.filmfly.domain.user.service;
 
+import com.sparta.filmfly.domain.board.repository.BoardRepository;
+import com.sparta.filmfly.domain.collection.repository.CollectionRepository;
+import com.sparta.filmfly.domain.comment.repository.CommentRepository;
+import com.sparta.filmfly.domain.favorite.repository.FavoriteRepository;
+import com.sparta.filmfly.domain.reaction.repository.BadRepository;
+import com.sparta.filmfly.domain.reaction.repository.GoodRepository;
 import com.sparta.filmfly.domain.user.dto.*;
+import com.sparta.filmfly.domain.user.entity.ContentTypeEnum;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
@@ -18,9 +25,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +42,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
     private final S3Uploader s3Uploader;
+    private final ApplicationContext applicationContext;
 
     @Value("${admin_password}")
     private String managerPassword;
@@ -42,14 +52,15 @@ public class UserService {
      */
     @Transactional
     public UserResponseDto signup(UserSignupRequestDto requestDto) {
-        if (userRepository.findByUsername(requestDto.getUsername()).isPresent()) {
+        // 사용자 이름 중복 확인
+        if (userRepository.existsByUsername(requestDto.getUsername())) {
             throw new DuplicateException(ResponseCodeEnum.USER_ALREADY_EXISTS);
         }
 
-        if (userRepository.findByNickname(requestDto.getNickname()).isPresent()) {
+        // 닉네임 중복 확인
+        if (userRepository.existsByNickname(requestDto.getNickname())) {
             throw new DuplicateException(ResponseCodeEnum.NICKNAME_ALREADY_EXISTS);
         }
-
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
         UserRoleEnum userRole;
@@ -150,7 +161,7 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public void checkNicknameDuplication(String nickname) {
-        if (userRepository.findByNickname(nickname).isPresent()) {
+        if (userRepository.existsByNickname(nickname)) {
             throw new DuplicateException(ResponseCodeEnum.NICKNAME_ALREADY_EXISTS);
         }
     }
@@ -314,6 +325,68 @@ public class UserService {
                 .userStatus(user.getUserStatus())
                 .updatedAt(user.getUpdatedAt())
                 .build();
+    }
+
+    /**
+     * 요청 데이터가 본인 데이터인지 응답
+     */
+    @Transactional(readOnly = true)
+    public List<UserOwnerCheckResponseDto> checkOwner(User loginUser, UserOwnerCheckRequestDto requestDto) {
+        List<UserOwnerCheckResponseDto> responseDtos = new ArrayList<>();
+        ContentTypeEnum contentType = ContentTypeEnum.valueOf(requestDto.getContentType().toUpperCase());
+
+        for (Long contentId : requestDto.getContentIds()) {
+            boolean isOwner;
+
+            if (contentType == ContentTypeEnum.USER) {
+                isOwner = loginUser.getId().equals(contentId);
+            } else {
+                isOwner = checkExistAndOwnership(contentType, loginUser.getId(), contentId);
+            }
+
+            UserOwnerCheckResponseDto responseDto = UserOwnerCheckResponseDto.builder()
+                    .contentType(requestDto.getContentType())
+                    .contentId(contentId)
+                    .isOwner(isOwner)
+                    .build();
+
+            responseDtos.add(responseDto);
+        }
+
+        return responseDtos;
+    }
+
+    /**
+     * 주어진 콘텐츠 타입과 아이디를 기반으로 데이터 확인
+     */
+    private boolean checkExistAndOwnership(ContentTypeEnum contentType, Long userId, Long contentId) {
+        Object repository = applicationContext.getBean(contentType.getRepositoryClass());
+        boolean existsAndOwned;
+
+        switch (contentType) {
+            case BOARD:
+                existsAndOwned = ((BoardRepository) repository).existsByIdAndUserId(contentId, userId);
+                break;
+            case BAD:
+                existsAndOwned = ((BadRepository) repository).existsByIdAndUserId(contentId, userId);
+                break;
+            case GOOD:
+                existsAndOwned = ((GoodRepository) repository).existsByIdAndUserId(contentId, userId);
+                break;
+            case COMMENT:
+                existsAndOwned = ((CommentRepository) repository).existsByIdAndUserId(contentId, userId);
+                break;
+            case FAVORITE:
+                existsAndOwned = ((FavoriteRepository) repository).existsByIdAndUserId(contentId, userId);
+                break;
+            case COLLECTION:
+                existsAndOwned = ((CollectionRepository) repository).existsByIdAndUserId(contentId, userId);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown content type: " + contentType);
+        }
+
+        return existsAndOwned;
     }
 
 }
