@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class CommentResponseDto {
-    private Long commentId;
+    private Long id;
     private Long userId;
     private String username;
     private String content;
@@ -19,8 +19,8 @@ public class CommentResponseDto {
     private long badCount;
 
     @Builder
-    public CommentResponseDto(Long commentId, Long userId, String username, String content, LocalDateTime updatedAt, long goodCount, long badCount) {
-        this.commentId = commentId;
+    public CommentResponseDto(Long id, Long userId, String username, String content, LocalDateTime updatedAt, long goodCount, long badCount) {
+        this.id = id;
         this.userId = userId;
         this.username = username;
         this.content = content;
@@ -31,7 +31,7 @@ public class CommentResponseDto {
 
     public static CommentResponseDto fromEntity(Comment comment,Long goodCount, Long badCount) {
         return CommentResponseDto.builder()
-                .commentId(comment.getId())
+                .id(comment.getId())
                 .userId(comment.getUser().getId())
                 .username(comment.getUser().getNickname())
                 .content(comment.getContent())

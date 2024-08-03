@@ -28,9 +28,9 @@ public class CommentController {
      */
     @PostMapping("/boards/{boardId}/comments")
     public ResponseEntity<DataResponseDto<CommentResponseDto>> createComment(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Valid @RequestBody CommentRequestDto requestDto,
-            @PathVariable Long boardId
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @Valid @RequestBody CommentRequestDto requestDto,
+        @PathVariable Long boardId
     ) {
         CommentResponseDto responseDto = commentService.createComment(userDetails.getUser(),requestDto,boardId);
         return ResponseUtils.success(responseDto);
@@ -41,7 +41,7 @@ public class CommentController {
      */
     @GetMapping("/comments/{commentId}")
     public ResponseEntity<DataResponseDto<CommentResponseDto>> getComment(
-            @PathVariable Long commentId
+        @PathVariable Long commentId
     ) {
         CommentResponseDto responseDto = commentService.getComment(commentId);
         return ResponseUtils.success(responseDto);
@@ -49,15 +49,14 @@ public class CommentController {
 
     /**
      * 댓글 페이지 조회
-     * http://localhost:8080/boards/{boardId}/comments?pageNum=1&size=50
+     * http://localhost:8080/boards/{boardId}/comments?page=1&size=10
      */
     @GetMapping("/boards/{boardId}/comments")
     public ResponseEntity<DataResponseDto<CommentPageResponseDto>> gerPageComment(
-            @PathVariable Long boardId,
-            @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum
-            //@RequestParam(value = "size", required = false, defaultValue = "50") final Integer size
+        @PathVariable Long boardId,
+        @RequestParam(value = "page", required = false, defaultValue = "1") final Integer pageNum,
+        @RequestParam(value = "size", required = false, defaultValue = "10") final Integer size
     ) {
-        Integer size = 50;
         CommentPageResponseDto responseDto = commentService.gerPageComment(pageNum,size,boardId);
         return ResponseUtils.success(responseDto);
     }
@@ -67,10 +66,10 @@ public class CommentController {
      */
     @GetMapping("/comments/users/{userId}")
     public ResponseEntity<DataResponseDto<CommentPageResponseDto>> getUsersComments(
-            @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum,
-            //@RequestParam(value = "size", required = false, defaultValue = "10") final Integer size
-            @PathVariable Long userId) {
-        Integer size = 10;
+        @PathVariable Long userId,
+        @RequestParam(value = "page", required = false, defaultValue = "1") final Integer pageNum,
+        @RequestParam(value = "size", required = false, defaultValue = "10") final Integer size
+    ) {
         CommentPageResponseDto  responseDto = commentService.getUsersComments(pageNum,size,userId);
         return ResponseUtils.success(responseDto);
     }
@@ -80,8 +79,9 @@ public class CommentController {
      */
     @GetMapping("/comments/{commentId}/for-update")
     public ResponseEntity<DataResponseDto<CommentUpdateResponseDto>> forUpdateComment(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long commentId) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long commentId
+    ) {
         CommentUpdateResponseDto response = commentService.forUpdateComment(userDetails.getUser(),commentId);
         return ResponseUtils.success(response);
     }
@@ -91,9 +91,9 @@ public class CommentController {
      */
     @PatchMapping("/comments/{commentId}")
     public ResponseEntity<DataResponseDto<CommentResponseDto>> updateComment(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Valid @RequestBody CommentRequestDto requestDto,
-            @PathVariable Long commentId
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @Valid @RequestBody CommentRequestDto requestDto,
+        @PathVariable Long commentId
     ) {
         CommentResponseDto responseDto = commentService.updateComment(userDetails.getUser(),requestDto,commentId);
         return ResponseUtils.success(responseDto);
@@ -104,8 +104,8 @@ public class CommentController {
      */
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<DataResponseDto<String>> deleteComment(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long commentId
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long commentId
     ) {
         String responseDto = commentService.deleteComment(userDetails.getUser(),commentId);
         return ResponseUtils.success(responseDto);

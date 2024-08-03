@@ -46,17 +46,16 @@ public class BoardController {
 
     /**
      * 보드 페이징 조회
-     * https://localhost/boards?pageNum=1&filterGoodCount=0&filterHits=0&search=제목
+     * https://localhost/boards?page=1&filterGoodCount=0&filterHits=0&search=제목
      */
     @GetMapping
     public ResponseEntity<DataResponseDto<BoardPageResponseDto >> getPageBoard(
-            @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum,
-            @RequestParam(value = "filterGoodCount", required = false) final Long filterGoodCount,
-            @RequestParam(value = "filterHits", required = false) final Long filterHits,
-            @RequestParam(value = "search", required = false) final String search
-            //@RequestParam(value = "size", required = false, defaultValue = "10") final Integer size
+        @RequestParam(value = "page", required = false, defaultValue = "1") final Integer pageNum,
+        @RequestParam(value = "size", required = false, defaultValue = "10") final Integer size,
+        @RequestParam(value = "filterGoodCount", required = false) final Long filterGoodCount,
+        @RequestParam(value = "filterHits", required = false) final Long filterHits,
+        @RequestParam(value = "search", required = false) final String search
     ) {
-        Integer size = 10;
         BoardPageResponseDto  responseDto = boardService.getPageBoard(pageNum,size,filterGoodCount,filterHits,search);
         return ResponseUtils.success(responseDto);
     }
@@ -116,9 +115,9 @@ public class BoardController {
     @GetMapping("/users/{userId}")
     public ResponseEntity<DataResponseDto<BoardPageResponseDto>> getUsersBoard(
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") final Integer pageNum,
-            //@RequestParam(value = "size", required = false, defaultValue = "10") final Integer size
-            @PathVariable Long userId) {
-        Integer size = 10;
+            @RequestParam(value = "size", required = false, defaultValue = "10") final Integer size,
+            @PathVariable Long userId
+    ) {
         BoardPageResponseDto  responseDto = boardService.getUsersBoard(pageNum,size,userId);
         return ResponseUtils.success(responseDto);
     }

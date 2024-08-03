@@ -7,6 +7,6 @@ GET https://localhost:443/movies/{{movieId}}
 GET https://localhost:443/movies/trend
 
 
-# https://localhost/boards?page=&size=10&sortBy=&isAsc=&search=
+# https://localhost/movies?page=&size=10&sortBy=&isAsc=&search=
 ### 영화 검색 (페이징)
-GET https://localhost/movies/search
+GET https://localhost/movies?page=1
