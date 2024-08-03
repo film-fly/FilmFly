@@ -1,6 +1,6 @@
 package com.sparta.filmfly.domain.review.controller;
 
-import com.sparta.filmfly.domain.movie.dto.PageResponseDto;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.domain.review.dto.ReviewCreateRequestDto;
 import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
 import com.sparta.filmfly.domain.review.dto.ReviewUpdateRequestDto;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 

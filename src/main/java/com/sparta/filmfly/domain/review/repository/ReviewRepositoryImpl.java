@@ -2,7 +2,7 @@ package com.sparta.filmfly.domain.review.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sparta.filmfly.domain.movie.dto.PageResponseDto;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;

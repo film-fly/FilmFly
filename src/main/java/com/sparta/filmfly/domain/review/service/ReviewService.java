@@ -1,6 +1,6 @@
 package com.sparta.filmfly.domain.review.service;
 
-import com.sparta.filmfly.domain.movie.dto.PageResponseDto;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;

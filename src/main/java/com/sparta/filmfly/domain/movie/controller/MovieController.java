@@ -6,6 +6,7 @@ import com.sparta.filmfly.domain.movie.entity.OriginLanguageEnum;
 import com.sparta.filmfly.domain.movie.service.MovieService;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

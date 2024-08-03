@@ -1,4 +1,4 @@
-package com.sparta.filmfly.domain.movie.dto;
+package com.sparta.filmfly.global.common.response;
 
 import lombok.Builder;
 import lombok.Getter;
