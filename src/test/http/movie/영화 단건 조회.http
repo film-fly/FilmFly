@@ -1,5 +1,0 @@
-### 영화 단건 조회
-@movieId = 280180
-GET https://localhost:443/movie/{{movieId}}
-
-

@@ -30,7 +30,7 @@ public class MovieController {
     /**
     * API 데이터 크롤링
     */
-    @PostMapping("/movie/api")
+    @PostMapping("/movies/api")
     public ResponseEntity<DataResponseDto<List<ApiMovieResponseDto>>> apiDiscoverMovieRequest(
             @RequestBody ApiMovieRequestDto apiMovieRequestDto
     ) {
@@ -51,16 +51,26 @@ public class MovieController {
         return ResponseUtils.success();
     }
 
+
+
+    // TODO 영화 기능 확인하기
+    // TODO 검색 확인하기
+
+
+
+
+
+
     /**
     * 영화 검색
     */
-    @GetMapping("/movie/search")
+    @GetMapping("/movies/search")
     public ResponseEntity<DataResponseDto<PageResponseDto<List<MovieResponseDto>>>> getListMovie(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "true") boolean isAsc,
-            @RequestParam(defaultValue = "") String search
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
+            @RequestParam(required = false, defaultValue = "true") boolean isAsc,
+            @RequestParam(required = false, defaultValue = "") String search
     ) {
         log.info("In getListMovie");
         Sort sort = isAsc ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -73,12 +83,12 @@ public class MovieController {
     /**
      * 최신 인기 영화
      */
-    @GetMapping("/movie/trend")
+    @GetMapping("/movies/trend")
     public ResponseEntity<DataResponseDto<PageResponseDto<List<MovieResponseDto>>>> getMovieList(
-        @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "10") int size,
-        @RequestParam(defaultValue = "id") String sortBy,
-        @RequestParam(defaultValue = "true") boolean isAsc
+        @RequestParam(required = false, defaultValue = "1") int page,
+        @RequestParam(required = false, defaultValue = "10") int size,
+        @RequestParam(required = false, defaultValue = "id") String sortBy,
+        @RequestParam(required = false, defaultValue = "true") boolean isAsc
     ) {
             log.info("In getListMovie");
             Sort sort = isAsc ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -105,7 +115,7 @@ public class MovieController {
     /**
      * 영화 상세(단건) 조회
      */
-    @GetMapping("/movie/{movieId}")
+    @GetMapping("/movies/{movieId}")
     public ResponseEntity<DataResponseDto<MovieDetailResponseDto>> getMovie(
             @PathVariable Long movieId
     ) {
