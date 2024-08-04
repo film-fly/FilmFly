@@ -29,8 +29,8 @@ public class AdminController {
     public ResponseEntity<DataResponseDto<UserSearchPageResponseDto>> getUsersBySearch(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) UserStatusEnum status,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
     ) {
         UserSearchPageResponseDto users = userService.getUsersBySearch(search, status, page-1, size);
         return ResponseUtils.success(users);
@@ -52,8 +52,8 @@ public class AdminController {
      */
     @GetMapping("/reports")
     public ResponseEntity<DataResponseDto<ReportPageResponseDto>> getAllReports(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
     ) {
         ReportPageResponseDto reports = reportService.getAllReports(page-1, size);
         return ResponseUtils.success(reports);

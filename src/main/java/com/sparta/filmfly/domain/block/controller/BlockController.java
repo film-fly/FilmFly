@@ -39,8 +39,8 @@ public class BlockController {
     @GetMapping
     public ResponseEntity<DataResponseDto<BlockedUserPageResponseDto>> getBlockedUsers(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(required=false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
     ) {
         BlockedUserPageResponseDto blockedUsers = blockService.getBlockedUsers(userDetails.getUser(), page-1, size);
         return ResponseUtils.success(blockedUsers);
