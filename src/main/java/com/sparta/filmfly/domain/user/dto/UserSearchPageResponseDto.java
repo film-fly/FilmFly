@@ -7,9 +7,10 @@ import java.util.List;
 
 @Getter
 @Builder
-public class UserSearchResponseDto {
+public class UserSearchPageResponseDto {
     private List<UserResponseDto> users;
-    private long userCount;
+    private long totalElements;
     private int currentPage;
     private int totalPages;
+    private int pageSize;
 }
