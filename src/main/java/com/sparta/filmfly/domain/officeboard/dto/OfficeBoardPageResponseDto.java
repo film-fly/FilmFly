@@ -1,16 +1,15 @@
-package com.sparta.filmfly.domain.board.dto;
+package com.sparta.filmfly.domain.officeboard.dto;
 
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
-
 @Getter
 @Builder
-public class BoardPageResponseDto {
+public class OfficeBoardPageResponseDto {
     Long totalElements;
     int totalPages;
     int currentPage;
     int pageSize;
-    List<BoardPageDto> content;
+    List<OfficeBoardResponseDto> content;
 }

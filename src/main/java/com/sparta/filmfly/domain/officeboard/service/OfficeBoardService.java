@@ -1,22 +1,22 @@
 package com.sparta.filmfly.domain.officeboard.service;
 
-import com.sparta.filmfly.domain.media.dto.MediaResponseDto;
-import com.sparta.filmfly.domain.media.entity.Media;
+import com.sparta.filmfly.domain.file.service.FileService;
 import com.sparta.filmfly.domain.media.entity.MediaTypeEnum;
-import com.sparta.filmfly.domain.media.service.MediaService;
+import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardPageResponseDto;
 import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardRequestDto;
 import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardResponseDto;
+import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardUpdateResponseDto;
 import com.sparta.filmfly.domain.officeboard.entity.OfficeBoard;
 import com.sparta.filmfly.domain.officeboard.repository.OfficeBoardRepository;
 import com.sparta.filmfly.domain.user.entity.User;
-import com.sparta.filmfly.global.util.FileUtils;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -25,121 +25,93 @@ import org.springframework.web.multipart.MultipartFile;
 public class OfficeBoardService {
 
     private final OfficeBoardRepository officeBoardRepository;
-    private final MediaService mediaService;
+    private final FileService fileService;
 
     /**
      * 운영보드 생성
      */
     @Transactional
-    public OfficeBoardResponseDto createOfficeBoard(OfficeBoard officeBoard,
-            List<MultipartFile> files) {
+    public OfficeBoardResponseDto createOfficeBoard(User user, OfficeBoardRequestDto requestDto) {
+        OfficeBoard entity = requestDto.toEntity(user);
+        //entity.checkAdmin(); // 관리자인지 확인하는거 여기 있어야하나? 시큐리티에서 막아주던가
+        OfficeBoard savedOfficeBoard = officeBoardRepository.save(entity); // 일단 저장 후 Id를 생성
 
-        officeBoard.checkAdmin();
-        OfficeBoard savedOfficeBoard = officeBoardRepository.save(officeBoard);
+        String content = requestDto.getContent();
+        String modifiedContent = fileService.uploadLocalImageToS3(MediaTypeEnum.OFFICE_BOARD,savedOfficeBoard.getId(), content);
 
-        OfficeBoardResponseDto responseDto = OfficeBoardResponseDto.fromEntity(
-                officeBoard);
+        savedOfficeBoard.updateTitleContent(null, modifiedContent);
+        OfficeBoard updatedOfficeBoard = officeBoardRepository.save(savedOfficeBoard);
 
-        if (!FileUtils.isEmpty(files)) {
-            // responseDto에 요청 file들 추가
-            for (MultipartFile file : files) {
-                MediaResponseDto mediaResponseDto = mediaService.createMedia(
-                        MediaTypeEnum.OFFICE_BOARD,
-                        savedOfficeBoard.getId(), file);
-                responseDto.addMediaDto(mediaResponseDto);
-            }
-        }
+        return OfficeBoardResponseDto.fromEntity(updatedOfficeBoard);
+    }
 
-        return responseDto;
+    /**
+     * 운영보드 단일 조회
+     */
+    @Transactional
+    public OfficeBoardResponseDto getOfficeBoard(Long id) {
+        OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(id);
+
+        officeBoard.addHits();
+        OfficeBoard savedofficeBoard = officeBoardRepository.save(officeBoard);
+
+        return OfficeBoardResponseDto.fromEntity(savedofficeBoard);
     }
 
     /**
      * 운영보드 전체 조회(페이징 포함)
      */
     @Transactional(readOnly = true)
-    public List<OfficeBoardResponseDto> getAllOfficeBoards(Pageable pageable) {
+    public OfficeBoardPageResponseDto getPageOfficeBoards(Integer pageNum, Integer size) {
+        Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        List<OfficeBoardResponseDto> list = officeBoardRepository.findAllByOrderByCreatedAtDesc(
-                        pageable)
-                .stream()
-                .map(OfficeBoardResponseDto::fromEntity)
-                .toList();
+        Page<OfficeBoard> officeBoardPage = officeBoardRepository.findAllByOrderByCreatedAtDesc(pageable);
 
-        for (OfficeBoardResponseDto responseDto : list) {
-            OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(
-                    responseDto.getId());
-
-            List<Media> mediaList = mediaService.getListMedia(MediaTypeEnum.OFFICE_BOARD,
-                    officeBoard.getId());
-
-            for (Media media : mediaList) {
-                responseDto.addMediaDto(MediaResponseDto.fromEntity(media));
-            }
-        }
-
-        return list;
+        return OfficeBoardPageResponseDto.builder()
+                .totalPages(officeBoardPage.getTotalPages())
+                .totalElements(officeBoardPage.getTotalElements())
+                .currentPage(officeBoardPage.getNumber() + 1)
+                .pageSize(officeBoardPage.getSize())
+                .content(officeBoardPage.stream().map(OfficeBoardResponseDto::fromEntity).toList())
+                .build();
     }
 
     /**
-     * 운영보드 단일 조회
+     * 운영보드 수정 페이지 정보
      */
-    @Transactional(readOnly = true)
-    public OfficeBoardResponseDto getOfficeBoard(Long id) {
-
-        OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(id);
-        List<Media> mediaList = mediaService.getListMedia(MediaTypeEnum.OFFICE_BOARD,
-                officeBoard.getId());
-
-        OfficeBoardResponseDto officeResponseDto = OfficeBoardResponseDto.fromEntity(officeBoard);
-
-        for (Media media : mediaList) {
-            officeResponseDto.addMediaDto(MediaResponseDto.fromEntity(media));
-        }
-
-        return officeResponseDto;
-
+    public OfficeBoardUpdateResponseDto forUpdateOfficeBoard(User user, Long boardId) {
+        OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(boardId);
+        //officeBoard.checkOwnerUser(user);  관리자는 서로 편집 가능하게?
+        return OfficeBoardUpdateResponseDto.fromEntity(officeBoard);
     }
 
     /**
      * 운영보드 수정
      */
     @Transactional
-    public OfficeBoardResponseDto updateOfficeBoard(User user, Long id,
-            OfficeBoardRequestDto requestDto, List<MultipartFile> files) {
+    public OfficeBoardResponseDto updateOfficeBoard(User user, OfficeBoardRequestDto requestDto, Long boardId) {
+        OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(boardId);
+        //officeBoard.checkOwnerUser(user);
 
-        OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(id);
-        officeBoard.checkAdmin();
-        officeBoard.checkOwnerUser(user);
+        String content = requestDto.getContent();
+        fileService.checkModifiedImageFile(MediaTypeEnum.OFFICE_BOARD, officeBoard.getId(), content); //이미지 변경 확인
+        String modifiedContent = fileService.uploadLocalImageToS3(MediaTypeEnum.OFFICE_BOARD,officeBoard.getId(),content); //이미지 S3 변환
 
-        OfficeBoardResponseDto responseDto = OfficeBoardResponseDto.fromEntity(officeBoard);
-        mediaService.deleteAllMedia(MediaTypeEnum.OFFICE_BOARD, officeBoard.getId());
-        officeBoard.updateOfficeBoard(requestDto);
+        officeBoard.updateTitleContent(requestDto.getTitle(),modifiedContent);
+        OfficeBoard updatedOfficeBoard = officeBoardRepository.save(officeBoard);
 
-        if (!FileUtils.isEmpty(files)) {
-            for (MultipartFile file : files) {
-                MediaResponseDto mediaResponseDto = mediaService.createMedia(
-                        MediaTypeEnum.OFFICE_BOARD,
-                        officeBoard.getId(), file);
-                responseDto.addMediaDto(mediaResponseDto);
-            }
-        }
-
-        return responseDto;
-
+        return OfficeBoardResponseDto.fromEntity(updatedOfficeBoard);
     }
 
     /**
      * 운영보드 삭제
      */
     @Transactional
-    public OfficeBoardResponseDto deleteOfficeBoard(User user, Long id) {
-
+    public String deleteOfficeBoard(User user, Long id) {
         OfficeBoard officeBoard = officeBoardRepository.findByIdOrElseThrow(id);
 
-        officeBoard.checkAdmin();
         officeBoard.checkOwnerUser(user);
-        officeBoard.deleteOfficeBoard();
-        return OfficeBoardResponseDto.fromEntity(officeBoard);
+        officeBoard.deleteOfficeBoard(); //officeBoardRepository.delete 대신 직접 deleteAt에 값을 넣어줌, 참고용으로 일단 놔둠
+        return "공지사항이 삭제되었습니다.";
     }
-
 }

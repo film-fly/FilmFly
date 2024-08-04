@@ -1,7 +1,16 @@
 package com.sparta.filmfly.domain.favorite.dto;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.sparta.filmfly.domain.favorite.entity.Favorite;
+import lombok.Builder;
 
+@Builder
 public class FavoriteResponseDto {
 
+    private Long id;
+
+    public static FavoriteResponseDto fromEntity(Favorite favorite) {
+        return FavoriteResponseDto.builder()
+            .id(favorite.getId())
+            .build();
+    }
 }

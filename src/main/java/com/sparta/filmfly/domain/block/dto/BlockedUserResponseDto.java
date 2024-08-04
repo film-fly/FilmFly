@@ -3,6 +3,8 @@ package com.sparta.filmfly.domain.block.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 public class BlockedUserResponseDto {
@@ -10,4 +12,5 @@ public class BlockedUserResponseDto {
     private String username;
     private String nickname;
     private String memo;
+    private LocalDateTime createdAt;
 }

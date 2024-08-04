@@ -66,8 +66,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
         return BoardPageResponseDto.builder()
                 .totalPages(page.getTotalPages())
                 .totalElements(page.getTotalElements())
-                .currentPages(page.getNumber() + 1)
-                .size(page.getSize())
+                .currentPage(page.getNumber() + 1)
+                .pageSize(page.getSize())
                 .content(content)
                 .build();
     }
@@ -107,8 +107,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
         return BoardPageResponseDto.builder()
                 .totalPages(page.getTotalPages())
                 .totalElements(page.getTotalElements())
-                .currentPages(page.getNumber() + 1)
-                .size(page.getSize())
+                .currentPage(page.getNumber() + 1)
+                .pageSize(page.getSize())
                 .content(content)
                 .build();
     }

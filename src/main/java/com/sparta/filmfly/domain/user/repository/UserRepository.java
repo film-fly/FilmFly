@@ -49,6 +49,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("DELETE FROM User u WHERE u.deletedAt IS NOT NULL AND u.deletedAt < :cutoffDate AND u.userStatus = 'DELETED'")
     void deleteOldSoftDeletedUsers(@Param("cutoffDate") LocalDateTime cutoffDate);
 
-    boolean existsByEmail(String email);
+    boolean existsByUsername(String username);
 
+    boolean existsByNickname(String nickname);
+
+    boolean existsByEmail(String email);
 }

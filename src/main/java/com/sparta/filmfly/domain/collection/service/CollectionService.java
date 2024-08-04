@@ -11,7 +11,6 @@ import com.sparta.filmfly.domain.collection.repository.MovieCollectionRepository
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.user.entity.User;
-import com.sparta.filmfly.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +28,7 @@ public class CollectionService {
     */
     public CollectionResponseDto createCollection(User user, CollectionRequestDto collectionRequestDto) {
         // 이미 있는 보관함인지 확인
-        collectionRepository.existsByUser_IdAndNameOrElseThrow(user.getId(), collectionRequestDto.getName());
+        collectionRepository.existsByUserIdAndNameOrElseThrow(user.getId(), collectionRequestDto.getName());
 
         // 보관함 생성, 저장
         Collection collection = Collection.builder()
@@ -72,7 +71,7 @@ public class CollectionService {
         // 영화 유무확인
         Movie movie = movieRepository.findByIdOrElseThrow(movieCollectionRequestDto.getMovieId());
         // 영화 보관함 사전등록 여부 확인
-        movieCollectionRepository.existsByCollection_idAndMovie_idOrElseThrow(movieCollectionRequestDto.getCollectionId(), movie.getId());
+        movieCollectionRepository.existsByCollectionIdAndMovieIdOrElseThrow(movieCollectionRequestDto.getCollectionId(), movie.getId());
         // 객체 생성 및 저장
         MovieCollection movieCollection = MovieCollection.builder()
                 .collection(collection)
@@ -94,15 +93,15 @@ public class CollectionService {
         ).toList());
     }
 
-    public void deleteMovieCollection(User user, Long collectionId, Long movieId) {
+    public void deleteMovieCollection(User user, MovieCollectionRequestDto movieCollectionRequestDto) {
         // 보관함 존재 확인
-        Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
+        Collection collection = collectionRepository.findByIdOrElseThrow(movieCollectionRequestDto.getCollectionId());
         // 보관함 주인 확인
         collection.validateOwner(user);
         // 영화 존재 확인
-        Movie movie = movieRepository.findByIdOrElseThrow(movieId);
+        Movie movie = movieRepository.findByIdOrElseThrow(movieCollectionRequestDto.getMovieId());
         // 영화-보관함 존재 확인
-        MovieCollection movieCollection = movieCollectionRepository.findByCollection_idAndMovie_idOrElseThrow(collection.getId(), movie.getId());
+        MovieCollection movieCollection = movieCollectionRepository.findByCollectionIdAndMovieIdOrElseThrow(collection.getId(), movie.getId());
         // 보관함에서 영화 삭제
         movieCollectionRepository.delete(movieCollection);
     }

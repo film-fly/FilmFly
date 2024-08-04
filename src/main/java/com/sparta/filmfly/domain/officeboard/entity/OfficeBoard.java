@@ -1,28 +1,21 @@
 package com.sparta.filmfly.domain.officeboard.entity;
 
-import static com.sparta.filmfly.domain.user.entity.UserRoleEnum.ROLE_ADMIN;
-
-import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.NotOwnerException;
 import com.sparta.filmfly.global.exception.custom.detail.UnAuthorizedException;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import java.util.Objects;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
+import java.util.Objects;
+
+import static com.sparta.filmfly.domain.user.entity.UserRoleEnum.ROLE_ADMIN;
 
 @Entity
 @Getter
@@ -42,15 +35,11 @@ public class OfficeBoard extends TimeStampEntity {
     @Column(nullable = false)
     String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false,columnDefinition = "TEXT")
     String content;
 
     @Column(nullable = false)
     Long hits;
-
-    @Column(nullable = false)
-    Long goodCount;
-
 
     @Builder
     public OfficeBoard(User user, String title, String content) {
@@ -58,12 +47,15 @@ public class OfficeBoard extends TimeStampEntity {
         this.title = title;
         this.content = content;
         this.hits = 0L;
-        this.goodCount = 0L;
     }
 
-    public void updateOfficeBoard(OfficeBoardRequestDto requestDto) {
-        this.title = requestDto.getTitle() != null ? requestDto.getTitle() : title;
-        this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
+    public void addHits(){
+        hits += 1;
+    }
+
+    public void updateTitleContent(String title, String content) {
+        this.title = title != null ? title : this.title;
+        this.content = content != null ? content : this.content;
     }
 
     public void deleteOfficeBoard() {

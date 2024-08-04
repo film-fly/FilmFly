@@ -15,11 +15,11 @@ public class MovieCollection extends TimeStampEntity {
     private Long id;
 
     @JoinColumn(nullable = true, name = "collection_id")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Collection collection;
 
     @JoinColumn(nullable = true, name = "movie_id")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Movie movie;
 
     @Builder

@@ -42,9 +42,11 @@ public enum ResponseCodeEnum {
     //Block
     USER_ALREADY_BLOCKED(HttpStatus.BAD_REQUEST, "이미 차단된 사용자입니다."),
     NOT_BLOCKED_TARGET(HttpStatus.NOT_FOUND, "차단된 상대가 아닙니다."),
+    INVALID_SELF_TARGET(HttpStatus.BAD_REQUEST, "본인을 차단 할 수 없습니다."),
 
     // Favorite
     FAVORITE_ALREADY_EXISTS(HttpStatus.ALREADY_REPORTED, "찜이 이미 등록되어있습니다."),
+    FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "찜을 하지 않은 영화입니다."),
 
 
     // Board
@@ -55,6 +57,7 @@ public enum ResponseCodeEnum {
     //Comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
     COMMENT_NOT_OWNER(HttpStatus.FORBIDDEN, "댓글의 주인이 아닙니다."),
+    COMMENT_PATH_MISMATCH(HttpStatus.BAD_REQUEST, "댓글의 보드 경로가 일치하지 않습니다."),
     // Review
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     REVIEW_NOT_OWNER(HttpStatus.FORBIDDEN, "본인이 작성한 리뷰가 아닙니다."),

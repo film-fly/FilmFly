@@ -1,7 +1,7 @@
 package com.sparta.filmfly.domain.block.controller;
 
 import com.sparta.filmfly.domain.block.dto.BlockRequestDto;
-import com.sparta.filmfly.domain.block.dto.BlockedUserResponseDto;
+import com.sparta.filmfly.domain.block.dto.BlockedUserPageResponseDto;
 import com.sparta.filmfly.domain.block.service.BlockService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
@@ -13,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/blocks")
@@ -22,7 +21,9 @@ public class BlockController {
 
     private final BlockService blockService;
 
-    // 유저 차단
+    /**
+     * 유저 차단
+     */
     @PostMapping
     public ResponseEntity<MessageResponseDto> blockUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -32,16 +33,22 @@ public class BlockController {
         return ResponseUtils.success();
     }
 
-    // 차단된 유저 목록 조회
+    /**
+     * 차단된 유저 목록 조회
+     */
     @GetMapping
-    public ResponseEntity<DataResponseDto<List<BlockedUserResponseDto>>> getBlockedUsers(
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+    public ResponseEntity<DataResponseDto<BlockedUserPageResponseDto>> getBlockedUsers(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<BlockedUserResponseDto> blockedUsers = blockService.getBlockedUsers(userDetails.getUser());
+        BlockedUserPageResponseDto blockedUsers = blockService.getBlockedUsers(userDetails.getUser(), page, size);
         return ResponseUtils.success(blockedUsers);
     }
 
-    // 차단 해제
+    /**
+     * 차단 해제
+     */
     @DeleteMapping
     public ResponseEntity<MessageResponseDto> unblockUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,

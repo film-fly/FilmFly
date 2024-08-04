@@ -7,6 +7,7 @@ import com.sparta.filmfly.domain.movie.repository.CreditRepository;
 import com.sparta.filmfly.domain.movie.repository.GenreRepository;
 import com.sparta.filmfly.domain.movie.repository.MovieCreditRepository;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
+import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.common.util.JsonFormatter;
 import com.sparta.filmfly.global.exception.custom.detail.ApiRequestFailedException;
@@ -46,6 +47,7 @@ public class MovieService {
     // 이미지 경로 : https://image.tmdb.org/t/p/w220_and_h330_face/이미지.jpg
     // 크기 : w220_and_h330_face , w600_and_h900_bestv2 , w1280
     private final String baseUrl = "https://api.themoviedb.org";
+    private final ReviewRepository reviewRepository;
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${TMDB_API_AUTHORIZATION}")
@@ -216,12 +218,15 @@ public class MovieService {
     public MovieDetailResponseDto getMovie(Long movieId) {
         Movie movie = movieRepository.findByIdOrElseThrow(movieId);
         List<Credit> creditList = creditRepository.findByMovieId(movieId);
+        Float avgRating = reviewRepository.getAverageRatingByMovieId(movieId);
+
         return MovieDetailResponseDto.builder()
-                .movie(MovieResponseDto.fromEntity(movie))
-                .creditList(creditList.stream()
-                        .map(CreditResponseDto::fromEntity)
-                        .collect(Collectors.toList()))
-                .build();
+            .movie(MovieResponseDto.fromEntity(movie))
+            .creditList(creditList.stream()
+                .map(CreditResponseDto::fromEntity)
+                .collect(Collectors.toList()))
+            .avgRating(avgRating)
+            .build();
     }
 
 }

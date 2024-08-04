@@ -103,7 +103,7 @@ public class S3Uploader {
      */
     private String createMediaPath(MediaTypeEnum mediaType, Long typeId, String fileName){
         StringBuilder sb = new StringBuilder();
-        if(mediaType == MediaTypeEnum.BOARD) {
+        if(mediaType == MediaTypeEnum.BOARD) { //FileService.checkModifiedImageFile에 있는거랑 비슷함
             sb.append("boards/");
         }
         else if(mediaType == MediaTypeEnum.OFFICE_BOARD) {
