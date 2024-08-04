@@ -35,11 +35,11 @@ jobs:
 
       # 권한 부여
       - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
+        run: chmod +x gradlew
 
       # Build
       - name: Build with Gradle
-        run: ./gradlew clean bootJar build
+        run: ./gradlew clean build
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -74,7 +74,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            CONTAINER_ID=$(sudo docker ps -q --filter "publish=443-443")
+            CONTAINER_ID=$(sudo docker ps -q --filter "publish=8080-8080")
             
             if [ ! -z "$CONTAINER_ID" ]; then
               sudo docker stop $CONTAINER_ID
