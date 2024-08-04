@@ -39,7 +39,7 @@ jobs:
 
       # Build
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean bootJar build
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
