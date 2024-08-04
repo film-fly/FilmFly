@@ -9,6 +9,7 @@ on:
     branches:
       - main
       - dev
+      - 305-bugfix-deploy-error
     # dev 가 pull request 를 생성시
 #  pull_request:
 #    branches:
