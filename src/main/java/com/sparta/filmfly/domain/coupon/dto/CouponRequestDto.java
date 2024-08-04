@@ -1,8 +1,6 @@
 package com.sparta.filmfly.domain.coupon.dto;
 
 import com.sparta.filmfly.domain.coupon.entity.Coupon;
-import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
-import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
