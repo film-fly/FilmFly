@@ -1,7 +1,7 @@
 let apiModule = (function() {
   // 기본 설정
   let settings = {
-    baseUrl: 'https://localhost:443', // 기본 URL, 필요에 따라 변경
+    baseUrl: 'https://localhost', // 기본 URL, 필요에 따라 변경
     headers: {
       'Content-Type': 'application/json',
       // 추가 헤더 설정 가능
@@ -18,12 +18,12 @@ let apiModule = (function() {
       xhrFields: {
         withCredentials: true
       },
-      success: function(response) {
-        console.log("성공 : " + response);
-        if (successCallback) successCallback(response);
+      success: function(result, status, xhr) {
+        console.log("성공 : " + JSON.stringify(result));
+        if (successCallback) successCallback(result);
       },
       error: function(xhr, status, error) {
-        console.error("에러: " + error.responseText);
+        console.error("에러: " + xhr.responseText);
         if (errorCallback) errorCallback(xhr, status, error);
       }
     });

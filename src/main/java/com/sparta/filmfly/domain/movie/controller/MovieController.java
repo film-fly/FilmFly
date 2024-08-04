@@ -57,7 +57,7 @@ public class MovieController {
     @GetMapping("/movies")
     public ResponseEntity<DataResponseDto<PageResponseDto<List<MovieResponseDto>>>> getListMovie(
             @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "12") int size,
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "true") boolean isAsc,
             @RequestParam(required = false, defaultValue = "") String search
