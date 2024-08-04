@@ -32,15 +32,4 @@ public class CouponRequestDto {
                 .requestDto(couponRequestDto)
                 .build();
     }
-
-    /**
-     * 쿠폰 기간 제대로 입력받았는지 검증하는 메서드
-     */
-    public void validateExpirationDate() {
-        // 오늘 날짜 ex) 2024 - 07 - 30 T 00:00:00
-        LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
-        if (expirationDate.isBefore(todayStart)) {
-            throw new AccessDeniedException(ResponseCodeEnum.COUPON_EXPIRATION_DATE_NOT_CORRECT);
-        }
-    }
 }

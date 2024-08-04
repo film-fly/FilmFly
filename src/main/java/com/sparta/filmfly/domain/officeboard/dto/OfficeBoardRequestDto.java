@@ -19,7 +19,7 @@ public class OfficeBoardRequestDto {
     String content;
 
     @Builder
-    public OfficeBoard toEntity(User user, OfficeBoardRequestDto requestDto) {
+    public OfficeBoard toEntity(User user) {
         return OfficeBoard.builder()
                 .user(user)
                 .title(title)

@@ -36,14 +36,14 @@
         ${review.nickname}
       </div>
       <div>
-        <i class="fa-solid fa-gear fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
-        <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${review.userId}" data-content-id="${review.boardId}" data-content-type="REVIEW">
-          <li class="dropdown-item block-user">차단</li>
-          <li class="dropdown-item block-user">신고</li>
-        </ul>
-      </div>
-      <div>
         ${review.createdAt}
+      </div>
+      <div class="d-flex justify-content-end flex-grow-1">
+        <i class="fa-solid fa-ellipsis-vertical settings-icon fs-4" data-bs-toggle="dropdown" aria-expanded="false"></i>
+        <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${review.userId}" data-content-id="${review.boardId}" data-content-type="REVIEW">
+          <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
+          <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
+        </ul>
       </div>
     </div>
     <div class="d-flex align-items-center">
@@ -93,6 +93,25 @@
         <div class="modal-footer">
           <button id="btnAddCollection" type="button" class="btn btn-primary">추가</button>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 신고, 차단 모달 -->
+<div class="modal fade" id="blockReportModal" tabindex="-1" aria-labelledby="blockReportModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="blockReportModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="inputBlockReport" class="mb-2">메모</label>
+        <textarea id="inputBlockReport" style="width: 100%;height: 200px;"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btnBlockReport">저장</button>
       </div>
     </div>
   </div>
@@ -165,6 +184,5 @@
 </script>
 
 <script src="../js/reaction.js"></script>
-
 </body>
 </html>

@@ -1,18 +1,10 @@
 package com.sparta.filmfly.domain.board.entity;
 
-import com.sparta.filmfly.domain.board.dto.BoardRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,14 +31,8 @@ public class Board extends TimeStampEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false,columnDefinition = "TEXT")
     private String content;
-
-    @Column(nullable = false)
-    private Long goodCount;
-
-    @Column(nullable = false)
-    private Long badCount;
 
     @Column(nullable = false)
     private Long hits;
@@ -59,14 +45,12 @@ public class Board extends TimeStampEntity {
         this.title = title;
         this.content = content;
 
-        goodCount = 0L;
-        badCount = 0L;
         hits = 0L;
     }
 
-    public void update(BoardRequestDto requestDto) {
-        this.title = requestDto.getTitle() != null ? requestDto.getTitle() : title;
-        this.content = requestDto.getContent() != null ? requestDto.getContent() : content;
+    public void updateContent(String title, String content) {
+        this.title = title != null ? title : this.title;
+        this.content = content != null ? content : this.content;
     }
 
     public void addHits(){

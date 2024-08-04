@@ -32,6 +32,13 @@
     <input type="text" id="inputMovieSearch" class="form-control" placeholder="검색">
     <button id="btnMovieSearch" type="button" class="btn btn-primary">검색</button>
   </div>
+
+  <div class="d-flex my-4 gap-3">
+    <input type="checkbox" class="btn-check" id="btnFilterGoods" autocomplete="off">
+    <label class="btn btn-outline-primary" for="btnFilterGoods">좋아요 수 20개 이상</label>
+    <input type="checkbox" class="btn-check" id="btnFilterHits" autocomplete="off">
+    <label class="btn btn-outline-primary" for="btnFilterHits">조회 수 20개 이상</label>
+  </div>
   <div>
     <ul id="board-box" class="list-group list-group-flush">
     </ul>
@@ -67,9 +74,9 @@
     let boardHtml = `
       <li class="list-group-item">
         <div class="d-flex flex-column">
-          <a href="./board-detail.html?board=${board.id}" class="fs-4 pt-3 pb-3">${board.title}</a>
+          <a href="./board-detail.html?board=${board.id}" class="fs-5 fw-bold py-3">${board.title}</a>
         </div>
-        <div class="d-flex align-items-center gap-4">
+        <div class="d-flex align-items-center gap-3">
           <div class="profile-box d-flex align-items-center gap-2">
 <!--            <div>-->
 <!--              <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">-->
@@ -80,6 +87,8 @@
           </div>
           <div class="d-flex gap-3">
             <p>조회수(${board.hits})</p>
+            <p>좋아요 수($.{board.goods})</p>
+            <p>싫어요 수($.{board.bads})</p>
             <p>${board.createdAt}</p>
           </div>
         </div>
@@ -98,6 +107,21 @@
     const data = {
       searchText: searchText
     };
+    alert(JSON.stringify(data));
+  });
+
+  $('.btn-check').on('change', function() {
+    const filterGoods = $('#btnFilterGoods').is(':checked');
+    const filterHits = $('#btnFilterHits').is(':checked');
+
+    console.log('좋아요 수 20개 이상:', filterGoods);
+    console.log('조회 수 20개 이상:', filterHits);
+
+    const data = {
+      filterGoods: filterGoods,
+      filterHits: filterHits
+    };
+
     alert(JSON.stringify(data));
   });
 </script>

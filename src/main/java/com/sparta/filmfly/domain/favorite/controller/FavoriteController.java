@@ -1,5 +1,6 @@
 package com.sparta.filmfly.domain.favorite.controller;
 
+import com.sparta.filmfly.domain.favorite.dto.FavoriteResponseDto;
 import com.sparta.filmfly.domain.favorite.service.FavoriteService;
 import com.sparta.filmfly.domain.movie.dto.MovieResponseDto;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-//@RequestMapping("")
+@RequestMapping("/favorites")
 @RequiredArgsConstructor
 public class FavoriteController {
 
@@ -25,14 +26,14 @@ public class FavoriteController {
     /**
     * 찜 등록하기
     */
-    @PostMapping
-    public ResponseEntity<MessageResponseDto> createFavorite(
+    @PostMapping("/movies/{movieId}")
+    public ResponseEntity<DataResponseDto<FavoriteResponseDto>> createFavorite(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam Long movieId
+            @PathVariable Long movieId
     ) {
         log.info("create favorite");
-        favoriteService.createFavorite(userDetails.getUser(), movieId);
-        return ResponseUtils.success();
+        FavoriteResponseDto responseDto = favoriteService.createFavorite(userDetails.getUser(), movieId);
+        return ResponseUtils.success(responseDto);
     }
 
     /**
@@ -50,10 +51,10 @@ public class FavoriteController {
     /**
     * 찜 취소하기
     */
-    @DeleteMapping
+    @DeleteMapping("/movies/{movieId}")
     public ResponseEntity<MessageResponseDto> deleteFavorite(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam Long movieId
+            @PathVariable Long movieId
     ) {
         log.info("delete favorite");
         favoriteService.deleteFavorite(userDetails.getUser(), movieId);

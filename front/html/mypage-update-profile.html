@@ -42,14 +42,6 @@
         <input type="email" class="form-control" id="email" value="${user.email}" disabled>
       </div>
       <div class="mb-3">
-        <label for="password" class="form-label">비밀번호</label>
-        <input type="password" class="form-control" id="password" placeholder="새 비밀번호 입력">
-      </div>
-      <div class="mb-3">
-        <label for="passwordCheck" class="form-label">비밀번호 재입력</label>
-        <input type="password" class="form-control" id="passwordCheck" placeholder="새 비밀번호 재입력">
-      </div>
-      <div class="mb-3">
         <label for="nickname" class="form-label">닉네임</label>
         <div class="input-group">
           <input type="text" class="form-control" id="nickname" placeholder="닉네임 입력">
@@ -108,22 +100,12 @@
   function submitForm() {
     const formData = new FormData();
     const profilePicture = document.getElementById('profilePicture').files[0];
-    const password = $('#password').val();
-    const passwordCheck = $('#passwordCheck').val();
     const nickname = $('#nickname').val();
     const introduce = $('#introduce').val();
 
     // TODO 로딩됐을 때와 비교를 해야됨
     if (profilePicture) {
       formData.append('profilePicture', profilePicture);
-    }
-    if (password || passwordCheck) {
-      if (password === passwordCheck) {
-        formData.append('password', password);
-      } else {
-        alert('변경할 비밀번호가 일치하지 않습니다.');
-        return;
-      }
     }
     if (nickname) {
       if (!flagNickname) {

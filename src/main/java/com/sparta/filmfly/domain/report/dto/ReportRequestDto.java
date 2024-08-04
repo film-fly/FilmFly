@@ -6,13 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 public class ReportRequestDto {
     @NotNull
     private Long reportedId;
-
-    @NotNull
-    private String content;
 
     @NotNull
     private Long typeId;

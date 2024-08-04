@@ -51,12 +51,6 @@ public class Review extends TimeStampEntity {
     @Column(nullable = false)
     private Float rating;
 
-    @Column(nullable = false)
-    private Long goodCount;
-
-    @Column(nullable = false)
-    private Long badCount;
-
     private LocalDateTime deletedAt;
 
     @Builder
@@ -66,8 +60,6 @@ public class Review extends TimeStampEntity {
         this.title = title;
         this.content = content;
         this.rating = rating;
-        this.goodCount = 0L;
-        this.badCount = 0L;
     }
 
     public void updateReview(ReviewUpdateRequestDto requestDto) {

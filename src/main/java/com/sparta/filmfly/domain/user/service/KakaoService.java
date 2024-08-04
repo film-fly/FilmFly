@@ -3,13 +3,15 @@ package com.sparta.filmfly.domain.user.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.filmfly.domain.user.dto.KakaoUserInfoDto;
+import com.sparta.filmfly.domain.user.dto.UserKakaoInfoDto;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.auth.JwtProvider;
+import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
+import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.security.SecureRandom;
 
 @Slf4j(topic = "KAKAO Login")
 @Service
@@ -47,13 +50,15 @@ public class KakaoService {
         String accessToken = getToken(code);
         log.info("Kakao access token: {}", accessToken);
 
-        KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
+        UserKakaoInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
         log.info("Kakao user info: {}", kakaoUserInfo);
 
         return createOrUpdateUser(kakaoUserInfo, response);
     }
 
-    // Access Token을 얻기 위한 메서드
+    /**
+     * Access Token 획득
+     */
     private String getToken(String code) throws JsonProcessingException {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kauth.kakao.com")
@@ -85,8 +90,10 @@ public class KakaoService {
         return jsonNode.get("access_token").asText();
     }
 
-    // Kakao 사용자 정보를 얻기 위한 메서드
-    private KakaoUserInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
+    /**
+     * Kakao 사용자 정보 획득
+     */
+    private UserKakaoInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kapi.kakao.com")
                 .path("/v2/user/me")
@@ -110,46 +117,52 @@ public class KakaoService {
 
         JsonNode jsonNode = objectMapper.readTree(response.getBody());
         Long id = jsonNode.get("id").asLong();
-        String nickname = jsonNode.get("properties").get("nickname").asText();
+        String email = jsonNode.get("kakao_account").get("email").asText();
         String pictureUrl = null;
         if (jsonNode.get("properties").get("profile_image") != null) {
             pictureUrl = jsonNode.get("properties").get("profile_image").asText();
         }
-        String email = jsonNode.get("kakao_account").get("email").asText();
 
-        return KakaoUserInfoDto.builder()
+        return UserKakaoInfoDto.builder()
                 .id(id)
-                .nickname(nickname)
+                .nickname(generateRandomNickname(email))
                 .pictureUrl(pictureUrl)
                 .email(email)
                 .build();
     }
 
-    // 사용자 생성 또는 업데이트 메서드
-    private UserResponseDto createOrUpdateUser(KakaoUserInfoDto kakaoUserInfo, HttpServletResponse response) {
-        String kakaoUsername = "kakao_" + kakaoUserInfo.getId();
+    /**
+     * 사용자 생성 또는 업데이트
+     */
+    public UserResponseDto createOrUpdateUser(UserKakaoInfoDto kakaoUserInfo, HttpServletResponse response) {
+        String email = kakaoUserInfo.getEmail();
         User user;
         boolean isNewUser = false;
 
         try {
-            user = userRepository.findByUsernameOrElseThrow(kakaoUsername);
+            user = userRepository.findByUsernameOrElseThrow(email);
         } catch (NotFoundException e) {
+            // 신규 사용자 생성 시에만 이메일 중복 체크 수행
+            if (userRepository.existsByEmail(kakaoUserInfo.getEmail())) {
+                throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
+            }
+
             user = User.builder()
-                    .username(kakaoUsername)
+                    .username(email)
                     .password("")
-                    .email(kakaoUserInfo.getEmail())
+                    .email(email)
                     .nickname(kakaoUserInfo.getNickname())
                     .pictureUrl(kakaoUserInfo.getPictureUrl())
                     .kakaoId(kakaoUserInfo.getId())
-                    .userStatus(UserStatusEnum.VERIFIED)
+                    .userStatus(UserStatusEnum.ACTIVE)
                     .userRole(UserRoleEnum.ROLE_USER)
                     .build();
             userRepository.save(user);
             isNewUser = true;
         }
 
-        String accessToken = jwtProvider.createAccessToken(user.getUsername());
-        String refreshToken = jwtProvider.createRefreshToken(user.getUsername());
+        String accessToken = jwtProvider.createAccessToken(user.getUsername(), user.getId());
+        String refreshToken = jwtProvider.createRefreshToken(user.getUsername(), user.getId());
 
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
@@ -157,7 +170,6 @@ public class KakaoService {
         addCookie(response, "accessToken", accessToken);
         addCookie(response, "refreshToken", refreshToken);
 
-        // 새로운 사용자라면 UserResponseDto를 반환
         if (isNewUser) {
             return UserResponseDto.builder()
                     .id(user.getId())
@@ -168,16 +180,41 @@ public class KakaoService {
                     .pictureUrl(user.getPictureUrl())
                     .userRole(user.getUserRole())
                     .userStatus(user.getUserStatus())
+                    .createdAt(user.getCreatedAt())
                     .build();
         }
 
         return null;
     }
 
-    // 쿠키 추가 메서드
+    /**
+     * 쿠키 추가
+     */
     private void addCookie(HttpServletResponse response, String name, String value) {
-        Cookie cookie = new Cookie(name, value.replace(" ", "+")); // 공백 문자를 +로 대체
+        Cookie cookie = new Cookie(name, value.replace(" ", "+"));
         cookie.setPath("/");
         response.addCookie(cookie);
+    }
+
+    /**
+     * 랜덤 닉네임 생성
+     */
+    private String generateRandomNickname(String email) {
+        String randomString = generateRandomString();
+        return email.split("@")[0] + "_" + randomString;
+    }
+
+    /**
+     * 랜덤 문자열 생성
+     */
+    private String generateRandomString() {
+        int length = 8;
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(characters.charAt(random.nextInt(characters.length())));
+        }
+        return sb.toString();
     }
 }

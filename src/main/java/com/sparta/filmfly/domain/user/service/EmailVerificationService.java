@@ -1,106 +1,91 @@
 package com.sparta.filmfly.domain.user.service;
 
 import com.sparta.filmfly.domain.user.entity.EmailVerification;
-import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.repository.EmailVerificationRepository;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
-import com.sparta.filmfly.global.exception.custom.detail.ExpiredException;
+import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
 public class EmailVerificationService {
 
+    private final EmailVerificationRepository emailVerificationRepository;
     private final UserRepository userRepository;
-    private final EmailVerificationRepository verificationRepository;
     private final JavaMailSender mailSender;
 
-    public EmailVerificationService(UserRepository userRepository,
-                                    EmailVerificationRepository verificationRepository,
-                                    JavaMailSender mailSender) {
-        this.userRepository = userRepository;
-        this.verificationRepository = verificationRepository;
-        this.mailSender = mailSender;
-    }
-
-    // 인증 코드를 생성하고 이메일로 전송하는 메서드
+    /**
+     * 이메일 인증 코드를 전송
+     */
     @Transactional
-    public void createVerificationCode(String username) {
-        User user = userRepository.findByUsernameOrElseThrow(username);
-        String token = generateVerificationToken();
+    public void sendVerificationEmail(String email) {
+        // 사용자 테이블에서 이메일 중복 확인
+        if (userRepository.existsByEmail(email)) {
+            throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
+        }
 
-        // 새로운 인증 코드 생성
-        EmailVerification verification = new EmailVerification(user, token, LocalDateTime.now().plusMinutes(3));
-        verificationRepository.save(verification);
+        // 이메일 인증 엔티티 조회, 존재하지 않으면 새로 생성
+        EmailVerification emailVerification = emailVerificationRepository.findByEmailOrCreateNew(email);
 
-        String recipientAddress = user.getEmail();
-        String subject = "이메일 인증";
-        String message = "이메일 인증번호는 다음과 같습니다: " + token;
+        // 재전송 제한 체크
+        emailVerification.validateSendLimit();
 
-        sendEmail(recipientAddress, subject, message);
+        // 새로운 인증 코드 생성 및 갱신
+        emailVerification.updateEmailVerificationToken();
+        emailVerification.incrementSendCount();
+        emailVerification.updateLastResendTime(LocalDateTime.now());
+        emailVerificationRepository.save(emailVerification);
+
+        // 이메일 발송
+        sendEmail(email, "이메일 인증 코드는 다음과 같습니다: " + emailVerification.getEmailVerificationToken());
     }
 
-    // 기존 인증 코드를 재전송하는 메서드
-    @Transactional
-    public void resendVerificationCode(Long userId) {
-        User user = userRepository.findByIdOrElseThrow(userId);
-        String token = generateVerificationToken();
-
-        // EmailVerification 객체를 조회하고 없으면 예외 발생
-        EmailVerification verification = verificationRepository.findByUserOrElseThrow(user);
-        // 기존 인증 코드 업데이트
-        verification.updateEmailVerificationToken(token);
-        verification.createEmailExpiryTime(LocalDateTime.now().plusMinutes(3)); // 3분간 유효
-
-        verificationRepository.save(verification);
-
-        String recipientAddress = user.getEmail();
-        String subject = "이메일 인증";
-        String message = "이메일 인증번호는 다음과 같습니다: " + token;
-
-        sendEmail(recipientAddress, subject, message);
-    }
-
-    // 이메일을 전송하는 메서드
-    private void sendEmail(String to, String subject, String text) {
+    /**
+     * 이메일을 전송
+     */
+    private void sendEmail(String to, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
-        message.setSubject(subject);
+        message.setSubject("이메일 인증 코드");
         message.setText(text);
 
         mailSender.send(message);
     }
 
-    // 6자리 인증 코드를 생성하는 메서드
-    private String generateVerificationToken() {
-        Random random = new Random();
-        int token = 100000 + random.nextInt(900000); // 6자리 숫자 생성
-        return String.valueOf(token);
+    /**
+     * 이메일 인증 코드를 검증
+     */
+    @Transactional
+    public void verifyEmailCode(String email, String code) {
+        EmailVerification emailVerification = emailVerificationRepository.findByEmailOrElseThrow(email);
+        emailVerification.validateToken(code);
+        emailVerification.validateExpiryTime();
+        emailVerification.verify();
+        emailVerificationRepository.save(emailVerification);
     }
 
-    // 사용자가 입력한 인증 코드를 검증하는 메서드
+    /**
+     * 이메일이 인증되었는지 확인
+     */
     @Transactional
-    public void verifyEmail(String token) {
-        // 인증 코드로 EmailVerification 객체를 조회합니다. 없으면 예외를 발생시킵니다.
-        EmailVerification verification = verificationRepository.findByEmailVerificationTokenOrElseThrow(token);
+    public void checkIfEmailVerified(String email) {
+        EmailVerification emailVerification = emailVerificationRepository.findByEmailOrElseThrow(email);
+        emailVerification.validateVerifiedStatus();
+    }
 
-        // 인증 코드의 유효 기간을 확인합니다. 만료되었으면 예외를 발생시킵니다.
-        if (verification.getEmailExpiryTime().isBefore(LocalDateTime.now())) {
-            throw new ExpiredException(ResponseCodeEnum.EMAIL_VERIFICATION_EXPIRED);
-        }
-
-        // 인증이 성공하면 유저의 상태를 VERIFIED로 변경하고 저장
-        User user = verification.getUser();
-        user.updateVerified(); // 상태 업데이트 메서드 호출
-        userRepository.save(user);
-
-        // 사용된 인증 코드는 삭제
-        verificationRepository.delete(verification);
+    /**
+     * 이메일 인증 데이터를 삭제
+     */
+    @Transactional
+    public void deleteEmailVerificationByEmail(String email) {
+        EmailVerification emailVerification = emailVerificationRepository.findByEmailOrElseThrow(email);
+        emailVerificationRepository.delete(emailVerification);
     }
 }
