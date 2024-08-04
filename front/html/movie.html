@@ -23,6 +23,12 @@
 <body>
 <div class="container">
   <header id="common-header"></header>
+
+  <div style="font-size:24px; color: red">
+    <p>지금은 영화제목 검색만 됩니다. (영화데이터 몇 개 안 넣어서 "데드풀"로 검색해주세요.)</p>
+    <p>검색옵션, 영화배우검색 안됨.</p>
+  </div>
+
   <div>영화 목록</div>
   <div class="d-flex align-items-center gap-3 mt-3">
     <div>
@@ -121,7 +127,6 @@
 
 <script>
   $(document).ready(function () {
-    alert("지금은 영화제목 검색만 됩니다. (영화데이터 몇 개 안 넣어서 데드풀로 검색해주세요.)\n\n검색옵션, 영화배우검색 안됨.");
     loadMovies(1);
 
     $('#btnMovieSearch').on('click', function () {
@@ -139,12 +144,17 @@
 
       loadMovies(1, queryParams.toString());
     });
+
+    $('#movie-box').on('click', '.col', function () {
+      let movieId = $(this).attr('data-movie-id');
+      location.href = `movie-detail.html?movie=${movieId}`;
+    });
   });
 
   function loadMovies(page, queryString = '') {
-    $('#movie-box').empty();
     apiModule.GET(`/movies?page=${page}&${queryString}`,
         function (result, status, xhr) {
+          $('#movie-box').empty();
           result.data.data.forEach(movie => {
             const movieHtml = `
           <div class="col" data-movie-id="${movie.id}">
