@@ -1,8 +1,6 @@
 package com.sparta.filmfly.domain.coupon.dto;
 
 import com.sparta.filmfly.domain.coupon.entity.Coupon;
-import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
-import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -31,16 +29,5 @@ public class CouponRequestDto {
                 .title(title)
                 .requestDto(couponRequestDto)
                 .build();
-    }
-
-    /**
-     * 쿠폰 기간 제대로 입력받았는지 검증하는 메서드
-     */
-    public void validateExpirationDate() {
-        // 오늘 날짜 ex) 2024 - 07 - 30 T 00:00:00
-        LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
-        if (expirationDate.isBefore(todayStart)) {
-            throw new AccessDeniedException(ResponseCodeEnum.COUPON_EXPIRATION_DATE_NOT_CORRECT);
-        }
     }
 }
