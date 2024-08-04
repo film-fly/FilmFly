@@ -1,5 +1,5 @@
 # github repository actions 페이지에 나타날 이름
-name: Deploy - CI/CD using github actions & docker
+name: Deploy - CI/CD Pipeline
 
 # event trigger
 # main이나 develop 브랜치에 push가 되었을 때 실행
@@ -86,6 +86,19 @@ jobs:
           username: ${{ secrets.AWS_USER }}
           key: ${{ secrets.AWS_KEY }}
           script: |
+            export DB_URL=${{ secrets.DB_URL }}
+            export DB_USERNAME=${{ secrets.DB_USERNAME }}
+            export MAIL_ACCOUNT=${{ secrets.MAIL_ACCOUNT }}
+            export MAIL_APP_PASSWORD=${{ secrets.MAIL_APP_PASSWORD }}
+            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+            export ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
+            export CLIENT_ID=${{ secrets.CLIENT_ID }}
+            export AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+            export AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
+            export TMDB_API_AUTHORIZATION=${{ secrets.TMDB_API_AUTHORIZATION }}
+            export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+            export DOCKER_IMAGE_TAG_NAME=${{ env.DOCKER_IMAGE_TAG_NAME }}
+            
             CONTAINER_ID=$(sudo docker ps -q --filter "publish=8080-8080")
             
             if [ ! -z "$CONTAINER_ID" ]; then
@@ -94,14 +107,14 @@ jobs:
             fi
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
             sudo docker run -d -p 8080:8080 \
-                -e DB_URL=${{secrets.DB_URL}} \
-                -e DB_USERNAME=${{secrets.DB_USERNAME}} \
-                -e MAIL_ACCOUNT=${{secrets.MAIL_ACCOUNT}} \
-                -e MAIL_APP_PASSWORD=${{secrets.MAIL_APP_PASSWORD}} \
-                -e JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
-                -e ADMIN_PASSWORD=${{secrets.ADMIN_PASSWORD}} \
-                -e CLIENT_ID=${{secrets.CLIENT_ID}} \
-                -e AWS_ACCESS_KEY=${{secrets.AWS_ACCESS_KEY}} \
-                -e AWS_SECRET_KEY=${{secrets.AWS_SECRET_KEY}} \
-                -e TMDB_API_AUTHORIZATION=${{secrets.TMDB_API_AUTHORIZATION}} \
+                -e DB_URL=$DB_URL \
+                -e DB_USERNAME=$DB_USERNAME \
+                -e MAIL_ACCOUNT=$MAIL_ACCOUNT \
+                -e MAIL_APP_PASSWORD=$MAIL_APP_PASSWORD \
+                -e JWT_SECRET_KEY=$JWT_SECRET_KEY \
+                -e ADMIN_PASSWORD=$ADMIN_PASSWORD \
+                -e CLIENT_ID=$CLIENT_ID \
+                -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY \
+                -e AWS_SECRET_KEY=$AWS_SECRET_KEY \
+                -e TMDB_API_AUTHORIZATION=$TMDB_API_AUTHORIZATION \
             ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
