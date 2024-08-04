@@ -65,6 +65,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/admins/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/admins/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/movie/genres/api").permitAll()
+                        .requestMatchers("/test/**").permitAll()
                         .anyRequest().authenticated()
         );
 
