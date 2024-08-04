@@ -28,10 +28,11 @@
   <div class="create-collection-form">
     <label for="inputReviewTitle">리뷰 제목</label>
     <input type="text" id="inputReviewTitle" class="form-control">
-    <label for="inputReviewDescription">리뷰 설명</label>
-    <textarea id="inputReviewDescription" class="form-control" style="height: 200px;"></textarea>
+    <label for="inputReviewContent">리뷰 설명</label>
+    <textarea id="inputReviewContent" class="form-control" style="height: 200px;"></textarea>
     <label for="inputReviewRating">별점</label>
     <select id="inputReviewRating" class="form-select" aria-label="별점 선택">
+      <option value selected>선택</option>
       <option value="0.5">0.5</option>
       <option value="1">1.0</option>
       <option value="1.5">1.5</option>
@@ -44,54 +45,87 @@
       <option value="5">5.0</option>
     </select>
   </div>
-  <button id="btnCreateReview" class="btn btn-primary mt-3">저장</button>
+  <button id="btnReview" class="btn btn-primary mt-3" onclick="createReview()">저장</button>
 </div>
 
 <script>
   const urlParams = new URLSearchParams(window.location.search);
-  const editId = urlParams.get('edit');
-  if (editId) {
-    $('#inputReviewTitle').val('수정할 리뷰 제목');
-    $('#inputReviewDescription').val('수정할 리뷰 설명');
-    $('#btnCreateReview').text("수정");
-    // $.ajax({
-    //   type: 'GET',
-    //   url: `/api/collections/${editId}`
-    // })
-    // .done(function (data) {
-    //   $('#inputCollectionTitle').val(data.title);
-    //   $('#inputCollectionDescription').val(data.description);
-    //   $('#btnCreateCollection').val("수정");
-    // })
-    // .fail(function (xhr, status, er) {
-    //   alert("데이터를 불러오는 데 실패했습니다.");
-    // });
+  const movieId = urlParams.get('movie');
+  const reviewId = urlParams.get('review');
+  if (reviewId) {
+    apiModule.GET(`/reviews/${reviewId}`,
+        function (result, status, xhr) {
+          let review = result.data;
+          $('#inputReviewTitle').val(`${review.title}`);
+          $('#inputReviewContent').val(`${review.content}`);
+          if ($('#inputReviewRating').find(`option[value="${review.rating}"]`).length) {
+            $('#inputReviewRating').val(`${review.rating}`);
+          } else {
+            $('#inputReviewRating').val($('#inputReviewRating option:first').val());
+          }
+          $('#btnReview').text("수정");
+        }, function (xhr, status, error) {
+          alert('수정할 데이터를 불러오는데 실패했습니다.');
+        });
   }
 
-  $('#btnCreateReview').on('click', function () {
+  // 리뷰 생성
+  $('#btnReview').on('click', function () {
     const title = $('#inputReviewTitle').val();
-    const description = $('#inputReviewDescription').val();
+    const content = $('#inputReviewContent').val();
     const rating = $('#inputReviewRating').val();
+
+    if (!invalidInput(title, content, rating)) {
+      return;
+    }
 
     const data = {
       title: title,
-      description: description,
+      content: content,
       rating: rating
     };
 
-    // $.ajax({
-    //   type: 'POST',
-    //   url: '',
-    //   data: JSON.stringify(data),
-    //   contentType: "application/json;charset=utf-8"
-    // })
-    // .done(function (result, status, xhr) {
-    //   // location.replace("./");
-    // })
-    // .fail(function (xhr, status, er) {
-    //   alert("리뷰 수정 실패");
-    // });
+    // 리뷰 생성
+    if (!reviewId) {
+      if (confirm('생성 하시겠습니까?')) {
+        apiModule.POST(`/movies/${movieId}/reviews`, data
+            , function (result, status, xhr) {
+              location.replace(`movie-detail.html?movie=${movieId}`);
+            },
+            function (xhr, status, error) {
+              alert('리뷰 생성 실패\n');
+            });
+      }
+    }
+    // 리뷰 수정
+    else {
+      if (confirm('수정 하시겠습니까?')) {
+        apiModule.PATCH(`/reviews/${reviewId}`, data
+            , function (result, status, xhr) {
+              location.replace(`movie-detail.html?movie=${movieId}`);
+            },
+            function (xhr, status, error) {
+              alert('리뷰 수정 실패\n');
+            });
+      }
+    }
   });
+
+  function invalidInput(title, content, rating) {
+    if (!title) {
+      alert('제목을 입력해주세요');
+      return false;
+    }
+    if (!content) {
+      alert('내용을 입력해주세요');
+      return false;
+    }
+    if (!rating) {
+      alert('별점을 입력해주세요');
+      return false;
+    }
+    return true;
+  }
 </script>
 </body>
 </html>

@@ -39,7 +39,7 @@
   <header id="common-header"></header>
 
   <div class="d-flex flex-column">
-    <button type="button" class="btn btn-primary mb-3" onclick="location.href='create-review.html'">
+    <button type="button" class="btn btn-primary mb-3" onclick="moveToCreateReview()">
       리뷰 작성하기
     </button>
     <div id="movie-box">
@@ -487,6 +487,15 @@
           });
         }, function (xhr, status, error) {
         });
+  }
+
+  // 리뷰 작성 페이지로 이동
+  function moveToCreateReview() {
+    location.href = `create-review.html?movie=${movieId}`;
+  }
+  // 리뷰 수정 페이지로 이동
+  function moveToUpdateReview() {
+    // location.href = `create-review.html?movie=${movieId}&review=${reviewId}`;
   }
 </script>
 <script src="../js/reaction.js"></script>
