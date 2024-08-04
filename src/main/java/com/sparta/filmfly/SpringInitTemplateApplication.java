@@ -17,26 +17,26 @@ public class SpringInitTemplateApplication {
         SpringApplication.run(SpringInitTemplateApplication.class, args);
     }
 
-    @Bean
-    public ServletWebServerFactory servletContainer() {
-        // Enable SSL Trafic
-        TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
-            @Override
-            protected void postProcessContext(Context context) {
-                SecurityConstraint securityConstraint = new SecurityConstraint();
-                securityConstraint.setUserConstraint("CONFIDENTIAL");
-                SecurityCollection collection = new SecurityCollection();
-                collection.addPattern("/*");
-                securityConstraint.addCollection(collection);
-                context.addConstraint(securityConstraint);
-            }
-        };
-
-        // Add HTTP to HTTPS redirect
-        tomcat.addAdditionalTomcatConnectors(httpToHttpsRedirectConnector());
-
-        return tomcat;
-    }
+//    @Bean
+//    public ServletWebServerFactory servletContainer() {
+//        // Enable SSL Trafic
+//        TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
+//            @Override
+//            protected void postProcessContext(Context context) {
+//                SecurityConstraint securityConstraint = new SecurityConstraint();
+//                securityConstraint.setUserConstraint("CONFIDENTIAL");
+//                SecurityCollection collection = new SecurityCollection();
+//                collection.addPattern("/*");
+//                securityConstraint.addCollection(collection);
+//                context.addConstraint(securityConstraint);
+//            }
+//        };
+//
+//        // Add HTTP to HTTPS redirect
+////        tomcat.addAdditionalTomcatConnectors(httpToHttpsRedirectConnector());
+//
+//        return tomcat;
+//    }
 
     /*
     We need to redirect from HTTP to HTTPS. Without SSL, this application used

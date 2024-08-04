@@ -1,10 +1,10 @@
 server:
-  port: ${SERVER_PORT:443}
-  ssl:
-    key-store: src/main/resources/bootsecurity.p12
-    key-store-password: 12345678
-    key-store-type: PKCS12
-    key-alias: bootsecurity
+  port: ${SERVER_PORT:8080}
+#  ssl:
+#    key-store: src/main/resources/bootsecurity.p12
+#    key-store-password: 12345678
+#    key-store-type: PKCS12
+#    key-alias: bootsecurity
 # 8080을 사용하지 않는 경우만 환경변수 등록
 
 spring:
