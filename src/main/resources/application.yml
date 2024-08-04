@@ -79,6 +79,6 @@ cloud:
       access-key: ${AWS_ACCESS_KEY}
       secret-key: ${AWS_SECRET_KEY}
     region:
-      static: us-east-2
+      static: ap-northeast-2
     s3:
-      bucket: sparta-storage
+      bucket: filmfly-backend
