@@ -26,4 +26,6 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
         );
     }
 
+    boolean existsByIdAndUserId(Long id, Long userId);
+
 }

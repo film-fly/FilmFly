@@ -60,6 +60,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             }
 
             if (user.getUserStatus() == UserStatusEnum.DELETED) {
+                handleTokenGeneration(response, user);
                 response.setStatus(ResponseCodeEnum.USER_DELETED.getHttpStatus().value());
                 ResponseEntity<MessageResponseDto> responseEntity = ResponseUtils.of(ResponseCodeEnum.USER_DELETED.getHttpStatus(), ResponseCodeEnum.USER_DELETED.getMessage());
                 writeResponseBody(response, responseEntity);
