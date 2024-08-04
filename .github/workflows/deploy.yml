@@ -14,8 +14,8 @@ on:
 #  pull_request:
 #    branches:
 #      - dev
-#env:
-#  DOCKER_IMAGE_TAG_NAME: filmfly
+env:
+  DOCKER_IMAGE_TAG_NAME: film-fly
 
 jobs:
   build-and-docker-push:
@@ -59,7 +59,7 @@ jobs:
           context: .
           file: ./docker/Dockerfile
           push: true
-#          tags: FilmFly/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
+          tags: FilmFly/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
 
   # 위의 build-and-docker-push 이 끝나고 실행
   deploy-to-ec2:
