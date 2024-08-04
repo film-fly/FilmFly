@@ -31,6 +31,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         List<ReviewResponseDto> fetch = queryFactory.select(Projections.constructor(
             ReviewResponseDto.class,
                 qReview.id,
+                qReview.user.id,
                 qReview.user.nickname,
                 qReview.user.pictureUrl,
                 qReview.rating,
@@ -78,6 +79,10 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
             .where(qReview.movie.id.eq(movieId)
                 .and(qReview.deletedAt.isNull())) // 조건을 추가하여 삭제된 리뷰를 제외
             .fetchOne();
+
+        if (averageRating == null) {
+            averageRating = 0.0;
+        }
 
         return Math.round(averageRating * 10) / 10.0f;
     }

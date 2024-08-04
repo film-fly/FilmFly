@@ -15,6 +15,7 @@
   <!-- Font Awesome -->
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <script src="../js/apiModule.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -58,26 +59,13 @@
       password: password
     };
 
-    $.ajax({
-      type: 'POST',
-      url: 'https://localhost:443/users/login',
-      data: JSON.stringify(data),
-      contentType: "application/json;charset=utf-8",
-      xhrFields: {
-        withCredentials: true
-      }
-    })
-    .done(function (result, status, xhr) {
-      location.replace("./index.html");
-    //   회원탈퇴한 계정입니다. 쓰기, 수정, 삭제 작업은 할 수 없습니다.
-    //   회원탈퇴를 한 날짜기준 30일 뒤 삭제가 이루어 지며
-    //   원치 않으신다면 마이페이지에서 복구해주세요.
-    })
-    .fail(function (xhr, status, er) {
-      console.log(er);
-      console.log(xhr);
-      alert('로그인 실패');
-    });
+    apiModule.POST('/users/login', data,
+        function (result, status, xhr) {
+          location.replace('./index.html');
+        },
+        function (xhr, status, er) {
+          alert(xhr.responseJSON.message);
+        });
   });
 </script>
 </body>
