@@ -26,22 +26,26 @@ jobs:
       # SOURCE 단계 - 저장소 Checkout
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Set up AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Upload to S3
-        uses: jakejarvis/s3-sync-action@v0.5.1
-        with:
-          args: --delete
+      - name: Sync Bucket
         env:
-          SOURCE_DIR: "front/html"
-          DEST_DIR: "dist"
-          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
-          AWS_REGION: ${{ env.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
+        run: |
+          aws s3 sync \
+            --region ap-northeast-2 \
+            build s3://fe-63-shinnh2-s3 \
+            --delete
+        working-directory: ./my-agora-states-client
+
+#      - name: Upload to S3
+#        uses: jakejarvis/s3-sync-action@v0.5.1
+#        with:
+#          args: --delete
+#        env:
+#          SOURCE_DIR: "front/html"
+#          DEST_DIR: "dist"
+#          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+#          AWS_REGION: ${{ env.AWS_REGION }}
