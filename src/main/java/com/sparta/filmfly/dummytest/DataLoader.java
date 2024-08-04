@@ -15,12 +15,12 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        executeSqlScript("dummy/userData.sql");
-        executeSqlScript("dummy/boardData.sql");
-        executeSqlScript("dummy/commentData.sql");
-        executeSqlScript("dummy/movieData.sql");
-        executeSqlScript("dummy/reviewData.sql");
-        executeSqlScript("dummy/reactionData.sql");
+//        executeSqlScript("dummy/userData.sql");
+//        executeSqlScript("dummy/boardData.sql");
+//        executeSqlScript("dummy/commentData.sql");
+//        executeSqlScript("dummy/movieData.sql");
+//        executeSqlScript("dummy/reviewData.sql");
+//        executeSqlScript("dummy/reactionData.sql");
     }
 
     private void executeSqlScript(String filePath) throws Exception {
