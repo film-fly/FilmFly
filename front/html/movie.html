@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>FilmFly</title>
-  <!-- 부트 스트랩 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
@@ -11,36 +10,38 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
           integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
           crossorigin="anonymous"></script>
-  <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <!-- 공통 헤더 -->
   <script src="../js/common.js"></script>
-  <!-- Font Awesome -->
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <script src="../js/jquery.twbsPagination.js"></script>
+  <script src="../js/apiModule.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 <div class="container">
-  <!-- 공통 헤더 -->
   <header id="common-header"></header>
+
+  <div style="font-size:24px; color: red">
+    <p>지금은 영화제목 검색만 됩니다. (영화데이터 몇 개 안 넣어서 "데드풀"로 검색해주세요.)</p>
+    <p>검색옵션, 영화배우검색 안됨.</p>
+  </div>
 
   <div>영화 목록</div>
   <div class="d-flex align-items-center gap-3 mt-3">
     <div>
-      <!-- Button trigger modal -->
       <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchOptionModal">
         검색 옵션
       </button>
     </div>
   </div>
-  <div id="movie-box" class="row row-cols-1 row-cols-md-4 g-4 mt-1">
+  <div id="movie-box" class="row row-cols-1 row-cols-md-4 g-4 mt-1 mb-5">
   </div>
+  <ul id="pagination-movies" class="pagination-sm d-flex justify-content-center"></ul>
 </div>
 
-<!-- Modal -->
 <div class="modal fade" id="searchOptionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
     <div class="modal-content">
@@ -63,47 +64,47 @@
         <div>
           <p>장르</p>
           <div class="d-flex flex-wrap justify-content-between mt-1">
-            <input type="checkbox" class="btn-check" id="btn-check-outlined1" autocomplete="off" name="1">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined1" autocomplete="off" name="genre" value="1">
             <label class="btn btn-outline-primary" for="btn-check-outlined1">장르 1</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined2" autocomplete="off" name="2">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined2" autocomplete="off" name="genre" value="2">
             <label class="btn btn-outline-primary" for="btn-check-outlined2">장르 2</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined3" autocomplete="off" name="3">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined3" autocomplete="off" name="genre" value="3">
             <label class="btn btn-outline-primary" for="btn-check-outlined3">장르 3</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined4" autocomplete="off" name="4">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined4" autocomplete="off" name="genre" value="4">
             <label class="btn btn-outline-primary" for="btn-check-outlined4">장르 4</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined5" autocomplete="off" name="5">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined5" autocomplete="off" name="genre" value="5">
             <label class="btn btn-outline-primary" for="btn-check-outlined5">장르 5</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined6" autocomplete="off" name="6">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined6" autocomplete="off" name="genre" value="6">
             <label class="btn btn-outline-primary" for="btn-check-outlined6">장르 6</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined7" autocomplete="off" name="7">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined7" autocomplete="off" name="genre" value="7">
             <label class="btn btn-outline-primary" for="btn-check-outlined7">장르 7</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined8" autocomplete="off" name="8">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined8" autocomplete="off" name="genre" value="7">
             <label class="btn btn-outline-primary invisible" for="btn-check-outlined8">장르 8</label>
           </div>
         </div>
         <div>
           <p>좋아요 수/찜하기 수</p>
           <div class="d-flex flex-wrap justify-content-between mt-1">
-            <input type="checkbox" class="btn-check" id="countOption1" autocomplete="off" name="9">
+            <input type="checkbox" class="btn-check" id="countOption1" autocomplete="off" name="likeCount" value="20">
             <label class="btn btn-outline-primary" for="countOption1">좋아요 수 20개 이상</label>
-            <input type="checkbox" class="btn-check" id="countOption2" autocomplete="off" name="10">
+            <input type="checkbox" class="btn-check" id="countOption2" autocomplete="off" name="wishlistCount" value="20">
             <label class="btn btn-outline-primary" for="countOption2">찜하기 수 20개 이상</label>
-            <input type="checkbox" class="btn-check" id="countOption3" autocomplete="off" name="">
+            <input type="checkbox" class="btn-check" id="countOption3" autocomplete="off" name="likeCount" value="20">
             <label class="btn btn-outline-primary invisible" for="countOption3"></label>
-            <input type="checkbox" class="btn-check" id="countOption4" autocomplete="off" name="">
+            <input type="checkbox" class="btn-check" id="countOption4" autocomplete="off" name="wishlistCount" value="20">
             <label class="btn btn-outline-primary invisible" for="countOption4"></label>
           </div>
         </div>
         <div>
           <p>등급</p>
           <div class="d-flex flex-wrap justify-content-between mt-1">
-            <input type="checkbox" class="btn-check" id="searchOption1" autocomplete="off" name="9">
+            <input type="checkbox" class="btn-check" id="searchOption1" autocomplete="off" name="rating" value="excludeAdult">
             <label class="btn btn-outline-primary" for="searchOption1">청소년 관람불가 제외</label>
-            <input type="checkbox" class="btn-check" id="searchOption2" autocomplete="off" name="10">
+            <input type="checkbox" class="btn-check" id="searchOption2" autocomplete="off" name="rating" value="includeAdult">
             <label class="btn btn-outline-primary" for="searchOption2">청소년 관람불가 포함</label>
-            <input type="checkbox" class="btn-check" id="searchOption3" autocomplete="off" name="11">
+            <input type="checkbox" class="btn-check" id="searchOption3" autocomplete="off" name="rating" value="adult">
             <label class="btn btn-outline-primary" for="searchOption3">청소년 관람불가</label>
-            <input type="checkbox" class="btn-check" id="searchOption4" autocomplete="off" name="11">
+            <input type="checkbox" class="btn-check" id="searchOption4" autocomplete="off" name="rating" value="adult">
             <label class="btn btn-outline-primary invisible" for="searchOption4"></label>
           </div>
         </div>
@@ -118,70 +119,70 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button id="btnMovieSearch" type="button" class="btn btn-primary">적용</button>
+        <button id="btnMovieSearch" type="button" class="btn btn-primary" data-bs-dismiss="modal">적용</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-  const movies = [
-    {
-      "movieId": 1,
-      "movieUrl": "../images/logo.png",
-      "title": "가나다라마바사아자차카타파하가나다라마바사아자차카타"
-    },
-    {
-      "movieId": 2,
-      "movieUrl": "../images/logo.png",
-      "title": "영화 제목 2"
-    },
-    {
-      "movieId": 3,
-      "movieUrl": "../images/logo.png",
-      "title": "영화 제목 3"
-    },
-    {
-      "movieId": 4,
-      "movieUrl": "../images/logo.png",
-      "title": "영화 제목 4"
-    },
-    {
-      "movieId": 4,
-      "movieUrl": "../images/logo.png",
-      "title": "영화 제목 4"
-    }
-  ];
+  $(document).ready(function () {
+    loadMovies(1);
 
-  movies.forEach(movie => {
-    const movieHtml = `
-    <div class="col" data-movie-id="${movie.movieId}">
-      <div class="card h-100">
-        <img src="${movie.movieUrl}" class="card-img-top img-big-size" alt="영화 포스터">
-        <div class="card-body">
-          <h5 class="card-title">${movie.title}</h5>
-        </div>
-      </div>
-    </div>
-    `;
-    $('#movie-box').append(movieHtml);
-  });
+    $('#btnMovieSearch').on('click', function () {
+      let searchText = $('#inputMovieSearch').val();
+      let selectedGenres = [];
+      $('input[name="genre"]:checked').each(function() {
+        selectedGenres.push($(this).val());
+      });
+      let searchType = $('#searchType').val();
+      let queryParams = new URLSearchParams({
+        search: searchText,
+        genres: selectedGenres.join(','),
+        type: searchType
+      });
 
-  $('#btnMovieSearch').on('click', function () {
-    let searchText = $('#inputMovieSearch').val();
-    let selectedGenres = [];
-    $('input[type="checkbox"]:checked').each(function() {
-      selectedGenres.push($(this).attr('name'));
+      loadMovies(1, queryParams.toString());
     });
-    let searchType = $('select.form-select').val();
 
-    const data = {
-      searchText: searchText,
-      searchOption: selectedGenres,
-      searchType: searchType
-    };
-    alert(JSON.stringify(data));
+    $('#movie-box').on('click', '.col', function () {
+      let movieId = $(this).attr('data-movie-id');
+      location.href = `movie-detail.html?movie=${movieId}`;
+    });
   });
+
+  function loadMovies(page, queryString = '') {
+    apiModule.GET(`/movies?page=${page}&${queryString}`,
+        function (result, status, xhr) {
+          $('#movie-box').empty();
+          result.data.data.forEach(movie => {
+            const movieHtml = `
+          <div class="col" data-movie-id="${movie.id}">
+            <div class="card h-100">
+              <img src="${movie.backdropPath}" class="card-img-top img-big-size" alt="영화 포스터">
+              <div class="card-body">
+                <h5 class="card-title">${movie.title}</h5>
+              </div>
+            </div>
+          </div>
+        `;
+            $('#movie-box').append(movieHtml);
+          });
+
+          $('#pagination-movies').twbsPagination('destroy');
+          $('#pagination-movies').twbsPagination({
+            totalPages: result.data.totalPages,
+            startPage: page,
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+              loadMovies(page, queryString);
+            }
+          });
+        },
+        function (xhr, status, error) {
+          alert('영화 데이터 가져오기 실패');
+        });
+  }
 </script>
 </body>
 </html>

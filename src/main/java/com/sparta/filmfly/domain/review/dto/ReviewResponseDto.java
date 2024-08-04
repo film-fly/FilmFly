@@ -13,6 +13,7 @@ import lombok.Getter;
 public class ReviewResponseDto {
 
     private Long id;
+    private Long userId;
     private String nickname;
     private String pictureUrl;
     private Float rating;
@@ -26,6 +27,7 @@ public class ReviewResponseDto {
     public static ReviewResponseDto fromEntity(Review review, Long goodCount, Long badCount) {
         return ReviewResponseDto.builder()
             .id(review.getId())
+            .userId(review.getUser().getId())
             .nickname(review.getUser().getNickname())
             .pictureUrl(review.getUser().getPictureUrl())
             .rating(review.getRating())
