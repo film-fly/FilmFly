@@ -3,15 +3,13 @@ package com.sparta.filmfly.domain.user.controller;
 import com.sparta.filmfly.domain.report.dto.ReportPageResponseDto;
 import com.sparta.filmfly.domain.report.service.ReportService;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
-import com.sparta.filmfly.domain.user.dto.UserSearchResponseDto;
+import com.sparta.filmfly.domain.user.dto.UserSearchPageResponseDto;
 import com.sparta.filmfly.domain.user.dto.UserStateChangeRequestDto;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import com.sparta.filmfly.domain.user.service.UserService;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,13 +26,13 @@ public class AdminController {
      * 유저 검색 조회
      */
     @GetMapping("/users")
-    public ResponseEntity<DataResponseDto<UserSearchResponseDto>> getUsersBySearch(
+    public ResponseEntity<DataResponseDto<UserSearchPageResponseDto>> getUsersBySearch(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) UserStatusEnum status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        UserSearchResponseDto users = userService.getUsersBySearch(search, status, page-1, size);
+        UserSearchPageResponseDto users = userService.getUsersBySearch(search, status, page-1, size);
         return ResponseUtils.success(users);
     }
 

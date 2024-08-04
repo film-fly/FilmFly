@@ -12,4 +12,5 @@ public class ReportPageResponseDto {
     private long totalElements;
     private int totalPages;
     private int currentPage;
+    private int pageSize;
 }
