@@ -29,7 +29,9 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -68,6 +70,7 @@ public class MovieService {
 
     @Transactional
     public List<ApiMovieResponseDto> apiRequestForSearchMovie(ApiMovieRequestDto apiMovieRequestDto) {
+
         String movieUrl = "/3/discover/movie";
 //        String credits = "/3/movie/{movieId}/credits";
 
