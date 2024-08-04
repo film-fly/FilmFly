@@ -8,6 +8,7 @@ on:
     # dev 나 main 으로 push 를 하거나
     branches:
       - main
+      - 305-bugfix-deploy-error
     # dev 가 pull request 를 생성시
 #  pull_request:
 #    branches:
