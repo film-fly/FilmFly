@@ -3,16 +3,16 @@
 @password1 = Admin12345!
 
 ### USER 로그인
-POST https://localhost/users/login
+POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
   "username" : "{{username1}}",
-  "password": "{{password1}}"
+  "password": "Test12345!"
 }
 
 ### 댓글 생성
-POST https://localhost/boards/28/comments
+POST http://localhost:8080/boards/28/comments
 Content-Type: application/json
 
 {
@@ -20,14 +20,14 @@ Content-Type: application/json
 }
 
 ### 댓글 단일 조회
-GET https://localhost/comments/1
+GET http://localhost:8080/comments/1
 
-# https://localhost/boards/1/comments?page=1&size=10
+# http://localhost:8080/boards/1/comments?page=1&size=10
 ### 댓글 페이징 조회
-GET https://localhost/boards/1/comments?page=1
+GET http://localhost:8080/boards/1/comments?page=1
 
 ### 댓글 수정
-PATCH https://localhost/comments/1
+PATCH http://localhost:8080/comments/1
 Content-Type: application/json
 
 {
@@ -35,8 +35,8 @@ Content-Type: application/json
 }
 
 ### 댓글 삭제
-DELETE https://localhost/comments/1
+DELETE http://localhost:8080/comments/1
 
 
 ### 특정 사용자의 댓글 조회
-GET https://localhost/comments/users/7
+GET http://localhost:8080/comments/users/7
