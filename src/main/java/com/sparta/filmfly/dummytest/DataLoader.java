@@ -25,6 +25,10 @@ public class DataLoader implements CommandLineRunner {
 //        executeSqlScript("dummy/collectionData.sql");
 //        executeSqlScript("dummy/reactionData.sql");
 //        executeSqlScript("dummy/reportData.sql");
+//        executeSqlScript("dummy/creditData.sql");
+//        executeSqlScript("dummy/movieCredit.sql");
+//        executeSqlScript("dummy/genre.sql");
+//        executeSqlScript("dummy/movieGenreIds.sql");
 
     }
 
