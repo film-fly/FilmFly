@@ -183,7 +183,7 @@
   function loadComments(page) {
     apiModule.GET(`/boards/${boardId}/comments?page=${page}`,
         function (result, status, xhr) {
-          let comments = result.data.content;
+          let comments = result.data.data;
           $('#comment-box').empty(); // 기존 댓글을 지우고 새 댓글을 불러옵니다.
           comments.forEach(comment => {
             let commentHtml = `
@@ -271,6 +271,11 @@
     const data = {
       content: content
     };
+
+    apiModule.POST('/users/check-nickname', data, function () {
+
+    }, function () {
+    });
 
     // $.ajax({
     //   type: 'POST',
