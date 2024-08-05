@@ -35,33 +35,26 @@
         }
         .content-wrapper {
             margin-left: 250px;
-        }
-        .main-sidebar {
-            width: 250px;
-        }
-        .content-wrapper {
-            display: flex;
-            flex-direction: column;
-            margin-top: 30px;
-            margin-right: 120px;
             background-color: white;
+            padding: 20px;
+            margin-right: 100px;
         }
         .card {
             margin-bottom: 20px;
             padding: 20px;
             font-size: 1.2rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 630px;
         }
         .profile-img {
             width: 200px;
             height: 200px;
             margin-bottom: 20px;
             border-radius: 50%;
-            border:solid 2px black;
+            border: solid 2px black;
+        }
+        .info-box {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
         }
         .card-part1{
             margin-bottom: 30px;
@@ -71,11 +64,23 @@
             align-items: center;
             font-size: 30px;
         }
-        .card-part2{
+        .info-box-icon {
+            background-color: #007bff;
+            color: white;
+            flex: 0 0 auto;
+            height: 60px;
+            width: 60px;
             display: flex;
-            flex-direction: column;
-            height: 200px;
-            justify-content: space-between;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .info-box-content {
+            flex: 1;
+            padding-left: 15px;
+        }
+        .info-box-text {
+            font-size: 1rem;
         }
         .button-container {
             margin-top: 20px;
@@ -84,15 +89,32 @@
             gap: 10px;
             margin-bottom: 10px;
         }
-
-        #suspendButton{
+        #suspendButton, #activateButton {
             width: 120px;
             border-radius: 40px;
+            color: #fff;
         }
-
-        #activateButton{
-            width: 120px;
-            border-radius: 40px;
+        #suspendButton {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        #activateButton {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .info-box-pair {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .info-box-half {
+            flex: 1;
+        }
+        .info-box-half:first-child {
+            margin-right: 20px;
+        }
+        .date{
+            font-size: 12px;
         }
     </style>
 </head>
@@ -122,7 +144,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="adminpage-report-list.html" class="nav-link">
                                 <i class="nav-icon fas fa-flag"></i>
                                 <p>신고 관리</p>
                             </a>
@@ -132,6 +154,7 @@
             </div>
             <!-- /.sidebar -->
         </aside>
+
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Main content -->
@@ -139,22 +162,52 @@
                 <div class="container-fluid">
                     <div id="mainDiv">
                         <div class="card">
-                            <div class="card-body">
+                            <div class="card-body text-center">
                                 <div class="card-part1">
                                     <img id="profileImg" class="profile-img" >
                                     <h5 id="username"></h5>
                                     <h6 id="nickname" class="text-muted"></h6>
                                 </div>
-                                <div class="card-part2">
-                                    <p><strong>이메일:</strong> <span id="email"></span></p>
-                                    <p><strong>역할:</strong> <span id="userRole"></span></p>
-                                    <p><strong>상태:</strong> <span id="userStatus"></span></p>
-                                    <p><strong>생성일:</strong> <span id="createdAt"></span></p>
-                                    <p><strong>수정일:</strong> <span id="updatedAt"></span></p>
+                                <div class="info-box mt-4">
+                                    <span class="info-box-icon"><i class="fas fa-envelope"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">이메일</span>
+                                        <span class="info-box-number" id="email"></span>
+                                    </div>
+                                </div>
+                                <div class="info-box">
+                                    <span class="info-box-icon"><i class="fas fa-user-tag"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">역할</span>
+                                        <span class="info-box-number" id="userRole"></span>
+                                    </div>
+                                </div>
+                                <div class="info-box">
+                                    <span class="info-box-icon"><i class="fas fa-user-shield"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">상태</span>
+                                        <span class="info-box-number" id="userStatus"></span>
+                                    </div>
+                                </div>
+                                <div class="info-box-pair">
+                                    <div class="info-box info-box-half">
+                                        <span class="info-box-icon"><i class="fas fa-calendar-alt"></i></span>
+                                        <div class="info-box-content">
+                                            <span class="info-box-text">생성일</span>
+                                            <span class="info-box-number date" id="createdAt"></span>
+                                        </div>
+                                    </div>
+                                    <div class="info-box info-box-half">
+                                        <span class="info-box-icon"><i class="fas fa-calendar-alt"></i></span>
+                                        <div class="info-box-content">
+                                            <span class="info-box-text">수정일</span>
+                                            <span class="info-box-number date" id="updatedAt"></span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="button-container">
-                                    <button id="activateButton" class="btn btn-success">활성화시키기</button>
-                                    <button id="suspendButton" class="btn btn-danger">정지시키기</button>
+                                    <button id="activateButton" class="btn">활성화시키기</button>
+                                    <button id="suspendButton" class="btn">정지시키기</button>
                                 </div>
                             </div>
                         </div>
