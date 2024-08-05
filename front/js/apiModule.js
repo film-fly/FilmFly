@@ -1,7 +1,7 @@
 let apiModule = (function() {
   // 기본 설정
   let settings = {
-    // baseUrl: 'https://localhost', // 기본 URL, 필요에 따라 변경
+    // baseUrl: 'http://localhost:8080', // 기본 URL, 필요에 따라 변경
     baseUrl: 'http://13.209.9.115:8080', // 기본 URL, 필요에 따라 변경
     headers: {
       'Content-Type': 'application/json',
