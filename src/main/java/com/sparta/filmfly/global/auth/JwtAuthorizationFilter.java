@@ -90,6 +90,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
+        if (uri.startsWith("/temp") || uri.startsWith("/image/upload") || uri.startsWith("/image/delete")) {
+            filterChain.doFilter(req, res);
+            return;
+        }
+
         try {
             String accessToken = getTokenFromCookie(req, "accessToken");
             if (!StringUtils.hasText(accessToken)) {

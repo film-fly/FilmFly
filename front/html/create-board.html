@@ -49,9 +49,8 @@ if (uri.startsWith("/temp") || uri.startsWith("/image/upload")) {
 <script src="../js/summernote.js"></script>
 <script>
   const urlParams = new URL(location.href).searchParams;
-  let movieId;
-  if (urlParams.get('edit')) {
-    movieId = urlParams.get('movie');
+  let boardId = urlParams.get('board');
+  if (boardId) {
     $('#inputBoardTitle').val('수정할 게시물 제목');
     $("#summernote").summernote('code',  'zzzzzzzz');
     $('#btnSaveBoard').text('수정');
@@ -65,6 +64,34 @@ if (uri.startsWith("/temp") || uri.startsWith("/image/upload")) {
       title: title,
       content: content
     }
+
+    // 게시물 생성
+    if (!boardId) {
+      if (confirm('생성 하시겠습니까?')) {
+        apiModule.POST('/boards', data,
+            function (result, status, xhr) {
+              let savedBoardId = result.data.id;
+              location.replace(`./board-detail.html?board=${savedBoardId}`);
+            },
+            function (xhr, status, error) {
+              alert('생성 실패\n');
+            });
+      }
+    }
+    // 게시물 수정
+    else {
+      if (confirm('수정 하시겠습니까?')) {
+        apiModule.PATCH(`/boards/${boardId}`, data
+            , function (result, status, xhr) {
+              location.replace(`./board-detail.html?board=${boardId}`);
+            },
+            function (xhr, status, error) {
+              alert('수정 실패\n');
+            });
+      }
+    }
+
+
 
     // $.ajax({
     //   type: 'POST',

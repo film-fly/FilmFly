@@ -15,6 +15,7 @@ public class BoardResponseDto {
     private String title;
     private String content;
     private String nickname;
+    private String profileUrl;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
     private Long goodCount;
@@ -28,6 +29,7 @@ public class BoardResponseDto {
                 .title(board.getTitle())
                 .content(board.getContent())
                 .nickname(board.getUser().getNickname())
+            .profileUrl(board.getUser().getPictureUrl())
                 .createdAt(board.getCreatedAt())
                 .goodCount(goodCount)
                 .badCount(badCount)

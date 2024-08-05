@@ -18,12 +18,15 @@ Content-Type: application/json
   "password": "Admin12345!"
 }
 
+### 컨텐츠 id값
+@contentId = 20
+
 ### 좋아요 등록
 POST https://localhost/good
 Content-Type: application/json
 
 {
-  "contentId": 1,
+  "contentId": {{contentId}},
   "contentType": "review"
 }
 
@@ -32,7 +35,7 @@ DELETE https://localhost/good
 Content-Type: application/json
 
 {
-  "contentId": 1,
+  "contentId": {{contentId}},
   "contentType": "review"
 }
 
@@ -41,7 +44,7 @@ POST https://localhost/good/check
 Content-Type: application/json
 
 {
-  "contentId": 1,
+  "contentId": {{contentId}},
   "contentType": "review"
 }
 
@@ -50,7 +53,7 @@ POST https://localhost/bad
 Content-Type: application/json
 
 {
-  "contentId": 1,
+  "contentId": {{contentId}},
   "contentType": "review"
 }
 
@@ -59,7 +62,7 @@ DELETE https://localhost/bad
 Content-Type: application/json
 
 {
-  "contentId": 1,
+  "contentId": {{contentId}},
   "contentType": "review"
 }
 
@@ -68,6 +71,6 @@ POST https://localhost/bad/check
 Content-Type: application/json
 
 {
-  "contentId": 1,
+  "contentId": {{contentId}},
   "contentType": "review"
 }
