@@ -22,15 +22,14 @@ let apiModule = (function() {
         withCredentials: true
       },
       success: function(result, status, xhr) {
-        console.log(`요청 성공 : ${fullUrl}\n` + JSON.stringify(result));
+        console.log(`요청 성공: ${method} ${fullUrl}\n` + JSON.stringify(result, null, 2));
         if (successCallback) successCallback(result);
       },
       error: function(xhr, status, error) {
-        console.error(`요청 실패 : ${fullUrl}\n`
+        console.error(`요청 실패:  ${method} ${fullUrl}\n`
             + `상태 코드 : ${xhr.status}\n`
-            + `응답 데이터 : ${xhr.responseText}\n`
+            + `응답 데이터 : ${JSON.stringify(xhr, null , 2)}\n`
         );
-        console.error("에러: " + JSON.stringify(xhr));
         if (errorCallback) errorCallback(xhr, status, error);
       }
     });

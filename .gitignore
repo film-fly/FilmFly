@@ -1,3 +1,6 @@
+# 게시물 생성할 때 임시 사진 저장
+/src/main/resources/static/temp
+
 # 환경변수
 /src/main/resources/properties/env.properties
 /src/main/resources/properties/env.yml
