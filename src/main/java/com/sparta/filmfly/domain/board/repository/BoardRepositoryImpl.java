@@ -4,11 +4,11 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.filmfly.domain.board.dto.BoardPageDto;
-import com.sparta.filmfly.domain.board.dto.BoardPageResponseDto;
 import com.sparta.filmfly.domain.board.entity.QBoard;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +21,7 @@ import java.util.List;
 public class BoardRepositoryImpl implements BoardRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
-    public BoardPageResponseDto findAllWithFilters(Pageable pageable, Long filterGoodCount, Long filterHits, String search) {
+    public PageResponseDto<List<BoardPageDto>> findAllWithFilters(Pageable pageable, Long filterGoodCount, Long filterHits, String search) {
         QBoard board = QBoard.board;
         QGood good = QGood.good;
         QBad bad = QBad.bad;
@@ -62,17 +62,17 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
         // PageImpl을 사용하여 페이지 정보를 생성합니다.
         PageImpl<BoardPageDto> page = new PageImpl<>(content, pageable, total);
 
-        // BoardPageResponseDto를 반환합니다.
-        return BoardPageResponseDto.builder()
-                .totalPages(page.getTotalPages())
+        // PageResponseDto 반환합니다.
+        return PageResponseDto.<List<BoardPageDto>>builder()
                 .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
                 .currentPage(page.getNumber() + 1)
                 .pageSize(page.getSize())
-                .content(content)
+                .data(content)
                 .build();
     }
 
-    public BoardPageResponseDto findAllByUserId(Long userId, Pageable pageable) {
+    public PageResponseDto<List<BoardPageDto>> findAllByUserId(Long userId, Pageable pageable) {
         QBoard board = QBoard.board;
         QGood good = QGood.good;
         QBad bad = QBad.bad;
@@ -103,13 +103,13 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
         // PageImpl을 사용하여 페이지 정보를 생성합니다.
         PageImpl<BoardPageDto> page = new PageImpl<>(content, pageable, total);
 
-        // BoardPageResponseDto를 반환합니다.
-        return BoardPageResponseDto.builder()
-                .totalPages(page.getTotalPages())
+        // PageResponseDto 반환합니다.
+        return PageResponseDto.<List<BoardPageDto>>builder()
                 .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
                 .currentPage(page.getNumber() + 1)
                 .pageSize(page.getSize())
-                .content(content)
+                .data(content)
                 .build();
     }
 }

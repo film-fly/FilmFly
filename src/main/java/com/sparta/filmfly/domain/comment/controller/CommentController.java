@@ -1,20 +1,24 @@
 package com.sparta.filmfly.domain.comment.controller;
 
-import com.sparta.filmfly.domain.comment.dto.CommentPageResponseDto;
 import com.sparta.filmfly.domain.comment.dto.CommentRequestDto;
 import com.sparta.filmfly.domain.comment.dto.CommentResponseDto;
 import com.sparta.filmfly.domain.comment.dto.CommentUpdateResponseDto;
 import com.sparta.filmfly.domain.comment.service.CommentService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
+import com.sparta.filmfly.global.util.PageUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -52,12 +56,15 @@ public class CommentController {
      * http://localhost:8080/boards/{boardId}/comments?page=1&size=10
      */
     @GetMapping("/boards/{boardId}/comments")
-    public ResponseEntity<DataResponseDto<CommentPageResponseDto>> gerPageComment(
+    public ResponseEntity<DataResponseDto<PageResponseDto<List<CommentResponseDto>>>> gerPageComment(
         @PathVariable Long boardId,
-        @RequestParam(value = "page", required = false, defaultValue = "1") final Integer pageNum,
-        @RequestParam(value = "size", required = false, defaultValue = "10") final Integer size
+        @RequestParam(required = false, defaultValue = "1") int page,
+        @RequestParam(required = false, defaultValue = "10") int size,
+        @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+        @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
-        CommentPageResponseDto responseDto = commentService.gerPageComment(pageNum,size,boardId);
+        Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
+        PageResponseDto<List<CommentResponseDto>> responseDto = commentService.gerPageComment(boardId,pageable);
         return ResponseUtils.success(responseDto);
     }
 
@@ -65,12 +72,15 @@ public class CommentController {
      * 유저의 댓글 목록
      */
     @GetMapping("/comments/users/{userId}")
-    public ResponseEntity<DataResponseDto<CommentPageResponseDto>> getUsersComments(
+    public ResponseEntity<DataResponseDto<PageResponseDto<List<CommentResponseDto>>>> getUsersComments(
         @PathVariable Long userId,
-        @RequestParam(value = "page", required = false, defaultValue = "1") final Integer pageNum,
-        @RequestParam(value = "size", required = false, defaultValue = "10") final Integer size
+        @RequestParam(required = false, defaultValue = "1") int page,
+        @RequestParam(required = false, defaultValue = "10") int size,
+        @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+        @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
-        CommentPageResponseDto  responseDto = commentService.getUsersComments(pageNum,size,userId);
+        Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
+        PageResponseDto<List<CommentResponseDto>> responseDto = commentService.getUsersComments(userId,pageable);
         return ResponseUtils.success(responseDto);
     }
 

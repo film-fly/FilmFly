@@ -31,7 +31,7 @@
 </div>
 
 <script>
-  const reviews = [
+/*  const reviews = [
     {
       "movieId": 1,
       "movieTitle": "영화 제목 1",
@@ -40,45 +40,25 @@
       "nickname": "닉네임 1",
       "rating": 3.2,
       "profileImg": "../images/profileImg.png"
-    },
-    {
-      "movieId": 2,
-      "movieTitle": "영화 제목 2",
-      "reviewId": 2,
-      "reviewTitle": "리뷰 제목 2",
-      "nickname": "닉네임 2",
-      "rating": 4.4,
-      "profileImg": "../images/profileImg.png"
-    },
-    {
-      "movieId": 3,
-      "movieTitle": "영화 제목 3",
-      "reviewId": 3,
-      "reviewTitle": "리뷰 제목 3",
-      "nickname": "닉네임 3",
-      "rating": 2.6,
-      "profileImg": "../images/profileImg.png"
-    },
-    {
-      "movieId": 4,
-      "movieTitle": "영화 제목 4",
-      "reviewId": 4,
-      "reviewTitle": "리뷰 제목 4",
-      "nickname": "닉네임 4",
-      "rating": 4.1,
-      "profileImg": "../images/profileImg.png"
-    }
-  ]
+    },*/
+  // URL에서 'user' 파라미터 값을 가져옵니다.
+  const urlParams = new URLSearchParams(window.location.search);
+  const userId = urlParams.get('user');
+  console.log("user id : " + userId);
 
-  reviews.forEach(review => {
-    const reviewHtml = `
-      <div class="list-group-item d-flex p-3" data-review-id="${review.reviewId}">
+  // 기본 프로필 이미지 경로
+  const defaultProfileImg = "../images/profileImg.png";
+
+  // 리뷰 HTML 생성 함수
+  function generateReviewHtml(review) {
+    return `
+      <div class="list-group-item d-flex p-3" data-review-id="${review.id}">
         <a href="" class="d-flex flex-column flex-grow-1">
           <div class="d-flex align-items-center justify-content-between">
             <div class="me-3 d-flex flex-column">
               <div>${review.movieTitle}</div>
               <div class="d-flex align-items-center">
-                <img style="width: 52px; height: 52px;" src="${review.profileImg}" alt="프로필사진">
+                <img style="width: 52px; height: 52px;" src="${review.pictureUrl}" alt="프로필사진" onerror="this.src='${defaultProfileImg}'">
                 <div>${review.nickname}</div>
               </div>
             </div>
@@ -88,17 +68,36 @@
             </div>
           </div>
           <div class="mt-3">
-            ${review.reviewTitle}
+            ${review.title}
           </div>
         </a>
         <div class="d-flex flex-column align-items-center ms-3 gap-2">
-          <button type="button" class="btn btn-primary" onclick="editReview(${review.reviewId})">수정</button>
-          <button type="button" class="btn btn-primary" onclick="removeReview(${review.reviewId})">삭제</button>
+          <button type="button" class="btn btn-primary" onclick="editReview(${review.id})">수정</button>
+          <button type="button" class="btn btn-primary" onclick="removeReview(${review.id})">삭제</button>
         </div>
       </div>
     `;
-    $('#review-box').append(reviewHtml);
-  });
+  }
+
+  // API 호출
+  apiModule.GET("/reviews/users/" + userId,
+          function(result) {
+            // 성공적으로 데이터를 받아왔을 때
+            console.log("API 성공:", result);
+            if (result.data && result.data.data) {
+              const reviews = result.data.data;
+              $('#review-box').empty(); // 기존 리뷰 삭제
+              reviews.forEach(review => {
+                const reviewHtml = generateReviewHtml(review);
+                $('#review-box').append(reviewHtml);
+              });
+            } else {
+              alert("리뷰 데이터를 불러오는 데 실패했습니다.");
+            }
+          },
+          function() {
+            alert("API 호출 실패");
+          });
 
   function editReview(reviewId) {
     location.href = `./create-review.html?edit=${reviewId}`;
@@ -117,6 +116,17 @@
       // .fail(function (xhr, status, er) {
       //   alert("리뷰 삭제 실패");
       // });
+
+      // API 호출
+      apiModule.DELETE("/reviews/" + reviewId,
+              function(result) {
+                // 성공적으로 데이터를 받아왔을 때
+                alert("리뷰 삭제 성공 : " + result.message)
+                location.reload();
+              },
+              function(result) {
+                alert("리뷰 삭제 실패 : " + result.message);
+              });
     }
   }
 </script>
