@@ -29,44 +29,19 @@
   <header id="common-header"></header>
 
   <div class="d-flex gap-3 flex-column">
-    <div class="profile-box d-flex align-items-center gap-3" data-content-id="1" data-user-id="">
-      <div>
-        <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">
-      </div>
-      <div>
-        ${review.nickname}
-      </div>
-      <div>
-        ${review.createdAt}
-      </div>
-      <div class="d-flex justify-content-end flex-grow-1">
-        <i class="fa-solid fa-ellipsis-vertical settings-icon fs-4" data-bs-toggle="dropdown" aria-expanded="false"></i>
-        <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${review.userId}" data-content-id="${review.boardId}" data-content-type="REVIEW">
-          <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
-          <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
-        </ul>
-      </div>
+<!--    프로필 -->
+    <div id="profile-box" class="d-flex align-items-center gap-3" data-content-id="1" data-user-id="">
     </div>
-    <div class="d-flex align-items-center">
-      <img class="img-default-size me-3" src="../images/logo.png" alt="영화 프로필">
-      <div class="d-flex flex-column gap-3">
-        <div>
-          ${movie.title}
-        </div>
-        <div>
-          <i class="fa-solid fa-star align-content-center">${movie.rating}</i>
-        </div>
-      </div>
+
+<!--    영화 -->
+    <div id="movie-box" class="d-flex align-items-center">
     </div>
     <hr>
-    <div>
-      <div class="fs-4 mb-3">
-        ${review.title}
-      </div>
-      <div>
-        ${review.content}
-      </div>
+<!--    리뷰 -->
+    <div id="review-box">
     </div>
+
+<!--    리액션 -->
     <div class="d-flex gap-3">
       <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true">
         <i class="fa-regular fa-face-smile">좋아요</i>
@@ -78,8 +53,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="addCollection" tabindex="-1" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
+<div class="modal fade" id="addCollection" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -119,6 +93,31 @@
 </div>
 
 <script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const movieId = urlParams.get('movie');
+  const reviewId = urlParams.get('review');
+
+  $(document).ready(function () {
+    loadReview();
+
+    apiModule.GET(`/movies/${movieId}`,
+        function (result, status, xhr) {
+          let movie = result.data.movie;
+          let movieHtml = `
+          <img class="img-default-size me-3" src="../images/logo.png" alt="영화 프로필">
+          <div class="d-flex flex-column gap-3">
+            <div>${movie.title}</div>
+            <div>
+              <i class="fa-solid fa-star align-content-center">${result.data.avgRating}</i>
+            </div>
+          </div>
+          `;
+          $('#movie-box').append(movieHtml);
+        },
+        function (xhr, status, error) {
+        });
+  });
+
   const initCollection = [
     {
       id: 333,
@@ -182,6 +181,47 @@
     //   alert("보관함 추가 실패");
     // });
   });
+
+  function loadReview() {
+    apiModule.GET(`/reviews/${reviewId}`,
+        function (result, status, xhr) {
+          let review = result.data;
+          $('#profile-box').attr('data-content-id', review.id).attr('data-user-id', review.userId);
+
+          let profileHtml = `
+          <div>
+            <img class="img-profile-size" src="${review.profileUrl}" alt="프로필 사진">
+          </div>
+          <div>
+            ${review.nickname}
+          </div>
+          <div>
+            ${review.createdAt}
+          </div>
+          <div class="d-flex justify-content-end flex-grow-1">
+            <i class="fa-solid fa-ellipsis-vertical settings-icon fs-4" data-bs-toggle="dropdown" aria-expanded="false"></i>
+            <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${review.userId}" data-content-id="${review.id}" data-content-type="REVIEW">
+              <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
+              <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
+            </ul>
+          </div>
+          `;
+          $('#profile-box').append(profileHtml);
+
+          let reviewHtml = `
+          <i class="fa-solid fa-star align-content-center">${review.rating}</i>
+          <div class="fs-4 my-3">
+            ${review.title}
+          </div>
+          <div>
+            ${review.content}
+          </div>
+          `;
+          $('#review-box').append(reviewHtml);
+        },
+        function (xhr, status, error) {
+        });
+  }
 </script>
 
 <script src="../js/reaction.js"></script>

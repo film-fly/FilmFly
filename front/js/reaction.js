@@ -1,20 +1,20 @@
-const urlParams = new URL(location.href).searchParams;
+const jsUrlParams = new URLSearchParams(window.location.search);
 
 // 좋아요 or 싫어요의 id 값 초기화
 $(document).ready(function() {
-  if (urlParams.get('movie')) {
-    const movieId = urlParams.get('movie');
+  if (jsUrlParams.get('movie')) {
+    const movieId = jsUrlParams.get('movie');
     $('.btnReaction[data-type="MOVIE"]').attr('data-content-id', movieId);
     $('#btnFavorite').attr('data-content-id', movieId);
   }
 
-  if (urlParams.get('review')) {
-    const reviewId = urlParams.get('review');
+  if (jsUrlParams.get('review')) {
+    const reviewId = jsUrlParams.get('review');
     $('.btnReaction[data-type="REVIEW"]').attr('data-content-id', reviewId);
   }
 
-  if (urlParams.get('board')) {
-    const boardId = urlParams.get('board');
+  if (jsUrlParams.get('board')) {
+    const boardId = jsUrlParams.get('board');
     $('.btnReaction[data-type="board"]').attr('data-content-id', boardId);
   }
   // 댓글은 다른방식으로
@@ -74,8 +74,8 @@ $(document).on('click', '.btnReaction', function () {
 
 // 신고 할 content id 초기화
 $(document).ready(function () {
-  if (urlParams.get('review')) {
-    let reviewId = urlParams.get('review');
+  if (jsUrlParams.get('review')) {
+    let reviewId = jsUrlParams.get('review');
 
   }
 });
@@ -93,12 +93,11 @@ $(document).ready(function() {
     $('#blockReportModal').removeAttr('data-report');
     selectedUserId = $(this).closest('.dropdown-menu').attr('data-user-id');
 
-    $('#inputBlockReport').val('');
+    $('#inputBlockReport').val(''); // 텍스트 지우기
     $('#blockReportModalLabel').text('차단하기');
     $('#btnBlockReport').text('차단하기');
     $('#blockReportModal').attr('data-block', true);
-    // alert('user id : ' + selectedUserId);
-    // 실제 차단 기능 구현 코드
+    $('#blockReportModal').modal('show'); // 모달 표시
   });
 
   // 신고 버튼 클릭 이벤트 처리
@@ -110,22 +109,38 @@ $(document).ready(function() {
     selectedContentId = $(this).closest('.dropdown-menu').attr('data-content-id');
     selectedContentType = $(this).closest('.dropdown-menu').attr('data-content-type');
 
-    $('#inputBlockReport').val('');
+    $('#inputBlockReport').val(''); // 텍스트 지우기
     $('#blockReportModalLabel').text('신고하기');
     $('#btnBlockReport').text('신고하기');
     $('#blockReportModal').attr('data-report', true);
-    // alert('user id : ' + selectedUserId + "\n신고할 content id : " + selectedContentId + '\n컨텐츠 타입 : ' + selectedContentType);
-    // 실제 신고 기능 구현 코드
+    $('#blockReportModal').modal('show'); // 모달 표시
   });
 
   // btnBlockReport 버튼 클릭 이벤트 처리
   $('#btnBlockReport').on('click', function() {
     if ($('#blockReportModal').attr('data-block')) {
-      alert('차단하기\nuser id : ' + selectedUserId);
+      let memo = $('#inputBlockReport').val();
+
+      let data = {
+        "blockedId": selectedUserId,
+        "memo": memo
+      };
+
+      blockUser(data);
     } else if ($('#blockReportModal').attr('data-report')) {
       alert('신고하기\nuser id : ' + selectedUserId + '\ncontent id : '
           + selectedContentId + '\ncontent type : ' + selectedContentType);
+    } else {
+      alert('신고, 차단 안됨');
     }
-    // 실제 저장 기능 구현 코드
   });
 });
+
+function blockUser(data) {
+  apiModule.POST('/blocks', data,
+      function () {
+        location.reload();
+      },
+      function () {
+      });
+}
