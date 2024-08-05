@@ -8,7 +8,6 @@ import com.sparta.filmfly.domain.coupon.entity.UserCoupon;
 import com.sparta.filmfly.domain.coupon.repository.CouponRepository;
 import com.sparta.filmfly.domain.coupon.repository.UserCouponRepository;
 import com.sparta.filmfly.domain.user.entity.User;
-import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;

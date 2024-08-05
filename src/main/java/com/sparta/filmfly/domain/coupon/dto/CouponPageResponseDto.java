@@ -1,6 +1,5 @@
 package com.sparta.filmfly.domain.coupon.dto;
 
-import com.sparta.filmfly.domain.coupon.entity.Coupon;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
