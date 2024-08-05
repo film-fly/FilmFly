@@ -51,9 +51,11 @@ class RandomReviewGeneratorTest {
         for (int i = 0; i < numberOfReviews; i++) {
             Long userId = getRandomElement(userIds, random);
             Long movieId = getRandomElement(movieIds, random);
-            String title = "Review Title " + i;
-            String content = "This is a review content for review number " + i;
-            Float rating = (float) (1 + random.nextInt(5)); // Rating between 1 and 5
+            float rating = 1 + random.nextInt(5); // 별점은 1~5
+
+            // 리뷰 제목과 내용을 별점에 따라 생성
+            String title = generateReviewTitle(rating, random);
+            String content = generateReviewContent(rating, random);
 
             // 생성시간과 수정시간 설정
             LocalDateTime reviewCreationDate = startDate.plusSeconds(random.nextInt((int) secondsBetween + 1));
@@ -62,10 +64,86 @@ class RandomReviewGeneratorTest {
             String formattedCreationDate = reviewCreationDate.toString().replace("T", " ");
             String formattedUpdateDate = reviewUpdateDate.toString().replace("T", " ");
 
-            String reviewKey = String.format("(%d, %d, '%s', '%s', %f, '%s', '%s')",
+            String reviewKey = String.format("(%d, %d, '%s', '%s', %.1f, '%s', '%s')",
                     userId, movieId, title, content, rating, formattedCreationDate, formattedUpdateDate);
 
             reviews.add(reviewKey);
+        }
+    }
+
+    private String generateReviewTitle(float rating, Random random) {
+        // 별점에 따라 다양한 제목을 생성
+        switch ((int) rating) {
+            case 5:
+                return getRandomElement(Arrays.asList(
+                        "최고의 영화!", "이 영화는 꼭 봐야 해요!", "완벽한 영화 경험", "가장 추천하는 영화입니다!", "이 영화를 놓치지 마세요!"
+                ), random);
+            case 4:
+                return getRandomElement(Arrays.asList(
+                        "좋은 영화입니다", "볼만한 영화", "즐겁게 볼 수 있는 영화", "추천할 만한 영화", "괜찮은 영화입니다"
+                ), random);
+            case 3:
+                return getRandomElement(Arrays.asList(
+                        "그냥 그렇습니다", "평범한 영화", "무난한 영화", "다시 볼 필요는 없어요", "기대 이하였습니다"
+                ), random);
+            case 2:
+                return getRandomElement(Arrays.asList(
+                        "실망스러운 영화", "별로 추천하지 않습니다", "아쉬운 영화", "시간 낭비", "다시 보고 싶지 않아요"
+                ), random);
+            case 1:
+                return getRandomElement(Arrays.asList(
+                        "최악의 영화", "정말로 보기 싫었던 영화", "시간을 낭비했습니다", "이 영화는 추천하지 않습니다", "참혹한 경험이었습니다"
+                ), random);
+            default:
+                return "리뷰 제목 없음";
+        }
+    }
+
+    private String generateReviewContent(float rating, Random random) {
+        // 별점에 따라 다양한 내용 생성
+        switch ((int) rating) {
+            case 5:
+                return getRandomElement(Arrays.asList(
+                        "이 영화는 정말 훌륭했습니다! 모든 면에서 완벽했어요. 강력히 추천합니다.",
+                        "감동적인 스토리와 훌륭한 연기! 다시 보고 싶네요.",
+                        "완벽한 영화입니다. 최고로 추천할 만한 영화입니다!",
+                        "모든 것이 뛰어난 영화입니다. 놓치지 마세요!",
+                        "정말 최고였어요. 다시 볼 준비가 되어 있습니다."
+                ), random);
+            case 4:
+                return getRandomElement(Arrays.asList(
+                        "좋은 영화였습니다. 몇 가지 아쉬운 점이 있지만 전반적으로 만족스러웠습니다.",
+                        "전반적으로 괜찮은 영화였지만, 몇 군데 개선이 필요해 보입니다.",
+                        "스토리와 연기가 좋았지만, 약간의 아쉬움이 있었습니다.",
+                        "즐겁게 볼 수 있는 영화였으나, 몇 가지 아쉬운 점이 있었습니다.",
+                        "보통 수준의 영화였지만, 여전히 볼만했습니다."
+                ), random);
+            case 3:
+                return getRandomElement(Arrays.asList(
+                        "보통 수준의 영화입니다. 특별히 기억에 남는 점은 없었습니다.",
+                        "그저 그런 영화였어요. 큰 감동은 없었습니다.",
+                        "볼만했지만, 큰 인상은 남지 않았습니다.",
+                        "기대보다 평범한 영화였어요. 재밌었지만 특별할 건 없었습니다.",
+                        "전체적으로 무난했지만, 특별히 추천할 만한 영화는 아닙니다."
+                ), random);
+            case 2:
+                return getRandomElement(Arrays.asList(
+                        "많이 실망스러웠습니다. 별로 추천하고 싶지 않네요.",
+                        "기대 이하의 영화였습니다. 많은 개선이 필요해 보입니다.",
+                        "이 영화는 많이 아쉬웠습니다. 다시 보고 싶지 않네요.",
+                        "내용이 부족하고 재미가 없었습니다. 추천하지 않습니다.",
+                        "많은 부분에서 실망스러웠습니다. 시간이 아까웠어요."
+                ), random);
+            case 1:
+                return getRandomElement(Arrays.asList(
+                        "정말 최악의 영화였습니다. 시간이 낭비였어요.",
+                        "이 영화는 정말 최악이었어요. 다시는 보고 싶지 않아요.",
+                        "매우 실망스러운 영화였습니다. 전혀 추천하지 않습니다.",
+                        "참혹한 경험이었습니다. 시간과 돈이 아까웠어요.",
+                        "이 영화는 완전히 실패작입니다. 절대 보지 마세요."
+                ), random);
+            default:
+                return "리뷰 내용 없음";
         }
     }
 
