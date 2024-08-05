@@ -39,8 +39,7 @@
         .content-wrapper {
             margin-top: 30px;
             background-color:white;
-            padding-right: 100px;
-            font-size: 15px;
+            width: 75%;
         }
         .content {
             width: 100%;
@@ -65,6 +64,19 @@
             transform: scaleY(1.1);
             transition: transform 0.1s ease-in-out;
             cursor: pointer;
+        }
+        #reportSearchResults {
+            font-size: 15px;
+        }
+        td.wrap-text {
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 100px;
+            overflow: auto;
+        }
+        #reason {
+            width: 300px;
+            height: 20px;
         }
     </style>
 </head>
@@ -101,6 +113,12 @@
                                 <p>신고 관리</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="adminpage-crawl-movies.html" class="nav-link">
+                                <i class="nav-icon fas fa-film"></i>
+                                <p>영화 크롤링</p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -122,7 +140,7 @@
                                     <th>번호</th>
                                     <th>신고자</th>
                                     <th>피신고자</th>
-                                    <th>사유</th>
+                                    <th id="reason">사유</th>
                                     <th>신고 날짜</th>
                                 </tr>
                                 </thead>
@@ -147,15 +165,18 @@
 <script>
     $(document).ready(function() {
         function renderReports(reports) {
-            const results = reports.map(report => `
-                <tr data-report-id="${report.id}">
-                    <td>${report.id}</td>
-                    <td>${report.reporterNickname}</td>
-                    <td>${report.reportedNickname}</td>
-                    <td>${report.reason}</td>
-                    <td>${new Date(report.createdAt).toLocaleString()}</td>
-                </tr>
-            `);
+            const results = reports.map(report => {
+                const reason = report.reason.length > 20 ? report.reason.substring(0, 20) + '...' : report.reason;
+                return `
+                    <tr data-report-id="${report.id}">
+                        <td>${report.id}</td>
+                        <td>${report.reporterNickname}</td>
+                        <td>${report.reportedNickname}</td>
+                        <td class="wrap-text">${reason}</td>
+                        <td>${new Date(report.createdAt).toLocaleString()}</td>
+                    </tr>
+                `;
+            });
             $('#reportSearchResults').html(results.join(''));
         }
 
