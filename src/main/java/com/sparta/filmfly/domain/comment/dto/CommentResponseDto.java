@@ -11,20 +11,20 @@ import java.time.LocalDateTime;
 public class CommentResponseDto {
     private Long id;
     private Long userId;
-    private String username;
+    private String nickname;
     private String content;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime updatedAt;
+    private LocalDateTime createdAt;
     private long goodCount;
     private long badCount;
 
     @Builder
-    public CommentResponseDto(Long id, Long userId, String username, String content, LocalDateTime updatedAt, long goodCount, long badCount) {
+    public CommentResponseDto(Long id, Long userId, String nickname, String content, LocalDateTime createdAt, long goodCount, long badCount) {
         this.id = id;
         this.userId = userId;
-        this.username = username;
+        this.nickname = nickname;
         this.content = content;
-        this.updatedAt = updatedAt;
+        this.createdAt = createdAt;
         this.goodCount = goodCount;
         this.badCount = badCount;
     }
@@ -33,9 +33,9 @@ public class CommentResponseDto {
         return CommentResponseDto.builder()
                 .id(comment.getId())
                 .userId(comment.getUser().getId())
-                .username(comment.getUser().getNickname())
+                .nickname(comment.getUser().getNickname())
                 .content(comment.getContent())
-                .updatedAt(comment.getUpdatedAt())
+                .createdAt(comment.getCreatedAt())
                 .goodCount(goodCount)
                 .badCount(badCount)
                 .build();

@@ -372,7 +372,7 @@
           let movieHtml = `
             <div class="d-flex mb-3">
               <div>
-                <img src="${movie.backdropPath}" class="img-big-size" alt="영화 프로필">
+                <img src="https://image.tmdb.org/t/p/w220_and_h330_face${movie.posterPath}" class="img-big-size" alt="영화 프로필">
               </div>
               <div class="d-flex flex-column justify-content-center ms-3">
                 <p class="fs-3 mb-3">${movie.title}</p>
@@ -389,7 +389,7 @@
           credits.forEach(credit => {
             let creditHtml = `
               <div>
-                <img src="../images/profileImg.png" class="img-actor-size" alt="영화배우사진">
+                <img src="https://image.tmdb.org/t/p/w220_and_h330_face${credit.profilePath}" class="img-actor-size" alt="영화배우사진">
                 <p class="movie-actor-name">${checkHangle(credit.originalName) ? credit.originalName : credit.name}</p>
               </div>
           `;
@@ -412,7 +412,7 @@
               <div class="d-flex align-items-center justify-content-between mb-3">
                 <div class="me-3 d-flex flex-column">
                   <div class="d-flex align-items-center gap-3">
-                    <img class="img-profile-size" src="${review.pictureUrl}" alt="프로필사진">
+                    <img class="img-profile-size" src="${review.pictureUrl === null ? '../images/profileImg.png' : review.pictureUrl}" alt="프로필사진">
                     <div>${review.nickname}</div>
                     <div>${review.createdAt}</div>
                     <i class="fa-solid fa-star">${review.rating}</i>

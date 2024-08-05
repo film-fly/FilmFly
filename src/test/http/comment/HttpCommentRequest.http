@@ -12,11 +12,11 @@ Content-Type: application/json
 }
 
 ### 댓글 생성
-POST https://localhost/boards/1/comments
+POST https://localhost/boards/28/comments
 Content-Type: application/json
 
 {
-  "content": "댓글 내용1"
+  "content": "댓글 내용11"
 }
 
 ### 댓글 단일 조회

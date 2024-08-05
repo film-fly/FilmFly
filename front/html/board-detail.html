@@ -19,6 +19,7 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="../js/apiModule.js"></script>
+  <script src="../js/jquery.twbsPagination.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -28,106 +29,22 @@
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
+<!--  게시물 -->
   <div id="board-box" class="d-flex flex-column gap-3">
-    <div class="d-flex align-items-center gap-3">
-      <div class="profile-box d-flex align-items-center gap-2">
-        <div>
-          <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">
-        </div>
-        <div>
-          ${board.nickname}
-        </div>
-      </div>
-      <div>
-        ${board.createdAt}
-      </div>
-      <div>
-        ${board.hits}
-      </div>
-      <div class="d-flex justify-content-end flex-grow-1">
-        <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
-        <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${board.userId}" data-content-id="${board.boardId}" data-content-type="BOARD">
-          <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
-          <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
-        </ul>
-      </div>
-    </div>
-    <div>
-      <div class="mb-3">
-        ${board.title}
-      </div>
-      <div class="mb-3">
-        ${board.content}
-      </div>
-    </div>
-    <div class="d-flex justify-content-between mb-3">
-      <div>
-        <button class="btnReaction btn btn-primary" data-content-id="${board.id}" data-type="BOARD" data-good="true">
-          <i class="fa-regular fa-face-smile">좋아요</i>
-        </button>
-        <!--      <button class="btnReaction btn btn-outline-primary" data-type="BOARD" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>-->
-        <button class="btnReaction btn btn-primary" data-content-id="${board.id}" data-type="BOARD" data-bad="true">
-          <i class="fa-regular fa-face-angry">싫어요</i>
-        </button>
-<!--        <button class="btnReaction btn btn-outline-primary" data-type="BOARD" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>-->
-      </div>
-      <div>
-        <button class="btn btn-primary" onclick="location.href='./create-board.html?edit=1'">수정</button>
-        <button class="btn btn-primary">삭제</button>
-      </div>
-    </div>
   </div>
-  <div id="comment-box">
-    <ul class="list-group list-group-flush mb-5">
-      <li class="list-group-item" data-content-id="${comment.commentId}">
-        <div class="profile-box d-flex align-items-center justify-content-between">
-          <div class="d-flex align-items-center gap-2">
-            <div>
-              <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">
-            </div>
-            <div>
-              ${comment.nickname}
-            </div>
-            <div>
-              ${comment.createdAt}
-            </div>
-          </div>
-          <div class="d-flex align-items-center gap-3">
-            <div class="d-flex justify-content-end flex-grow-1">
-              <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
-              <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${comment.userId}" data-content-id="${comment.commentId}" data-content-type="COMMENT">
-                <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
-                <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
-              </ul>
-            </div>
-            <div>
-              <button class="btn btn-primary edit-comment">수정</button>
-              <button class="btn btn-primary delete-comment">삭제</button>
-              <button class="btn btn-primary save-comment" style="display:none;">저장</button>
-              <button class="btn btn-primary cancel-edit" style="display:none;">취소</button>
-            </div>
-          </div>
-        </div>
-        <div class="comment-content mb-3">
-          ${comment.content}
-        </div>
-        <div>
-          <button class="btnReaction btn btn-primary" data-content-id="${comment.commentId}" data-type="COMMENT" data-good="true">
-            <i class="fa-regular fa-face-smile">좋아요</i>
-          </button>
-          <button class="btnReaction btn btn-primary" data-content-id="${comment.commentId}" data-type="COMMENT" data-bad="true">
-            <i class="fa-regular fa-face-angry">싫어요</i>
-          </button>
-        </div>
-      </li>
-    </ul>
 
+  <hr>
 
-    <div class="mb-3">
-      <label for="inputComment" class="form-label">댓글 입력</label>
-      <textarea class="form-control mb-3" id="inputComment" rows="3"></textarea>
-      <button id="btnSaveComment" class="btn btn-primary">저장</button>
-    </div>
+<!--  댓글 -->
+  <ul id="comment-box" class="list-group list-group-flush mb-5">
+  </ul>
+
+  <ul id="pagination-comments" class="pagination-sm d-flex justify-content-center"></ul>
+
+  <div class="mb-3">
+    <label for="inputComment" class="form-label">댓글 입력</label>
+    <textarea class="form-control mb-3" id="inputComment" rows="3"></textarea>
+    <button id="btnSaveComment" class="btn btn-primary">저장</button>
   </div>
 </div>
 
@@ -151,8 +68,16 @@
 </div>
 
 <script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const boardId = urlParams.get('board');
+
   $(document).ready(function () {
     let originalContent = '';
+
+    // 게시물 로드
+    loadBoard();
+    // 댓글 로드
+    loadComments(1);
 
     // 수정 버튼 클릭 이벤트 핸들러
     $(document).on('click', '.edit-comment', function () {
@@ -202,6 +127,130 @@
       commentBox.find('.cancel-edit').hide();
     });
   });
+
+  // 게시물 로드
+  function loadBoard() {
+    apiModule.GET(`/boards/${boardId}`,
+        function (result, status, xhr) {
+          let board = result.data;
+          let boardHtml = `
+          <div class="d-flex align-items-center gap-3">
+            <div class="profile-box d-flex align-items-center gap-2">
+              <div>
+                <img class="img-profile-size" src="${board.profileUrl === null ? '../images/profileImg.png' : board.profileUrl}" alt="프로필 사진">
+              </div>
+              <div>${board.nickname}</div>
+            </div>
+            <div>${board.createdAt}</div>
+            <div>조회수(${board.hits})</div>
+            <div class="d-flex justify-content-end flex-grow-1">
+              <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
+              <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${board.userId}" data-content-id="${board.id}" data-content-type="BOARD">
+                <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
+                <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="mb-3 fs-4">${board.title}</div>
+            <div class="mb-3">${board.content}</div>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
+            <div>
+              <button class="btnReaction btn btn-primary" data-content-id="${board.id}" data-type="BOARD" data-good="true">
+                <i class="fa-regular fa-face-smile">좋아요</i>
+              </button>
+              <!--      <button class="btnReaction btn btn-outline-primary" data-type="BOARD" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>-->
+              <button class="btnReaction btn btn-primary" data-content-id="${board.id}" data-type="BOARD" data-bad="true">
+                <i class="fa-regular fa-face-angry">싫어요</i>
+              </button>
+      <!--        <button class="btnReaction btn btn-outline-primary" data-type="BOARD" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>-->
+            </div>
+            <div>
+              <button class="btn btn-primary" onclick="location.href='./create-board.html?board=${boardId}'">수정</button>
+              <button class="btn btn-primary">삭제</button>
+            </div>
+          </div>
+          `;
+          $('#board-box').append(boardHtml);
+        },
+        function (xhr, status, error) {
+          alert('게시물 로드 실패');
+        });
+  }
+
+//   댓글 로드
+  function loadComments(page) {
+    apiModule.GET(`/boards/${boardId}/comments?page=${page}`,
+        function (result, status, xhr) {
+          let comments = result.data.content;
+          $('#comment-box').empty(); // 기존 댓글을 지우고 새 댓글을 불러옵니다.
+          comments.forEach(comment => {
+            let commentHtml = `
+          <li class="list-group-item" data-content-id="${comment.id}">
+            <div class="profile-box d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div>
+                  <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">
+                </div>
+                <div>
+                  ${comment.nickname}
+                </div>
+                <div>
+                  ${comment.createdAt}
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-3">
+                <div class="d-flex justify-content-end flex-grow-1">
+                  <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                  <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${comment.userId}" data-content-id="${comment.commentId}" data-content-type="COMMENT">
+                    <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
+                    <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
+                  </ul>
+                </div>
+                <div>
+                  <button class="btn btn-primary edit-comment">수정</button>
+                  <button class="btn btn-primary delete-comment">삭제</button>
+                  <button class="btn btn-primary save-comment" style="display:none;">저장</button>
+                  <button class="btn btn-primary cancel-edit" style="display:none;">취소</button>
+                </div>
+              </div>
+            </div>
+            <div class="comment-content mb-3">
+              ${comment.content}
+            </div>
+            <div>
+              <button class="btnReaction btn btn-primary" data-content-id="${comment.commentId}" data-type="COMMENT" data-good="true">
+                <i class="fa-regular fa-face-smile">좋아요</i>
+              </button>
+              <button class="btnReaction btn btn-primary" data-content-id="${comment.commentId}" data-type="COMMENT" data-bad="true">
+                <i class="fa-regular fa-face-angry">싫어요</i>
+              </button>
+            </div>
+          </li>
+        `;
+            $('#comment-box').append(commentHtml);
+          });
+
+          $('#pagination-comments').twbsPagination('destroy');
+          $('#pagination-comments').twbsPagination({
+            totalPages: result.data.totalPages,
+            startPage: page,
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+              loadComments(page);
+              $('html, body').animate({
+                scrollTop: $('#comment-box').offset().top
+              }, 'fast');
+            }
+          });
+        },
+        function (xhr, status, error) {
+          alert('댓글 로딩 실패');
+        }
+    );
+  }
+
 </script>
 
 

@@ -16,7 +16,7 @@ import java.util.Date;
 public class JwtProvider {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
-    public static final long ACCESS_TOKEN_TIME = 30 * 60 * 1000L;
+    public static final long ACCESS_TOKEN_TIME = 30 * 60 * 1000L * 60 * 60;
     public static final long REFRESH_TOKEN_TIME = 14 * 24 * 60 * 60 * 1000L;
     private static final String USER_ID_CLAIM = "userId";
 

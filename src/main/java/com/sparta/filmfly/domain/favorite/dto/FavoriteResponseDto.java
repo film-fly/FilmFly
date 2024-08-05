@@ -2,7 +2,9 @@ package com.sparta.filmfly.domain.favorite.dto;
 
 import com.sparta.filmfly.domain.favorite.entity.Favorite;
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 @Builder
 public class FavoriteResponseDto {
 
