@@ -15,7 +15,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-/*        executeSqlScript("dummy/userData.sql");
+        executeSqlScript("dummy/userData.sql");
         executeSqlScript("dummy/blockData.sql");
         executeSqlScript("dummy/boardData.sql");
         executeSqlScript("dummy/commentData.sql");
@@ -24,7 +24,11 @@ public class DataLoader implements CommandLineRunner {
         executeSqlScript("dummy/favoriteData.sql");
         executeSqlScript("dummy/collectionData.sql");
         executeSqlScript("dummy/reactionData.sql");
-        executeSqlScript("dummy/reportData.sql");*/
+        executeSqlScript("dummy/reportData.sql");
+        executeSqlScript("dummy/creditData.sql");
+        executeSqlScript("dummy/movieCredit.sql");
+        executeSqlScript("dummy/genre.sql");
+        executeSqlScript("dummy/movieGenreIds.sql");
     }
 
     private void executeSqlScript(String filePath) throws Exception {
