@@ -101,7 +101,9 @@ public class UserController {
      * 닉네임 중복 확인
      */
     @PostMapping("/check-nickname")
-    public ResponseEntity<MessageResponseDto> checkNicknameDuplication(@RequestBody UserNicknameCheckRequestDto requestDto) {
+    public ResponseEntity<MessageResponseDto> checkNicknameDuplication(
+        @Valid @RequestBody UserNicknameCheckRequestDto requestDto
+    ) {
         userService.checkNicknameDuplication(requestDto.getNickname());
         return ResponseUtils.success();
     }
