@@ -11,7 +11,7 @@ class RandomEntityUserAndBoardAndCommentTest {
             "원지연", "백원하", "이은규", "한호진", "강준모"
     };
     private static final String FIXED_PASSWORD = "$2a$12$rQpJST/20h27oYcjOZ20XOqusfj5O.x2u9W1nnZ9RYdZWYU3IQwxu";
-    public static final int NUMBER_OF_USER_RECORDS = 20; // 생성할 유저 레코드 수
+    public static final int NUMBER_OF_USER_RECORDS = 25; // 생성할 유저 레코드 수
     public static final int NUMBER_OF_BOARD_RECORDS = 100; // 생성할 보드 레코드 수
     public static final int NUMBER_OF_COMMENT_RECORDS = 300; // 생성할 댓글 레코드 수
     public static final int DAYS_BEFORE = 30; // 기준 날짜로부터 몇 일 전
@@ -59,7 +59,7 @@ class RandomEntityUserAndBoardAndCommentTest {
                 nickname = FIXED_NICKNAMES[i - 1];
                 role = "ROLE_ADMIN";
             } else {
-                username = "username" + i;
+                username = "username" + (i - 5);
                 nickname = (i <= FIXED_NICKNAMES.length)
                         ? FIXED_NICKNAMES[i - 1]
                         : generateUniqueKoreanName(random, usedNicknames);
@@ -69,8 +69,8 @@ class RandomEntityUserAndBoardAndCommentTest {
 
             String formattedDateTime = userCreationDate.toString().replace("T", " ");
             userSb.append(String.format(
-                    "('%s', '%s', 'user%d@example.com', '%s', NULL, 'http://example.com/pic%d.jpg', 'ACTIVE', '%s', '%s', '%s')",
-                    username, FIXED_PASSWORD, i, nickname, i, role, formattedDateTime, formattedDateTime
+                    "('%s', '%s', 'user%d@example.com', '%s', NULL, NULL, 'ACTIVE', '%s', '%s', '%s')",
+                    username, FIXED_PASSWORD, i, nickname, role, formattedDateTime, formattedDateTime
             ));
 
             if (i < NUMBER_OF_USER_RECORDS) {
