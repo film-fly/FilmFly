@@ -73,12 +73,13 @@ public class MovieController {
     /**
      * 최신 인기 영화
      */
-    @GetMapping("/movies/trend")
+    @PostMapping("/movie/trend")
     public ResponseEntity<DataResponseDto<PageResponseDto<List<MovieResponseDto>>>> getMovieList(
-        @RequestParam(required = false, defaultValue = "1") int page,
-        @RequestParam(required = false, defaultValue = "10") int size,
-        @RequestParam(required = false, defaultValue = "id") String sortBy,
-        @RequestParam(required = false, defaultValue = "true") boolean isAsc
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "id") String sortBy,
+        @RequestParam(defaultValue = "true") boolean isAsc
+//        @RequestParam
     ) {
             log.info("In getListMovie");
             Sort sort = isAsc ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();

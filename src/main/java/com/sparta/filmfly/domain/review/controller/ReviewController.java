@@ -39,9 +39,9 @@ public class ReviewController {
      */
     @PostMapping("/movies/{movieId}/reviews")
     public ResponseEntity<DataResponseDto<ReviewResponseDto>> createReview(
-        @AuthenticationPrincipal UserDetailsImpl userDetails,
-        @PathVariable Long movieId,
-        @Valid @RequestBody ReviewCreateRequestDto requestDto
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long movieId,
+            @Valid @RequestBody ReviewCreateRequestDto requestDto
     ) {
         ReviewResponseDto responseDto = reviewService.createReview(userDetails.getUser(), movieId, requestDto);
         return ResponseUtils.success(responseDto);
@@ -52,7 +52,7 @@ public class ReviewController {
      */
     @GetMapping("/reviews/{reviewId}")
     public ResponseEntity<DataResponseDto<ReviewResponseDto>> getReview(
-        @PathVariable Long reviewId
+            @PathVariable Long reviewId
     ) {
         ReviewResponseDto responseDto = reviewService.getReview(reviewId);
         return ResponseUtils.success(responseDto);
@@ -63,11 +63,11 @@ public class ReviewController {
      */
     @GetMapping("/movies/{movieId}/reviews")
     public ResponseEntity<DataResponseDto<PageResponseDto<List<ReviewResponseDto>>>> getPageReview(
-        @PathVariable Long movieId,
-        @RequestParam(required = false, defaultValue = "1") int page,
-        @RequestParam(required = false, defaultValue = "10") int size,
-        @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
-        @RequestParam(required = false, defaultValue = "false") boolean isAsc
+            @PathVariable Long movieId,
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+            @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
         PageResponseDto<List<ReviewResponseDto>> responseDto = reviewService.getPageReview(movieId, pageable);
@@ -79,9 +79,9 @@ public class ReviewController {
      */
     @PatchMapping("/reviews/{reviewId}")
     public ResponseEntity<DataResponseDto<ReviewUpdateResponseDto>> updateReview(
-        @AuthenticationPrincipal UserDetailsImpl userDetails,
-        @Valid @RequestBody ReviewUpdateRequestDto requestDto,
-        @PathVariable Long reviewId
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody ReviewUpdateRequestDto requestDto,
+            @PathVariable Long reviewId
     ) {
         ReviewUpdateResponseDto responseDto = reviewService.updateReview(userDetails.getUser(), requestDto, reviewId);
         return ResponseUtils.success(responseDto);
@@ -92,8 +92,8 @@ public class ReviewController {
      */
     @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<MessageResponseDto> deleteReview(
-        @AuthenticationPrincipal UserDetailsImpl userDetails,
-        @PathVariable Long reviewId
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long reviewId
     ) {
         reviewService.deleteReview(userDetails.getUser(), reviewId);
         return ResponseUtils.success();

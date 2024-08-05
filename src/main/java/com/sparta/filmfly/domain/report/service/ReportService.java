@@ -13,6 +13,7 @@ import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
+import com.sparta.filmfly.global.exception.custom.detail.InvalidTargetException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,6 +46,11 @@ public class ReportService {
         // 중복 신고 확인
         if (reportRepository.existsByReporterIdAndReportedIdAndTypeIdAndType(reporter, reported, reportRequestDto.getTypeId(), reportRequestDto.getType())) {
             throw new DuplicateException(ResponseCodeEnum.ALREADY_REPORTED);
+        }
+
+        // 본인 신고 여부 확인
+        if (reporter.equals(reported)) {
+            throw new InvalidTargetException(ResponseCodeEnum.INVALID_SELF_TARGET);
         }
 
         // 원본 내용 가져오기
@@ -88,7 +94,8 @@ public class ReportService {
                 .reports(reportResponseDtos)
                 .totalElements(reportsPage.getTotalElements())
                 .totalPages(reportsPage.getTotalPages())
-                .currentPage(reportsPage.getNumber())
+                .currentPage(reportsPage.getNumber() + 1)
+                .pageSize(size)
                 .build();
     }
 

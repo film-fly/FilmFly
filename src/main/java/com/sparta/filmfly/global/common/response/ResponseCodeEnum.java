@@ -29,6 +29,7 @@ public enum ResponseCodeEnum {
     EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "이메일을 찾을 수 없습니다."),
     INVALID_ADMIN_PASSWORD(HttpStatus.FORBIDDEN, "관리자 비밀번호가 일치하지 않습니다."),
     INVALID_ADMIN_TARGET(HttpStatus.FORBIDDEN, "관리자를 대상으로 할 수 없습니다."),
+    INVALID_SELF_TARGET(HttpStatus.BAD_REQUEST, "본인을 대상으로 할 수 없습니다."),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     SAME_AS_OLD_PASSWORD(HttpStatus.BAD_REQUEST, "새 비밀번호가 현재 비밀번호와 동일합니다."),
     EMAIL_VERIFICATION_REQUIRED(HttpStatus.FORBIDDEN, "이메일 인증이 필요합니다."),
@@ -42,7 +43,6 @@ public enum ResponseCodeEnum {
     //Block
     USER_ALREADY_BLOCKED(HttpStatus.BAD_REQUEST, "이미 차단된 사용자입니다."),
     NOT_BLOCKED_TARGET(HttpStatus.NOT_FOUND, "차단된 상대가 아닙니다."),
-    INVALID_SELF_TARGET(HttpStatus.BAD_REQUEST, "본인을 차단 할 수 없습니다."),
 
     // Favorite
     FAVORITE_ALREADY_EXISTS(HttpStatus.ALREADY_REPORTED, "찜이 이미 등록되어있습니다."),

@@ -7,13 +7,13 @@ import com.sparta.filmfly.domain.coupon.entity.UserCoupon;
 import com.sparta.filmfly.domain.coupon.repository.CouponRepository;
 import com.sparta.filmfly.domain.coupon.repository.UserCouponRepository;
 import com.sparta.filmfly.domain.user.entity.User;
-import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
+import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
-import java.security.SecureRandom;
+import com.sparta.filmfly.global.util.StringUtils;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,12 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CouponService {
 
     private final CouponRepository couponRepository;
-    private final UserRepository userRepository;
     private final UserCouponRepository userCouponRepository;
-
-    private static final int COUPON_CODE_LENGTH = 8;
-    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private final Random random = new SecureRandom();
 
     /**
      * 쿠폰 발급
@@ -36,7 +31,7 @@ public class CouponService {
     @Transactional
     public List<CouponResponseDto> createCoupon(User user, CouponRequestDto requestDto) {
 
-        requestDto.validateExpirationDate();
+        validateExpirationDate(requestDto);
 
         List<CouponResponseDto> list = new ArrayList<>();
 
@@ -48,7 +43,7 @@ public class CouponService {
         for (int i = 0; i < requestDto.getQuantity(); i++) {
             // 랜덤 값(title) 중복되면 반복문 돌아감
             do {
-                title = generateRandomCouponCode();
+                title = StringUtils.generateRandomCouponCode();
             } while (couponRepository.existsByTitle(title));
             Coupon coupon = Coupon.builder()
                     .title(title)
@@ -123,14 +118,15 @@ public class CouponService {
     }
 
     /**
-     * 쿠폰 번호 랜덤 배정하는 메서드
+     * 쿠폰 기간 제대로 입력받았는지 검증하는 메서드
      */
-    public String generateRandomCouponCode() {
-        StringBuilder code = new StringBuilder(COUPON_CODE_LENGTH);
-        for (int i = 0; i < COUPON_CODE_LENGTH; i++) {
-            code.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
+    public void validateExpirationDate(CouponRequestDto requestDto) {
+        // 오늘 날짜 ex) 2024 - 07 - 30 T 00:00:00
+        LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0)
+                .withNano(0);
+        if (requestDto.getExpirationDate().isBefore(todayStart)) {
+            throw new AccessDeniedException(ResponseCodeEnum.COUPON_EXPIRATION_DATE_NOT_CORRECT);
         }
-        return code.toString();
     }
 
 }

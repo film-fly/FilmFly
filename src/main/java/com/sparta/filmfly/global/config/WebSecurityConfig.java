@@ -66,6 +66,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/admins/**").hasAuthority("ROLE_ADMIN")
                     .requestMatchers("/image/upload", "/image/delete", "/temp/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/movie/genres/api").permitAll()
+                        .requestMatchers("/test/**").permitAll()
                         .anyRequest().authenticated()
         );
 

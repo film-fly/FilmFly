@@ -9,6 +9,7 @@ import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
+import com.sparta.filmfly.global.exception.custom.detail.InvalidTargetException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +42,7 @@ public class BlockService {
 
         // 본인 차단 여부 확인
         if (blocker.equals(blocked)) {
-            throw new DuplicateException(ResponseCodeEnum.INVALID_SELF_TARGET);
+            throw new InvalidTargetException(ResponseCodeEnum.INVALID_SELF_TARGET);
         }
 
 
@@ -73,9 +74,10 @@ public class BlockService {
 
         return BlockedUserPageResponseDto.builder()
                 .users(blockedUserDtos)
-                .userCount(blockedUsersPage.getTotalElements())
-                .currentPage(blockedUsersPage.getNumber())
+                .totalElements(blockedUsersPage.getTotalElements())
+                .currentPage(blockedUsersPage.getNumber() + 1)
                 .totalPages(blockedUsersPage.getTotalPages())
+                .pageSize(size)
                 .build();
     }
 

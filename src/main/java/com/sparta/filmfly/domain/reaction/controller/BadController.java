@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/bad")
+@RequestMapping("/bads")
 public class BadController {
 
     private final BadService badService;
