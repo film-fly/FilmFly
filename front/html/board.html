@@ -15,6 +15,7 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="../js/apiModule.js"></script>
+  <script src="../js/jquery.twbsPagination.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -40,91 +41,77 @@
     <input type="checkbox" class="btn-check" id="btnFilterHits" autocomplete="off">
     <label class="btn btn-outline-primary" for="btnFilterHits">조회 수 20개 이상</label>
   </div>
-  <div>
-    <ul id="board-box" class="list-group list-group-flush">
-    </ul>
-  </div>
+  <ul id="board-box" class="list-group list-group-flush">
+  </ul>
+  <ul id="pagination-boards" class="pagination-sm d-flex justify-content-center my-5"></ul>
 </div>
 
 <script>
-  const boards = [
-    {
-      "id": 1,
-      "title": "게시물 제목1",
-      "createdAt": "2024-07-26 11:11:11",
-      "nickname": "닉네임 1",
-      "hits": 12
-    },
-    {
-      "id": 2,
-      "title": "게시물 제목2",
-      "createdAt": "2024-07-26 11:11:11",
-      "nickname": "닉네임 2",
-      "hits": 22
-    },
-    {
-      "id": 3,
-      "title": "게시물 제목3",
-      "createdAt": "2024-07-26 11:11:11",
-      "nickname": "닉네임 3",
-      "hits": 33
-    },
-  ];
-
-  boards.forEach(board => {
-    let boardHtml = `
-      <li class="list-group-item">
-        <div class="d-flex flex-column">
-          <a href="./board-detail.html?board=${board.id}" class="fs-5 fw-bold py-3">${board.title}</a>
-        </div>
-        <div class="d-flex align-items-center gap-3">
-          <div class="profile-box d-flex align-items-center gap-2">
-<!--            <div>-->
-<!--              <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">-->
-<!--            </div>-->
-            <div>
-              ${board.nickname}
-            </div>
-          </div>
-          <div class="d-flex gap-3">
-            <p>조회수(${board.hits})</p>
-            <p>좋아요 수($.{board.goods})</p>
-            <p>싫어요 수($.{board.bads})</p>
-            <p>${board.createdAt}</p>
-          </div>
-        </div>
-      </li>
-    `;
-    $('#board-box').append(boardHtml);
+  $(document).ready(function () {
+    loadBoards(1);
   });
 
   $('#btnMovieSearch').on('click', function () {
     let searchText = $('#inputMovieSearch').val();
-    // let selectedGenres = [];
-    // $('input[type="checkbox"]:checked').each(function() {
-    //   selectedGenres.push($(this).attr('name'));
-    // });
-
-    const data = {
-      searchText: searchText
-    };
-    alert(JSON.stringify(data));
-  });
-
-  $('.btn-check').on('change', function() {
     const filterGoods = $('#btnFilterGoods').is(':checked');
     const filterHits = $('#btnFilterHits').is(':checked');
 
-    console.log('좋아요 수 20개 이상:', filterGoods);
-    console.log('조회 수 20개 이상:', filterHits);
+    let queryParams = new URLSearchParams({
+      search: searchText,
+      filterGoodCount: filterGoods ? 20 : 0,
+      filterHits: filterHits ? 20 : 0
+    });
 
-    const data = {
-      filterGoods: filterGoods,
-      filterHits: filterHits
-    };
-
-    alert(JSON.stringify(data));
+    alert(queryParams.toString());
+    loadBoards(1, queryParams.toString());
   });
+
+  function loadBoards(page, queryString = '') {
+    apiModule.GET(`/boards?page=${page}&${queryString}`,
+        function (result, status, xhr) {
+          $('#board-box').empty();
+          let boards = result.data.content;
+          boards.forEach(board => {
+            let boardHtml = `
+              <li class="list-group-item">
+                <div class="d-flex flex-column">
+                  <a href="./board-detail.html?board=${board.id}" class="fs-5 fw-bold py-3">${board.title}</a>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="profile-box d-flex align-items-center gap-2">
+        <!--            <div>-->
+        <!--              <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">-->
+        <!--            </div>-->
+                    <div>
+                      ${board.nickname}
+                    </div>
+                  </div>
+                  <div class="d-flex gap-3">
+                    <p>조회수(${board.hits})</p>
+                    <p>좋아요 수(${board.goodCount})</p>
+                    <p>싫어요 수(${board.badCount})</p>
+                    <p>${board.createdAt}</p>
+                  </div>
+                </div>
+              </li>
+            `;
+            $('#board-box').append(boardHtml);
+          });
+
+          $('#pagination-boards').twbsPagination('destroy');
+          $('#pagination-boards').twbsPagination({
+            totalPages: result.data.totalPages,
+            startPage: page,
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+              loadBoards(page, queryString);
+            }
+          });
+        },
+        function (xhr, status, error) {
+          alert('보드 데이터 가져오기 실패');
+        });
+  }
 </script>
 </body>
 </html>

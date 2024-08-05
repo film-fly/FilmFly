@@ -257,7 +257,7 @@ public class UserService {
      * 유저 검색 조회(관리자 기능)
      */
     @Transactional(readOnly = true)
-    public UserSearchResponseDto getUsersBySearch(String search, UserStatusEnum status, int page, int size) {
+    public UserSearchPageResponseDto getUsersBySearch(String search, UserStatusEnum status, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<User> usersPage;
 
@@ -280,11 +280,12 @@ public class UserService {
                         .build())
                 .collect(Collectors.toList());
 
-        return UserSearchResponseDto.builder()
+        return UserSearchPageResponseDto.builder()
                 .users(userResponseDtos)
-                .userCount(usersPage.getTotalElements())
-                .currentPage(usersPage.getNumber())
+                .totalElements(usersPage.getTotalElements())
+                .currentPage(usersPage.getNumber() + 1)
                 .totalPages(usersPage.getTotalPages())
+                .pageSize(size)
                 .build();
     }
 

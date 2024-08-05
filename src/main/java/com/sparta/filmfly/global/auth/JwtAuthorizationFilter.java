@@ -52,7 +52,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             "/emails/code-send",
             "/users/check-nickname",
             "/emails/[0-9]+/resend",
-            "/movie/genres/api"
+            "/movie/genres/api",
+            "/favicon.ico",
+            "/test/1",
+            "/test/2",
+            "/test/3"
+
     );
 
     private final List<String> getMethodWhiteList = List.of(
@@ -81,6 +86,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         // 인증 불필요
         if (isWhiteListed(uri) || isGetMethodWhiteListed(req.getMethod(), uri)) {
             log.info("인증이 필요 없는 요청: {}", uri);
+            filterChain.doFilter(req, res);
+            return;
+        }
+
+        if (uri.startsWith("/temp") || uri.startsWith("/image/upload") || uri.startsWith("/image/delete")) {
             filterChain.doFilter(req, res);
             return;
         }

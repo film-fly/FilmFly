@@ -9,7 +9,8 @@ import java.util.List;
 @Builder
 public class BlockedUserPageResponseDto {
     private List<BlockedUserResponseDto> users;
-    private long userCount;
+    private long totalElements;
     private int currentPage;
     private int totalPages;
+    private int pageSize;
 }

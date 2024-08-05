@@ -13,6 +13,7 @@ import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
+import com.sparta.filmfly.global.exception.custom.detail.InvalidTargetException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -47,6 +48,11 @@ public class ReportService {
             throw new DuplicateException(ResponseCodeEnum.ALREADY_REPORTED);
         }
 
+        // 본인 신고 여부 확인
+        if (reporter.equals(reported)) {
+            throw new InvalidTargetException(ResponseCodeEnum.INVALID_SELF_TARGET);
+        }
+
         // 원본 내용 가져오기
         String[] contentAndTitle = fetchContent(reportRequestDto.getType(), reportRequestDto.getTypeId());
         String content = "Title: " + contentAndTitle[1] + "\nContent: " + contentAndTitle[0];
@@ -72,23 +78,48 @@ public class ReportService {
         Page<Report> reportsPage = reportRepository.findAll(pageable);
 
         List<ReportResponseDto> reportResponseDtos = reportsPage.getContent().stream()
-                .map(report -> ReportResponseDto.builder()
-                        .id(report.getId())
-                        .reporterId(report.getReporterId().getId())
-                        .reportedId(report.getReportedId().getId())
-                        .content(report.getContent())
-                        .typeId(report.getTypeId())
-                        .type(report.getType())
-                        .reason(report.getReason())
-                        .createdAt(report.getCreatedAt().toString())
-                        .build())
+                .map(report -> {
+                    User reporter = userRepository.findByIdOrElseThrow(report.getReporterId().getId());
+                    User reported = userRepository.findByIdOrElseThrow(report.getReportedId().getId());
+                    return ReportResponseDto.builder()
+                            .id(report.getId())
+                            .reporterNickname(reporter.getNickname())
+                            .reportedNickname(reported.getNickname())
+                            .reason(report.getReason())
+                            .createdAt(report.getCreatedAt().toString())
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         return ReportPageResponseDto.builder()
                 .reports(reportResponseDtos)
                 .totalElements(reportsPage.getTotalElements())
                 .totalPages(reportsPage.getTotalPages())
-                .currentPage(reportsPage.getNumber())
+                .currentPage(reportsPage.getNumber() + 1)
+                .pageSize(size)
+                .build();
+    }
+
+    /**
+     * 신고 상세 조회
+     */
+    @Transactional(readOnly = true)
+    public ReportResponseDto getReportDetail(Long reportId) {
+        Report report = reportRepository.findByIdOrElseThrow(reportId);
+        User reporter = userRepository.findByIdOrElseThrow(report.getReporterId().getId());
+        User reported = userRepository.findByIdOrElseThrow(report.getReportedId().getId());
+
+        return ReportResponseDto.builder()
+                .id(report.getId())
+                .reporterId(reporter.getId())
+                .reporterNickname(reporter.getNickname())
+                .reportedId(reported.getId())
+                .reportedNickname(reported.getNickname())
+                .content(report.getContent())
+                .typeId(report.getTypeId())
+                .type(report.getType())
+                .reason(report.getReason())
+                .createdAt(report.getCreatedAt().toString())
                 .build();
     }
 

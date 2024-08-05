@@ -24,11 +24,6 @@
 <div class="container">
   <header id="common-header"></header>
 
-  <div style="font-size:24px; color: red">
-    <p>지금은 영화제목 검색만 됩니다. (영화데이터 몇 개 안 넣어서 "데드풀"로 검색해주세요.)</p>
-    <p>검색옵션, 영화배우검색 안됨.</p>
-  </div>
-
   <div>영화 목록</div>
   <div class="d-flex align-items-center gap-3 mt-3">
     <div>
@@ -159,7 +154,7 @@
             const movieHtml = `
           <div class="col" data-movie-id="${movie.id}">
             <div class="card h-100">
-              <img src="${movie.backdropPath}" class="card-img-top img-big-size" alt="영화 포스터">
+              <img src="https://image.tmdb.org/t/p/w220_and_h330_face${movie.posterPath}" class="card-img-top img-big-size" alt="영화 포스터">
               <div class="card-body">
                 <h5 class="card-title">${movie.title}</h5>
               </div>

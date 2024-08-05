@@ -23,11 +23,14 @@ $('#summernote').summernote({
     onMediaDelete: function ($target, editor, $editable) {
       // 삭제된 이미지의 파일 이름을 알아내기 위해 split 활용
       //if (confirm('이미지를 삭제하시겠습니까?')) { 확인 누르면 삭제됨 취소 누르면 섬머보드에서만 지워지고 서버에는 남음
-        var deletedImageUrl = $target.attr('src').split('/').pop()
-        imageDelete(deletedImageUrl)
+      var deletedImageUrl = $target.attr('src').split('/').pop()
+      imageDelete(deletedImageUrl)
     },
   }
 });
+
+// let serverUrl = 'https://localhost'; // 기본 URL, 필요에 따라 변경
+serverUrl = 'http://13.209.9.115:8080'; // 기본 URL, 필요에 따라 변경
 
 function imageUploader(file, el) {
   let formData = new FormData();
@@ -36,14 +39,14 @@ function imageUploader(file, el) {
   $.ajax({
     data : formData,
     type : "POST",
-    url : 'https://localhost/image/upload',
+    url : `${serverUrl}/image/upload`,
     contentType : false,
     processData : false,
     enctype : 'multipart/form-data',
     success : function(data) {
       console.log(data);
       // let imageUrl = window.location.origin + data;
-      let imageUrl = 'https://localhost' + data;
+      let imageUrl = `${serverUrl}` + data;
       console.log('url: ' + imageUrl);
       $(el).summernote('insertImage', imageUrl, function($image) {
         $image.css('width', "25%");
@@ -59,7 +62,7 @@ function imageDelete(imageName) {
   $.ajax({
     data: data,
     type: 'DELETE',
-    url: 'https://localhost/image/delete',
+    url: `${serverUrl}/image/delete`,
     contentType: false,
     enctype: 'multipart/form-data',
     processData: false,
