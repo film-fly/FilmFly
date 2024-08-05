@@ -168,7 +168,7 @@
             </div>
             <div>
               <button class="btn btn-primary" onclick="location.href='./create-board.html?board=${boardId}'">수정</button>
-              <button class="btn btn-primary">삭제</button>
+              <button class="btn btn-primary" onclick="deleteBoard()">삭제</button>
             </div>
           </div>
           `;
@@ -251,6 +251,16 @@
     );
   }
 
+  function deleteBoard() {
+    if (confirm('삭제 하시겠습니까?')) {
+      apiModule.DELETE(`/boards/${boardId}`, function (result, status, xhr) {
+        alert('삭제 성공');
+        location.replace('./board.html');
+      }, function (xhr, status, error) {
+        alert('삭제 실패');
+      });
+    }
+  }
 </script>
 
 
