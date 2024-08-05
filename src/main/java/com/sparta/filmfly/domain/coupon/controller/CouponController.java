@@ -4,10 +4,8 @@ import com.sparta.filmfly.domain.coupon.dto.CouponPageResponseDto;
 import com.sparta.filmfly.domain.coupon.dto.CouponRequestDto;
 import com.sparta.filmfly.domain.coupon.dto.CouponResponseDto;
 import com.sparta.filmfly.domain.coupon.service.CouponService;
-import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardPageResponseDto;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
-import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
 import com.sparta.filmfly.global.util.PageUtils;
 import jakarta.validation.Valid;
@@ -29,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/coupon")
+@RequestMapping("/coupons")
 public class CouponController {
 
     private final CouponService couponService;
