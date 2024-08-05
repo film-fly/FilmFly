@@ -51,9 +51,7 @@ if (uri.startsWith("/temp") || uri.startsWith("/image/upload")) {
   const urlParams = new URL(location.href).searchParams;
   let boardId = urlParams.get('board');
   if (boardId) {
-    $('#inputBoardTitle').val('수정할 게시물 제목');
-    $("#summernote").summernote('code',  'zzzzzzzz');
-    $('#btnSaveBoard').text('수정');
+    loadBoardForUpdate();
   }
 
   $('#btnSaveBoard').on('click', function () {
@@ -106,6 +104,18 @@ if (uri.startsWith("/temp") || uri.startsWith("/image/upload")) {
     //   alert("좋아요 취소 실패");
     // });
   });
+
+  function loadBoardForUpdate() {
+    apiModule.GET(`/boards/${boardId}/for-update`,
+        function (result, status, xhr) {
+          let board = result.data;
+          $('#inputBoardTitle').val(board.title);
+          $("#summernote").summernote('code',  board.content);
+          $('#btnSaveBoard').text('수정');
+        },
+        function (xhr, status, error) {
+        });
+  }
 </script>
 </body>
 </html>
