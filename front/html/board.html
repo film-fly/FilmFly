@@ -62,7 +62,6 @@
       filterHits: filterHits ? 20 : 0
     });
 
-    alert(queryParams.toString());
     loadBoards(1, queryParams.toString());
   });
 
@@ -70,7 +69,7 @@
     apiModule.GET(`/boards?page=${page}&${queryString}`,
         function (result, status, xhr) {
           $('#board-box').empty();
-          let boards = result.data.content;
+          let boards = result.data.data;
           boards.forEach(board => {
             let boardHtml = `
               <li class="list-group-item">

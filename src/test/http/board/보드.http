@@ -1,14 +1,14 @@
 ### 로그인
-POST https://localhost/users/login
+POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "username": "admin5",
-  "password": "Admin12345!"
+  "username": "admin1",
+  "password": "Test12345!"
 }
 
 ### 보드 생성
-POST https://localhost/boards
+POST http://localhost:8080/boards
 
 {
   "title": "제목11",
@@ -16,13 +16,13 @@ POST https://localhost/boards
 }
 
 ### 보드 조회
-GET https://localhost/boards/23
+GET http://localhost:8080/boards/23
 
 ### 보드 페이징 조회
-GET https://localhost/boards?page=1
+GET http://localhost:8080/boards?page=1
 
 ### 보드 수정
-PATCH https://localhost/boards/23
+PATCH http://localhost:8080/boards/23
 Content-Type: application/json
 
 {
@@ -31,5 +31,5 @@ Content-Type: application/json
 }
 
 ### 보드 삭제
-DELETE https://localhost/boards/23
+DELETE http://localhost:8080/boards/23
 Content-Type: application/json

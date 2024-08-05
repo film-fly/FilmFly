@@ -25,6 +25,7 @@ public class DataLoader implements CommandLineRunner {
 //        executeSqlScript("dummy/collectionData.sql");
 //        executeSqlScript("dummy/reactionData.sql");
 //        executeSqlScript("dummy/reportData.sql");
+
     }
 
     private void executeSqlScript(String filePath) throws Exception {
