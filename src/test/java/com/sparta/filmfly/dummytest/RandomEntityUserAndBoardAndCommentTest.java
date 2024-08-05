@@ -13,7 +13,7 @@ class RandomEntityUserAndBoardAndCommentTest {
     private static final String FIXED_PASSWORD = "$2a$12$rQpJST/20h27oYcjOZ20XOqusfj5O.x2u9W1nnZ9RYdZWYU3IQwxu";
     public static final int NUMBER_OF_USER_RECORDS = 20; // 생성할 유저 레코드 수
     public static final int NUMBER_OF_BOARD_RECORDS = 100; // 생성할 보드 레코드 수
-    public static final int NUMBER_OF_COMMENT_RECORDS = 100; // 생성할 댓글 레코드 수
+    public static final int NUMBER_OF_COMMENT_RECORDS = 300; // 생성할 댓글 레코드 수
     public static final int DAYS_BEFORE = 30; // 기준 날짜로부터 몇 일 전
 
     @Test
@@ -108,7 +108,11 @@ class RandomEntityUserAndBoardAndCommentTest {
             // 랜덤 hits 값 (0~1000)
             long randomHits = random.nextInt(1001); // 0부터 1000까지의 랜덤 숫자
 
-            boardDataList.add(new BoardData(userId, i, formattedDateTime, formattedDateTime, randomHits));
+            // 보드 제목과 내용에 한글 추가
+            String title = getRandomBoardTitle(random);
+            String content = getRandomBoardContent(random);
+
+            boardDataList.add(new BoardData(userId, i, title, content, formattedDateTime, formattedDateTime, randomHits));
         }
 
         // 보드 데이터를 생성일자 기준으로 정렬
@@ -118,8 +122,8 @@ class RandomEntityUserAndBoardAndCommentTest {
         for (int i = 0; i < boardDataList.size(); i++) {
             BoardData boardData = boardDataList.get(i);
             boardSb.append(String.format(
-                    "(%d, '제목 %d', '내용 %d', '%s', '%s', %d)",
-                    boardData.getUserId(), boardData.getTitle(), boardData.getTitle(),
+                    "(%d, '%s', '%s', '%s', '%s', %d)",
+                    boardData.getUserId(), boardData.getTitle(), boardData.getContent(),
                     boardData.getCreatedAt(), boardData.getUpdatedAt(), boardData.getHits()
             ));
 
@@ -159,7 +163,10 @@ class RandomEntityUserAndBoardAndCommentTest {
             String formattedDateTime = commentCreationDate.toString().replace("T", " ");
             long userId = userIndex + 1; // 유저 ID는 1부터 시작
 
-            commentDataList.add(new CommentData(userId, boardData.getBoardId(), "댓글 내용 " + i, formattedDateTime));
+            // 댓글 내용에 한글 추가
+            String commentContent = getRandomCommentContent(random);
+
+            commentDataList.add(new CommentData(userId, boardData.getBoardId(), commentContent, formattedDateTime));
         }
 
         // 댓글 데이터를 생성일자 기준으로 정렬
@@ -211,21 +218,60 @@ class RandomEntityUserAndBoardAndCommentTest {
         return familyName + givenName;
     }
 
+    private String getRandomBoardTitle(Random random) {
+        String[] titles = {
+                "안녕하세요", "새로운 소식", "이벤트 안내", "업데이트 정보", "공지사항",
+                "다시 시작합니다", "우리 팀 소개", "자주 묻는 질문", "고객 지원", "문의하기",
+                "이번 달 특별 행사", "시스템 유지 보수", "서비스 점검", "특별 할인", "새로운 기능 소개",
+                "프로젝트 발표", "연말 결산", "신제품 출시", "회원 혜택", "주간 리뷰",
+                "캠페인 시작", "참여 이벤트", "서비스 개선 안내", "제휴 소식", "공식 발표",
+                "트렌드 분석", "업계 뉴스", "정기 업데이트", "서비스 리뉴얼", "사용자 가이드"
+        };
+        return titles[random.nextInt(titles.length)];
+    }
+
+    private String getRandomBoardContent(Random random) {
+        String[] contents = {
+                "이번 주에는 특별한 이벤트가 준비되어 있습니다. 많은 참여 부탁드립니다.",
+                "새로운 기능이 추가되었습니다. 자세한 내용은 공지사항을 확인해주세요.",
+                "시스템 점검이 예정되어 있습니다. 이용에 불편을 드려 죄송합니다.",
+                "고객 지원팀에 문의하시면 빠르게 답변을 드리겠습니다.",
+                "특별 할인을 진행 중입니다. 자세한 내용은 홈페이지를 참고해주세요.",
+                "서비스 개선을 위한 피드백을 기다리고 있습니다. 소중한 의견을 남겨주세요.",
+                "이번 달의 추천 상품을 소개합니다. 많은 관심 부탁드립니다.",
+                "자주 묻는 질문을 업데이트했습니다. 도움이 되시길 바랍니다.",
+                "저희 팀의 새로운 프로젝트를 소개합니다. 많은 관심 부탁드립니다.",
+                "문의 사항이 있으시면 언제든지 연락주시면 감사하겠습니다."
+        };
+        return contents[random.nextInt(contents.length)];
+    }
+
+    private String getRandomCommentContent(Random random) {
+        String[] comments = {
+                "정말 유용한 정보 감사합니다!", "이벤트 참여해볼게요.", "서비스가 점점 좋아지네요.",
+                "고객 지원팀의 답변이 빠릅니다.", "할인 정보를 감사합니다.", "문의 사항이 해결되었습니다.",
+                "팀 소개를 보니 믿음이 가네요.", "자주 묻는 질문이 도움이 되었습니다.", "새로운 기능이 기대됩니다.",
+                "서비스 유지 보수에 대한 안내 감사합니다.", "기대 이상입니다!", "정말 잘 설명해주셨습니다.",
+                "이번 달의 추천 상품 좋네요.", "서비스가 계속 발전하는군요.", "문의하기가 쉽네요."
+        };
+        return comments[random.nextInt(comments.length)];
+    }
+
     // 보드 데이터를 담기 위한 내부 클래스
     static class BoardData {
         private final long userId;
-        private final int title;
+        private final long boardId;
+        private final String title;
         private final String content;
         private final String createdAt;
         private final String updatedAt;
         private final long hits;
-        private final long boardId;
 
-        public BoardData(long userId, long boardId, String createdAt, String updatedAt, long hits) {
+        public BoardData(long userId, long boardId, String title, String content, String createdAt, String updatedAt, long hits) {
             this.userId = userId;
             this.boardId = boardId;
-            this.title = (int) boardId;
-            this.content = "내용 " + title; // content는 title에 따라 다름
+            this.title = title; // 타이틀을 문자열로 사용
+            this.content = content;
             this.createdAt = createdAt;
             this.updatedAt = updatedAt;
             this.hits = hits;
@@ -235,7 +281,11 @@ class RandomEntityUserAndBoardAndCommentTest {
             return userId;
         }
 
-        public int getTitle() {
+        public long getBoardId() {
+            return boardId;
+        }
+
+        public String getTitle() {
             return title;
         }
 
@@ -253,10 +303,6 @@ class RandomEntityUserAndBoardAndCommentTest {
 
         public long getHits() {
             return hits;
-        }
-
-        public long getBoardId() {
-            return boardId;
         }
     }
 
