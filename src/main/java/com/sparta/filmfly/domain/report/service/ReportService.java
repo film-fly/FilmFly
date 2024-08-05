@@ -79,8 +79,8 @@ public class ReportService {
 
         List<ReportResponseDto> reportResponseDtos = reportsPage.getContent().stream()
                 .map(report -> {
-                    User reporter = userRepository.findById(report.getReporterId().getId()).orElseThrow(() -> new RuntimeException("Reporter not found"));
-                    User reported = userRepository.findById(report.getReportedId().getId()).orElseThrow(() -> new RuntimeException("Reported user not found"));
+                    User reporter = userRepository.findByIdOrElseThrow(report.getReporterId().getId());
+                    User reported = userRepository.findByIdOrElseThrow(report.getReportedId().getId());
                     return ReportResponseDto.builder()
                             .id(report.getId())
                             .reporterNickname(reporter.getNickname())
@@ -105,9 +105,9 @@ public class ReportService {
      */
     @Transactional(readOnly = true)
     public ReportResponseDto getReportDetail(Long reportId) {
-        Report report = reportRepository.findById(reportId).orElseThrow(() -> new RuntimeException("Report not found"));
-        User reporter = userRepository.findById(report.getReporterId().getId()).orElseThrow(() -> new RuntimeException("Reporter not found"));
-        User reported = userRepository.findById(report.getReportedId().getId()).orElseThrow(() -> new RuntimeException("Reported user not found"));
+        Report report = reportRepository.findByIdOrElseThrow(reportId);
+        User reporter = userRepository.findByIdOrElseThrow(report.getReporterId().getId());
+        User reported = userRepository.findByIdOrElseThrow(report.getReportedId().getId());
 
         return ReportResponseDto.builder()
                 .id(report.getId())
