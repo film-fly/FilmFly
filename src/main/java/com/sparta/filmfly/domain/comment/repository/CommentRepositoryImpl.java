@@ -3,12 +3,12 @@ package com.sparta.filmfly.domain.comment.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sparta.filmfly.domain.comment.dto.CommentPageResponseDto;
 import com.sparta.filmfly.domain.comment.dto.CommentResponseDto;
 import com.sparta.filmfly.domain.comment.entity.QComment;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
@@ -24,7 +24,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-    public CommentPageResponseDto findAllByBoardIdWithReactions(Long boardId, Pageable pageable) {
+    public PageResponseDto<List<CommentResponseDto>> findAllByBoardIdWithReactions(Long boardId, Pageable pageable) {
         QComment comment = QComment.comment;
         QGood good = QGood.good;
         QBad bad = QBad.bad;
@@ -53,17 +53,17 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
         // PageImpl을 사용하여 페이지 정보를 생성합니다.
         PageImpl<CommentResponseDto> page = new PageImpl<>(content, pageable, total);
 
-        // CommentPageResponseDto를 반환합니다.
-        return CommentPageResponseDto.builder()
-                .totalPages(page.getTotalPages())
+        // PageResponseDto 반환합니다.
+        return PageResponseDto.<List<CommentResponseDto>>builder()
                 .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
                 .currentPage(page.getNumber() + 1)
                 .pageSize(page.getSize())
-                .content(content)
+                .data(content)
                 .build();
     }
 
-    public CommentPageResponseDto findAllByUserId(Long userId, Pageable pageable) {
+    public PageResponseDto<List<CommentResponseDto>> findAllByUserId(Long userId, Pageable pageable) {
         QComment comment = QComment.comment;
         QGood good = QGood.good;
         QBad bad = QBad.bad;
@@ -93,13 +93,13 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
         // PageImpl을 사용하여 페이지 정보를 생성합니다.
         PageImpl<CommentResponseDto> page = new PageImpl<>(content, pageable, total);
 
-        // CommentPageResponseDto를 반환합니다.
-        return CommentPageResponseDto.builder()
-                .totalPages(page.getTotalPages())
+        // PageResponseDto 반환합니다.
+        return PageResponseDto.<List<CommentResponseDto>>builder()
                 .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
                 .currentPage(page.getNumber() + 1)
                 .pageSize(page.getSize())
-                .content(content)
+                .data(content)
                 .build();
     }
 }

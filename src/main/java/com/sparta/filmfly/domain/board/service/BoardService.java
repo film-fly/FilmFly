@@ -1,9 +1,6 @@
 package com.sparta.filmfly.domain.board.service;
 
-import com.sparta.filmfly.domain.board.dto.BoardPageResponseDto;
-import com.sparta.filmfly.domain.board.dto.BoardRequestDto;
-import com.sparta.filmfly.domain.board.dto.BoardResponseDto;
-import com.sparta.filmfly.domain.board.dto.BoardUpdateResponseDto;
+import com.sparta.filmfly.domain.board.dto.*;
 import com.sparta.filmfly.domain.board.entity.Board;
 import com.sparta.filmfly.domain.board.repository.BoardRepository;
 import com.sparta.filmfly.domain.file.service.FileService;
@@ -13,13 +10,14 @@ import com.sparta.filmfly.domain.reaction.service.BadService;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -64,18 +62,26 @@ public class BoardService {
         return BoardResponseDto.fromEntity(savedBoard,goodCount,badCount);
     }
 
-    public BoardPageResponseDto getPageBoard(int pageNum, int size, Long filterGoodCount, Long filterHits, String search) {
-        Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-
+    /**
+     * 보드 페이징 조회
+     */
+    public PageResponseDto<List<BoardPageDto>> getPageBoard(Long filterGoodCount, Long filterHits, String search, Pageable pageable) {
         return boardRepository.findAllWithFilters(pageable, filterGoodCount, filterHits, search);
+    }
+
+    /**
+     * 유저의 보드 조회
+     */
+    public PageResponseDto<List<BoardPageDto>> getUsersBoard(Long userId, Pageable pageable) {
+        return boardRepository.findAllByUserId(userId,pageable);
     }
 
     /**
      * 보드 수정 권한 체크
      */
-    public Boolean checkEditBoardPermission(User user, Long boardId) {
+    public Boolean getBoardUpdatePermission(User user, Long boardId) {
         Board board = boardRepository.findByIdOrElseThrow(boardId);
-        board.validateOwner(user);
+        board.checkOwnerUser(user);
         return true; //수정 권한 없으면 에러?
     }
 
@@ -84,7 +90,7 @@ public class BoardService {
      */
     public BoardUpdateResponseDto forUpdateBoard(User user, Long boardId) {
         Board board = boardRepository.findByIdOrElseThrow(boardId);
-        board.validateOwner(user);
+        board.checkOwnerUser(user);
         return BoardUpdateResponseDto.fromEntity(board);
     }
 
@@ -94,7 +100,7 @@ public class BoardService {
     @Transactional
     public BoardResponseDto updateBoard(User user, BoardRequestDto requestDto, Long boardId) {
         Board board = boardRepository.findByIdOrElseThrow(boardId);
-        board.validateOwner(user);
+        board.checkOwnerUser(user);
 
         String content = requestDto.getContent();
         fileService.checkModifiedImageFile(MediaTypeEnum.BOARD, board.getId(), content); //이미지 변경 확인
@@ -117,20 +123,11 @@ public class BoardService {
 
         //관리자면 삭제 가능하게
         if(user.getUserRole() == UserRoleEnum.ROLE_USER) {
-            board.validateOwner(user);
+            board.checkOwnerUser(user);
         }
 
         boardRepository.delete(board);
 
         return "게시물이 삭제되었습니다.";
-    }
-
-    /**
-     * 유저의 보드 조회
-     */
-    public BoardPageResponseDto getUsersBoard(Integer pageNum, Integer size, Long userId) {
-        Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-
-        return boardRepository.findAllByUserId(userId,pageable);
     }
 }

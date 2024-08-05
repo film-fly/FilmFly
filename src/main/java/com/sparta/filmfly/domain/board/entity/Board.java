@@ -13,6 +13,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -60,8 +61,8 @@ public class Board extends TimeStampEntity {
     /**
      * 요청한 유저가 해당 보드의 소유주인지 확인
      */
-    public void validateOwner(User requestUser) {
-        if(this.user.getId() != requestUser.getId())
+    public void checkOwnerUser(User requestUser) {
+        if(!Objects.equals(this.user.getId(), requestUser.getId()))
            throw new AccessDeniedException(ResponseCodeEnum.BOARD_NOT_OWNER);
     }
 }

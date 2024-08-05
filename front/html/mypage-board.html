@@ -31,31 +31,22 @@
 </div>
 
 <script>
-  const boards = [
+ /* const boards = [
     {
       "id": 1,
       "title": "게시물 제목 1",
       "nickname": "닉네임 1"
-    },
-    {
-      "id": 2,
-      "title": "게시물 제목 2",
-      "nickname": "닉네임 2"
-    },
-    {
-      "id": 3,
-      "title": "게시물 제목 3",
-      "nickname": "닉네임 3"
-    },
-    {
-      "id": 4,
-      "title": "게시물 제목 4",
-      "nickname": "닉네임 4"
     }
-  ]
+  ]*/
 
-  boards.forEach(board => {
-    const boardHtml = `
+  // URL에서 'user' 파라미터 값을 가져옵니다.
+  const urlParams = new URLSearchParams(window.location.search);
+  const userId = urlParams.get('user');
+  console.log("user id : " + userId);
+
+  // 리뷰 HTML 생성 함수
+  function generateBoardHtml(board) {
+    return `
       <div class="list-group-item d-flex p-3" data-board-id="${board.id}">
         <a href="" class="d-flex justify-content-between align-items-center flex-grow-1">
           <div>${board.title}</div>
@@ -69,8 +60,30 @@
         </div>
       </div>
     `;
-    $('#board-box').append(boardHtml);
-  });
+  }
+
+  // API 호출
+  apiModule.GET("/boards/users/" + userId,
+          function(result) {
+            // 성공적으로 데이터를 받아왔을 때
+            console.log("API 성공:", result);
+            if (result.data && result.data.data) {
+              const boards = result.data.data;
+              $('#board-box').empty(); // 기존 보드 삭제
+              boards.forEach(board => {
+                const boardHtml = generateBoardHtml(board);
+                $('#board-box').append(boardHtml);
+              });
+            } else {
+              alert("보드 데이터를 불러오는 데 실패했습니다.");
+            }
+          },
+          function() {
+            alert("API 호출 실패");
+          });
+
+
+
 
   function editBoard(boardId) {
     location.href = `./create-board.html?edit=${boardId}`;
