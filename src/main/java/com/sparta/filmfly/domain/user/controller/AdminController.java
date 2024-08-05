@@ -1,6 +1,7 @@
 package com.sparta.filmfly.domain.user.controller;
 
 import com.sparta.filmfly.domain.report.dto.ReportPageResponseDto;
+import com.sparta.filmfly.domain.report.dto.ReportResponseDto;
 import com.sparta.filmfly.domain.report.service.ReportService;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
 import com.sparta.filmfly.domain.user.dto.UserSearchPageResponseDto;
@@ -55,8 +56,19 @@ public class AdminController {
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ) {
-        ReportPageResponseDto reports = reportService.getAllReports(page-1, size);
+        ReportPageResponseDto reports = reportService.getAllReports(page - 1, size);
         return ResponseUtils.success(reports);
+    }
+
+    /**
+     * 신고 상세 조회
+     */
+    @GetMapping("/reports/{reportId}")
+    public ResponseEntity<DataResponseDto<ReportResponseDto>> getReportDetail(
+            @PathVariable Long reportId
+    ) {
+        ReportResponseDto reportDetail = reportService.getReportDetail(reportId);
+        return ResponseUtils.success(reportDetail);
     }
 
     /**
