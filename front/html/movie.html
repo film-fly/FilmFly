@@ -47,59 +47,70 @@
               <i class="fa-solid fa-magnifying-glass fs-4"></i>
             </span>
           </label>
-          <input type="text" id="inputMovieSearch" class="form-control" placeholder="영화제목, 영화배우 검색">
+          <input type="text" id="inputMovieSearch" class="form-control" placeholder="영화제목">
         </div>
-        <select class="form-select w-auto" aria-label="Default select example">
-          <option value="MOVIE" selected>영화제목</option>
-          <option value="ACTOR">영화배우</option>
-        </select>
+<!--        <select class="form-select w-auto" aria-label="Default select example">-->
+<!--          <option value="MOVIE" selected>영화제목</option>-->
+<!--&lt;!&ndash;          <option value="ACTOR">영화배우</option>&ndash;&gt;-->
+<!--        </select>-->
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body d-flex flex-column gap-3">
         <div>
           <p>장르</p>
-          <div class="d-flex flex-wrap justify-content-between mt-1">
-            <input type="checkbox" class="btn-check" id="btn-check-outlined1" autocomplete="off" name="genre" value="1">
-            <label class="btn btn-outline-primary" for="btn-check-outlined1">장르 1</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined2" autocomplete="off" name="genre" value="2">
-            <label class="btn btn-outline-primary" for="btn-check-outlined2">장르 2</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined3" autocomplete="off" name="genre" value="3">
-            <label class="btn btn-outline-primary" for="btn-check-outlined3">장르 3</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined4" autocomplete="off" name="genre" value="4">
-            <label class="btn btn-outline-primary" for="btn-check-outlined4">장르 4</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined5" autocomplete="off" name="genre" value="5">
-            <label class="btn btn-outline-primary" for="btn-check-outlined5">장르 5</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined6" autocomplete="off" name="genre" value="6">
-            <label class="btn btn-outline-primary" for="btn-check-outlined6">장르 6</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined7" autocomplete="off" name="genre" value="7">
-            <label class="btn btn-outline-primary" for="btn-check-outlined7">장르 7</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined8" autocomplete="off" name="genre" value="7">
-            <label class="btn btn-outline-primary invisible" for="btn-check-outlined8">장르 8</label>
-          </div>
-        </div>
-        <div>
-          <p>좋아요 수/찜하기 수</p>
-          <div class="d-flex flex-wrap justify-content-between mt-1">
-            <input type="checkbox" class="btn-check" id="countOption1" autocomplete="off" name="likeCount" value="20">
-            <label class="btn btn-outline-primary" for="countOption1">좋아요 수 20개 이상</label>
-            <input type="checkbox" class="btn-check" id="countOption2" autocomplete="off" name="wishlistCount" value="20">
-            <label class="btn btn-outline-primary" for="countOption2">찜하기 수 20개 이상</label>
-            <input type="checkbox" class="btn-check" id="countOption3" autocomplete="off" name="likeCount" value="20">
-            <label class="btn btn-outline-primary invisible" for="countOption3"></label>
-            <input type="checkbox" class="btn-check" id="countOption4" autocomplete="off" name="wishlistCount" value="20">
-            <label class="btn btn-outline-primary invisible" for="countOption4"></label>
+          <div id="genre-box" class="d-flex flex-wrap justify-content-between mt-1">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined1" autocomplete="off" name="genre" value="28">
+            <label class="btn btn-outline-primary" for="btn-check-outlined1">액션</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined2" autocomplete="off" name="genre" value="12">
+            <label class="btn btn-outline-primary" for="btn-check-outlined2">모험</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined3" autocomplete="off" name="genre" value="16">
+            <label class="btn btn-outline-primary" for="btn-check-outlined3">애니메이션</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined4" autocomplete="off" name="genre" value="35">
+            <label class="btn btn-outline-primary" for="btn-check-outlined4">코미디</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined5" autocomplete="off" name="genre" value="80">
+            <label class="btn btn-outline-primary" for="btn-check-outlined5">범죄</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined6" autocomplete="off" name="genre" value="99">
+            <label class="btn btn-outline-primary" for="btn-check-outlined6">다큐멘터리</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined7" autocomplete="off" name="genre" value="18">
+            <label class="btn btn-outline-primary" for="btn-check-outlined7">드라마</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined8" autocomplete="off" name="genre" value="10751">
+            <label class="btn btn-outline-primary" for="btn-check-outlined8">가족</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined9" autocomplete="off" name="genre" value="14">
+            <label class="btn btn-outline-primary" for="btn-check-outlined9">판타지</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined10" autocomplete="off" name="genre" value="36">
+            <label class="btn btn-outline-primary" for="btn-check-outlined10">역사</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined11" autocomplete="off" name="genre" value="27">
+            <label class="btn btn-outline-primary" for="btn-check-outlined11">공포</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined12" autocomplete="off" name="genre" value="10402">
+            <label class="btn btn-outline-primary" for="btn-check-outlined12">음악</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined13" autocomplete="off" name="genre" value="9648">
+            <label class="btn btn-outline-primary" for="btn-check-outlined13">미스터리</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined14" autocomplete="off" name="genre" value="10749">
+            <label class="btn btn-outline-primary" for="btn-check-outlined14">로맨스</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined15" autocomplete="off" name="genre" value="878">
+            <label class="btn btn-outline-primary" for="btn-check-outlined15">SF</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined16" autocomplete="off" name="genre" value="10770">
+            <label class="btn btn-outline-primary" for="btn-check-outlined16">영화</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined17" autocomplete="off" name="genre" value="53">
+            <label class="btn btn-outline-primary" for="btn-check-outlined17">스릴러</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined18" autocomplete="off" name="genre" value="10752">
+            <label class="btn btn-outline-primary" for="btn-check-outlined18">전쟁</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined19" autocomplete="off" name="genre" value="37">
+            <label class="btn btn-outline-primary" for="btn-check-outlined19">서부</label>
+            <input type="checkbox" class="btn-check" id="btn-check-outlined20" autocomplete="off">
+            <label class="btn btn-outline-primary invisible" for="btn-check-outlined20"></label>
           </div>
         </div>
         <div>
           <p>등급</p>
           <div class="d-flex flex-wrap justify-content-between mt-1">
-            <input type="checkbox" class="btn-check" id="searchOption1" autocomplete="off" name="rating" value="excludeAdult">
-            <label class="btn btn-outline-primary" for="searchOption1">청소년 관람불가 제외</label>
-            <input type="checkbox" class="btn-check" id="searchOption2" autocomplete="off" name="rating" value="includeAdult">
-            <label class="btn btn-outline-primary" for="searchOption2">청소년 관람불가 포함</label>
-            <input type="checkbox" class="btn-check" id="searchOption3" autocomplete="off" name="rating" value="adult">
-            <label class="btn btn-outline-primary" for="searchOption3">청소년 관람불가</label>
-            <input type="checkbox" class="btn-check" id="searchOption4" autocomplete="off" name="rating" value="adult">
+            <input type="checkbox" class="btn-check" id="searchOption1" autocomplete="off" name="adult" value="0">
+            <label class="btn btn-outline-primary" for="searchOption1">19세 미만</label>
+            <input type="checkbox" class="btn-check" id="searchOption2" autocomplete="off" name="adult" value="1">
+            <label class="btn btn-outline-primary" for="searchOption2">19세 이상</label>
+            <input type="checkbox" class="btn-check" id="searchOption3" autocomplete="off">
+            <label class="btn btn-outline-primary invisible" for="searchOption3"></label>
+            <input type="checkbox" class="btn-check" id="searchOption4" autocomplete="off">
             <label class="btn btn-outline-primary invisible" for="searchOption4"></label>
           </div>
         </div>
@@ -130,12 +141,23 @@
       $('input[name="genre"]:checked').each(function() {
         selectedGenres.push($(this).val());
       });
-      let searchType = $('#searchType').val();
+      let adults = [];
+      $('input[name="adult"]:checked').each(function() {
+        adults.push($(this).val());
+      });
+      let releaseDateFrom = $('#releaseDateFrom').val();
+      let releaseDateTo = $('#releaseDateTo').val();
+      // let searchType = $('#searchType').val();
       let queryParams = new URLSearchParams({
         search: searchText,
-        genres: selectedGenres.join(','),
-        type: searchType
+        releaseDateFrom: releaseDateFrom,
+        releaseDateTo: releaseDateTo
       });
+      selectedGenres.forEach(genreId => queryParams.append('genreIds', genreId));
+      adults.forEach(adult => queryParams.append('adults', adult));
+      // for(const [key, value] of queryParams){
+      //   console.log(key, value);
+      // }
 
       loadMovies(1, queryParams.toString());
     });
@@ -152,15 +174,19 @@
           $('#movie-box').empty();
           result.data.data.forEach(movie => {
             const movieHtml = `
-          <div class="col" data-movie-id="${movie.id}">
-            <div class="card h-100">
-              <img src="https://image.tmdb.org/t/p/w220_and_h330_face${movie.posterPath}" class="card-img-top img-big-size" alt="영화 포스터">
-              <div class="card-body">
-                <h5 class="card-title">${movie.title}</h5>
+            <div class="col" data-movie-id="${movie.id}">
+              <div class="card h-100">
+                <img src="https://image.tmdb.org/t/p/w220_and_h330_face${movie.posterPath}" class="card-img-top img-big-size" alt="영화 포스터">
+                <div class="card-body">
+                  <h5 class="card-title">${movie.title}</h5>
+                </div>
+                <div class="d-flex justify-content-center gap-3 mb-3">
+                  <div><i class="fa-regular fa-face-smile mypage-smile"></i> ${movie.goodCount}</div>
+                  <div><i class="fa-regular fa-face-angry mypage-angry"></i> ${movie.badCount}</div>
+                </div>
               </div>
             </div>
-          </div>
-        `;
+            `;
             $('#movie-box').append(movieHtml);
           });
 

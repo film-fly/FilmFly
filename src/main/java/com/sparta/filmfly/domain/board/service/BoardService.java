@@ -81,7 +81,10 @@ public class BoardService {
      */
     public Boolean getBoardUpdatePermission(User user, Long boardId) {
         Board board = boardRepository.findByIdOrElseThrow(boardId);
-        board.checkOwnerUser(user);
+        //admin이면 true 반환
+        if(!user.isAdmin()) {
+            board.checkOwnerUser(user);
+        }
         return true; //수정 권한 없으면 에러?
     }
 

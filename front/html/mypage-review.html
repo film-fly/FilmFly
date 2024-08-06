@@ -40,9 +40,14 @@
   console.log("user id : " + userId);
 
   $(document).ready(function () {
+    if(userId == null) {
+      alert("user 누락! 페이지 오류!");
+      window.history.back();
+    }
     // 리뷰 로드
     loadReviews(1);
   });
+
   // 기본 프로필 이미지 경로
   const defaultProfileImg = "../images/profileImg.png";
 
@@ -73,8 +78,8 @@
         </div>
       </a>
       <div class="d-flex flex-column align-items-center ms-3 gap-2">
-        <button type="button" class="btn btn-primary" onclick="editReview(${review.id})">수정</button>
-        <button type="button" class="btn btn-primary" onclick="removeReview(${review.id})">삭제</button>
+        <button type="button" class="btn btn-primary" onclick="requestEditReview(${review.id})">수정</button>
+        <button type="button" class="btn btn-primary" onclick="requestRemoveReview(${review.id})">삭제</button>
       </div>
     </div>
   `;
@@ -116,17 +121,47 @@
     );
   }
 
+  function requestEditReview(reviewId) {
+    checkPermission(reviewId, function(canEdit) {
+      if (canEdit) {
+        editReview(reviewId);
+      } else {
+        alert("수정 권한이 없습니다.");
+      }
+    });
+  }
+
+  function requestRemoveReview(reviewId) {
+    checkPermission(reviewId, function(canEdit) {
+      if (canEdit) {
+        removeReview(reviewId);
+      } else {
+        alert("삭제 권한이 없습니다.");
+      }
+    });
+  }
+
+  function checkPermission(reviewId, callback) {
+    apiModule.GET(`/reviews/${reviewId}/update-permission`, function(result) {
+      if (result.statusCode === 200) {
+        callback(result.data);
+      } else {
+        callback(false);
+      }
+    }, function() {
+      callback(false);
+    });
+  }
+
   function editReview(reviewId) {
-    location.href = `./create-review.html?edit=${reviewId}`;
+    location.href = `./create-review.html?review=${reviewId}`;
   }
 
   function removeReview(reviewId) {
     if (confirm("리뷰를 삭제하시겠습니까?")) {
-      //alert('리뷰 : ' + reviewId);
-      // API 호출
       apiModule.DELETE("/reviews/" + reviewId,
               function(result) {
-                // 성공적으로 데이터를 받아왔을 때  result.message
+                // 성공적으로 데이터를 받아왔을 때
                 alert("리뷰가 삭제되었습니다.");
                 location.reload();
               },

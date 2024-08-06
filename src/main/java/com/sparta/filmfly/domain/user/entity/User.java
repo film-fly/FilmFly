@@ -170,4 +170,11 @@ public class User extends TimeStampEntity {
         this.introduce = introduce;
         this.pictureUrl = pictureUrl;
     }
+
+    /**
+     * 유저가 Admin 이면 true
+     */
+    public boolean isAdmin() {
+        return this.userRole == UserRoleEnum.ROLE_ADMIN;
+    }
 }

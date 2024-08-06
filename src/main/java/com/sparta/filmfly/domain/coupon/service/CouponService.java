@@ -1,5 +1,6 @@
 package com.sparta.filmfly.domain.coupon.service;
 
+import com.sparta.filmfly.domain.coupon.dto.CouponPageResponseDto;
 import com.sparta.filmfly.domain.coupon.dto.CouponRequestDto;
 import com.sparta.filmfly.domain.coupon.dto.CouponResponseDto;
 import com.sparta.filmfly.domain.coupon.entity.Coupon;
@@ -15,6 +16,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,6 +94,21 @@ public class CouponService {
 
         couponRepository.delete(coupon);
         return CouponResponseDto.fromEntity(coupon);
+    }
+
+    /**
+     * 유저의 발급받은 쿠폰 목록
+     */
+    public CouponPageResponseDto getUserCoupon(Long userId, Pageable pageable) {
+        Page<Coupon> couponPage = userCouponRepository.findAllCouponsByUserId(userId, pageable);
+
+        return CouponPageResponseDto.builder()
+                .totalPages(couponPage.getTotalPages())
+                .totalElements(couponPage.getTotalElements())
+                .currentPage(couponPage.getNumber() + 1)
+                .pageSize(couponPage.getSize())
+                .content(couponPage.stream().map(CouponResponseDto::fromEntity).toList())
+                .build();
     }
 
     /**
