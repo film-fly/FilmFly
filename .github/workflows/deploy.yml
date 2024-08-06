@@ -101,6 +101,7 @@ jobs:
           script: |
             export DB_URL=${{ secrets.DB_URL }}
             export DB_USERNAME=${{ secrets.DB_USERNAME }}
+            export DB_USERNAME=${{ secrets.DB_PASSWORD }}
             export MAIL_ACCOUNT=${{ secrets.MAIL_ACCOUNT }}
             export MAIL_APP_PASSWORD=${{ secrets.MAIL_APP_PASSWORD }}
             export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
@@ -122,6 +123,7 @@ jobs:
             sudo docker run -d -p 8080:8080 \
                 -e DB_URL=$DB_URL \
                 -e DB_USERNAME=$DB_USERNAME \
+                -e DB_PASSWORD=$DB_PASSWORD \
                 -e MAIL_ACCOUNT=$MAIL_ACCOUNT \
                 -e MAIL_APP_PASSWORD=$MAIL_APP_PASSWORD \
                 -e JWT_SECRET_KEY=$JWT_SECRET_KEY \
