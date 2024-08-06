@@ -93,11 +93,12 @@
     return couponHtml;
   }
 
+  let coupons = "";
   //API 호출
   apiModule.GET("/coupons/users/" + userId,
       function (result) {
         if (result.data && result.data.data) {
-          const coupons = result.data.data;
+          coupons = result.data.data;
           $('#coupon-box').empty();
           coupons.forEach(coupon => {
             const couponHtml = generateCouponHtml(coupon);
@@ -124,7 +125,7 @@
       filteredCoupons = coupons.filter(coupon => new Date(coupon.expirationDate) < new Date());
     }
 
-  /*  filteredCoupons.forEach(coupon => {
+    filteredCoupons.forEach(coupon => {
       const isExpired = new Date(coupon.expirationDate) < new Date();
       const couponHtml = `
         <div data-coupon-id="${coupon.couponId}" class="border rounded border-secondary-subtle justify-content-between p-2 d-flex mb-3 ${isExpired
@@ -141,7 +142,7 @@
       `;
       $('#coupon-box').append(couponHtml);
     });
-  }*/
+  }
 
   // 정렬 목록
   $('#coupon-filter').on('change', function () {
@@ -160,7 +161,7 @@
   });
 
   // 페이지 로드 시 전체 쿠폰을 렌더링
-  renderCoupons('1');}
+  renderCoupons('1');
 </script>
 </body>
 </html>
