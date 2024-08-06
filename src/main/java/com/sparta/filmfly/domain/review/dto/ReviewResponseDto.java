@@ -14,6 +14,7 @@ public class ReviewResponseDto {
 
     private Long id;
     private Long userId;
+    private Long movieId;
     private String nickname;
     private String pictureUrl;
     private Float rating;
@@ -28,6 +29,7 @@ public class ReviewResponseDto {
         return ReviewResponseDto.builder()
             .id(review.getId())
             .userId(review.getUser().getId())
+            .movieId(review.getMovie().getId())
             .nickname(review.getUser().getNickname())
             .pictureUrl(review.getUser().getPictureUrl())
             .rating(review.getRating())

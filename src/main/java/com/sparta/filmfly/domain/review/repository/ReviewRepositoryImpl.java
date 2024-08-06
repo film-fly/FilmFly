@@ -2,18 +2,19 @@ package com.sparta.filmfly.domain.review.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;
 import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
 import com.sparta.filmfly.domain.review.entity.QReview;
-import java.util.List;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Slf4j
 @Repository
@@ -32,6 +33,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
             ReviewResponseDto.class,
                 qReview.id,
                 qReview.user.id,
+                qReview.movie.id,
                 qReview.user.nickname,
                 qReview.user.pictureUrl,
                 qReview.rating,
@@ -50,6 +52,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
             .groupBy(qReview.id)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
+            .orderBy(qReview.createdAt.desc())
             .fetch();
 
         Long total = queryFactory
@@ -67,6 +70,58 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
             .pageSize(page.getSize())
             .data(fetch)
             .build();
+    }
+
+    /**
+     * 유저의 리뷰 목록
+     */
+    @Override
+    public PageResponseDto<List<ReviewResponseDto>> getPageReviewByUserId(Long userId, Pageable pageable) {
+        QReview qReview = QReview.review;
+        QGood qGood = QGood.good;
+        QBad qBad = QBad.bad;
+
+        List<ReviewResponseDto> fetch = queryFactory.select(Projections.constructor(
+                        ReviewResponseDto.class,
+                        qReview.id,
+                        qReview.user.id,
+                        qReview.movie.id,
+                        qReview.user.nickname,
+                        qReview.user.pictureUrl,
+                        qReview.rating,
+                        qReview.title,
+                        qReview.content,
+                        qReview.createdAt,
+                        qGood.id.count().as("goodCount"),
+                        qBad.id.count().as("badCount")
+                ))
+                .from(qReview)
+                .leftJoin(qGood).on(qGood.type.eq(ReactionContentTypeEnum.REVIEW)
+                        .and(qGood.typeId.eq(qReview.id)))
+                .leftJoin(qBad).on(qBad.type.eq(ReactionContentTypeEnum.REVIEW)
+                        .and(qBad.typeId.eq(qReview.id)))
+                .where(qReview.user.id.eq(userId))
+                .groupBy(qReview.id)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(qReview.createdAt.desc())
+                .fetch();
+
+        Long total = queryFactory
+                .select(qReview.count())
+                .from(qReview)
+                .where(qReview.user.id.eq(userId))
+                .fetchOne();
+
+        PageImpl<ReviewResponseDto> page = new PageImpl<>(fetch, pageable, total);
+
+        return PageResponseDto.<List<ReviewResponseDto>>builder()
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .currentPage(page.getNumber() + 1)
+                .pageSize(page.getSize())
+                .data(fetch)
+                .build();
     }
 
     @Override

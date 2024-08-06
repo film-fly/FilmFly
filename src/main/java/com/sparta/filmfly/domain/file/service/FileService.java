@@ -122,7 +122,7 @@ public class FileService {
             else {
                 mediaText = "etc/";
             }
-            String s3Url = "https://sparta-storage.s3.us-east-2.amazonaws.com/+"+mediaText+mediaId; // 팀플용 은규님 S3
+            String s3Url = "https://filmfly-backend.s3.ap-northeast-2.amazonaws.com/+"+mediaText+mediaId; // 팀플용 은규님 S3
             String s3Url2 = "https://outsourcing-profile.s3.ap-northeast-2.amazonaws.com/"+mediaText+mediaId; //테스트용 JunMo S3
             //log.error("src = {}",src);
             //log.error("s3Url2 = {}",s3Url2);

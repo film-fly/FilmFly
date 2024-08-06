@@ -2,7 +2,6 @@ package com.sparta.filmfly.domain.comment.service;
 
 import com.sparta.filmfly.domain.board.entity.Board;
 import com.sparta.filmfly.domain.board.repository.BoardRepository;
-import com.sparta.filmfly.domain.comment.dto.CommentPageResponseDto;
 import com.sparta.filmfly.domain.comment.dto.CommentRequestDto;
 import com.sparta.filmfly.domain.comment.dto.CommentResponseDto;
 import com.sparta.filmfly.domain.comment.dto.CommentUpdateResponseDto;
@@ -13,13 +12,14 @@ import com.sparta.filmfly.domain.reaction.service.BadService;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -58,12 +58,18 @@ public class CommentService {
      * 댓글 페이지 조회
      */
     @Transactional(readOnly = true)
-    public CommentPageResponseDto gerPageComment(Integer pageNum,Integer size, Long boardId) {
+    public PageResponseDto<List<CommentResponseDto>> gerPageComment(Long boardId, Pageable pageable) {
         //정렬은 생성 시간, get으로 넘겨주는 댓글은 수정 시간
-        Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.ASC, "createdAt"));
         boardRepository.existsByIdOrElseThrow(boardId); // 보드가 존재하지 않으면 에러
 
         return commentRepository.findAllByBoardIdWithReactions(boardId, pageable);
+    }
+
+    /**
+     * 유저의 댓글 조회
+     */
+    public PageResponseDto<List<CommentResponseDto>> getUsersComments(Long userId, Pageable pageable) {
+        return commentRepository.findAllByUserId(userId,pageable);
     }
 
     /**
@@ -105,11 +111,5 @@ public class CommentService {
         commentRepository.delete(comment);
 
         return "댓글이 삭제되었습니다.";
-    }
-
-    public CommentPageResponseDto getUsersComments(Integer pageNum, Integer size, Long userId) {
-        Pageable pageable = PageRequest.of(pageNum-1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-
-        return commentRepository.findAllByUserId(userId,pageable);
     }
 }

@@ -168,7 +168,7 @@
             </div>
             <div>
               <button class="btn btn-primary" onclick="location.href='./create-board.html?board=${boardId}'">수정</button>
-              <button class="btn btn-primary">삭제</button>
+              <button class="btn btn-primary" onclick="deleteBoard()">삭제</button>
             </div>
           </div>
           `;
@@ -183,7 +183,7 @@
   function loadComments(page) {
     apiModule.GET(`/boards/${boardId}/comments?page=${page}`,
         function (result, status, xhr) {
-          let comments = result.data.content;
+          let comments = result.data.data;
           $('#comment-box').empty(); // 기존 댓글을 지우고 새 댓글을 불러옵니다.
           comments.forEach(comment => {
             let commentHtml = `
@@ -251,6 +251,16 @@
     );
   }
 
+  function deleteBoard() {
+    if (confirm('삭제 하시겠습니까?')) {
+      apiModule.DELETE(`/boards/${boardId}`, function (result, status, xhr) {
+        alert('삭제 성공');
+        location.replace('./board.html');
+      }, function (xhr, status, error) {
+        alert('삭제 실패');
+      });
+    }
+  }
 </script>
 
 
@@ -261,6 +271,11 @@
     const data = {
       content: content
     };
+
+    apiModule.POST('/users/check-nickname', data, function () {
+
+    }, function () {
+    });
 
     // $.ajax({
     //   type: 'POST',

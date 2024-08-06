@@ -15,17 +15,22 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-/*        executeSqlScript("dummy/userData.sql");
-        executeSqlScript("dummy/blockData.sql");
-        executeSqlScript("dummy/boardData.sql");
-        executeSqlScript("dummy/commentData.sql");
-        executeSqlScript("dummy/movieData.sql");
-        executeSqlScript("dummy/reviewData.sql");
-        executeSqlScript("dummy/favoriteData.sql");
-        executeSqlScript("dummy/collectionData.sql");
-        executeSqlScript("dummy/reactionData.sql");
-        executeSqlScript("dummy/reportData.sql");*/
+//        executeSqlScript("dummy/userData.sql");
+//        executeSqlScript("dummy/blockData.sql");
+//        executeSqlScript("dummy/boardData.sql");
+//        executeSqlScript("dummy/commentData.sql");
+//        executeSqlScript("dummy/movieData.sql");
+//        executeSqlScript("dummy/reviewData.sql");
+//        executeSqlScript("dummy/favoriteData.sql");
+//        executeSqlScript("dummy/collectionData.sql");
+//        executeSqlScript("dummy/reactionData.sql");
+//        executeSqlScript("dummy/reportData.sql");
+//        executeSqlScript("dummy/creditData.sql");
+//        executeSqlScript("dummy/movieCredit.sql");
+//        executeSqlScript("dummy/genre.sql");
+//        executeSqlScript("dummy/movieGenreIds.sql");
     }
+//    사용자 비밀번호는 Test12345! 로 통일
 
     private void executeSqlScript(String filePath) throws Exception {
         ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator(

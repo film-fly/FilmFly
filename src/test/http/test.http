@@ -4,8 +4,8 @@ Content-Type: application/json
 
 {
   "username": "admin1",
-  "password": "Test123!",
-  "email" : "dmarb0313@gmail.com",
+  "password": "Test12345!",
+  "email" : "admin1@gmail.com",
   "adminPassword": "1234"
 }
 
@@ -15,7 +15,7 @@ Content-Type: application/json
 
 {
   "username" : "admin1",
-  "password": "Test123!"
+  "password": "Test12345!"
 }
 
 ### User Password 수정
@@ -32,9 +32,9 @@ POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
-  "username": "admin1232",
-  "password": "Test123!23",
-  "email" : "dmarb03123@gmail.com",
+  "username": "admin2",
+  "password": "Test12345!",
+  "email" : "admin2@gmail.com",
   "adminPassword": "1234"
 }
 
@@ -44,7 +44,7 @@ Content-Type: application/json
 
 {
   "username" : "admin1232",
-  "password": "Test123!23"
+  "password": "Test12345!"
 }
 
 ### User Password 수정 222
@@ -61,8 +61,8 @@ POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
-  "username": "admin123",
-  "password": "Test123!23",
+  "username": "admin1",
+  "password": "Test12345!",
   "email" : "dmarb031323@gmail.com",
   "adminPassword": "1234"
 }
@@ -73,6 +73,5 @@ Content-Type: application/json
 
 {
   "username" : "admin123",
-  "password": "Test123!23"
+  "password": "Test12345!"
 }
-

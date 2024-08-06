@@ -1,28 +1,28 @@
 ### ADMIN 회원가입
-POST https://localhost/users/signup
+POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
   "username": "admin1",
-  "password": "Admin1!",
+  "password": "Test12345!",
   "email" : "dmarb0313@gmail.com",
   "adminPassword": "1234"
 }
 
 ### ADMIN 로그인
-POST https://localhost/users/login
+POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "username": "admin5",
-  "password": "Admin12345!"
+  "username": "admin1",
+  "password": "Test12345!"
 }
 
 ### 영화 PK 값
 @movieId = 238
 
 ### 리뷰 등록
-POST https://localhost/movies/{{movieId}}/reviews
+POST http://localhost:8080/movies/{{movieId}}/reviews
 Content-Type: application/json
 
 {
@@ -32,13 +32,13 @@ Content-Type: application/json
 }
 
 ### 리뷰 단일 조회
-GET https://localhost/reviews/20
+GET http://localhost:8080/reviews/20
 
 ### 특정 영화에 대한 리뷰 전체 조회
-GET https://localhost/movies/{{movieId}}/reviews
+GET http://localhost:8080/movies/{{movieId}}/reviews
 
 ### 리뷰 수정
-PATCH https://localhost/reviews/1
+PATCH http://localhost:8080/reviews/1
 Content-Type: application/json
 
 {
@@ -48,4 +48,4 @@ Content-Type: application/json
 }
 
 ### 리뷰 삭제
-DELETE https://localhost/reviews/17
+DELETE http://localhost:8080/reviews/17

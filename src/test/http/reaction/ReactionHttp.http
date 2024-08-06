@@ -1,28 +1,28 @@
 ### ADMIN 회원가입
-POST https://localhost/users/signup
+POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
   "username": "admin1",
-  "password": "Test123!",
+  "password": "Test12345!",
   "email" : "dmarb0313@gmail.com",
   "adminPassword": "1234"
 }
 
 ### ADMIN 로그인
-POST https://localhost/users/login
+POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "username": "admin5",
-  "password": "Admin12345!"
+  "username": "admin1",
+  "password": "Test12345!"
 }
 
 ### 컨텐츠 id값
 @contentId = 20
 
 ### 좋아요 등록
-POST https://localhost/good
+POST http://localhost:8080/good
 Content-Type: application/json
 
 {
@@ -31,7 +31,7 @@ Content-Type: application/json
 }
 
 ### 좋아요 취소
-DELETE https://localhost/good
+DELETE http://localhost:8080/good
 Content-Type: application/json
 
 {
@@ -40,7 +40,7 @@ Content-Type: application/json
 }
 
 ### 좋아요 눌렀는지 확인
-POST https://localhost/good/check
+POST http://localhost:8080/good/check
 Content-Type: application/json
 
 {
@@ -49,7 +49,7 @@ Content-Type: application/json
 }
 
 ### 싫어요 등록
-POST https://localhost/bad
+POST http://localhost:8080/bad
 Content-Type: application/json
 
 {
@@ -58,7 +58,7 @@ Content-Type: application/json
 }
 
 ### 싫어요 취소
-DELETE https://localhost/bad
+DELETE http://localhost:8080/bad
 Content-Type: application/json
 
 {
@@ -67,7 +67,7 @@ Content-Type: application/json
 }
 
 ### 싫어요 눌렀는지 확인
-POST https://localhost/bad/check
+POST http://localhost:8080/bad/check
 Content-Type: application/json
 
 {

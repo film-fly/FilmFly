@@ -1,6 +1,5 @@
 package com.sparta.filmfly.domain.review.service;
 
-import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
@@ -13,12 +12,14 @@ import com.sparta.filmfly.domain.review.dto.ReviewUpdateResponseDto;
 import com.sparta.filmfly.domain.review.entity.Review;
 import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.domain.user.entity.User;
-import java.util.List;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -65,6 +66,14 @@ public class ReviewService {
     }
 
     /**
+     * 유저의 리뷰 목록
+     */
+    @Transactional(readOnly = true)
+    public PageResponseDto<List<ReviewResponseDto>> getUsersReviews(Long userId, Pageable pageable) {
+        return reviewRepository.getPageReviewByUserId(userId, pageable);
+    }
+
+    /**
      * 리뷰 수정
      */
     @Transactional
@@ -78,7 +87,6 @@ public class ReviewService {
         findReview.updateReview(requestDto);
         return ReviewUpdateResponseDto.fromEntity(findReview);
     }
-
     /**
      * 리뷰 삭제
      */

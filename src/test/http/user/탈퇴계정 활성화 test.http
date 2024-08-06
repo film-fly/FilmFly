@@ -44,8 +44,8 @@ POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
-  "username": "admin12",
-  "password": "Test12345!2",
+  "username": "admin1",
+  "password": "Test12345!",
   "email" : "dmarb03132@gmail.com",
   "adminPassword": "1234",
   "nickname": "admin2"
@@ -57,7 +57,7 @@ Content-Type: application/json
 
 {
   "username" : "admin12",
-  "password": "Test12345!2"
+  "password": "Test12345!"
 }
 
 ### 회원탈퇴 2
@@ -65,7 +65,7 @@ DELETE http://localhost:8080/users/withdraw
 Content-Type: application/json
 
 {
-  "password": "Test12345!2"
+  "password": "Test12345!"
 }
 
 ### 활성화 시키기

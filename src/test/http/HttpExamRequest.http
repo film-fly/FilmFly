@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "username": "admin1",
-  "password": "Test123!",
+  "password": "Test12345!",
   "email" : "dmarb0313@gmail.com",
   "adminPassword": "1234"
 }
@@ -14,8 +14,8 @@ POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
-  "username": "admin2",
-  "password": "Test123!",
+  "username": "admin1",
+  "password": "Test12345!",
   "email" : "dmarb0313@gmail.com",
   "adminPassword": "12341"
 }
@@ -25,8 +25,8 @@ POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
-  "username": "user1",
-  "password": "Test123!",
+  "username": "admin1",
+  "password": "Test12345!",
   "email" : "dmsrb0125@naver.com"
 }
 
@@ -54,7 +54,7 @@ Content-Type: application/json
 
 {
   "username" : "manager1",
-  "password": "Test123!"
+  "password": "Test12345!"
 }
 
 > {% client.global.set("ADMIN_TOKEN", response.headers.valueOf("Authorization")); %}
@@ -65,7 +65,7 @@ Content-Type: application/json
 
 {
   "username" : "user1",
-  "password": "Test123!"
+  "password": "Test12345!"
 }
 
 > {% client.global.set("USER_TOKEN", response.headers.valueOf("Authorization"));
@@ -113,5 +113,5 @@ Content-Type: application/json
 Authorization:{{USER_TOKEN}}
 
 {
-  "password": "sparta12!@!"
+  "password": "Test12345!"
 }

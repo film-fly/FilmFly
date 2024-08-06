@@ -1,55 +1,55 @@
 ### ADMIN 회원가입
-POST https://localhost:443/users/signup
+POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
-  "username": "admin0",
-  "password": "qweQWE123!",
+  "username": "admin1",
+  "password": "Test12345!",
   "email" : "dmarb0313@gmail.com",
   "adminPassword": "1234",
   "nickname": "admin"
 }
 
 ### ADMIN 로그인
-POST https://localhost:443/users/login
+POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "username" : "admin0",
-  "password": "qweQWE123!"
+  "username" : "admin1",
+  "password": "Test12345!"
 }
 
 ### 영화 API 데이터 크롤링 1
-POST https://localhost:443/movie/api
+POST http://localhost:8080/movies/api
 Content-Type: application/json
 
 {
-  "page": 1
+  "sort_by": "POPULARITY_DESC"
 }
 
 ### 영화 API 데이터 크롤링 2
-POST https://localhost:443/movie/api
+POST http://localhost:8080/movies/api
 Content-Type: application/json
 
 {
   "page": 2
 }
 ### 영화 API 데이터 크롤링 3
-POST https://localhost:443/movie/api
+POST http://localhost:8080/movies/api
 Content-Type: application/json
 
 {
   "page": 3
 }
 ### 영화 API 데이터 크롤링 4
-POST https://localhost:443/movie/api
+POST http://localhost:8080/movies/api
 Content-Type: application/json
 
 {
   "page": 4
 }
 ### 영화 API 데이터 크롤링 5
-POST https://localhost:443/movie/api
+POST http://localhost:8080/movies/api
 Content-Type: application/json
 
 {
