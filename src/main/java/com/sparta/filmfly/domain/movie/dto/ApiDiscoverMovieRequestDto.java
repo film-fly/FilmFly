@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class ApiMovieRequestDto {
+public class ApiDiscoverMovieRequestDto {
     private String certification;
     private String certification__gte;
     private String certification__lte;
@@ -38,7 +38,7 @@ public class ApiMovieRequestDto {
     private String with_companies;                          // 제작사 검색
     private String with_crew;                               // 배우 검색
     private String with_genres;                             // 장르 검색
-    private String with_keywords;                           // 제목 검색
+    private String with_keywords;                           // 키워드 "15:우정, 456:살인, 78:robbery, 4986:alcohol, 9812:release from prison" 등 에 지정된 번호 ex.( 524 )
     private String with_origin_country;
     private OriginLanguageEnum with_original_language;
     private String with_people;
@@ -54,7 +54,7 @@ public class ApiMovieRequestDto {
     private int year;
 
     // 기본 생성자 default 값 설정
-    public ApiMovieRequestDto() {
+    public ApiDiscoverMovieRequestDto() {
         this.include_adult = false;
         this.include_video = false;
         this.language = LanguagesEnum.KO_KR;
