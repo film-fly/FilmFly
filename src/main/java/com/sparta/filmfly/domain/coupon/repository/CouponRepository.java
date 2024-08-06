@@ -1,11 +1,14 @@
 package com.sparta.filmfly.domain.coupon.repository;
 
 import com.sparta.filmfly.domain.coupon.entity.Coupon;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import java.util.List;
 import java.util.Optional;
 import javax.swing.text.html.Option;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
