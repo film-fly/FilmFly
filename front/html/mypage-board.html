@@ -27,29 +27,29 @@
   <header id="common-header"></header>
 
   <div class="page-title">작성한 게시물 목록</div>
-  <div id="board-box" class="list-group list-group-flush">
-  </div>
+  <div id="board-box" class="list-group list-group-flush"></div>
   <ul id="pagination-boards" class="pagination-sm d-flex justify-content-center"></ul>
 </div>
 
 <script>
-  // URL에서 'user' 파라미터 값을 가져옵니다.
   const urlParams = new URLSearchParams(window.location.search);
   const userId = urlParams.get('user');
   console.log("user id : " + userId);
 
   $(document).ready(function () {
-    // 보드 로드
+    if(userId == null) {
+      alert("user 누락! 페이지 오류!");
+      window.history.back();
+    }
     loadBoards(1);
   });
 
-  // 보드 HTML 생성 함수
   function generateBoardHtml(board) {
     return `
       <div class="list-group-item d-flex p-3" data-board-id="${board.id}">
         <a href="board-detail.html?board=${board.id}" class="d-flex flex-column flex-grow-1">
           <div class="d-flex justify-content-between align-items-center">
-            <div class="mypage-entity-title"">${board.title || '제목 미확인'}</div>
+            <div class="mypage-entity-title">${board.title || '제목 미확인'}</div>
             <div class="text-muted">${board.createdAt}</div>
           </div>
           <div class="mt-2 d-flex justify-content-between align-items-center">
@@ -72,14 +72,12 @@
   }
 
   function loadBoards(page) {
-    // API 호출
     apiModule.GET("/boards/users/" + userId + "?page=" + page,
             function (result) {
-              // 성공적으로 데이터를 받아왔을 때
               console.log("API 성공:", result);
               if (result.data && result.data.data) {
                 const boards = result.data.data;
-                $('#board-box').empty(); // 기존 보드 삭제
+                $('#board-box').empty();
                 boards.forEach(board => {
                   const boardHtml = generateBoardHtml(board);
                   $('#board-box').append(boardHtml);
@@ -103,28 +101,51 @@
             },
             function () {
               alert("API 호출 실패");
-            });
+              //window.history.back();
+            }
+    );
+  }
+
+  function checkEditPermission(boardId, callback) {
+    apiModule.GET(`/boards/${boardId}/update-permission`, function(result) {
+      if (result.statusCode === 200) {
+        callback(result.data);
+      } else {
+        callback(false);
+      }
+    }, function() {
+      callback(false);
+    });
   }
 
   function editBoard(boardId) {
-    location.href = `./create-board.html?edit=${boardId}`;
+    checkEditPermission(boardId, function(canEdit) {
+      if (canEdit) {
+        location.href = `./create-board.html?board=${boardId}`;
+      } else {
+        alert("수정 권한이 없습니다.");
+      }
+    });
   }
 
   function deleteBoard(boardId) {
-    if (confirm("게시물을 삭제하시겠습니까?")) {
-      //alert('리뷰 : ' + reviewId);
-      // API 호출
-      apiModule.DELETE("/boards/" + boardId,
-              function(result) {
-                // 성공적으로 데이터를 받아왔을 때  result.message
-                alert("게시글이 삭제되었습니다.");
-                location.reload();
-              },
-              function(result) {
-                alert("오류!! : " + result.responseJSON.message);
-              }
-      );
-    }
+    checkEditPermission(boardId, function(canEdit) {
+      if (canEdit) {
+        if (confirm("게시물을 삭제하시겠습니까?")) {
+          apiModule.DELETE("/boards/" + boardId,
+                  function(result) {
+                    alert("게시글이 삭제되었습니다.");
+                    location.reload();
+                  },
+                  function(result) {
+                    alert("오류!! : " + result.responseJSON.message);
+                  }
+          );
+        }
+      } else {
+        alert("삭제 권한이 없습니다.");
+      }
+    });
   }
 </script>
 </body>

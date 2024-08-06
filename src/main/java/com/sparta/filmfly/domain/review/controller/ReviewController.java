@@ -82,6 +82,18 @@ public class ReviewController {
     }
 
     /**
+     * 리뷰 수정 권한 확인
+     */
+    @GetMapping("/reviews/{reviewId}/update-permission")
+    public ResponseEntity<DataResponseDto<Boolean>> getReviewsUpdatePermission(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long reviewId
+    ) {
+        Boolean response = reviewService.getReviewsUpdatePermission(userDetails.getUser(),reviewId);
+        return ResponseUtils.success(response);
+    }
+
+    /**
      * 리뷰 수정
      */
     @PatchMapping("/reviews/{reviewId}")

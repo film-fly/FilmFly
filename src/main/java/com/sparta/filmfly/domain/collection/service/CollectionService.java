@@ -10,6 +10,7 @@ import com.sparta.filmfly.domain.collection.repository.CollectionRepository;
 import com.sparta.filmfly.domain.collection.repository.MovieCollectionRepository;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
+import com.sparta.filmfly.domain.review.entity.Review;
 import com.sparta.filmfly.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,18 @@ public class CollectionService {
         return collectionList.stream().map(
                 CollectionResponseDto::fromEntity
         ).toList();
+    }
+
+    /**
+     * 보관함 수정 권한 확인
+     */
+    public Boolean getCollectionUpdatePermission(User user, Long collectionId) {
+        Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
+        //admin이면 true 반환
+        if(!user.isAdmin()) {
+            collection.validateOwner(user);
+        }
+        return true; //수정 권한 없으면 에러?
     }
 
     /**

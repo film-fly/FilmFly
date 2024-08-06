@@ -71,6 +71,18 @@ public class ReviewService {
     }
 
     /**
+     * 리뷰 수정 권한 확인
+     */
+    public Boolean getReviewsUpdatePermission(User user, Long reviewId) {
+        Review review = reviewRepository.findByIdOrElseThrow(reviewId);
+        //admin이면 true 반환
+        if(!user.isAdmin()) {
+            review.checkReviewOwner(user);
+        }
+        return true; //수정 권한 없으면 에러?
+    }
+
+    /**
      * 리뷰 수정
      */
     @Transactional
@@ -84,6 +96,7 @@ public class ReviewService {
         findReview.updateReview(requestDto);
         return ReviewUpdateResponseDto.fromEntity(findReview);
     }
+
     /**
      * 리뷰 삭제
      */
@@ -92,8 +105,9 @@ public class ReviewService {
         Review findReview = reviewRepository.findByIdOrElseThrow(reviewId);
 
         // 삭제하려는 리뷰가 자기가 작성한 리뷰인지 확인
-        findReview.checkReviewOwner(loginUser);
-
+        if(!loginUser.isAdmin()) { //관리자는 삭제 가능
+            findReview.checkReviewOwner(loginUser);
+        }
         reviewRepository.delete(findReview);
     }
 }

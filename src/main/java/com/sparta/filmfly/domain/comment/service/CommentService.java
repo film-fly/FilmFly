@@ -75,9 +75,21 @@ public class CommentService {
     /**
      * 댓글 수정 권한 확인
      */
+    public Boolean getCommentUpdatePermission(User user, Long commentId) {
+        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
+        //admin이면 true 반환
+        if(!user.isAdmin()) {
+            comment.checkOwnerUser(user);
+        }
+        return true; //수정 권한 없으면 에러?
+    }
+
+    /**
+     * 댓글 수정 정보
+     */
     public CommentUpdateResponseDto forUpdateComment(User user, Long commentId) {
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
-        comment.validateOwner(user);
+        comment.checkOwnerUser(user);
         return CommentUpdateResponseDto.fromEntity(comment);
     }
 
@@ -87,16 +99,15 @@ public class CommentService {
     @Transactional
     public CommentResponseDto updateComment(User user, CommentRequestDto requestDto, Long commentId) {
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
-        comment.validateOwner(user);
+        comment.checkOwnerUser(user);
 
         comment.update(requestDto);
         Comment updatedComment = commentRepository.save(comment);
         Long goodCount = goodService.getCountByTypeTypeId(ReactionContentTypeEnum.COMMENT,commentId);
-    Long badCount = badService.getCountByTypeTypeId(ReactionContentTypeEnum.COMMENT,commentId);
+        Long badCount = badService.getCountByTypeTypeId(ReactionContentTypeEnum.COMMENT,commentId);
 
         return CommentResponseDto.fromEntity(updatedComment,goodCount,badCount);
     }
-
     /**
      * 댓글 삭제
      */
@@ -104,8 +115,8 @@ public class CommentService {
     public String deleteComment(User user, Long commentId) {
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
-        if(user.getUserRole() == UserRoleEnum.ROLE_USER) { //관리자면 삭제 가능하게
-            comment.validateOwner(user);
+        if(!user.isAdmin()) { //관리자면 삭제 가능하게
+            comment.checkOwnerUser(user);
         }
 
         commentRepository.delete(comment);
