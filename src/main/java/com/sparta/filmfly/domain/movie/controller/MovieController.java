@@ -8,6 +8,10 @@ import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseUtils;
+import com.sparta.filmfly.global.util.PageUtils;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,22 +70,32 @@ public class MovieController {
     }
 
     /**
-    * 영화 검색
+    * 영화 검색 (페이징)
     */
     @GetMapping("/movies")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<MovieResponseDto>>>> getListMovie(
-            @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam(required = false, defaultValue = "12") int size,
-            @RequestParam(required = false, defaultValue = "id") String sortBy,
-            @RequestParam(required = false, defaultValue = "true") boolean isAsc,
-            @RequestParam(required = false, defaultValue = "") String search
+    public ResponseEntity<DataResponseDto<PageResponseDto<List<MovieReactionsResponseDto>>>> getListMovie(
+        @RequestParam(required = false, defaultValue = "1") int page,
+        @RequestParam(required = false, defaultValue = "12") int size,
+        @RequestParam(required = false, defaultValue = "id") String sortBy,
+        @RequestParam(required = false, defaultValue = "true") boolean isAsc,
+        @RequestParam(required = false, defaultValue = "") String search,
+        @RequestParam(required = false) List<Integer> genreIds,
+        @RequestParam(required = false) List<Integer> adults,
+        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate releaseDateFrom,
+        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate releaseDateTo
     ) {
         log.info("In getListMovie");
-        Sort sort = isAsc ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(page-1, size, sort);
-        Page<Movie> moviePage = movieService.getMovieList(search, pageable);
 
-        return getDataResponseDtoResponseEntity(moviePage);
+        MovieSearchCond movieSearchCond = MovieSearchCond.createSearchCondition(
+            search, genreIds, adults, releaseDateFrom, releaseDateTo
+        );
+
+        Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
+
+        PageResponseDto<List<MovieReactionsResponseDto>> responseDto = movieService.getPageMovieBySearchCond(
+            movieSearchCond, pageable
+        );
+        return ResponseUtils.success(responseDto);
     }
 
     /**
