@@ -69,36 +69,36 @@
       "expirationDate": "2024-6-30"
     }
   ];*/
-  const url = window.location.pathname;
 
-  // URL 경로에서 {userId} 추출
-  const parts = url.split('/');
-  const userId = parts[parts.length - 1];
+
 
   function generateCouponHtml(coupon) {
     const isExpired = new Date(coupon.expirationDate) < new Date();
     const couponHtml = `
-        <div data-coupon-id="${coupon.couponId}" class="border rounded border-secondary-subtle justify-content-between p-2 d-flex mb-3 ${isExpired
+        <div data-coupon-id="${coupon.id}" class="border rounded border-secondary-subtle justify-content-between p-2 d-flex mb-3 ${isExpired
         ? 'opacity-50' : ''}">
           <div class="d-flex flex-column align-content-center flex-grow-1 gap-2">
             <div>${coupon.expirationDate} 까지</div>
-            <div class="fw-bold">${coupon.couponTitle}</div>
-            <div>${coupon.couponContent}</div>
-            <div class="mt-3">쿠폰 번호: ${coupon.couponNumber}</div>
+            <div class="fw-bold">${coupon.title}</div>
+            <div>${coupon.description}</div>
+            <div class="mt-3">쿠폰 번호: ${coupon.title}</div>
           </div>
           <button class="btn-copy-coupon btn btn-primary" ${isExpired ? 'disabled'
-        : ''} data-coupon-number="${coupon.couponNumber}">복사</button>
+        : ''} data-coupon-number="${coupon.title}">복사</button>
         </div>
       `;
     return couponHtml;
   }
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const userId = urlParams.get('user');
+
   let coupons = "";
   //API 호출
   apiModule.GET("/coupons/users/" + userId,
       function (result) {
-        if (result.data && result.data.data) {
-          coupons = result.data.data;
+        if (result.data && result.data.content) {
+          coupons = result.data.content;
           $('#coupon-box').empty();
           coupons.forEach(coupon => {
             const couponHtml = generateCouponHtml(coupon);
@@ -109,7 +109,7 @@
         }
       },
       function () {
-        alert("API 호출 실패");
+        alert(" API 호출 실패");
       }
   );
 
