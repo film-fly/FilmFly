@@ -16,6 +16,7 @@
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="../js/apiModule.js"></script>
+  <script src="../js/jquery.twbsPagination.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -25,36 +26,44 @@
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
-  <div>작성한 게시물 목록</div>
+  <div class="page-title">작성한 게시물 목록</div>
   <div id="board-box" class="list-group list-group-flush">
   </div>
+  <ul id="pagination-boards" class="pagination-sm d-flex justify-content-center"></ul>
 </div>
 
 <script>
- /* const boards = [
-    {
-      "id": 1,
-      "title": "게시물 제목 1",
-      "nickname": "닉네임 1"
-    }
-  ]*/
-
   // URL에서 'user' 파라미터 값을 가져옵니다.
   const urlParams = new URLSearchParams(window.location.search);
   const userId = urlParams.get('user');
   console.log("user id : " + userId);
 
-  // 리뷰 HTML 생성 함수
+  $(document).ready(function () {
+    // 보드 로드
+    loadBoards(1);
+  });
+
+  // 보드 HTML 생성 함수
   function generateBoardHtml(board) {
     return `
       <div class="list-group-item d-flex p-3" data-board-id="${board.id}">
-        <a href="" class="d-flex justify-content-between align-items-center flex-grow-1">
-          <div>${board.title}</div>
-          <div class="d-flex align-items-center gap-2">
-            <div>${board.nickname}</div>
+        <a href="board-detail.html?board=${board.id}" class="d-flex flex-column flex-grow-1">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mypage-entity-title"">${board.title || '제목 미확인'}</div>
+            <div class="text-muted">${board.createdAt}</div>
+          </div>
+          <div class="mt-2 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <div>${board.nickname || '닉네임 없음'}</div>
+            </div>
+            <div class="d-flex gap-3">
+              <div><i class="fa-regular fa-face-smile mypage-smile"></i> ${board.goodCount}</div>
+              <div><i class="fa-regular fa-face-angry mypage-angry"></i> ${board.badCount}</div>
+              <div><i class="fa-regular fa-eye"></i> ${board.hits}</div>
+            </div>
           </div>
         </a>
-        <div class="ms-3">
+        <div class="ms-3 d-flex flex-column gap-2">
           <button type="button" class="btn btn-primary" onclick="editBoard(${board.id})">수정</button>
           <button type="button" class="btn btn-primary" onclick="deleteBoard(${board.id})">삭제</button>
         </div>
@@ -62,46 +71,59 @@
     `;
   }
 
-  // API 호출
-  apiModule.GET("/boards/users/" + userId,
-          function(result) {
-            // 성공적으로 데이터를 받아왔을 때
-            console.log("API 성공:", result);
-            if (result.data && result.data.data) {
-              const boards = result.data.data;
-              $('#board-box').empty(); // 기존 보드 삭제
-              boards.forEach(board => {
-                const boardHtml = generateBoardHtml(board);
-                $('#board-box').append(boardHtml);
-              });
-            } else {
-              alert("보드 데이터를 불러오는 데 실패했습니다.");
-            }
-          },
-          function() {
-            alert("API 호출 실패");
-          });
+  function loadBoards(page) {
+    // API 호출
+    apiModule.GET("/boards/users/" + userId + "?page=" + page,
+            function (result) {
+              // 성공적으로 데이터를 받아왔을 때
+              console.log("API 성공:", result);
+              if (result.data && result.data.data) {
+                const boards = result.data.data;
+                $('#board-box').empty(); // 기존 보드 삭제
+                boards.forEach(board => {
+                  const boardHtml = generateBoardHtml(board);
+                  $('#board-box').append(boardHtml);
+                });
 
-
-
+                $('#pagination-boards').twbsPagination('destroy');
+                $('#pagination-boards').twbsPagination({
+                  totalPages: result.data.totalPages,
+                  startPage: page,
+                  initiateStartPageClick: false,
+                  onPageClick: function (event, page) {
+                    loadBoards(page);
+                    $('html, body').animate({
+                      scrollTop: $('#board-box').offset().top
+                    }, 'fast');
+                  }
+                });
+              } else {
+                alert("보드 데이터를 불러오는 데 실패했습니다.");
+              }
+            },
+            function () {
+              alert("API 호출 실패");
+            });
+  }
 
   function editBoard(boardId) {
     location.href = `./create-board.html?edit=${boardId}`;
   }
 
   function deleteBoard(boardId) {
-    if (confirm("삭제하시겠습니까?")) {
-      alert('게시물 : ' + boardId);
-      // $.ajax({
-      //   type: 'DELETE',
-      //   url: ''
-      // })
-      // .done(function (result, status, xhr) {
-      //   // location.replace("./");
-      // })
-      // .fail(function (xhr, status, er) {
-      //   alert("게시물 삭제 실패");
-      // });
+    if (confirm("게시물을 삭제하시겠습니까?")) {
+      //alert('리뷰 : ' + reviewId);
+      // API 호출
+      apiModule.DELETE("/boards/" + boardId,
+              function(result) {
+                // 성공적으로 데이터를 받아왔을 때  result.message
+                alert("게시글이 삭제되었습니다.");
+                location.reload();
+              },
+              function(result) {
+                alert("오류!! : " + result.responseJSON.message);
+              }
+      );
     }
   }
 </script>

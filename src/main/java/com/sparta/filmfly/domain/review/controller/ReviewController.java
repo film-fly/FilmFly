@@ -1,9 +1,6 @@
 package com.sparta.filmfly.domain.review.controller;
 
-import com.sparta.filmfly.domain.review.dto.ReviewCreateRequestDto;
-import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
-import com.sparta.filmfly.domain.review.dto.ReviewUpdateRequestDto;
-import com.sparta.filmfly.domain.review.dto.ReviewUpdateResponseDto;
+import com.sparta.filmfly.domain.review.dto.*;
 import com.sparta.filmfly.domain.review.service.ReviewService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
@@ -72,7 +69,7 @@ public class ReviewController {
      * 유저의 리뷰 목록
      */
     @GetMapping("/reviews/users/{userId}")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<ReviewResponseDto>>>> getUsersReviews(
+    public ResponseEntity<DataResponseDto<PageResponseDto<List<ReviewUserResponseDto>>>> getUsersReviews(
             @PathVariable Long userId,
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size,
@@ -80,7 +77,7 @@ public class ReviewController {
             @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<ReviewResponseDto>> responseDto = reviewService.getUsersReviews(userId,pageable);
+        PageResponseDto<List<ReviewUserResponseDto>> responseDto = reviewService.getUsersReviews(userId,pageable);
         return ResponseUtils.success(responseDto);
     }
 

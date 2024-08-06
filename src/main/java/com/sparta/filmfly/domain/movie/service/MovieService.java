@@ -29,10 +29,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -69,17 +66,22 @@ public class MovieService {
     }
 
     @Transactional
-    public List<ApiMovieResponseDto> apiRequestForSearchMovie(ApiMovieRequestDto apiMovieRequestDto) {
+    public List<ApiMovieResponseDto> apiRequestForMovie(Object apiDiscoverMovieRequestDto) {
 
-        String movieUrl = "/3/discover/movie";
+        String movieUrl = "";
+        if (apiDiscoverMovieRequestDto instanceof ApiDiscoverMovieRequestDto) {
+            movieUrl = "/3/discover/movie";
+        } else {
+            movieUrl = "/3/search/movie";
+        }
 //        String credits = "/3/movie/{movieId}/credits";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl + movieUrl);
-        Field[] fields = apiMovieRequestDto.getClass().getDeclaredFields();
+        Field[] fields = apiDiscoverMovieRequestDto.getClass().getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true); // private 필드 접근 허용
             try {
-                Object value = field.get(apiMovieRequestDto);
+                Object value = field.get(apiDiscoverMovieRequestDto);
                 if (value != null) {
                     if (!(value instanceof Number && ((Number) value).doubleValue() == 0.0)) {
                         String fieldName = field.getName().replace("__", ".");
@@ -98,6 +100,11 @@ public class MovieService {
                 e.printStackTrace();
             }
         }
+
+        // 제목 검색을 위한 query 파라미터 추가
+        builder.queryParam("query", "범죄도시");
+
+
         String url = builder.toUriString();
         log.info(url);
         Request movieRequest = requestBuilder(url);
@@ -136,20 +143,20 @@ public class MovieService {
                 log.info("배우 List 저장");
                 // Credit Entity 저장 : saveAll -> 이미 존재하는 데이터는 업데이트, 없으면 새로 생성
                 creditList = creditRepository.saveAll(creditList);
-                    // 영화 list api 요청  가지고 옴
-                    // 영화 list forEach -> 영화 list 에 대해서 배우들 list 를 요청해서 가지고 옴
-                    // 영화 1 -> 배우 4,6,8,3
-                    // 영화 2 -> 배우 3,7,4,2,9
+                // 영화 list api 요청  가지고 옴
+                // 영화 list forEach -> 영화 list 에 대해서 배우들 list 를 요청해서 가지고 옴
+                // 영화 1 -> 배우 4,6,8,3
+                // 영화 2 -> 배우 3,7,4,2,9
                 // MovieCredit 엔티티 생성 및 저장
                 log.info("배우-영화 연관관계 저장");
                 creditList.forEach(credit -> {
-                            if(!movieCreditRepository.existsByMovieAndCredit(movie, credit)) {
-                                movieCreditRepository.save( MovieCredit.builder()
-                                    .movie(movie)
-                                    .credit(credit)
-                                    .build());
-                            }
-                                });
+                    if (!movieCreditRepository.existsByMovieAndCredit(movie, credit)) {
+                        movieCreditRepository.save(MovieCredit.builder()
+                                .movie(movie)
+                                .credit(credit)
+                                .build());
+                    }
+                });
 
 //                        .map(credit -> {
 //                            Optional<MovieCredit> existingMovieCreditOpt = movieCreditRepository.findByMovieAndCredit(movie, credit);
@@ -218,27 +225,27 @@ public class MovieService {
     }
 
     /*
-    * 배우 검색
-    */
+     * 배우 검색
+     */
 //    public Page<Credit> getCreditList(String keyword, Pageable pageable) {
 //
 //    }
 
     /*
-    * 영화 단건 조회
-    */
+     * 영화 단건 조회
+     */
     public MovieDetailResponseDto getMovie(Long movieId) {
         Movie movie = movieRepository.findByIdOrElseThrow(movieId);
         List<Credit> creditList = creditRepository.findByMovieId(movieId);
         Float avgRating = reviewRepository.getAverageRatingByMovieId(movieId);
 
         return MovieDetailResponseDto.builder()
-            .movie(MovieResponseDto.fromEntity(movie))
-            .creditList(creditList.stream()
-                .map(CreditResponseDto::fromEntity)
-                .collect(Collectors.toList()))
-            .avgRating(avgRating)
-            .build();
+                .movie(MovieResponseDto.fromEntity(movie))
+                .creditList(creditList.stream()
+                        .map(CreditResponseDto::fromEntity)
+                        .collect(Collectors.toList()))
+                .avgRating(avgRating)
+                .build();
     }
 
 }

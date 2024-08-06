@@ -6,6 +6,7 @@ import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;
 import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
+import com.sparta.filmfly.domain.review.dto.ReviewUserResponseDto;
 import com.sparta.filmfly.domain.review.entity.QReview;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,6 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
             ReviewResponseDto.class,
                 qReview.id,
                 qReview.user.id,
-                qReview.movie.id,
                 qReview.user.nickname,
                 qReview.user.pictureUrl,
                 qReview.rating,
@@ -76,16 +76,17 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
      * 유저의 리뷰 목록
      */
     @Override
-    public PageResponseDto<List<ReviewResponseDto>> getPageReviewByUserId(Long userId, Pageable pageable) {
+    public PageResponseDto<List<ReviewUserResponseDto>> getPageReviewByUserId(Long userId, Pageable pageable) {
         QReview qReview = QReview.review;
         QGood qGood = QGood.good;
         QBad qBad = QBad.bad;
 
-        List<ReviewResponseDto> fetch = queryFactory.select(Projections.constructor(
-                        ReviewResponseDto.class,
+        List<ReviewUserResponseDto> fetch = queryFactory.select(Projections.constructor(
+                        ReviewUserResponseDto.class,
                         qReview.id,
                         qReview.user.id,
                         qReview.movie.id,
+                        qReview.movie.title,
                         qReview.user.nickname,
                         qReview.user.pictureUrl,
                         qReview.rating,
@@ -113,9 +114,9 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 .where(qReview.user.id.eq(userId))
                 .fetchOne();
 
-        PageImpl<ReviewResponseDto> page = new PageImpl<>(fetch, pageable, total);
+        PageImpl<ReviewUserResponseDto> page = new PageImpl<>(fetch, pageable, total);
 
-        return PageResponseDto.<List<ReviewResponseDto>>builder()
+        return PageResponseDto.<List<ReviewUserResponseDto>>builder()
                 .totalElements(page.getTotalElements())
                 .totalPages(page.getTotalPages())
                 .currentPage(page.getNumber() + 1)

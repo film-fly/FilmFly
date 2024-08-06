@@ -30,13 +30,26 @@ public class MovieController {
     /**
     * API 데이터 크롤링
     */
-    @PostMapping("/movies/api")
+    @PostMapping("/movies/api/discover")
     public ResponseEntity<DataResponseDto<List<ApiMovieResponseDto>>> apiDiscoverMovieRequest(
-            @RequestBody ApiMovieRequestDto apiMovieRequestDto
+            @RequestBody ApiDiscoverMovieRequestDto apiDiscoverMovieRequestDto
+    ) {
+        // 영화 검색
+        log.info("In discoverMovieList");
+        List<ApiMovieResponseDto> responseDto = movieService.apiRequestForMovie(apiDiscoverMovieRequestDto);
+        return ResponseUtils.success(responseDto);
+    }
+
+    /**
+     * API 데이터 크롤링
+     */
+    @PostMapping("/movies/api/search")
+    public ResponseEntity<DataResponseDto<List<ApiMovieResponseDto>>> apiSearchMovieRequest(
+            @RequestBody ApiSearchMovieRequestDto apiSearchMovieRequestDto
     ) {
         // 영화 검색
         log.info("In searchMovieList");
-        List<ApiMovieResponseDto> responseDto = movieService.apiRequestForSearchMovie(apiMovieRequestDto);
+        List<ApiMovieResponseDto> responseDto = movieService.apiRequestForMovie(apiSearchMovieRequestDto);
         return ResponseUtils.success(responseDto);
     }
 
