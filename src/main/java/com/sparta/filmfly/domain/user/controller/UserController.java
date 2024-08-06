@@ -32,10 +32,10 @@ public class UserController {
     private final UserService userService;
     private final KakaoService kakaoService;
 
-    @Value("${CLIENT_ID}")
+    @Value("${kakao.client_id}")
     private String clientId;
 
-    @Value("${kakao.redirect-uri}")
+    @Value("${kakao.redirect_uri}")
     private String redirectUri;
 
     /**

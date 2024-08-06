@@ -40,7 +40,6 @@
             margin-top: 30px;
             background-color:white;
             width: 75%;
-
         }
         .content {
             width: 100%;
@@ -51,7 +50,7 @@
             margin-bottom: 20px;
         }
         #userSearchForm {
-            margin-top: 5px;
+            margin-top: 20px;
             display: flex;
         }
         .form-group {
@@ -179,40 +178,6 @@
 
 <script>
     $(document).ready(function() {
-        function renderUsers(users) {
-            const results = users.map(user => `
-                <tr data-user-id="${user.id}">
-                    <td>${user.id}</td>
-                    <td>${user.username}</td>
-                    <td>${user.nickname}</td>
-                    <td>${user.userRole}</td>
-                </tr>
-            `);
-            $('#userSearchResults').html(results.join(''));
-        }
-
-        function renderPagination(totalPages, currentPage) {
-            const pagination = $('#pagination');
-            pagination.empty();
-
-            for (let i = 1; i <= totalPages; i++) {
-                const button = $('<button>')
-                    .addClass('btn btn-outline-primary')
-                    .text(i)
-                    .on('click', function() {
-                        const search = $('#search').val().toLowerCase();
-                        const status = $('.status-filter.active').data('status');
-                        getUsers(search, status, i);
-                    });
-
-                if (i === currentPage) {
-                    button.addClass('active');
-                }
-
-                pagination.append(button);
-            }
-        }
-
         function getUsers(search = '', status = '', page = 1) {
             let url = `/admins/users?page=${page}&size=10`;
 
@@ -239,6 +204,60 @@
                 }
             );
         }
+
+        function renderUsers(users) {
+            const results = users.map(user => `
+                <tr data-user-id="${user.id}">
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.nickname}</td>
+                    <td>${user.userRole}</td>
+                </tr>
+            `);
+            $('#userSearchResults').html(results.join(''));
+        }
+
+        function renderPagination(totalPages, currentPage) {
+            const pagination = $('#pagination');
+            pagination.empty();
+
+            const maxVisiblePages = 10; // 한 번에 표시할 최대 페이지 수
+            const halfVisiblePages = Math.floor(maxVisiblePages / 2);
+
+            let startPage = Math.floor((currentPage - 1) / maxVisiblePages) * maxVisiblePages + 1;
+            let endPage = startPage + maxVisiblePages - 1;
+
+            if (endPage > totalPages) {
+                endPage = totalPages;
+            }
+
+            const previousPageSet = Math.max(startPage - maxVisiblePages, 1);
+            const nextPageSet = Math.min(startPage + maxVisiblePages, totalPages);
+
+            pagination.append(`<button class="btn btn-outline-primary" data-page="${previousPageSet}">이전</button>`);
+
+            for (let i = startPage; i <= endPage; i++) {
+                const button = $('<button>')
+                    .addClass('btn btn-outline-primary')
+                    .text(i)
+                    .data('page', i);
+
+                if (i === currentPage) {
+                    button.addClass('active');
+                }
+
+                pagination.append(button);
+            }
+
+            pagination.append(`<button class="btn btn-outline-primary" data-page="${nextPageSet}">다음</button>`);
+        }
+
+        $(document).on('click', '.pagination button', function() {
+            const page = $(this).data('page');
+            const search = $('#search').val().toLowerCase();
+            const status = $('.status-filter.active').data('status') || 'ALL';
+            getUsers(search, status, page);
+        });
 
         $('#searchButton').on('click', function() {
             const search = $('#search').val().toLowerCase();
@@ -269,7 +288,6 @@
             const userId = $(this).data('user-id');
             window.location.href = `adminpage-user-detail.html?userId=${userId}`;
         });
-
 
         // 초기 로드 시 전체 유저 로드
         getUsers();

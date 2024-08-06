@@ -164,6 +164,21 @@
 
 <script>
     $(document).ready(function() {
+        function getReports(page = 1) {
+            let url = `/admins/reports?page=${page}&size=10`;
+
+            apiModule.GET(url,
+                function(response) {
+                    renderReports(response.data.reports);
+                    renderPagination(response.data.totalPages, response.data.currentPage);
+                    $('#totalCount').text(`총 ${response.data.totalElements}건의 신고가 있습니다.`);
+                },
+                function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
+            );
+        }
+
         function renderReports(reports) {
             const results = reports.map(report => {
                 const reason = report.reason.length > 20 ? report.reason.substring(0, 20) + '...' : report.reason;
@@ -184,13 +199,26 @@
             const pagination = $('#pagination');
             pagination.empty();
 
-            for (let i = 1; i <= totalPages; i++) {
+            const maxVisiblePages = 10; // 한 번에 표시할 최대 페이지 수
+            const halfVisiblePages = Math.floor(maxVisiblePages / 2);
+
+            let startPage = Math.floor((currentPage - 1) / maxVisiblePages) * maxVisiblePages + 1;
+            let endPage = startPage + maxVisiblePages - 1;
+
+            if (endPage > totalPages) {
+                endPage = totalPages;
+            }
+
+            const previousPageSet = Math.max(startPage - maxVisiblePages, 1);
+            const nextPageSet = Math.min(startPage + maxVisiblePages, totalPages);
+
+            pagination.append(`<button class="btn btn-outline-primary" data-page="${previousPageSet}">이전</button>`);
+
+            for (let i = startPage; i <= endPage; i++) {
                 const button = $('<button>')
                     .addClass('btn btn-outline-primary')
                     .text(i)
-                    .on('click', function() {
-                        getReports(i);
-                    });
+                    .data('page', i);
 
                 if (i === currentPage) {
                     button.addClass('active');
@@ -198,22 +226,14 @@
 
                 pagination.append(button);
             }
+
+            pagination.append(`<button class="btn btn-outline-primary" data-page="${nextPageSet}">다음</button>`);
         }
 
-        function getReports(page = 1) {
-            let url = `/admins/reports?page=${page}&size=10`;
-
-            apiModule.GET(url,
-                function(response) {
-                    renderReports(response.data.reports);
-                    renderPagination(response.data.totalPages, response.data.currentPage);
-                    $('#totalCount').text(`총 ${response.data.totalElements}건의 신고가 있습니다.`);
-                },
-                function(xhr) {
-                    alert(xhr.responseJSON.message);
-                }
-            );
-        }
+        $(document).on('click', '.pagination button', function() {
+            const page = $(this).data('page');
+            getReports(page);
+        });
 
         $(document).on('click', 'tr[data-report-id]', function() {
             const reportId = $(this).data('report-id');
