@@ -16,6 +16,7 @@
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="../js/apiModule.js"></script>
+  <script src="../js/jquery.twbsPagination.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -25,9 +26,10 @@
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
-  <div>작성한 댓글 목록</div>
+  <div class="page-title">작성한 댓글 목록</div>
   <div id="comment-box" class="list-group list-group-flush">
   </div>
+  <ul id="pagination-comments" class="pagination-sm d-flex justify-content-center"></ul>
 </div>
 
 <!-- The Modal -->
@@ -38,62 +40,88 @@
       <span class="comment-close">&times;</span>
     </div>
     <div class="comment-modal-body">
-      <textarea id="editCommentText"></textarea>
+      <textarea id="editCommentText" class="form-control" rows="4"></textarea>
     </div>
     <div class="comment-modal-footer">
       <button class="btn btn-primary" id="btnUpdateComment">수정</button>
     </div>
   </div>
 </div>
-<script>
-  const comments = [
-    {
-      "boardId": 4,
-      "commentId": 1,
-      "boardTitle": '${board.title}',
-      "content": "댓글 내용 1"
-    },
-    {
-      "boardId": 3,
-      "commentId": 2,
-      "boardTitle": '${board.title}',
-      "content": "댓글 내용 2"
-    },
-    {
-      "boardId": 2,
-      "commentId": 3,
-      "boardTitle": '${board.title}',
-      "content": "댓글 내용 3"
-    },
-    {
-      "boardId": 1,
-      "commentId": 4,
-      "boardTitle": '${board.title}',
-      "content": "댓글 내용 4"
-    }
-  ]
 
-  comments.forEach(comment => {
-    const commentHtml = `
-      <div class="list-group-item d-flex p-3" data-comment-id="${comment.commentId}">
-        <a href="./board-detail.html?board=${comment.boardId}" class="d-flex align-items-center flex-grow-1 gap-2">
-          <div class="d-flex flex-column gap-2">
-            <div>${comment.boardTitle}</div>
-            <div>${comment.content} </div>
+<script>
+  // URL에서 'user' 파라미터 값을 가져옵니다.
+  const urlParams = new URLSearchParams(window.location.search);
+  const userId = urlParams.get('user');
+  console.log("user id : " + userId);
+
+  $(document).ready(function () {
+    loadComments(1); // 초기 페이지 로드
+  });
+
+  // 댓글 HTML 생성 함수
+  function generateCommentHtml(comment) {
+    return `
+      <div class="list-group-item d-flex p-3" data-comment-id="${comment.id}">
+        <a href="./board-detail.html?board=${comment.boardId}" class="d-flex flex-column flex-grow-1">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mypage-entity-title">${comment.content || '내용 없음'}</div>
+            <div class="text-muted">${comment.createdAt}</div>
+          </div>
+         <div class="mt-2 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <div>${comment.nickname}</div>
+            </div>
+            <div class="d-flex gap-3">
+              <div><i class="fa-regular fa-face-smile mypage-smile"></i> ${comment.goodCount}</div>
+              <div><i class="fa-regular fa-face-angry mypage-angry"></i> ${comment.badCount}</div>
+            </div>
           </div>
         </a>
-        <div class="ms-2 d-flex align-items-center">
-          <button type="button" class="btn btn-primary flex-shrink-0 me-2" onclick="editComment(${comment.commentId})">수정</button>
-          <button type="button" class="btn btn-primary flex-shrink-0" onclick="deleteComment(${comment.commentId})">삭제</button>
+        <div class="ms-3 d-flex flex-column gap-2">
+          <button type="button" class="btn btn-primary" onclick="editComment(${comment.id})">수정</button>
+          <button type="button" class="btn btn-primary" onclick="deleteComment(${comment.id})">삭제</button>
         </div>
       </div>
     `;
-    $('#comment-box').append(commentHtml);
-  });
+  }
+
+  let comments = []; // 댓글 데이터를 저장할 배열
+  // 댓글 목록 로드
+  function loadComments(page) {
+    // API 호출
+    apiModule.GET("/comments/users/" + userId + "?page=" + page, function (result) {
+      if (result.data && result.data.data) {
+        comments = result.data.data;
+        $('#comment-box').empty(); // 기존 댓글 삭제
+        comments.forEach(comment => {
+          const commentHtml = generateCommentHtml(comment);
+          $('#comment-box').append(commentHtml);
+        });
+
+        $('#pagination-comments').twbsPagination('destroy');
+        $('#pagination-comments').twbsPagination({
+          totalPages: result.data.totalPages,
+          startPage: page,
+          initiateStartPageClick: false,
+          onPageClick: function (event, page) {
+            loadComments(page);
+            $('html, body').animate({
+              scrollTop: $('#comment-box').offset().top
+            }, 'fast');
+          }
+        });
+      } else {
+        alert("댓글 데이터를 불러오는 데 실패했습니다.");
+      }
+    }, function () {
+      console.log("API 호출 실패");
+    });
+  }
 
   function editComment(commentId) {
     // 해당 commentId로 댓글 정보를 가져옵니다.
-    const comment = comments.find(c => c.commentId === commentId);
+    console.log("id : "+commentId);
+    const comment = comments.find(c => c.id === commentId);
 
     // 댓글 내용을 모달에 채워넣습니다.
     $('#editCommentText').val(comment.content);
@@ -114,37 +142,51 @@
     }
   });
 
+  // 댓글 삭제
+  window.deleteComment = function(commentId) {
+    if (confirm("댓글을 삭제하시겠습니까?")) {
+      apiModule.DELETE("/comments/" + commentId, function(result) {
+        alert("댓글이 삭제되었습니다.");
+        loadComments(1); // 페이지 새로고침
+      }, function(result) {
+        alert("오류!! : " + result.responseJSON.message);
+      });
+    }
+  };
+
   $('#btnUpdateComment').on('click', function () {
     if (confirm("수정하시겠습니까?")) {
-      let commentId = $(this).closest('#editCommentModal').attr('data-comment-id');
-      alert('댓글 : ' + commentId);
-      // $.ajax({
-      //   type: 'PATCH',
-      //   url: ''
-      // })
-      // .done(function (result, status, xhr) {
-      //   // location.replace("./");
-      // })
-      // .fail(function (xhr, status, er) {
-      //   alert("댓글 삭제 실패");
-      // });
+      let commentId = $('#editCommentModal').attr('data-comment-id');
+      let updatedContent = $('#editCommentText').val();
+
+      apiModule.PATCH("/comments/" + commentId, { content: updatedContent }, function(result) {
+        alert("댓글이 수정되었습니다.");
+        $('#editCommentModal').hide();
+        loadComments(1); // 페이지 새로고침
+      }, function(result) {
+        alert("오류!! : " + result.responseJSON.message);
+      });
     }
   });
 
-  function deleteComment(commentId) {
-    if (confirm("삭제하시겠습니까?")) {
-      alert('댓글 : ' + commentId);
-      // $.ajax({
-      //   type: 'DELETE',
-      //   url: ''
-      // })
-      // .done(function (result, status, xhr) {
-      //   // location.replace("./");
-      // })
-      // .fail(function (xhr, status, er) {
-      //   alert("댓글 삭제 실패");
-      // });
-    }
+  // 좋아요 버튼 클릭 핸들러
+  function likeComment(commentId) {
+    apiModule.POST(`/comments/${commentId}/like`, function(result) {
+      alert("댓글에 좋아요를 눌렀습니다.");
+      loadComments(1); // 페이지 새로고침
+    }, function(result) {
+      alert("오류!! : " + result.responseJSON.message);
+    });
+  }
+
+  // 싫어요 버튼 클릭 핸들러
+  function dislikeComment(commentId) {
+    apiModule.POST(`/comments/${commentId}/dislike`, function(result) {
+      alert("댓글에 싫어요를 눌렀습니다.");
+      loadComments(1); // 페이지 새로고침
+    }, function(result) {
+      alert("오류!! : " + result.responseJSON.message);
+    });
   }
 </script>
 </body>
