@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MovieCreditRepository extends JpaRepository<MovieCredit, Long> {
-    Optional<MovieCredit> findByMovieAndCredit(Movie movie, Credit credit);
+    boolean existsByMovieAndCredit(Movie movie, Credit credit);
 
     List<MovieCredit> findByCredit(Credit credit);
 

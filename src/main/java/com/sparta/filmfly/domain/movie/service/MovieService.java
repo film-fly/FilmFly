@@ -119,6 +119,7 @@ public class MovieService {
             for (Movie movie : movieList) {
                 // 영화 배우 목록 API 호출
                 Request creditsRequest = requestBuilder(String.format("%s/3/movie/%d/credits", baseUrl, movie.getId()));
+                log.info("In 배우 데이터 크롤링");
                 Response creditsResponse = httpClient.newCall(creditsRequest).execute();
                 if (!creditsResponse.isSuccessful())
                     throw new ApiRequestFailedException(ResponseCodeEnum.API_REQUEST_FAILED);
@@ -132,21 +133,34 @@ public class MovieService {
                 List<Credit> creditList = apiCreditsResponseDtoList.stream()
                         .map(ApiCreditsResponseDto::toEntity)
                         .collect(Collectors.toList());
-
+                log.info("배우 List 저장");
                 // Credit Entity 저장 : saveAll -> 이미 존재하는 데이터는 업데이트, 없으면 새로 생성
                 creditList = creditRepository.saveAll(creditList);
-
+                    // 영화 list api 요청  가지고 옴
+                    // 영화 list forEach -> 영화 list 에 대해서 배우들 list 를 요청해서 가지고 옴
+                    // 영화 1 -> 배우 4,6,8,3
+                    // 영화 2 -> 배우 3,7,4,2,9
                 // MovieCredit 엔티티 생성 및 저장
-                List<MovieCredit> movieCreditList = creditList.stream()
-                        .map(credit -> {
-                            Optional<MovieCredit> existingMovieCreditOpt = movieCreditRepository.findByMovieAndCredit(movie, credit);
-                            return existingMovieCreditOpt.orElseGet(() -> MovieCredit.builder()
+                log.info("배우-영화 연관관계 저장");
+                creditList.forEach(credit -> {
+                            if(!movieCreditRepository.existsByMovieAndCredit(movie, credit)) {
+                                movieCreditRepository.save( MovieCredit.builder()
                                     .movie(movie)
                                     .credit(credit)
                                     .build());
-                        })
-                        .collect(Collectors.toList());
-                movieCreditRepository.saveAll(movieCreditList);
+                            }
+                                });
+
+//                        .map(credit -> {
+//                            Optional<MovieCredit> existingMovieCreditOpt = movieCreditRepository.findByMovieAndCredit(movie, credit);
+//                            return existingMovieCreditOpt.orElseGet(() -> MovieCredit.builder()
+//                                    .movie(movie)
+//                                    .credit(credit)
+//                                    .build());
+//                        })
+//                        .collect(Collectors.toList());
+//                movieCreditRepository.saveAll(movieCreditList);
+                log.info("Out 배우 데이터 크롤링");
 
                 // Movie 의 movieCredits 리스트 업데이트 ->  CascadeAll 처리
 //                movie.updateMovieCreditList(movieCreditList);
@@ -164,11 +178,6 @@ public class MovieService {
                 .addHeader("accept", "application/json")
                 .addHeader("Authorization", TMDB_API_AUTHORIZATION)
                 .build();
-    }
-
-    private void updateMovieCreditListOnCredit(Credit credit) {
-        List<MovieCredit> movieCreditList = movieCreditRepository.findByCredit(credit);
-        credit.updateMovieCreditList(movieCreditList);
     }
 
     //
