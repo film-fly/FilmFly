@@ -30,6 +30,7 @@ public class DataLoader implements CommandLineRunner {
 //        executeSqlScript("dummy/genre.sql");
 //        executeSqlScript("dummy/movieGenreIds.sql");
     }
+//    사용자 비밀번호는 Test12345! 로 통일
 
     private void executeSqlScript(String filePath) throws Exception {
         ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator(
