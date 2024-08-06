@@ -16,6 +16,7 @@
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="../js/apiModule.js"></script>
+  <script src="../js/jquery.twbsPagination.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -35,43 +36,10 @@
   </div>
 
   <div id="coupon-box"></div>
+  <ul id="pagination-coupons" class="pagination-sm d-flex justify-content-center"></ul>
 </div>
 
 <script>
-
-  /*const coupons = [
-    {
-      "couponId": 1,
-      "couponTitle": "할인 쿠폰",
-      "couponContent": "10% 할인",
-      "couponNumber": "aaaaa",
-      "expirationDate": "2024-12-15"
-    },
-    {
-      "couponId": 2,
-      "couponTitle": "무료 배송 쿠폰",
-      "couponContent": "무료 배송",
-      "couponNumber": "bbbbb",
-      "expirationDate": "2024-10-31"
-    },
-    {
-      "couponId": 3,
-      "couponTitle": "캐시백 쿠폰",
-      "couponContent": "5% 캐시백",
-      "couponNumber": "ccccc",
-      "expirationDate": "2024-7-28"
-    },
-    {
-      "couponId": 4,
-      "couponTitle": "1+1 쿠폰",
-      "couponContent": "1+1 상품 구매",
-      "couponNumber": "ddddd",
-      "expirationDate": "2024-6-30"
-    }
-  ];*/
-
-
-
   function generateCouponHtml(coupon) {
     const isExpired = new Date(coupon.expirationDate) < new Date();
     const couponHtml = `
@@ -94,24 +62,43 @@
   const userId = urlParams.get('user');
 
   let coupons = "";
-  //API 호출
-  apiModule.GET("/coupons/users/" + userId,
-      function (result) {
-        if (result.data && result.data.content) {
-          coupons = result.data.content;
-          $('#coupon-box').empty();
-          coupons.forEach(coupon => {
-            const couponHtml = generateCouponHtml(coupon);
-            $('#coupon-box').append(couponHtml)
-          });
-        } else {
-          alert("쿠폰 데이터를 불러오는 데 실패했습니다.");
-        }
-      },
-      function () {
-        alert(" API 호출 실패");
-      }
-  );
+  $(document).ready(function () {
+    // 쿠폰 로드
+    loadCoupons(1);
+  });
+
+  function loadCoupons(page) {
+    //API 호출
+    apiModule.GET("/coupons/users/" + userId + "?page=" + page,
+        function (result) {
+          if (result.data && result.data.content) {
+            coupons = result.data.content;
+            $('#coupon-box').empty();
+            coupons.forEach(coupon => {
+              const couponHtml = generateCouponHtml(coupon);
+              $('#coupon-box').append(couponHtml)
+            });
+
+            $('#pagination-coupons').twbsPagination('destroy');
+            $('#pagination-coupons').twbsPagination({
+              totalPages: result.data.totalPages,
+              startPage: page,
+              initiateStartPageClick: false,
+              onPageClick: function (event, page) {
+                loadCoupons(page);
+                $('html, body').animate({
+                  scrollTop: $('#coupon-box').offset().top
+                }, 'fast');
+              }
+            });
+          } else {
+            alert("쿠폰 데이터를 불러오는 데 실패했습니다.");
+          }
+        },
+        function () {
+          alert(" API 호출 실패");
+        });
+  }
 
   function renderCoupons(filter) {
     $('#coupon-box').empty();
