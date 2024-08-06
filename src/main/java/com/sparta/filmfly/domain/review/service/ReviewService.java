@@ -5,10 +5,7 @@ import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.repository.BadRepository;
 import com.sparta.filmfly.domain.reaction.repository.GoodRepository;
-import com.sparta.filmfly.domain.review.dto.ReviewCreateRequestDto;
-import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
-import com.sparta.filmfly.domain.review.dto.ReviewUpdateRequestDto;
-import com.sparta.filmfly.domain.review.dto.ReviewUpdateResponseDto;
+import com.sparta.filmfly.domain.review.dto.*;
 import com.sparta.filmfly.domain.review.entity.Review;
 import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.domain.user.entity.User;
@@ -69,7 +66,7 @@ public class ReviewService {
      * 유저의 리뷰 목록
      */
     @Transactional(readOnly = true)
-    public PageResponseDto<List<ReviewResponseDto>> getUsersReviews(Long userId, Pageable pageable) {
+    public PageResponseDto<List<ReviewUserResponseDto>> getUsersReviews(Long userId, Pageable pageable) {
         return reviewRepository.getPageReviewByUserId(userId, pageable);
     }
 

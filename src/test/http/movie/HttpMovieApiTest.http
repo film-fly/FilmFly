@@ -20,7 +20,7 @@ Content-Type: application/json
 }
 
 ### 영화 API 데이터 크롤링 1
-POST http://localhost:8080/movies/api
+POST http://localhost:8080/movies/api/search
 Content-Type: application/json
 
 {
