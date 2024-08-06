@@ -15,7 +15,7 @@ POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "username" : "admin0",
+  "username" : "admin1",
   "password": "Test12345!"
 }
 
@@ -24,7 +24,7 @@ POST http://localhost:8080/movies/api
 Content-Type: application/json
 
 {
-  "page": 1
+  "sort_by": "POPULARITY_DESC"
 }
 
 ### 영화 API 데이터 크롤링 2
