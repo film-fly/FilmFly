@@ -2,7 +2,6 @@ package com.sparta.filmfly.domain.collection.controller;
 
 import com.sparta.filmfly.domain.collection.dto.*;
 import com.sparta.filmfly.domain.collection.service.CollectionService;
-import com.sparta.filmfly.domain.movie.dto.MovieResponseDto;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
@@ -43,6 +42,18 @@ public class CollectionController {
     ) {
         List<CollectionResponseDto> collectionResponseDtoList = collectionService.getAllCollection(userDetails.getUser());
         return ResponseUtils.success(collectionResponseDtoList);
+    }
+
+    /**
+     * 보관함 수정 권한 확인
+     */
+    @GetMapping("/{collectionId}/update-permission")
+    public ResponseEntity<DataResponseDto<Boolean>> getCollectionUpdatePermission(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long collectionId
+    ) {
+        Boolean response = collectionService.getCollectionUpdatePermission(userDetails.getUser(),collectionId);
+        return ResponseUtils.success(response);
     }
 
     /**

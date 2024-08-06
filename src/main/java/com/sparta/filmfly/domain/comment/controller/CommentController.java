@@ -87,6 +87,18 @@ public class CommentController {
     /**
      * 댓글 수정 권한 확인
      */
+    @GetMapping("/comments/{commentId}/update-permission")
+    public ResponseEntity<DataResponseDto<Boolean>> getCommentUpdatePermission(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long commentId
+    ) {
+        Boolean response = commentService.getCommentUpdatePermission(userDetails.getUser(),commentId);
+        return ResponseUtils.success(response);
+    }
+
+    /**
+     * 댓글 수정 정보
+     */
     @GetMapping("/comments/{commentId}/for-update")
     public ResponseEntity<DataResponseDto<CommentUpdateResponseDto>> forUpdateComment(
         @AuthenticationPrincipal UserDetailsImpl userDetails,

@@ -16,6 +16,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -60,18 +61,17 @@ public class Comment extends TimeStampEntity {
     /**
      * 요청한 유저가 해당 댓글 소유주인지 유효성 검사
      */
-    public void validateOwner(User requestUser) {
-        if(this.user.getId() != requestUser.getId()) {
-            throw new AccessDeniedException(ResponseCodeEnum.COMMENT_NOT_OWNER);
+    public void checkBoardId(Long boardId) {
+        if(this.board.getId() != boardId) {
+            throw new AccessDeniedException(ResponseCodeEnum.COMMENT_PATH_MISMATCH);
         }
     }
 
     /**
-     * 요청한 유저가 해당 댓글 소유주인지 유효성 검사
+     * 요청한 유저가 해당 댓글의 소유주인지 확인
      */
-    public void validateBoardId(Long boardId) {
-        if(this.board.getId() != boardId) {
-            throw new AccessDeniedException(ResponseCodeEnum.COMMENT_PATH_MISMATCH);
-        }
+    public void checkOwnerUser(User requestUser) {
+        if(!Objects.equals(this.user.getId(), requestUser.getId()))
+            throw new AccessDeniedException(ResponseCodeEnum.COMMENT_NOT_OWNER);
     }
 }
