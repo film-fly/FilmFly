@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "username" : "admin1",
-  "password": "Test123!@"
+  "password": "Test12345!"
 }
 ### ADMIN 로그인 2
 POST http://localhost:8080/users/login
@@ -12,7 +12,7 @@ Content-Type: application/json
 
 {
   "username" : "admin2221",
-  "password": "Test123!22"
+  "password": "Test12345!"
 }
 
 ### ADMIN 로그인 2
@@ -21,15 +21,15 @@ Content-Type: application/json
 
 {
   "username" : "admin222",
-  "password": "Test123!22"
+  "password": "Test12345!"
 }
 ### ADMIN 회원가입 2
 POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
-  "username": "admin222132",
-  "password": "Test123!22",
+  "username": "admin1",
+  "password": "Test12345!",
   "email" : "dmarb0313@gmail.com",
   "adminPassword": "1234"
 }

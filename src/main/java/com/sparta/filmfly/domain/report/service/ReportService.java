@@ -78,16 +78,17 @@ public class ReportService {
         Page<Report> reportsPage = reportRepository.findAll(pageable);
 
         List<ReportResponseDto> reportResponseDtos = reportsPage.getContent().stream()
-                .map(report -> ReportResponseDto.builder()
-                        .id(report.getId())
-                        .reporterId(report.getReporterId().getId())
-                        .reportedId(report.getReportedId().getId())
-                        .content(report.getContent())
-                        .typeId(report.getTypeId())
-                        .type(report.getType())
-                        .reason(report.getReason())
-                        .createdAt(report.getCreatedAt().toString())
-                        .build())
+                .map(report -> {
+                    User reporter = userRepository.findByIdOrElseThrow(report.getReporterId().getId());
+                    User reported = userRepository.findByIdOrElseThrow(report.getReportedId().getId());
+                    return ReportResponseDto.builder()
+                            .id(report.getId())
+                            .reporterNickname(reporter.getNickname())
+                            .reportedNickname(reported.getNickname())
+                            .reason(report.getReason())
+                            .createdAt(report.getCreatedAt().toString())
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         return ReportPageResponseDto.builder()
@@ -96,6 +97,29 @@ public class ReportService {
                 .totalPages(reportsPage.getTotalPages())
                 .currentPage(reportsPage.getNumber() + 1)
                 .pageSize(size)
+                .build();
+    }
+
+    /**
+     * 신고 상세 조회
+     */
+    @Transactional(readOnly = true)
+    public ReportResponseDto getReportDetail(Long reportId) {
+        Report report = reportRepository.findByIdOrElseThrow(reportId);
+        User reporter = userRepository.findByIdOrElseThrow(report.getReporterId().getId());
+        User reported = userRepository.findByIdOrElseThrow(report.getReportedId().getId());
+
+        return ReportResponseDto.builder()
+                .id(report.getId())
+                .reporterId(reporter.getId())
+                .reporterNickname(reporter.getNickname())
+                .reportedId(reported.getId())
+                .reportedNickname(reported.getNickname())
+                .content(report.getContent())
+                .typeId(report.getTypeId())
+                .type(report.getType())
+                .reason(report.getReason())
+                .createdAt(report.getCreatedAt().toString())
                 .build();
     }
 
