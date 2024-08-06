@@ -8,6 +8,7 @@ import com.sparta.filmfly.domain.movie.repository.GenreRepository;
 import com.sparta.filmfly.domain.movie.repository.MovieCreditRepository;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.review.repository.ReviewRepository;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.common.util.JsonFormatter;
 import com.sparta.filmfly.global.exception.custom.detail.ApiRequestFailedException;
@@ -59,6 +60,15 @@ public class MovieService {
         long total = movieRepository.countByTitleContaining(keyword);
         // PageImpl 을 사용하여 List<Movie> 를 Page<Movie> 로 변환
         return new PageImpl<>(movieList, pageable, total);
+    }
+
+    /**
+     * 영화 검색 (페이징)
+     */
+    public PageResponseDto<List<MovieReactionsResponseDto>> getPageMovieBySearchCond(
+        MovieSearchCond searchCond, Pageable pageable
+    ) {
+        return movieRepository.getPageMovieBySearchCond(searchCond, pageable);
     }
 
     public Page<Movie> getMovieTrendList(Pageable pageable) {
