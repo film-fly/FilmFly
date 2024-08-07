@@ -188,4 +188,6 @@ public class UserController {
         List<UserOwnerCheckResponseDto> responseDtos = userService.checkOwner(userDetails.getUser(), requestDto);
         return ResponseUtils.success(responseDtos);
     }
+
+
 }

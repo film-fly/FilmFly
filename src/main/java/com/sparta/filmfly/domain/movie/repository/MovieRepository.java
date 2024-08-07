@@ -23,4 +23,5 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieReposi
 
     long countByTitleContaining(String keyword);
 
+    long count();
 }

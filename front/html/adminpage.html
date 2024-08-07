@@ -30,18 +30,43 @@
             display: flex;
             width: 100%;
         }
-        .content-wrapper {
-            margin-left: 250px;
-        }
+
         .main-sidebar {
             width: 250px;
         }
         .content-wrapper {
             display: flex;
             flex-direction: column;
-            margin-top: 100px;
-            margin-right: 100px;
             background-color: white;
+            align-items: center;
+            margin: 50px auto;
+        }
+        .small-box {
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-align: center;
+        }
+        .bg-info {
+            background-color: #17a2b8 !important;
+            color: white;
+        }
+        .bg-success {
+            background-color: #28a745 !important;
+            color: white;
+        }
+        .bg-warning {
+            background-color: #ffc107 !important;
+            color: white;
+        }
+        .content{
+            width: 600px;
+            display: flex;
+            flex-direction: column;
+            margin-left: 100px;
         }
     </style>
 </head>
@@ -100,41 +125,32 @@
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
-                    <div id="mainDiv">
-                        <div class="row">
-                            <div class="col-lg-4 col-6">
-                                <div class="small-box bg-info">
-                                    <div class="inner">
-                                        <h3 id="userCount">123</h3>
-                                        <p>유저 수</p>
-                                    </div>
-                                    <div class="icon">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-6">
-                                <div class="small-box bg-success">
-                                    <div class="inner">
-                                        <h3 id="postCount">456</h3>
-                                        <p>게시물 수</p>
-                                    </div>
-                                    <div class="icon">
-                                        <i class="fas fa-file-alt"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-6">
-                                <div class="small-box bg-warning">
-                                    <div class="inner">
-                                        <h3 id="movieCount">789</h3>
-                                        <p>영화 수</p>
-                                    </div>
-                                    <div class="icon">
-                                        <i class="fas fa-film"></i>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- Statistics Section -->
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3 id="userCount">0</h3>
+                            <p>유저 수</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3 id="movieCount">0</h3>
+                            <p>영화 수</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-film"></i>
+                        </div>
+                    </div>
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3 id="postCount">0</h3>
+                            <p>게시물 수</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-file-alt"></i>
                         </div>
                     </div>
                 </div><!--/. container-fluid -->
@@ -147,22 +163,14 @@
 <!-- ./wrapper -->
 
 <script>
-    function test() {
-        $('.main-sidebar').toggleClass('sidebar-collapse');
-    }
-
-    // 임의 데이터로 설정 (실제 데이터 사용 시 AJAX 요청)
     $(document).ready(function() {
-        // 실제 데이터 가져올 때 사용
-        // $.ajax({
-        //   url: '/api/admin/stats', // 백엔드 API 엔드포인트
-        //   method: 'GET',
-        //   success: function(data) {
-        //     $('#userCount').text(data.userCount);
-        //     $('#postCount').text(data.postCount);
-        //     $('#movieCount').text(data.movieCount);
-        //   }
-        // });
+        apiModule.GET('/admins/statistics', function(data) {
+            $('#userCount').text(data.data.userCount);
+            $('#postCount').text(data.data.boardCount);
+            $('#movieCount').text(data.data.movieCount);
+        }, function(error) {
+            console.error("Error fetching stats:", error);
+        });
     });
 </script>
 </body>

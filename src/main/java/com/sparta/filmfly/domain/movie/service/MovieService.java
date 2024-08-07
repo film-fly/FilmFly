@@ -254,4 +254,11 @@ public class MovieService {
                 .build();
     }
 
+    /**
+     * 영화 수 반환
+     */
+    public long getMovieCount() {
+        return movieRepository.count();
+    }
+
 }

@@ -395,4 +395,11 @@ public class UserService {
         return existsAndOwned;
     }
 
+    /**
+     * 유저 수 반환
+     */
+    public long getUserCount() {
+        return userRepository.count();
+    }
+
 }

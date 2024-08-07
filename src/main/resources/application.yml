@@ -65,7 +65,7 @@ admin_password: ${ADMIN_PASSWORD}
 
 kakao:
   client_id: ${CLIENT_ID}
-  redirect_uri: https://localhost/users/kakao/callback
+  redirect_uri: http://localhost:8080/users/kakao/callback
 
 cloud:
   aws:
