@@ -384,7 +384,7 @@
         /* 장르 가져오기 */
         const moviePost = document.getElementById('movie-post');
         let genre;
-        apiModule.GET("/movies/genres",
+        apiModule.GET("/genres",
             function (response) {
                 const genres = response.data;
                 const randomNum = Math.floor(Math.random() * (genres.length/2)+(genres.length/2));

@@ -112,7 +112,7 @@ public class MovieController {
     /**
      * 최신 인기 영화
      */
-    @PostMapping("/movies/trend")
+    @GetMapping("/movies/trend")
     public ResponseEntity<DataResponseDto<PageResponseDto<List<MovieResponseDto>>>> getMovieList(
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size,
@@ -120,7 +120,7 @@ public class MovieController {
         @RequestParam(defaultValue = "true") boolean isAsc
 //        @RequestParam
     ) {
-            log.info("In getListMovie");
+            log.info("In getTrendMovie");
             Sort sort = isAsc ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
             Pageable pageable = PageRequest.of(page-1, size, sort);
             Page<Movie> moviePage = movieService.getMovieTrendList(pageable);
