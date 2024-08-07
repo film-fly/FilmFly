@@ -28,10 +28,10 @@
   <div class="mb-3">
     <div class="d-flex align-items-center">
       <div class="me-3">
-        <img src="../images/profileImg.png" class="img-profile-big-size" alt="프로필 사진">
+        <img id="profile-picture" src="../images/profileImg.png" class="img-profile-big-size" alt="프로필 사진">
       </div>
-      <div>
-        ${user.nickname}
+      <div id="nickname">
+        ${nickname}
       </div>
       <div class="d-flex justify-content-end flex-grow-1">
         <button class="btn btn-primary" onclick="location.href='./mypage-update.html'">수정</button>
@@ -39,7 +39,7 @@
     </div>
     <div class="mt-2">
       <p class="fs-5 fw-bold">한줄 소개</p>
-      <p class="p-3">${user.introduce}</p>
+      <p class="p-3" id="introduce">${user.introduce}</p>
     </div>
   </div>
 
@@ -60,10 +60,10 @@
   <div class="card w-100 mb-3">
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
-        <a href="./mypage-collection.html">
+        <a id="collection-link" href="#">
           <span>영화 보관함</span>
           <div>
-<!--            <span>12</span>-->
+            <!--            <span>12</span>-->
             <i class="fa-solid fa-chevron-right"></i>
           </div>
         </a>
@@ -74,7 +74,7 @@
   <div class="card w-100 mb-3">
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
-        <a href="./mypage-review.html">
+        <a id="review-link" href="#">
           <span>작성한 리뷰</span>
           <div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -82,7 +82,7 @@
         </a>
       </li>
       <li class="list-group-item">
-        <a href="./mypage-board.html">
+        <a id="board-link" href="#">
           <span>작성한 게시물</span>
           <div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -90,7 +90,7 @@
         </a>
       </li>
       <li class="list-group-item">
-        <a href="./mypage-comment.html">
+        <a id="comment-link" href="#">
           <span>작성한 댓글</span>
           <div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -103,7 +103,7 @@
   <div class="card w-100 mb-3">
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
-        <a href="./mypage-favorite-movie.html">
+        <a id="favorite-movie-link" href="#">
           <span>찜한 영화 목록</span>
           <div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -111,7 +111,7 @@
         </a>
       </li>
       <li class="list-group-item">
-        <a href="./mypage-good.html">
+        <a id="good-link" href="#">
           <span>좋아요</span>
           <div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -119,7 +119,7 @@
         </a>
       </li>
       <li class="list-group-item">
-        <a href="./mypage-bad.html">
+        <a id="bad-link" href="#">
           <span>싫어요</span>
           <div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -132,7 +132,7 @@
   <div class="card w-100 mb-3">
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
-        <a href="./mypage-coupon.html">
+        <a id="coupon-link" href="#">
           <span>받은 쿠폰 확인</span>
           <div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -145,7 +145,7 @@
   <div class="card w-100 mb-3">
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
-        <a href="./mypage-block.html">
+        <a id="block-link" href="#">
           <span>차단 목록</span>
           <div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -170,12 +170,49 @@
 </div>
 
 <script>
-  $('#btnWithdraw').on('click', function () {
-    alert('탈퇴 하시겠습니까?');
-  });
+  let userId = "";
 
-  $('#btnActiveUser').on('click', function () {
-    alert('복구 하시겠습니까?');
+  // 로그인한 계정 정보 가져옴 (프로필Url, id, Nickname, introduce)
+  $(document).ready(function () {
+    apiModule.GET("/users/myInfo",
+        function (response) {
+          const data = response.data;
+
+          // 프로필 이미지 설정
+          const profileImage = data.pictureUrl || '../images/profileImg.png';
+          $('#profile-picture').attr('src', profileImage);
+
+          // 닉네임 설정
+          $('#nickname').text(data.nickname);
+
+          // 한줄 소개 설정(nullable = true)
+          $('#introduce').text(data.introduce || "등록된 소개가 없습니다.");
+
+          // 유저 ID 저장
+          userId = data.id;
+
+          // 링크 동적 설정
+          $('#collection-link').attr('href', `./mypage-collection.html?user=${userId}`);
+          $('#review-link').attr('href', `./mypage-review.html?user=${userId}`);
+          $('#board-link').attr('href', `./mypage-board.html?user=${userId}`);
+          $('#comment-link').attr('href', `./mypage-comment.html?user=${userId}`);
+          $('#favorite-movie-link').attr('href', `./mypage-favorite-movie.html?user=${userId}`);
+          $('#good-link').attr('href', `./mypage-good.html?user=${userId}`);
+          $('#bad-link').attr('href', `./mypage-bad.html?user=${userId}`);
+          $('#coupon-link').attr('href', `./mypage-coupon.html?user=${userId}`);
+          $('#block-link').attr('href', `./mypage-block.html?user=${userId}`);
+        }, function (){
+          alert("유저 정보를 불러오는데 실패했습니다.");
+        }
+    );
+
+    $('#btnWithdraw').on('click', function () {
+      alert('탈퇴 하시겠습니까?');
+    });
+
+    $('#btnActiveUser').on('click', function () {
+      alert('복구 하시겠습니까?');
+    });
   });
 </script>
 </body>
