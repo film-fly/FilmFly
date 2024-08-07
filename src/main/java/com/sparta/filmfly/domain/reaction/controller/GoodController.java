@@ -5,6 +5,7 @@ import com.sparta.filmfly.domain.reaction.dto.BadRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionBoardResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionCommentResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionMovieResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionReviewResponseDto;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
@@ -108,6 +109,22 @@ public class GoodController {
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
         PageResponseDto<List<ReactionBoardResponseDto>> responseDto = goodService.getPageGoodBoard(userId, pageable);
+        return ResponseUtils.success(responseDto);
+    }
+
+    /**
+     * 사용자가 좋아요를 누른 댓글 조회
+     */
+    @GetMapping("/comments/users/{userId}")
+    public ResponseEntity<DataResponseDto<PageResponseDto<List<ReactionCommentResponseDto>>>> getPageGoodComment(
+        @PathVariable Long userId,
+        @RequestParam(required = false, defaultValue = "1") int page,
+        @RequestParam(required = false, defaultValue = "10") int size,
+        @RequestParam(required = false, defaultValue = "id") String sortBy,
+        @RequestParam(required = false, defaultValue = "false") boolean isAsc
+    ) {
+        Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
+        PageResponseDto<List<ReactionCommentResponseDto>> responseDto = goodService.getPageGoodComment(userId, pageable);
         return ResponseUtils.success(responseDto);
     }
 

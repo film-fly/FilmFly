@@ -9,6 +9,7 @@ import com.sparta.filmfly.domain.reaction.dto.BadRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionBoardResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionCommentResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionMovieResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionReviewResponseDto;
 import com.sparta.filmfly.domain.reaction.entity.Good;
@@ -122,5 +123,12 @@ public class GoodService {
      */
     public PageResponseDto<List<ReactionBoardResponseDto>> getPageGoodBoard(Long userId, Pageable pageable) {
         return goodRepository.getPageBoardByUserGood(userId, pageable);
+    }
+
+    /**
+     * 사용자가 좋아요를 누른 댓글 조회
+     */
+    public PageResponseDto<List<ReactionCommentResponseDto>> getPageGoodComment(Long userId, Pageable pageable) {
+        return goodRepository.getPageCommentByUserGood(userId, pageable);
     }
 }

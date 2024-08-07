@@ -74,6 +74,8 @@
     loadReviews(1);
     // 게시물 로드
     loadBoards(1);
+    // 댓글 로드
+    loadComments(1);
   });
 
   // 영화 로딩
@@ -172,6 +174,37 @@
     );
   }
 
+  // 댓글 목록 로드
+  function loadComments(page) {
+    apiModule.GET(`/goods/comments/users/${userId}?page=${page}`, function (result) {
+      if (result.data && result.data.data) {
+        comments = result.data.data;
+        $('#comment_list').empty(); // 기존 댓글 삭제
+        comments.forEach(comment => {
+          const commentHtml = generateCommentHtml(comment);
+          $('#comment_list').append(commentHtml);
+        });
+
+        $('#pagination-good-comments').twbsPagination('destroy');
+        $('#pagination-good-comments').twbsPagination({
+          totalPages: result.data.totalPages,
+          startPage: page,
+          initiateStartPageClick: false,
+          onPageClick: function (event, page) {
+            loadComments(page);
+            $('html, body').animate({
+              scrollTop: $('#comment_content').offset().top
+            }, 'fast');
+          }
+        });
+      } else {
+        alert("댓글 데이터를 불러오는 데 실패했습니다.");
+      }
+    }, function () {
+      console.log("API 호출 실패");
+    });
+  }
+
   // 좋아요 취소
   function removeGood(id, type) {
     let data = {
@@ -266,6 +299,28 @@
         </a>
         <div class="ms-3 d-flex flex-column gap-2">
           <button type="button" class="btn btn-primary" onclick="removeGood(${board.boardId}, 'board')">취소</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // 댓글 HTML 생성 함수
+  function generateCommentHtml(comment) {
+    return `
+      <div class="list-group-item d-flex p-3" data-comment-id="${comment.id}">
+        <a href="./board-detail.html?board=${comment.boardId}" class="d-flex flex-column flex-grow-1">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mypage-entity-title">${comment.content || '내용 없음'}</div>
+            <div class="text-muted">${comment.createdAt}</div>
+          </div>
+          <div class="mt-2 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <div>${comment.nickname}</div>
+            </div>
+          </div>
+        </a>
+        <div class="ms-3 d-flex flex-column gap-2">
+          <button type="button" class="btn btn-primary" onclick="removeGood(${comment.commentId}, 'board')">취소</button>
         </div>
       </div>
     `;

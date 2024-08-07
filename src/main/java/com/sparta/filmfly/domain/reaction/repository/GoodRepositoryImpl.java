@@ -3,9 +3,11 @@ package com.sparta.filmfly.domain.reaction.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.filmfly.domain.board.entity.QBoard;
+import com.sparta.filmfly.domain.comment.entity.QComment;
 import com.sparta.filmfly.domain.movie.entity.QMovie;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.dto.ReactionBoardResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionCommentResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionMovieResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionReviewResponseDto;
 import com.sparta.filmfly.domain.reaction.entity.QBad;
@@ -169,6 +171,57 @@ public class GoodRepositoryImpl implements GoodRepositoryCustom {
         PageImpl<ReactionBoardResponseDto> page = new PageImpl<>(fetch, pageable, total);
 
         return PageResponseDto.<List<ReactionBoardResponseDto>>builder()
+            .totalElements(page.getTotalElements())
+            .totalPages(page.getTotalPages())
+            .currentPage(page.getNumber() + 1)
+            .pageSize(page.getSize())
+            .data(page.getContent())
+            .build();
+    }
+
+    /**
+     * 사용자가 좋아요를 누른 댓글 조회 (페이징)
+     */
+    @Override
+    public PageResponseDto<List<ReactionCommentResponseDto>> getPageCommentByUserGood(
+        Long userId, Pageable pageable
+    ) {
+        QBoard qBoard = QBoard.board;
+        QComment qComment = QComment.comment;
+        QGood qGood = QGood.good;
+
+        List<ReactionCommentResponseDto> fetch = queryFactory
+            .select(Projections.constructor(ReactionCommentResponseDto.class,
+                qGood.id,
+                qComment.id,
+                qComment.user.id,
+                qComment.board.id,
+                qComment.user.nickname,
+                qComment.content,
+                qComment.createdAt
+            ))
+            .from(qGood)
+            .join(qComment).on(
+                qGood.typeId.eq(qComment.id)
+                    .and(qGood.user.id.eq(userId))
+            )
+            .join(qComment).on(qComment.board.eq(qBoard))
+            .where(qGood.type.eq(ReactionContentTypeEnum.COMMENT))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        Long total = queryFactory
+            .select(qComment.count())
+            .from(qComment)
+            .innerJoin(qGood).on(qGood.type.eq(ReactionContentTypeEnum.COMMENT)
+                .and(qGood.typeId.eq(qComment.id))
+                .and(qGood.user.id.eq(userId)))
+            .fetchOne();
+
+        PageImpl<ReactionCommentResponseDto> page = new PageImpl<>(fetch, pageable, total);
+
+        return PageResponseDto.<List<ReactionCommentResponseDto>>builder()
             .totalElements(page.getTotalElements())
             .totalPages(page.getTotalPages())
             .currentPage(page.getNumber() + 1)
