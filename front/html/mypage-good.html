@@ -45,9 +45,13 @@
       <div class="list-group list-group-flush" id="review_list"></div>
       <ul id="pagination-good-reviews" class="pagination-sm d-flex justify-content-center"></ul>
     </div>
-    <div class="tab_content list-group list-group-flush" id="board_content">
+    <div class="tab_content" id="board_content">
+      <div class="list-group list-group-flush" id="board_list"></div>
+      <ul id="pagination-good-boards" class="pagination-sm d-flex justify-content-center"></ul>
     </div>
-    <div class="tab_content list-group list-group-flush" id="comment_content">
+    <div class="tab_content" id="comment_content">
+      <div class="list-group list-group-flush" id="comment_list"></div>
+      <ul id="pagination-good-comments" class="pagination-sm d-flex justify-content-center"></ul>
     </div>
   </div>
 </div>
@@ -68,6 +72,8 @@
     loadMovies(1);
     // 리뷰 로드
     loadReviews(1);
+    // 게시물 로드
+    loadBoards(1);
   });
 
   // 영화 로딩
@@ -128,6 +134,40 @@
           });
         },
         function () {
+        }
+    );
+  }
+
+  // 게시물 로딩
+  function loadBoards(page) {
+    apiModule.GET(`/goods/boards/users/${userId}?page=${page}`,
+        function (result) {
+          if (result.data && result.data.data) {
+            const boards = result.data.data;
+            $('#board_list').empty(); // 기존 게시물 삭제
+            boards.forEach(board => {
+              const boardHtml = generateBoardHtml(board);
+              $('#board_list').append(boardHtml);
+            });
+
+            $('#pagination-good-boards').twbsPagination('destroy');
+            $('#pagination-good-boards').twbsPagination({
+              totalPages: result.data.totalPages,
+              startPage: page,
+              initiateStartPageClick: false,
+              onPageClick: function (event, page) {
+                loadBoards(page);
+                $('html, body').animate({
+                  scrollTop: $('#board_content').offset().top
+                }, 'fast');
+              }
+            });
+          } else {
+            alert("게시물 데이터를 불러오는 데 실패했습니다.");
+          }
+        },
+        function () {
+          alert("API 호출 실패");
         }
     );
   }
@@ -200,10 +240,35 @@
         </a>
       </div>
       <div class="d-flex flex-column justify-content-center ms-3 gap-2">
-        <button type="button" class="btn btn-primary" onclick="removeGood(${review.id}, 'review')">취소</button>
+        <button type="button" class="btn btn-primary" onclick="removeGood(${review.reviewId}, 'review')">취소</button>
       </div>
     </div>
   `;
+  }
+
+  // 게시물 HTML 생성 함수
+  function generateBoardHtml(board) {
+    return `
+      <div class="list-group-item d-flex p-3" data-board-id="${board.id}">
+        <a href="board-detail.html?board=${board.boardId}" class="d-flex flex-column flex-grow-1">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mypage-entity-title">${board.title || '제목 미확인'}</div>
+            <div class="text-muted">${board.createdAt}</div>
+          </div>
+          <div class="mt-2 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <div>${board.nickname || '닉네임 없음'}</div>
+            </div>
+            <div class="d-flex gap-3">
+              <div><i class="fa-regular fa-eye"></i> ${board.hits}</div>
+            </div>
+          </div>
+        </a>
+        <div class="ms-3 d-flex flex-column gap-2">
+          <button type="button" class="btn btn-primary" onclick="removeGood(${board.boardId}, 'board')">취소</button>
+        </div>
+      </div>
+    `;
   }
 </script>
 </body>

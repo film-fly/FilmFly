@@ -2,8 +2,10 @@ package com.sparta.filmfly.domain.reaction.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sparta.filmfly.domain.board.entity.QBoard;
 import com.sparta.filmfly.domain.movie.entity.QMovie;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
+import com.sparta.filmfly.domain.reaction.dto.ReactionBoardResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionMovieResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionReviewResponseDto;
 import com.sparta.filmfly.domain.reaction.entity.QBad;
@@ -122,7 +124,56 @@ public class GoodRepositoryImpl implements GoodRepositoryCustom {
             .totalPages(page.getTotalPages())
             .currentPage(page.getNumber() + 1)
             .pageSize(page.getSize())
-            .data(fetch)
+            .data(page.getContent())
+            .build();
+    }
+
+    /**
+     * 사용자가 좋아요를 누른 게시물 조회 (페이징)
+     */
+    @Override
+    public PageResponseDto<List<ReactionBoardResponseDto>> getPageBoardByUserGood(
+        Long userId, Pageable pageable
+    ) {
+        QBoard qBoard = QBoard.board;
+        QGood qGood = QGood.good;
+
+        List<ReactionBoardResponseDto> fetch = queryFactory
+            .select(Projections.constructor(ReactionBoardResponseDto.class,
+                qGood.id,
+                qBoard.id,
+                qBoard.user.id,
+                qBoard.title,
+                qBoard.user.nickname,
+                qBoard.createdAt,
+                qBoard.hits
+            ))
+            .from(qGood)
+            .join(qBoard).on(
+                qGood.typeId.eq(qBoard.id)
+                    .and(qGood.user.id.eq(userId))
+            )
+            .where(qGood.type.eq(ReactionContentTypeEnum.BOARD))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        Long total = queryFactory
+            .select(qBoard.count())
+            .from(qBoard)
+            .join(qGood).on(qGood.type.eq(ReactionContentTypeEnum.BOARD)
+                .and(qGood.typeId.eq(qBoard.id))
+                .and(qGood.user.id.eq(userId)))
+            .fetchOne();
+
+        PageImpl<ReactionBoardResponseDto> page = new PageImpl<>(fetch, pageable, total);
+
+        return PageResponseDto.<List<ReactionBoardResponseDto>>builder()
+            .totalElements(page.getTotalElements())
+            .totalPages(page.getTotalPages())
+            .currentPage(page.getNumber() + 1)
+            .pageSize(page.getSize())
+            .data(page.getContent())
             .build();
     }
 }
