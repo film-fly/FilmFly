@@ -282,30 +282,16 @@
 </body>
 <script>
     function loginCheck() {
-        let auth = getCookie('accessToken');
-        if (auth === undefined || auth === '') {
-            console.log('사용자 없음');
-            window.location.href = window.location.host + '/filmfly/front/html/login.html';
-        } else {
-            console.log('사용자 확인');
-        }
-    }
+        apiModule.GET("/users",
+            function (response) {
+                console.log('사용자 확인');
+            },
+            function (xhr, status, error) {
+                console.log('사용자 없음');
+                window.location.href = window.location.protocol + '//' + window.location.host + '/film-fly/front/html/login.html';
 
-    function getCookie(cookieName) {
-        let cookie = ';'+document.cookie;
-        if (cookie.length > 0) {
-            let startIndex = cookie.indexOf(';'+cookieName+'=');
-            if (startIndex !== -1) {
-                startIndex += cookieName.length+1;
-                let endIndex = cookie.indexOf(";", startIndex);
-                if (endIndex === -1) endIndex = cookie.length;
-                return cookie.substring(startIndex + 1, endIndex);
-            } else {
-                return false;
             }
-        } else {
-            return false;
-        }
+        )
     }
 
     $(document).ready(function () {
