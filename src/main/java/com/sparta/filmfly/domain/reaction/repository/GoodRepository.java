@@ -5,11 +5,14 @@ import com.sparta.filmfly.domain.reaction.entity.Good;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AlreadyActionException;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
+import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface GoodRepository extends JpaRepository<Good, Long> {
+public interface GoodRepository extends JpaRepository<Good, Long>, GoodRepositoryCustom {
 
     Optional<Good> findByTypeIdAndTypeAndUserId(Long typeId, ReactionContentTypeEnum type, Long userId);
     default Good findByTypeIdAndTypeAndUserIdOrElseThrow(Long typeId, ReactionContentTypeEnum type, Long userId) {
@@ -28,4 +31,5 @@ public interface GoodRepository extends JpaRepository<Good, Long> {
 
     boolean existsByIdAndUserId(Long id, Long userId);
 
+    Page<Good> findByUserIdAndType(Long userId, ReactionContentTypeEnum type, Pageable pageable);
 }

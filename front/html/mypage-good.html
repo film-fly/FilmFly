@@ -16,6 +16,7 @@
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="../js/apiModule.js"></script>
+  <script src="../js/jquery.twbsPagination.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -36,9 +37,13 @@
     <input id="comment" type="radio" name="tab_item">
     <label class="tab_item" for="comment">COMMENT</label>
 
-    <div class="tab_content list-group list-group-flush" id="movie_content">
+    <div class="tab_content" id="movie_content">
+      <div class="list-group list-group-flush" id="movie_list"></div>
+      <ul id="pagination-good-movies" class="pagination-sm d-flex justify-content-center"></ul>
     </div>
-    <div class="tab_content list-group list-group-flush" id="review_content">
+    <div class="tab_content" id="review_content">
+      <div class="list-group list-group-flush" id="review_list"></div>
+      <ul id="pagination-good-reviews" class="pagination-sm d-flex justify-content-center"></ul>
     </div>
     <div class="tab_content list-group list-group-flush" id="board_content">
     </div>
@@ -48,241 +53,152 @@
 </div>
 
 <script>
-  const initData = {
-    movies: [
-      {
-        "id": 1,
-        "url": "../images/logo.png",
-        "title": "가나다라마바사아자차카타파하가나다라마바사아자차카타"
-      },
-      {
-        "id": 2,
-        "url": "../images/logo.png",
-        "title": "영화 제목 2"
-      },
-      {
-        "id": 3,
-        "url": "../images/logo.png",
-        "title": "영화 제목 3"
-      },
-      {
-        "id": 4,
-        "url": "../images/logo.png",
-        "title": "영화 제목 4"
-      }
-    ],
-    reviews: [
-      {
-        "movieId": 1,
-        "movieTitle": "영화 제목 1",
-        "reviewId": 1,
-        "reviewTitle": "리뷰 제목 1",
-        "nickname": "닉네임 1",
-        "rating": 3.2,
-        "profileImg": "../images/profileImg.png"
-      },
-      {
-        "movieId": 2,
-        "movieTitle": "영화 제목 2",
-        "reviewId": 2,
-        "reviewTitle": "리뷰 제목 2",
-        "nickname": "닉네임 2",
-        "rating": 4.4,
-        "profileImg": "../images/profileImg.png"
-      },
-      {
-        "movieId": 3,
-        "movieTitle": "영화 제목 3",
-        "reviewId": 3,
-        "reviewTitle": "리뷰 제목 3",
-        "nickname": "닉네임 3",
-        "rating": 2.6,
-        "profileImg": "../images/profileImg.png"
-      },
-      {
-        "movieId": 4,
-        "movieTitle": "영화 제목 4",
-        "reviewId": 4,
-        "reviewTitle": "리뷰 제목 4",
-        "nickname": "닉네임 4",
-        "rating": 4.1,
-        "profileImg": "../images/profileImg.png"
-      }
-    ],
-    boards: [
-      {
-        "id": 1,
-        "title": "게시물 제목 1",
-        "nickname": "닉네임 1"
-      },
-      {
-        "id": 2,
-        "title": "게시물 제목 2",
-        "nickname": "닉네임 2"
-      },
-      {
-        "id": 3,
-        "title": "게시물 제목 3",
-        "nickname": "닉네임 3"
-      },
-      {
-        "id": 4,
-        "title": "게시물 제목 4",
-        "nickname": "닉네임 4"
-      }
-    ],
-    comments: [
-      {
-        "id": 1,
-        "commentContent": "댓글 내용 1",
-        "boardTitle": "${board.title}",
-        "nickname": "닉네임 1"
-      },
-      {
-        "id": 2,
-        "commentContent": "댓글 내용 2",
-        "boardTitle": "${board.title}",
-        "nickname": "닉네임 2"
-      },
-      {
-        "id": 3,
-        "commentContent": "댓글 내용 3",
-        "boardTitle": "${board.title}",
-        "nickname": "닉네임 3"
-      },
-      {
-        "id": 4,
-        "commentContent": "댓글 내용 4",
-        "boardTitle": "${board.title}",
-        "nickname": "닉네임 4"
-      }
-    ]
-  };
+  const urlParams = new URLSearchParams(window.location.search);
+  const userId = urlParams.get('user');
 
-  // movies
-  initData.movies.forEach(movie => {
-    const movieHtml = `
-      <div class="list-group-item d-flex p-3" data-movie-id="${movie.id}">
-        <a href="" class="d-flex align-items-center flex-grow-1">
-          <div>
-            <img class="img-default-size" src="${movie.url}" alt="">
-          </div>
-          <div>${movie.title}</div>
-        </a>
-        <div class="d-flex align-items-center gap-2">
-          <button type="button" class="btn btn-primary">취소</button>
-        </div>
-      </div>
-    `;
-    $('#movie_content').append(movieHtml);
-  });
+  // 기본 프로필 이미지 경로
+  const defaultProfileImg = "../images/profileImg.png";
 
-  // reviews
-  initData.reviews.forEach(review => {
-    const reviewHtml = `
-      <div class="list-group-item d-flex p-3" data-review-id="${review.reviewId}">
-        <a href="" class="d-flex flex-column flex-grow-1">
-          <div class="d-flex align-items-center justify-content-between">
-            <div class="me-3 d-flex flex-column">
-              <div>${review.movieTitle}</div>
-              <div class="d-flex align-items-center">
-                <img style="width: 52px; height: 52px;" src="${review.profileImg}" alt="프로필사진">
-                <div>${review.nickname}</div>
-              </div>
-            </div>
-            <div>
-              <i class="fa-solid fa-star"></i>
-              ${review.rating}
-            </div>
-          </div>
-          <div class="mt-3">
-            ${review.reviewTitle}
-          </div>
-        </a>
-        <div class="d-flex align-items-center ms-3">
-          <button type="button" class="btn btn-primary">취소</button>
-        </div>
-      </div>
-    `;
-    $('#review_content').append(reviewHtml);
-  });
-
-  // boards
-  initData.boards.forEach(board => {
-    const boardHtml = `
-      <div class="list-group-item d-flex p-3" data-board-id="${board.id}">
-        <a href="" class="d-flex justify-content-between align-items-center flex-grow-1">
-          <div>${board.title}</div>
-          <div class="d-flex align-items-center gap-2">
-            <div>${board.nickname}</div>
-          </div>
-        </a>
-        <div class="ms-2 d-flex align-items-center">
-          <button type="button" class="btn btn-primary flex-shrink-0">취소</button>
-        </div>
-      </div>
-    `;
-    $('#board_content').append(boardHtml);
-  });
-
-  // comments
-  initData.comments.forEach(comment => {
-    const commentHtml = `
-      <div class="list-group-item d-flex p-3" data-comment-id="${comment.id}">
-        <a href="" class="d-flex flex-column flex-grow-1 gap-2">
-          <div class="fw-bold fs-5">${comment.boardTitle}</div>
-          <div>
-            <div class="d-flex align-items-center gap-2">
-              <div>${comment.nickname}</div>
-            </div>
-          </div>
-          <div>${comment.commentContent} asdfasd fsdafasdf sad fasdf asd fasdfasdfasd adsf sdafasdfsdfsd fsd fsdfsd fsdfsd f</div>
-        </a>
-        <div class="ms-2 d-flex align-items-center">
-          <button type="button" class="btn btn-primary flex-shrink-0">취소</button>
-        </div>
-      </div>
-    `;
-    $('#comment_content').append(commentHtml);
-  });
-
-  $('.tabs').on('click', 'button', function () {
-    const parentDiv = $(this).closest('.list-group-item');
-    let itemId, itemType;
-    if (parentDiv.attr('data-movie-id')) {
-      itemId = parentDiv.attr('data-movie-id');
-      itemType = 'MOVIE';
-    } else if (parentDiv.attr('data-review-id')) {
-      itemId = parentDiv.attr('data-review-id');
-      itemType = 'REVIEW';
-    } else if (parentDiv.attr('data-board-id')) {
-      itemId = parentDiv.attr('data-board-id');
-      itemType = 'BOARD';
-    } else if (parentDiv.attr('data-comment-id')) {
-      itemId = parentDiv.attr('data-comment-id');
-      itemType = 'COMMENT';
+  $(document).ready(function () {
+    if (userId == null) {
+      alert("user 누락! 페이지 오류!");
+      window.history.back();
     }
+    // 영화 로드
+    loadMovies(1);
+    // // 리뷰 로드
+    loadReviews(1);
+  });
 
-    const data = {
-      itemId: itemId,
-      itemType: itemType
+  // 영화 로딩
+  function loadMovies(page) {
+    apiModule.GET(`/goods/movies/users/${userId}?page=${page}`,
+        function (result) {
+          if (result.data && result.data.data) {
+            const movies = result.data.data;
+            $('#movie_list').empty(); // 기존 영화 삭제
+            movies.forEach(movie => {
+              const movieHtml = generateMovieHtml(movie);
+              $('#movie_list').append(movieHtml);
+            });
+
+            $('#pagination-good-movies').twbsPagination('destroy');
+            $('#pagination-good-movies').twbsPagination({
+              totalPages: result.data.totalPages,
+              startPage: page,
+              initiateStartPageClick: false,
+              onPageClick: function (event, page) {
+                loadMovies(page);
+                $('html, body').animate({
+                  scrollTop: $('#movie_content').offset().top
+                }, 'fast');
+              }
+            });
+          } else {
+            alert("영화 데이터를 불러오는 데 실패했습니다.");
+          }
+        },
+        function () {
+        }
+    );
+  }
+
+  // 리뷰 로딩
+  function loadReviews(page) {
+    apiModule.GET(`/goods/reviews/users/${userId}?page=${page}`,
+        function (result) {
+          const reviews = result.data.data;
+          $('#review_list').empty(); // 기존 리뷰 삭제
+          reviews.forEach(review => {
+            const reviewHtml = generateReviewHtml(review);
+            $('#review_list').append(reviewHtml);
+          });
+
+          $('#pagination-good-reviews').twbsPagination('destroy');
+          $('#pagination-good-reviews').twbsPagination({
+            totalPages: result.data.totalPages,
+            startPage: page,
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+              loadReviews(page);
+              $('html, body').animate({
+                scrollTop: $('#review_content').offset().top
+              }, 'fast');
+            }
+          });
+        },
+        function () {
+        }
+    );
+  }
+
+  // 좋아요 취소
+  function removeGood(id, type) {
+    let data = {
+      contentId: id,
+      contentType: type
     };
 
-    alert('좋아요 취소 : ' + data.itemId + ', ' + data.itemType);
+    if (confirm("좋아요를 취소하시겠습니까?")) {
+      apiModule.DELETE(`/goods`, data, function (result) {
+            alert("좋아요가 취소되었습니다.");
+            location.reload();
+          }, function (result) {
+            console.log(result.responseJSON.message);
+          }
+      );
+    }
+  }
 
-    // $.ajax({
-    //   type: 'DELETE',
-    //   url: '',
-    //   data: JSON.stringify(data),
-    //   contentType: "application/json;charset=utf-8"
-    // })
-    // .done(function (result, status, xhr) {
-    //   // location.replace("./");
-    // })
-    // .fail(function (xhr, status, er) {
-    //   alert("좋아요 취소 실패");
-    // });
-  });
+  // 영화 HTML 생성 함수
+  function generateMovieHtml(movie) {
+    return `
+      <div class="list-group-item d-flex p-3 movie-item">
+        <a href="./movie-detail.html?movie=${movie.movieId}" class="d-flex align-items-center flex-grow-1">
+          <div>
+            <img class="img-default-size" src="https://image.tmdb.org/t/p/w220_and_h330_face${movie.posterPath}" alt="${movie.title}">
+          </div>
+          <div class="ms-3">${movie.title}</div>
+        </a>
+        <div class="d-flex align-items-center ms-3 gap-2">
+          <button type="button" class="btn btn-primary" onclick="removeGood(${movie.movieId}, 'movie')">취소</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // 리뷰 HTML 생성 함수
+  function generateReviewHtml(review) {
+    return `
+    <div class="list-group-item d-flex p-3 review-item" data-review-id="${review.id}">
+      <a href="../html/movie-detail.html?movie=${review.movieId}" class="d-flex flex-column flex-grow-1">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="me-3 d-flex flex-column">
+            <div style="font-weight: bold; color: #FF6F61;">${review.movieTitle || '영화 제목 미확인'}</div>
+            <div class="d-flex align-items-center">
+              <img style="width: 52px; height: 52px;" src="${review.pictureUrl || defaultProfileImg}" alt="프로필사진" onerror="this.src='${defaultProfileImg}'">
+              <div>${review.nickname || '닉네임 없음'}</div>
+            </div>
+          </div>
+          <div class="d-flex flex-column align-items-end">
+            <div class="text-muted mb-1">
+              ${review.createdAt || '날짜 미제공'}
+            </div>
+            <div>
+              <i class="fa-solid fa-star"> ${review.rating || 0}</i>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 mypage-entity-title">
+          ${review.title || '제목 없음'}
+        </div>
+      </a>
+      <div class="d-flex flex-column align-items-center ms-3 gap-2">
+        <button type="button" class="btn btn-primary" onclick="removeGood(${review.id}, 'review')">취소</button>
+      </div>
+    </div>
+  `;
+  }
 </script>
 </body>
 </html>

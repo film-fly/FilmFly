@@ -21,8 +21,7 @@ public class ReactionService {
      */
     public void checkContentExist(ReactionContentTypeEnum type, Long id) {
         if (type == ReactionContentTypeEnum.MOVIE) {
-            movieRepository.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("영화가 없음"));  // 각 기능 다 되면 삭제
+            movieRepository.findByIdOrElseThrow(id);
         } else if (type == ReactionContentTypeEnum.REVIEW) {
             reviewRepository.findByIdOrElseThrow(id);
         } else if (type == ReactionContentTypeEnum.BOARD) {

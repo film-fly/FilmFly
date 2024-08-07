@@ -80,8 +80,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest req, @NonNull HttpServletResponse res,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
+        String http = req.getMethod();
         String uri = req.getRequestURI();
-        log.info("요청된 URI: {}", uri);
+        log.info("요청된 URI: {} {}", http, uri);
 
         // 인증 불필요
         if (isWhiteListed(uri) || isGetMethodWhiteListed(req.getMethod(), uri)) {
