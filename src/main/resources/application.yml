@@ -39,8 +39,8 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
+        show_sql: false
+        format_sql: false
         connection:
           CharSet: utf-8
           characterEncoding: utf-8

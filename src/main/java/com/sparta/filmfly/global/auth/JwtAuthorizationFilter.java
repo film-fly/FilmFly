@@ -85,7 +85,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         log.info("요청된 URI: {} {}", http, uri);
 
         // 인증 불필요
-        if (isWhiteListed(uri) || isGetMethodWhiteListed(req.getMethod(), uri)) {
+        if (isWhiteListed(uri) || isGetMethodWhiteListed(req.getMethod(), uri)
+        || uri.startsWith("/movies")
+        ) {
             log.info("인증이 필요 없는 요청: {}", uri);
             filterChain.doFilter(req, res);
             return;

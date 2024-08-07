@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
+@RequestMapping
 @RequiredArgsConstructor
 public class MovieController {
     private final MovieService movieService;
@@ -59,14 +60,24 @@ public class MovieController {
     }
 
     /**
-    * 장르 가져오기
-    */
+     * 장르 api 가져오기
+     */
     @GetMapping("/genres/api")
     public ResponseEntity<MessageResponseDto> apiGenresRequest() {
         log.info("In apiGenresRequest");
         movieService.apiGenresRequest(OriginLanguageEnum.EN);
         movieService.apiGenresRequest(OriginLanguageEnum.KO);
         return ResponseUtils.success();
+    }
+
+    /**
+     * 장르 가져오기
+     */
+    @GetMapping("/genres")
+    public ResponseEntity<DataResponseDto<List<GenresResponseDto>>> getGenres() {
+        log.info("In getGenres");
+        List<GenresResponseDto> genresResponseDtoList = movieService.getGenres();
+        return ResponseUtils.success(genresResponseDtoList);
     }
 
     /**
@@ -101,7 +112,7 @@ public class MovieController {
     /**
      * 최신 인기 영화
      */
-    @PostMapping("/movie/trend")
+    @PostMapping("/movies/trend")
     public ResponseEntity<DataResponseDto<PageResponseDto<List<MovieResponseDto>>>> getMovieList(
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size,
@@ -142,32 +153,4 @@ public class MovieController {
         MovieDetailResponseDto movieDetailResponseDto = movieService.getMovie(movieId);
         return ResponseUtils.success(movieDetailResponseDto);
     }
-
-    /**
-     * 배우 검색
-     */
-//    @GetMapping("/credit/search")
-//    public ResponseEntity<DataResponseDto<PageResponseDto<List<MovieResponseDto>>>> getListCredit(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size,
-//            @RequestParam(defaultValue = "id") String sortBy,
-//            @RequestParam(defaultValue = "true") boolean isAsc,
-//            @RequestParam(defaultValue = "") String keyword
-//    ) {
-//        log.info("In getListMovie");
-//        Sort sort = isAsc ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-//        Pageable pageable = PageRequest.of(page, size, sort);
-//        Page<Credit> creditPage = movieService.getCreditList(keyword, pageable);
-//
-//        PageResponseDto<List<CreditResponseDto>> response = PageResponseDto.<List<CreditResponseDto>>builder()
-//                .data(creditPage.getContent().stream()
-//                        .map(CreditResponseDto::fromEntity)
-//                        .collect(Collectors.toList()))
-//                .totalElements(creditPage.getTotalElements())
-//                .totalPages(creditPage.getTotalPages())
-//                .pageNumber(creditPage.getNumber())
-//                .pageSize(creditPage.getSize())
-//                .build();
-//        return ResponseUtils.success(response);
-//    }
 }

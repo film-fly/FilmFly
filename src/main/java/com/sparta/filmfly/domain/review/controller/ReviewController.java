@@ -117,4 +117,19 @@ public class ReviewController {
         reviewService.deleteReview(userDetails.getUser(), reviewId);
         return ResponseUtils.success();
     }
+
+    /**
+     * 최신 리뷰 목록
+     */
+    @GetMapping("/reviews")
+    public ResponseEntity<DataResponseDto<PageResponseDto<List<ReviewUserResponseDto>>>> getReviews(
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+            @RequestParam(required = false, defaultValue = "false") boolean isAsc
+    ) {
+        Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
+        PageResponseDto<List<ReviewUserResponseDto>> responseDto = reviewService.getReviews(pageable);
+        return ResponseUtils.success(responseDto);
+    }
 }

@@ -20,19 +20,23 @@ Content-Type: application/json
 }
 
 ### 영화 API 데이터 크롤링 1
+POST http://localhost:8080/movies/api/discover
+Content-Type: application/json
+
+{
+  "sort_by": "VOTE_AVERAGE_DESC",
+  "vote_count__gte": 1000
+}
+### 영화 장르별로 가져오기
+GET http://localhost:8080/movies?genreIds=12
+Content-Type: application/json
+
+### 영화 API 데이터 크롤링 2
 POST http://localhost:8080/movies/api/search
 Content-Type: application/json
 
 {
-  "sort_by": "POPULARITY_DESC"
-}
-
-### 영화 API 데이터 크롤링 2
-POST http://localhost:8080/movies/api
-Content-Type: application/json
-
-{
-  "page": 2
+  "query": "범죄도시"
 }
 ### 영화 API 데이터 크롤링 3
 POST http://localhost:8080/movies/api
