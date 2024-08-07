@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>FilmFly Admin</title>
+    <title>쿠폰 관리 - FilmFly Admin</title>
     <!-- AdminLTE CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <!-- 부트스트랩 CSS -->
@@ -20,6 +20,9 @@
     <script src="../js/common.js"></script>
     <script src="../js/apiModule.js"></script>
     <style>
+        .main-sidebar {
+            width: 250px;
+        }
         #common-header {
             display: flex;
             width: 100%;
@@ -30,24 +33,67 @@
             display: flex;
             width: 100%;
         }
-        .content-wrapper {
-            margin-left: 250px;
-        }
         .main-sidebar {
             width: 250px;
         }
         .content-wrapper {
-            display: flex;
-            flex-direction: column;
-            margin-top: 100px;
-            margin-right: 100px;
+            margin-top: 30px;
             background-color: white;
+            width: 75%;
         }
-        .coupon-card {
-            margin-bottom: 15px;
+        .content {
+            width: 100%;
+            margin-right: 10px;
+            box-sizing: border-box;
         }
-        .coupon-stats {
-            margin-bottom: 15px;
+        .card-header {
+            background-color: #007bff;
+            color: white;
+        }
+        .card {
+            margin-top: 20px;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .coupon-table {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .coupon-table th, .coupon-table td {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .coupon-table th {
+            background-color: #f8f9fa;
+        }
+        .scrollable-table {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        #createCouponButton{
+            width: 80%;
+            margin-left: 85px;
+        }
+        .deleteCouponButton{
+            height: 30px;
+        }
+        .expired {
+            opacity: 0.5;
+        }
+        .issued {
+            background-color: #d4edda;
+        }
+        .not-issued {
+            background-color: #f8d7da;
+        }
+        .coupon-all-issued {
+           font-weight: bold ;
         }
     </style>
 </head>
@@ -63,7 +109,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="index.html" class="brand-link">
+            <a href="adminpage.html" class="brand-link">
                 <span class="brand-text font-weight-light">FilmFly Admin</span>
             </a>
 
@@ -101,6 +147,7 @@
             </div>
             <!-- /.sidebar -->
         </aside>
+
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Main content -->
@@ -115,12 +162,12 @@
                             <div class="card-body">
                                 <form id="couponCreateForm">
                                     <div class="form-group">
-                                        <label for="quantity">수량</label>
-                                        <input type="number" class="form-control" id="quantity" placeholder="수량">
-                                    </div>
-                                    <div class="form-group">
                                         <label for="description">쿠폰 종류</label>
                                         <input type="text" class="form-control" id="description" placeholder="쿠폰 종류">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="quantity">수량</label>
+                                        <input type="number" class="form-control" id="quantity" placeholder="수량">
                                     </div>
                                     <div class="form-group">
                                         <label for="expirationDate">만료일</label>
@@ -133,11 +180,24 @@
 
                         <div class="card mt-4">
                             <div class="card-header">
-                                <h3 class="card-title">발급된 쿠폰</h3>
+                                <h3 class="card-title">쿠폰 현황</h3>
                             </div>
                             <div class="card-body">
-                                <div id="issuedCoupons">
-                                    <!-- 발급된 쿠폰 목록이 여기에 표시됩니다. -->
+                                <div class="table-responsive">
+                                    <table class="table coupon-table">
+                                        <thead>
+                                        <tr>
+                                            <th>쿠폰 종류</th>
+                                            <th>전체 쿠폰 수</th>
+                                            <th>발급 쿠폰 수</th>
+                                            <th>남은 쿠폰 수</th>
+                                            <th>만료일</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="couponStats">
+                                        <!-- 쿠폰 통계가 여기에 표시됩니다. -->
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -147,8 +207,22 @@
                                 <h3 class="card-title">쿠폰 관리</h3>
                             </div>
                             <div class="card-body">
-                                <div id="couponStats">
-                                    <!-- 쿠폰 통계가 여기에 표시됩니다. -->
+                                <div class="table-responsive scrollable-table">
+                                    <table class="table coupon-table">
+                                        <thead>
+                                        <tr>
+                                            <th>쿠폰 번호</th>
+                                            <th>쿠폰 종류</th>
+                                            <th>쿠폰 코드</th>
+                                            <th>발급 여부</th>
+                                            <th>만료일</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="couponList">
+                                        <!-- 쿠폰 목록이 여기에 표시됩니다. -->
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -176,6 +250,13 @@
             return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
         }
 
+        // 만료 여부 확인 함수
+        function isExpired(expirationDate) {
+            const now = new Date();
+            const expiration = new Date(expirationDate);
+            return now > expiration;
+        }
+
         // 쿠폰 생성
         $('#createCouponButton').on('click', function() {
             const quantity = $('#quantity').val();
@@ -194,42 +275,15 @@
             apiModule.POST('/coupons', requestData, function(response) {
                 console.log("Response:", response); // 응답 데이터를 콘솔에 출력
                 alert('쿠폰이 성공적으로 생성되었습니다.');
-                loadIssuedCoupons();
                 loadCouponStats();
+                loadCoupons(); // 쿠폰 목록을 다시 로드
             }, function(xhr) {
                 console.error("Error:", xhr.responseJSON); // 오류 메시지를 콘솔에 출력
                 alert('쿠폰 생성에 실패했습니다.');
             });
         });
 
-        // 발급된 쿠폰 로드
-        function loadIssuedCoupons() {
-            apiModule.GET('/coupons', function(response) {
-                console.log("Coupons Loaded:", response); // 로드된 쿠폰 데이터를 콘솔에 출력
-                const coupons = response.data;
-                let couponHtml = '';
-                coupons.forEach(coupon => {
-                    couponHtml += `
-                        <div class="coupon-card card">
-                            <div class="card-body">
-                                <h5 class="card-title">${coupon.title}</h5>
-                                <p class="card-text">${coupon.description}</p>
-                                <p class="card-text">생성일: ${coupon.createdAt}</p>
-                                <p class="card-text">만료일: ${coupon.expirationDate}</p>
-                                <p class="card-text">발급 상태: ${coupon.issued ? '발급됨' : '미발급'}</p>
-                                <p class="card-text">상태: ${coupon.status ? '유효' : '만료'}</p>
-                            </div>
-                        </div>
-                    `;
-                });
-                $('#issuedCoupons').html(couponHtml);
-            }, function(xhr) {
-                console.error("Error Loading Coupons:", xhr.responseJSON); // 오류 메시지를 콘솔에 출력
-                alert('쿠폰 로드에 실패했습니다.');
-            });
-        }
-
-        // 쿠폰 통계 로드
+        // 쿠폰 현황 로드
         function loadCouponStats() {
             apiModule.GET('/coupons', function(response) {
                 console.log("Coupon Stats Loaded:", response); // 로드된 쿠폰 통계 데이터를 콘솔에 출력
@@ -241,30 +295,29 @@
                         stats[coupon.description] = {
                             total: 0,
                             issued: 0,
-                            expired: 0
+                            code: coupon.title,
+                            expirationDate: coupon.expirationDate,
+                            expired: isExpired(coupon.expirationDate)
                         };
                     }
                     stats[coupon.description].total++;
                     if (coupon.issued) {
                         stats[coupon.description].issued++;
                     }
-                    if (!coupon.status) {
-                        stats[coupon.description].expired++;
-                    }
                 });
 
                 let statsHtml = '';
                 for (const [description, data] of Object.entries(stats)) {
+                    const rowClass = data.total - data.issued === 0 ? 'coupon-all-issued': '';
+                    const expirationClass = data.expired ? 'expired' : '';
                     statsHtml += `
-                        <div class="coupon-stats card">
-                            <div class="card-body">
-                                <h5 class="card-title">${description}</h5>
-                                <p class="card-text">전체 쿠폰: ${data.total}</p>
-                                <p class="card-text">발급된 쿠폰: ${data.issued}</p>
-                                <p class="card-text">남은 쿠폰: ${data.total - data.issued}</p>
-                                <p class="card-text">만료된 쿠폰: ${data.expired}</p>
-                            </div>
-                        </div>
+                        <tr class="${rowClass} ${expirationClass}">
+                            <td>${description}</td>
+                            <td>${data.total}</td>
+                            <td>${data.issued}</td>
+                            <td>${data.total - data.issued}</td>
+                            <td>${data.expirationDate}</td>
+                        </tr>
                     `;
                 }
                 $('#couponStats').html(statsHtml);
@@ -274,9 +327,51 @@
             });
         }
 
+        // 쿠폰 목록 로드
+        function loadCoupons() {
+            apiModule.GET('/coupons', function(response) {
+                console.log("Coupons Loaded:", response); // 로드된 쿠폰 데이터를 콘솔에 출력
+                const coupons = response.data;
+
+                let couponHtml = '';
+                coupons.forEach(coupon => {
+                    const rowClass = isExpired(coupon.expirationDate) ? 'expired' : '';
+                    const issuedClass = coupon.issued ? 'coupon-all-issued' : '';
+                    couponHtml += `
+                        <tr class="${rowClass} ${issuedClass}">
+                            <td>${coupon.id}</td>
+                            <td>${coupon.description}</td>
+                            <td>${coupon.title}</td>
+                            <td class="${coupon.issued ? 'issued' : 'not-issued'}">${coupon.issued ? '발급 완료' : '발급 전'}</td>
+                            <td>${coupon.expirationDate}</td>
+                            <td><button class="btn btn-danger deleteCouponButton" data-id="${coupon.id}">삭제</button></td>
+                        </tr>
+                    `;
+                });
+                $('#couponList').html(couponHtml);
+            }, function(xhr) {
+                console.error("Error Loading Coupons:", xhr.responseJSON); // 오류 메시지를 콘솔에 출력
+                alert('쿠폰 목록 로드에 실패했습니다.');
+            });
+        }
+
+        // 쿠폰 삭제
+        $(document).on('click', '.deleteCouponButton', function() {
+            const couponId = $(this).data('id');
+            apiModule.DELETE(`/coupons/${couponId}`, function(response) {
+                console.log("Coupon Deleted:", response); // 삭제된 쿠폰 데이터를 콘솔에 출력
+                alert('쿠폰이 성공적으로 삭제되었습니다.');
+                loadCouponStats();
+                loadCoupons(); // 쿠폰 목록을 다시 로드
+            }, function(xhr) {
+                console.error("Error Deleting Coupon:", xhr.responseJSON); // 오류 메시지를 콘솔에 출력
+                alert('쿠폰 삭제에 실패했습니다.');
+            });
+        });
+
         // 페이지 초기 로드 시 데이터 로드
-        loadIssuedCoupons();
         loadCouponStats();
+        loadCoupons();
     });
 </script>
 </body>

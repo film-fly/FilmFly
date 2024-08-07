@@ -32,10 +32,11 @@
         }
         .content-wrapper {
             background-color: white;
-            width: 80%;
+            width:76%;
+
         }
         .crawling-section {
-            margin-top: 50px;
+            margin-top: 30px;
         }
         .crawling-section .form-group {
             display: flex;
@@ -44,6 +45,7 @@
         }
         .crawling-section .form-group input, .crawling-section .form-group select, .crawling-section .form-group button {
             margin-right: 10px;
+            font-size: 13px;
         }
         .crawling-section .form-group button {
             width: 150px;
@@ -100,6 +102,13 @@
         #date{
             width: 150px;
         }
+        .overview{
+            width: 300px
+        }
+        #poster{
+            width: 250px;
+        }
+
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -114,7 +123,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="index.html" class="brand-link">
+            <a href="adminpage.html" class="brand-link">
                 <span class="brand-text font-weight-light">FilmFly Admin</span>
             </a>
             <!-- Sidebar -->
@@ -160,7 +169,7 @@
                     <div id="mainDiv">
                         <!-- 크롤링 섹션 -->
                         <div class="crawling-section">
-                            <h2>새로운 영화 크롤링</h2>
+                            <h2>영화 크롤링</h2>
                             <!-- 인기순/평점순/수익순/최신순 크롤링 -->
                             <div class="form-group">
                                 <select class="form-select" id="sortCriteria">
@@ -183,12 +192,12 @@
                                 <table class="table table-bordered table-striped">
                                     <thead>
                                     <tr>
-                                        <th id="id">영화 ID</th>
+                                        <th id="id">ID</th>
                                         <th id="title">제목</th>
                                         <th id ="date">개봉일</th>
-                                        <th>포스터</th>
+                                        <th id ="poster">포스터</th>
                                         <th class="overview">개요</th>
-                                        <th id="rate">평점 (투표수)</th>
+                                        <th id="rate">평점</th>
                                         <th id="pop">인기도</th>
                                     </tr>
                                     </thead>
