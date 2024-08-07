@@ -94,14 +94,16 @@ public class CouponController {
     }
 
     /**
-     * (이벤트) 유저에게 쿠폰 발급
+     *  쿠폰 발급 받기
      */
     @PostMapping("/event")
     public ResponseEntity<DataResponseDto<CouponResponseDto>> distributeCoupons(
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam String description
     ) {
-        CouponResponseDto responseDto = couponService.distributeCoupons(userDetails.getUser());
+        CouponResponseDto responseDto = couponService.distributeCoupons(userDetails.getUser(), description);
         return ResponseUtils.success(responseDto);
     }
+
 
 }
