@@ -2,7 +2,6 @@ package com.sparta.filmfly.domain.reaction.service;
 
 import com.sparta.filmfly.domain.board.repository.BoardRepository;
 import com.sparta.filmfly.domain.comment.repository.CommentRepository;
-import com.sparta.filmfly.domain.movie.dto.MovieSimpleResponseDto;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
@@ -10,17 +9,18 @@ import com.sparta.filmfly.domain.reaction.dto.BadRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionMovieResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionReviewResponseDto;
 import com.sparta.filmfly.domain.reaction.entity.Good;
 import com.sparta.filmfly.domain.reaction.repository.BadRepository;
 import com.sparta.filmfly.domain.reaction.repository.GoodRepository;
+import com.sparta.filmfly.domain.review.dto.ReviewUserResponseDto;
+import com.sparta.filmfly.domain.review.entity.Review;
 import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -106,33 +106,13 @@ public class GoodService {
      * 사용자가 좋아요를 누른 영화 조회
      */
     public PageResponseDto<List<ReactionMovieResponseDto>> getPageGoodMovie(Long userId, Pageable pageable) {
-        // 사용자 id와 타입으로 조회 (페이징)
-        Page<Good> goodsPage = goodRepository.findByUserIdAndType(userId, ReactionContentTypeEnum.MOVIE, pageable);
-        // 영화 id를 따로 추출
-        List<Long> movieIds = goodsPage.stream().map(Good::getTypeId).toList();
-        // 영화 id에 맞게 영화 조회
-        List<Movie> movies = movieRepository.findByIdIn(movieIds);
+        return goodRepository.getPageMovieByUserGood(userId, pageable);
+    }
 
-        Map<Long, Movie> movieMap = movies.stream()
-            .collect(Collectors.toMap(Movie::getId, movie -> movie));
-
-        // 좋아요와 영화를 하나의 list로 묶어서 DTO 생성
-        List<ReactionMovieResponseDto> list = goodsPage.getContent().stream()
-            .map(good -> ReactionMovieResponseDto.fromEntity(good, movieMap.get(good.getTypeId())))
-            .toList();
-
-        PageImpl<ReactionMovieResponseDto> page = new PageImpl<>(list, pageable, goodsPage.getTotalElements());
-
-        return PageResponseDto.<List<ReactionMovieResponseDto>>builder()
-            .totalElements(page.getTotalElements())
-            .totalPages(page.getTotalPages())
-            .currentPage(page.getNumber() + 1)
-            .pageSize(page.getSize())
-            .data(page.getContent())
-            .build();
-
-//        나중에 Querydsl과 성능차이가 궁금해서 Querydsl로도 만들었음
-//        PageResponseDto<List<ReactionMovieResponseDto>> pageMovieByUserGood = goodRepository.getPageMovieByUserGood(userId, pageable);
-//        return pageMovieByUserGood;
+    /**
+     * 사용자가 좋아요를 누른 리뷰 조회
+     */
+    public PageResponseDto<List<ReactionReviewResponseDto>> getPageGoodReview(Long userId, Pageable pageable) {
+        return goodRepository.getPageReviewByUserGood(userId, pageable);
     }
 }

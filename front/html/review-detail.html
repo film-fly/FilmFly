@@ -104,7 +104,7 @@
         function (result, status, xhr) {
           let movie = result.data.movie;
           let movieHtml = `
-          <img class="img-default-size me-3" src="../images/logo.png" alt="영화 프로필">
+          <img class="img-default-size me-3" src="https://image.tmdb.org/t/p/w220_and_h330_face${movie.posterPath}" alt="영화 프로필">
           <div class="d-flex flex-column gap-3">
             <div>${movie.title}</div>
             <div>
@@ -190,7 +190,7 @@
 
           let profileHtml = `
           <div>
-            <img class="img-profile-size" src="${review.profileUrl}" alt="프로필 사진">
+            <img class="img-profile-size" src="${review.pictureUrl || '../images/profileImg.png'}" alt="프로필 사진">
           </div>
           <div>
             ${review.nickname}

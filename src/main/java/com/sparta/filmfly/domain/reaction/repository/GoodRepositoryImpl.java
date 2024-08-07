@@ -5,7 +5,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.filmfly.domain.movie.entity.QMovie;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.dto.ReactionMovieResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionReviewResponseDto;
+import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;
+import com.sparta.filmfly.domain.review.entity.QReview;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -65,6 +68,61 @@ public class GoodRepositoryImpl implements GoodRepositoryCustom {
             .currentPage(page.getNumber() + 1)
             .pageSize(page.getSize())
             .data(page.getContent())
+            .build();
+    }
+
+    /**
+     * 사용자가 좋아요를 누른 리뷰 조회 (페이징)
+     */
+    @Override
+    public PageResponseDto<List<ReactionReviewResponseDto>> getPageReviewByUserGood(
+        Long userId, Pageable pageable
+    ) {
+        QMovie qMovie = QMovie.movie;
+        QReview qReview = QReview.review;
+        QGood qGood = QGood.good;
+
+        List<ReactionReviewResponseDto> fetch = queryFactory.select(Projections.constructor(
+                ReactionReviewResponseDto.class,
+                qGood.id,
+                qReview.id,
+                qReview.user.id,
+                qReview.movie.id,
+                qReview.movie.title,
+                qReview.user.nickname,
+                qReview.user.pictureUrl,
+                qReview.rating,
+                qReview.title,
+                qReview.content,
+                qReview.createdAt
+            ))
+            .from(qGood)
+            .join(qReview).on(
+                qGood.typeId.eq(qReview.id)
+                    .and(qGood.user.id.eq(userId))
+            )
+            .join(qReview).on(qReview.movie.eq(qMovie))
+            .where(qGood.type.eq(ReactionContentTypeEnum.REVIEW))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        Long total = queryFactory
+            .select(qReview.count())
+            .from(qReview)
+            .innerJoin(qGood).on(qGood.type.eq(ReactionContentTypeEnum.REVIEW)
+                .and(qGood.typeId.eq(qReview.id))
+                .and(qGood.user.id.eq(userId)))
+            .fetchOne();
+
+        PageImpl<ReactionReviewResponseDto> page = new PageImpl<>(fetch, pageable, total);
+
+        return PageResponseDto.<List<ReactionReviewResponseDto>>builder()
+            .totalElements(page.getTotalElements())
+            .totalPages(page.getTotalPages())
+            .currentPage(page.getNumber() + 1)
+            .pageSize(page.getSize())
+            .data(fetch)
             .build();
     }
 }

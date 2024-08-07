@@ -5,7 +5,9 @@ import com.sparta.filmfly.domain.reaction.dto.BadRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionMovieResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionReviewResponseDto;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
+import com.sparta.filmfly.domain.review.dto.ReviewUserResponseDto;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
@@ -80,7 +82,7 @@ public class GoodController {
      * 사용자가 좋아요를 누른 리뷰 조회
      */
     @GetMapping("/reviews/users/{userId}")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<ReactionMovieResponseDto>>>> getPageGoodReview(
+    public ResponseEntity<DataResponseDto<PageResponseDto<List<ReactionReviewResponseDto>>>> getPageGoodReview(
         @PathVariable Long userId,
         @RequestParam(required = false, defaultValue = "1") int page,
         @RequestParam(required = false, defaultValue = "10") int size,
@@ -88,7 +90,7 @@ public class GoodController {
         @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<ReactionMovieResponseDto>> responseDto = goodService.getPageGoodMovie(userId, pageable);
+        PageResponseDto<List<ReactionReviewResponseDto>> responseDto = goodService.getPageGoodReview(userId, pageable);
         return ResponseUtils.success(responseDto);
     }
 
