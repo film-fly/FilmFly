@@ -102,7 +102,7 @@ public class MovieService {
                             builder.queryParam(fieldName, enumValue);
                         } else {
                             // 일반 타입인 경우 값을 쿼리 파라미터로 추가
-                            builder.queryParam(field.getName(), value);
+                            builder.queryParam(fieldName, value);
                         }
                     }
                 }
@@ -110,10 +110,6 @@ public class MovieService {
                 e.printStackTrace();
             }
         }
-
-        // 제목 검색을 위한 query 파라미터 추가
-        builder.queryParam("query", "범죄도시");
-
 
         String url = builder.toUriString();
         log.info(url);

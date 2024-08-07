@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>유저 검색 - FilmFly Admin</title>
+    <title>유저 관리 - FilmFly Admin</title>
     <!-- AdminLTE CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <!-- 부트스트랩 CSS -->
@@ -104,15 +104,21 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <li class="nav-item">
-                            <a href="adminpage-user-search.html" class="nav-link">
+                            <a href="adminpage-user-management.html" class="nav-link">
                                 <i class="nav-icon fas fa-user"></i>
                                 <p>유저 관리</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="adminpage-report-list.html" class="nav-link">
+                            <a href="adminpage-report-management.html" class="nav-link">
                                 <i class="nav-icon fas fa-flag"></i>
                                 <p>신고 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="adminpage-coupon-management.html" class="nav-link">
+                                <i class="nav-icon fas fa-ticket-alt"></i>
+                                <p>쿠폰 관리</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -221,7 +227,7 @@
             const pagination = $('#pagination');
             pagination.empty();
 
-            const maxVisiblePages = 10; // 한 번에 표시할 최대 페이지 수
+            const maxVisiblePages = 10;
             const halfVisiblePages = Math.floor(maxVisiblePages / 2);
 
             let startPage = Math.floor((currentPage - 1) / maxVisiblePages) * maxVisiblePages + 1;
@@ -292,6 +298,7 @@
         // 초기 로드 시 전체 유저 로드
         getUsers();
     });
+
 </script>
 </body>
 </html>

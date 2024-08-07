@@ -32,7 +32,7 @@
         }
         .content-wrapper {
             background-color: white;
-            width: 75%;
+            width: 80%;
         }
         .crawling-section {
             margin-top: 50px;
@@ -90,7 +90,16 @@
             width: 600px;
             text-align: center;
         }
+        #rate{
+            width: 130px;
 
+        }
+        #pop{
+            width: 100px;
+        }
+        #date{
+            width: 150px;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -114,15 +123,21 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <li class="nav-item">
-                            <a href="adminpage-user-search.html" class="nav-link">
+                            <a href="adminpage-user-management.html" class="nav-link">
                                 <i class="nav-icon fas fa-user"></i>
                                 <p>유저 관리</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="adminpage-report-list.html" class="nav-link">
+                            <a href="adminpage-report-management.html" class="nav-link">
                                 <i class="nav-icon fas fa-flag"></i>
                                 <p>신고 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="adminpage-coupon-management.html" class="nav-link">
+                                <i class="nav-icon fas fa-ticket-alt"></i>
+                                <p>쿠폰 관리</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -158,17 +173,10 @@
                                 <input type="number" class="form-control" id="endPage" placeholder="끝 페이지">
                                 <button type="button" class="btn btn-primary" id="crawlButton">옵션 크롤링</button>
                             </div>
-                            <!-- 연도별 크롤링 -->
-                            <div class="form-group">
-                                <input type="number" class="form-control" id="releaseYear" placeholder="개봉 연도">
-                                <input type="number" class="form-control" id="yearStartPage" placeholder="시작 페이지">
-                                <input type="number" class="form-control" id="yearEndPage" placeholder="끝 페이지">
-                                <button type="button" class="btn btn-primary" id="yearSearchButton">개봉연도 크롤링</button>
-                            </div>
                             <!-- 제목 검색 -->
                             <div class="form-group">
                                 <input type="text" class="form-control" id="searchQuery" placeholder="제목 검색">
-                                <button type="button" class="btn btn-primary" id="searchButton">제목 크롤링 </button>
+                                <button type="button" class="btn btn-primary" id="searchButton">제목 크롤링</button>
                             </div>
                             <div class="status" id="crawlStatus"></div>
                             <div class="results">
@@ -177,9 +185,11 @@
                                     <tr>
                                         <th id="id">영화 ID</th>
                                         <th id="title">제목</th>
-                                        <th>출시일</th>
+                                        <th id ="date">개봉일</th>
                                         <th>포스터</th>
                                         <th class="overview">개요</th>
+                                        <th id="rate">평점 (투표수)</th>
+                                        <th id="pop">인기도</th>
                                     </tr>
                                     </thead>
                                     <tbody id="crawlResults">
@@ -197,7 +207,6 @@
     </div>
 </div>
 <!-- ./wrapper -->
-
 <script>
     $(document).ready(function() {
         function fetchMovies(endpoint, data) {
@@ -222,7 +231,9 @@
                             <td>${movie.title}</td>
                             <td>${movie.release_date}</td>
                             <td><img src="https://image.tmdb.org/t/p/w200${movie.poster_path}" alt="${movie.title} 포스터"></td>
-                            <td class="overview">${movie.overview.length > 20 ? movie.overview.substring(0, 20) + '...' : movie.overview}</td>
+                            <td class="overview">${movie.overview.length > 20 ? movie.overview.substring(0, 300) + '...' : movie.overview}</td>
+                            <td><i class="fas fa-star" style="color: gold;"></i> ${movie.vote_average.toFixed(1)} (${movie.vote_count})</td>
+                            <td><i class="fas fa-fire" style="color: red;"></i> ${movie.popularity.toFixed(1)}</td>
                         </tr>
                     `);
                         $('#crawlResults').append(results.join(''));
@@ -251,66 +262,38 @@
             fetchData(data.startPage);
         }
 
-        function fetchMovieByTitle(query) {
-            $('#crawlStatus').text('크롤링 진행 중...');
-            $('#crawlResults').empty();
-
-            apiModule.POST('/movies/api/search', { query: query },
-                function(response) {
-                    const movies = response.data;
-                    if (!movies || movies.length === 0) {
-                        $('#crawlStatus').text(`영화를 찾을 수 없습니다.`);
-                        return;
-                    }
-                    const results = movies.map(movie => `
-                        <tr>
-                            <td>${movie.id}</td>
-                            <td>${movie.title}</td>
-                            <td>${movie.release_date}</td>
-                            <td><img src="https://image.tmdb.org/t/p/w200${movie.poster_path}" alt="${movie.title} 포스터"></td>
-                            <td class="overview">${movie.overview.length > 20 ? movie.overview.substring(0, 20) + '...' : movie.overview}</td>
-                        </tr>
-                    `);
-                    $('#crawlResults').append(results.join(''));
-                    $('#crawlStatus').text(`크롤링 완료 (성공: ${movies.length}, 실패: 0)`);
-                },
-                function(xhr) {
-                    $('#crawlStatus').text(`크롤링 실패`);
-                }
-            );
-        }
-
         $('#crawlButton').on('click', function() {
             const sortCriteria = $('#sortCriteria').val();
             const startPage = parseInt($('#startPage').val());
             const endPage = parseInt($('#endPage').val());
 
             if (startPage && endPage && startPage <= endPage) {
-                fetchMovies('/movies/api/discover', { sort_by: sortCriteria, startPage: startPage, endPage: endPage });
+                let requestData = { sort_by: sortCriteria, page: startPage };
+
+                // 평점순 요청에 vote_count__gte 추가
+                if (sortCriteria === 'VOTE_AVERAGE_DESC') {
+                    requestData.vote_count__gte = 1000;
+                }
+
+                // 최신순 요청에 primary_release_date__lte 추가
+                if (sortCriteria === 'PRIMARY_RELEASE_DATE_DESC') {
+                    let today = new Date();
+                    let formattedDate = today.toISOString().split('T')[0];
+                    requestData.primary_release_date__lte = formattedDate;
+                }
+
+                fetchMovies('/movies/api/discover', requestData);
             } else {
                 alert('유효한 페이지 번호를 입력하세요.');
             }
         });
 
-        $('#yearSearchButton').on('click', function() {
-            const year = $('#releaseYear').val();
-            const startPage = parseInt($('#yearStartPage').val());
-            const endPage = parseInt($('#yearEndPage').val());
-
-            if (year && startPage && endPage && startPage <= endPage) {
-                fetchMovies('/movies/api/search', { primary_release_year: year, startPage: startPage, endPage: endPage });
-            } else {
-                alert('유효한 페이지 번호와 연도를 입력하세요.');
-            }
-        });
-
         $('#searchButton').on('click', function() {
-            const query = $('#searchQuery').val();
-
-            if (query) {
-                fetchMovieByTitle(query);
+            const searchQuery = $('#searchQuery').val();
+            if (searchQuery) {
+                fetchMovies('/movies/api/search', { query: searchQuery, page: 1 });
             } else {
-                alert('유효한 검색어를 입력하세요.');
+                alert('검색어를 입력하세요.');
             }
         });
     });
