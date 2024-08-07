@@ -258,4 +258,13 @@ public class MovieService {
                 .build();
     }
 
+
+    /*
+     * 영화 장르 조회
+     */
+    public List<GenresResponseDto> getGenres() {
+        return genreRepository.findAll().stream()
+                .map(GenresResponseDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 }

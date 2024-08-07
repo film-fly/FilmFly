@@ -1,10 +1,11 @@
 const serverUrl = 'http://localhost:8080';
+const imageUrl = 'https://image.tmdb.org/t/p/w600_and_h900_bestv2';
 let apiModule = (function() {
   // 기본 설정
   let settings = {
-    baseUrl: serverUrl // 기본 URL, 필요에 따라 변경
+    // baseUrl: 'http://localhost:8080', // 기본 URL, 필요에 따라 변경
     // baseUrl: 'http://3.34.139.188:8080', // 기본 URL, 필요에 따라 변경
-    // baseUrl: 'http://api.filmfly.life:8080', // 기본 URL, 필요에 따라 변경
+    baseUrl: 'https://api.filmfly.life', // 기본 URL, 필요에 따라 변경
   };
 
   // 내부 함수: Ajax 요청을 보내는 함수

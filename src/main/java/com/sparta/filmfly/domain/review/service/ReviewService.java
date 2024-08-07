@@ -110,4 +110,12 @@ public class ReviewService {
         }
         reviewRepository.delete(findReview);
     }
+
+    /**
+     * 최신 리뷰 목록
+     */
+    @Transactional(readOnly = true)
+    public PageResponseDto<List<ReviewUserResponseDto>> getReviews(Pageable pageable) {
+        return reviewRepository.getPageReview(pageable);
+    }
 }

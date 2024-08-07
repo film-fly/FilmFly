@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -141,5 +142,62 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         }
 
         return Math.round(averageRating * 10) / 10.0f;
+    }
+
+
+    /**
+     * 최신 리뷰 목록
+     */
+    @Override
+    public PageResponseDto<List<ReviewUserResponseDto>> getPageReview(Pageable pageable) {
+        QReview qReview = QReview.review;
+        QGood qGood = QGood.good;
+        QBad qBad = QBad.bad;
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime oneMonthAgo = now.minusMonths(1);
+
+        List<ReviewUserResponseDto> fetch = queryFactory.select(Projections.constructor(
+                        ReviewUserResponseDto.class,
+                        qReview.id,
+                        qReview.user.id,
+                        qReview.movie.id,
+                        qReview.movie.title,
+                        qReview.user.nickname,
+                        qReview.user.pictureUrl,
+                        qReview.rating,
+                        qReview.title,
+                        qReview.content,
+                        qReview.createdAt,
+                        qGood.id.count().as("goodCount"),
+                        qBad.id.count().as("badCount")
+                ))
+                .from(qReview)
+                .leftJoin(qGood).on(qGood.type.eq(ReactionContentTypeEnum.REVIEW)
+                        .and(qGood.typeId.eq(qReview.id)))
+                .leftJoin(qBad).on(qBad.type.eq(ReactionContentTypeEnum.REVIEW)
+                        .and(qBad.typeId.eq(qReview.id)))
+                .where(qReview.createdAt.after(oneMonthAgo))
+                .groupBy(qReview.id)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(qReview.createdAt.desc())
+                .fetch();
+
+        Long total = queryFactory
+                .select(qReview.count())
+                .from(qReview)
+                .where(qReview.createdAt.after(oneMonthAgo))
+                .fetchOne();
+
+        PageImpl<ReviewUserResponseDto> page = new PageImpl<>(fetch, pageable, total);
+
+        return PageResponseDto.<List<ReviewUserResponseDto>>builder()
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .currentPage(page.getNumber() + 1)
+                .pageSize(page.getSize())
+                .data(fetch)
+                .build();
     }
 }

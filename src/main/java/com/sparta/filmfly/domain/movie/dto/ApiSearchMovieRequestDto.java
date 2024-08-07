@@ -2,15 +2,15 @@ package com.sparta.filmfly.domain.movie.dto;
 
 import com.sparta.filmfly.domain.movie.entity.LanguagesEnum;
 import com.sparta.filmfly.domain.movie.entity.SortByEnum;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
+import org.aspectj.lang.annotation.RequiredTypes;
 
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ApiSearchMovieRequestDto {
+    @NotBlank
     private String query;
     private boolean includeAdult;
     private LanguagesEnum language;
