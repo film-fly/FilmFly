@@ -1,0 +1,14 @@
+### ADMIN 로그인
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "Test12345!"
+}
+
+### 사용자 id
+@userId = 1
+
+### 사용자가 좋아요를 누른 영화 조회
+GET http://localhost:8080/goods/movies/users/{{userId}}?page=1

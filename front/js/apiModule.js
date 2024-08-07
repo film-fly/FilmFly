@@ -22,7 +22,7 @@ let apiModule = (function() {
         withCredentials: true
       },
       success: function(result, status, xhr) {
-        console.log(`요청 성공: ${method} ${fullUrl}\n` + JSON.stringify(result, null, 2));
+        console.log(`요청 성공: ${method} ${fullUrl}\n`, result);
         if (successCallback) successCallback(result);
       },
       error: function(xhr, status, error) {
@@ -56,8 +56,8 @@ let apiModule = (function() {
   }
 
   // DELETE 요청
-  function DELETE(url, successCallback, errorCallback, options) {
-    ajaxRequest('DELETE', url, null, successCallback, errorCallback, options);
+  function DELETE(url, data = null, successCallback, errorCallback, options) {
+    ajaxRequest('DELETE', url, data, successCallback, errorCallback, options);
   }
 
   // 외부에 공개할 API
