@@ -23,7 +23,9 @@ public class WebConfig implements WebMvcConfigurer {
                 "http://localhost:8080",
                 "http://localhost:63342",
                 "https://localhost:8080",
-                "https://localhost:63342"
+                "https://localhost:63342",
+                "https://www.filmfly.life",
+                "https://api.filmfly.life"
             )
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
             .allowCredentials(true)
