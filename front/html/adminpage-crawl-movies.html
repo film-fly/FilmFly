@@ -268,7 +268,7 @@
             const endPage = parseInt($('#endPage').val());
 
             if (startPage && endPage && startPage <= endPage) {
-                let requestData = { sort_by: sortCriteria, page: startPage };
+                let requestData = { sort_by: sortCriteria, startPage: startPage, endPage: endPage };
 
                 // 평점순 요청에 vote_count__gte 추가
                 if (sortCriteria === 'VOTE_AVERAGE_DESC') {
@@ -291,12 +291,13 @@
         $('#searchButton').on('click', function() {
             const searchQuery = $('#searchQuery').val();
             if (searchQuery) {
-                fetchMovies('/movies/api/search', { query: searchQuery, page: 1 });
+                fetchMovies('/movies/api/search', { query: searchQuery, page: 1, endPage: 1 });
             } else {
                 alert('검색어를 입력하세요.');
             }
         });
     });
 </script>
+
 </body>
 </html>
