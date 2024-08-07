@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface BadRepository extends JpaRepository<Bad, Long> {
+public interface BadRepository extends JpaRepository<Bad, Long>, BadRepositoryCustom {
 
     Optional<Bad> findByTypeIdAndTypeAndUserId(Long typeId, ReactionContentTypeEnum type, Long userId);
     default Bad findByTypeIdAndTypeAndUserIdOrElseThrow(Long typeId, ReactionContentTypeEnum type, Long userId) {

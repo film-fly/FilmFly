@@ -3,12 +3,19 @@ package com.sparta.filmfly.domain.reaction.service;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.dto.BadRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.BadResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionBoardResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionCommentResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionMovieResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionReviewResponseDto;
 import com.sparta.filmfly.domain.reaction.entity.Bad;
 import com.sparta.filmfly.domain.reaction.repository.BadRepository;
 import com.sparta.filmfly.domain.reaction.repository.GoodRepository;
 import com.sparta.filmfly.domain.user.entity.User;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,5 +85,33 @@ public class BadService {
         return badRepository.existsByTypeIdAndTypeAndUserId(
                 requestDto.getContentId(), requestDto.getContentType(), loginUser.getId()
         );
+    }
+
+    /**
+     * 사용자가 싫어요를 누른 영화 조회
+     */
+    public PageResponseDto<List<ReactionMovieResponseDto>> getPageBadMovie(Long userId, Pageable pageable) {
+        return badRepository.getPageMovieByUserBad(userId, pageable);
+    }
+
+    /**
+     * 사용자가 싫어요를 누른 리뷰 조회
+     */
+    public PageResponseDto<List<ReactionReviewResponseDto>> getPageBadReview(Long userId, Pageable pageable) {
+        return badRepository.getPageReviewByUserBad(userId, pageable);
+    }
+
+    /**
+     * 사용자가 싫어요를 누른 게시물 조회
+     */
+    public PageResponseDto<List<ReactionBoardResponseDto>> getPageBadBoard(Long userId, Pageable pageable) {
+        return badRepository.getPageBoardByUserBad(userId, pageable);
+    }
+
+    /**
+     * 사용자가 싫어요를 누른 댓글 조회
+     */
+    public PageResponseDto<List<ReactionCommentResponseDto>> getPageBadComment(Long userId, Pageable pageable) {
+        return badRepository.getPageCommentByUserBad(userId, pageable);
     }
 }

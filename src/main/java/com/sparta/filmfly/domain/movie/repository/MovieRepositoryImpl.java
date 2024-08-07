@@ -41,10 +41,12 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
                 .fetch();
     }
 
+    /**
+     * 영화 조회 (페이징)
+     */
     @Override
     public PageResponseDto<List<MovieReactionsResponseDto>> getPageMovieBySearchCond(
-        MovieSearchCond searchOptions,
-        Pageable pageable
+        MovieSearchCond searchOptions, Pageable pageable
     ) {
         QMovie qMovie = QMovie.movie;
         QGood qGood = QGood.good;

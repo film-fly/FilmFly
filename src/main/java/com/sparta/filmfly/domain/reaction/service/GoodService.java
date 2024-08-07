@@ -1,15 +1,33 @@
 package com.sparta.filmfly.domain.reaction.service;
 
+import com.sparta.filmfly.domain.board.repository.BoardRepository;
+import com.sparta.filmfly.domain.comment.repository.CommentRepository;
+import com.sparta.filmfly.domain.movie.entity.Movie;
+import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.dto.BadRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionBoardResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionCommentResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionMovieResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionReviewResponseDto;
 import com.sparta.filmfly.domain.reaction.entity.Good;
 import com.sparta.filmfly.domain.reaction.repository.BadRepository;
 import com.sparta.filmfly.domain.reaction.repository.GoodRepository;
+import com.sparta.filmfly.domain.review.dto.ReviewUserResponseDto;
+import com.sparta.filmfly.domain.review.entity.Review;
+import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.domain.user.entity.User;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +39,10 @@ public class GoodService {
     private final ReactionService reactionService;
     private final GoodRepository goodRepository;
     private final BadRepository badRepository;
+    private final MovieRepository movieRepository;
+    private final ReviewRepository reviewRepository;
+    private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
     
     /**
      * 좋아요 추가
@@ -80,5 +102,33 @@ public class GoodService {
         return goodRepository.existsByTypeIdAndTypeAndUserId(
                 requestDto.getContentId(), requestDto.getContentType(), loginUser.getId()
         );
+    }
+
+    /**
+     * 사용자가 좋아요를 누른 영화 조회
+     */
+    public PageResponseDto<List<ReactionMovieResponseDto>> getPageGoodMovie(Long userId, Pageable pageable) {
+        return goodRepository.getPageMovieByUserGood(userId, pageable);
+    }
+
+    /**
+     * 사용자가 좋아요를 누른 리뷰 조회
+     */
+    public PageResponseDto<List<ReactionReviewResponseDto>> getPageGoodReview(Long userId, Pageable pageable) {
+        return goodRepository.getPageReviewByUserGood(userId, pageable);
+    }
+
+    /**
+     * 사용자가 좋아요를 누른 게시물 조회
+     */
+    public PageResponseDto<List<ReactionBoardResponseDto>> getPageGoodBoard(Long userId, Pageable pageable) {
+        return goodRepository.getPageBoardByUserGood(userId, pageable);
+    }
+
+    /**
+     * 사용자가 좋아요를 누른 댓글 조회
+     */
+    public PageResponseDto<List<ReactionCommentResponseDto>> getPageGoodComment(Long userId, Pageable pageable) {
+        return goodRepository.getPageCommentByUserGood(userId, pageable);
     }
 }

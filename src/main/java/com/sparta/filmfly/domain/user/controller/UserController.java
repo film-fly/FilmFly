@@ -118,6 +118,17 @@ public class UserController {
     }
 
     /**
+     * 본인 프로필 조회
+     */
+    @GetMapping
+    public ResponseEntity<DataResponseDto<UserResponseDto>> getMyProfile(
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        UserResponseDto profile = userService.getProfile(userDetails.getUserId());
+        return ResponseUtils.success(profile);
+    }
+
+    /**
      * 로그아웃
      */
     @PostMapping("/logout")

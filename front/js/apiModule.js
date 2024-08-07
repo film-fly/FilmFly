@@ -1,10 +1,11 @@
 const serverUrl = 'http://localhost:8080';
+const imageUrl = 'https://image.tmdb.org/t/p/w600_and_h900_bestv2';
 let apiModule = (function() {
   // 기본 설정
   let settings = {
-    baseUrl: serverUrl // 기본 URL, 필요에 따라 변경
+    // baseUrl: 'http://localhost:8080', // 기본 URL, 필요에 따라 변경
     // baseUrl: 'http://3.34.139.188:8080', // 기본 URL, 필요에 따라 변경
-    // baseUrl: 'http://api.filmfly.life:8080', // 기본 URL, 필요에 따라 변경
+    baseUrl: 'https://api.filmfly.life', // 기본 URL, 필요에 따라 변경
   };
 
   // 내부 함수: Ajax 요청을 보내는 함수
@@ -22,7 +23,7 @@ let apiModule = (function() {
         withCredentials: true
       },
       success: function(result, status, xhr) {
-        console.log(`요청 성공: ${method} ${fullUrl}\n` + JSON.stringify(result, null, 2));
+        console.log(`요청 성공: ${method} ${fullUrl}\n`, result);
         if (successCallback) successCallback(result);
       },
       error: function(xhr, status, error) {
@@ -56,8 +57,8 @@ let apiModule = (function() {
   }
 
   // DELETE 요청
-  function DELETE(url, successCallback, errorCallback, options) {
-    ajaxRequest('DELETE', url, null, successCallback, errorCallback, options);
+  function DELETE(url, data = null, successCallback, errorCallback, options) {
+    ajaxRequest('DELETE', url, data, successCallback, errorCallback, options);
   }
 
   // 외부에 공개할 API

@@ -10,5 +10,7 @@ import java.util.List;
 public interface ReviewRepositoryCustom {
     PageResponseDto<List<ReviewResponseDto>> getPageReviewByMovieId(Long movieId, Pageable pageable);
     PageResponseDto<List<ReviewUserResponseDto>> getPageReviewByUserId(Long userId, Pageable pageable);
+    PageResponseDto<List<ReviewUserResponseDto>> getPageReview(Pageable pageable);
+
     Float getAverageRatingByMovieId(Long movieId);
 }

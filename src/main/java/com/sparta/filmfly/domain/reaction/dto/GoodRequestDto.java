@@ -5,8 +5,10 @@ import com.sparta.filmfly.domain.reaction.entity.Good;
 import com.sparta.filmfly.domain.user.entity.User;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class GoodRequestDto {
 
     @NotNull(message = "컨텐츠의 번호를 입력해 주세요.")
