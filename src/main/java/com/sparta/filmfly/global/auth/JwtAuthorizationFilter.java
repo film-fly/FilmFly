@@ -100,6 +100,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         try {
             String accessToken = getTokenFromCookie(req, "accessToken");
+            log.info("Access Token : {}", accessToken);
             if (!StringUtils.hasText(accessToken)) {
                 setErrorResponse(res, ResponseCodeEnum.INVALID_TOKENS);
                 return;

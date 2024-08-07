@@ -61,7 +61,7 @@ Content-Type: application/json
 }
 
 ### 영화 API 데이터 크롤링 5
-GET https://api.filmfly.life/genres
+GET https://api.filmfly.life/movies/trend
 
 ###검색 가능 항목
 # String certification;
