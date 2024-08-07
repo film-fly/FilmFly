@@ -82,29 +82,25 @@
   function loadMovies(page) {
     apiModule.GET(`/goods/movies/users/${userId}?page=${page}`,
         function (result) {
-          if (result.data && result.data.data) {
-            const movies = result.data.data;
-            $('#movie_list').empty(); // 기존 영화 삭제
-            movies.forEach(movie => {
-              const movieHtml = generateMovieHtml(movie);
-              $('#movie_list').append(movieHtml);
-            });
+          const movies = result.data.data;
+          $('#movie_list').empty(); // 기존 영화 삭제
+          movies.forEach(movie => {
+            const movieHtml = generateMovieHtml(movie);
+            $('#movie_list').append(movieHtml);
+          });
 
-            $('#pagination-good-movies').twbsPagination('destroy');
-            $('#pagination-good-movies').twbsPagination({
-              totalPages: result.data.totalPages,
-              startPage: page,
-              initiateStartPageClick: false,
-              onPageClick: function (event, page) {
-                loadMovies(page);
-                $('html, body').animate({
-                  scrollTop: $('#movie_content').offset().top
-                }, 'fast');
-              }
-            });
-          } else {
-            alert("영화 데이터를 불러오는 데 실패했습니다.");
-          }
+          $('#pagination-good-movies').twbsPagination('destroy');
+          $('#pagination-good-movies').twbsPagination({
+            totalPages: result.data.totalPages,
+            startPage: page,
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+              loadMovies(page);
+              $('html, body').animate({
+                scrollTop: $('#movie_content').offset().top
+              }, 'fast');
+            }
+          });
         },
         function () {
         }
@@ -144,32 +140,27 @@
   function loadBoards(page) {
     apiModule.GET(`/goods/boards/users/${userId}?page=${page}`,
         function (result) {
-          if (result.data && result.data.data) {
-            const boards = result.data.data;
-            $('#board_list').empty(); // 기존 게시물 삭제
-            boards.forEach(board => {
-              const boardHtml = generateBoardHtml(board);
-              $('#board_list').append(boardHtml);
-            });
+          const boards = result.data.data;
+          $('#board_list').empty(); // 기존 게시물 삭제
+          boards.forEach(board => {
+            const boardHtml = generateBoardHtml(board);
+            $('#board_list').append(boardHtml);
+          });
 
-            $('#pagination-good-boards').twbsPagination('destroy');
-            $('#pagination-good-boards').twbsPagination({
-              totalPages: result.data.totalPages,
-              startPage: page,
-              initiateStartPageClick: false,
-              onPageClick: function (event, page) {
-                loadBoards(page);
-                $('html, body').animate({
-                  scrollTop: $('#board_content').offset().top
-                }, 'fast');
-              }
-            });
-          } else {
-            alert("게시물 데이터를 불러오는 데 실패했습니다.");
-          }
+          $('#pagination-good-boards').twbsPagination('destroy');
+          $('#pagination-good-boards').twbsPagination({
+            totalPages: result.data.totalPages,
+            startPage: page,
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+              loadBoards(page);
+              $('html, body').animate({
+                scrollTop: $('#board_content').offset().top
+              }, 'fast');
+            }
+          });
         },
         function () {
-          alert("API 호출 실패");
         }
     );
   }
@@ -214,11 +205,10 @@
 
     if (confirm("좋아요를 취소하시겠습니까?")) {
       apiModule.DELETE(`/goods`, data, function (result) {
-            alert("좋아요가 취소되었습니다.");
-            location.reload();
-          }, function (result) {
-            console.log(result.responseJSON.message);
-          }
+        alert("좋아요가 취소되었습니다.");
+        location.reload();
+        }, function (result) {
+      }
       );
     }
   }
@@ -320,7 +310,7 @@
           </div>
         </a>
         <div class="ms-3 d-flex flex-column gap-2">
-          <button type="button" class="btn btn-primary" onclick="removeGood(${comment.commentId}, 'board')">취소</button>
+          <button type="button" class="btn btn-primary" onclick="removeGood(${comment.commentId}, 'comment')">취소</button>
         </div>
       </div>
     `;
