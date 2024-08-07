@@ -7,8 +7,11 @@ import com.sparta.filmfly.domain.movie.dto.MovieResponseDto;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.user.entity.User;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,12 +44,19 @@ public class FavoriteService {
     /**
     * 자신이 찜한 영화 조회
     */
-    public List<MovieResponseDto> getFavorite(User user) {
-        List<Favorite> favoriteList = favoriteRepository.findAllByUserId(user.getId());
+    public PageResponseDto<List<MovieResponseDto>> getPageFavorite(Long userId,Pageable pageable) {
+        Page<Favorite> favoriteList = favoriteRepository.findAllByUserId(userId,pageable);
+        //movie 하나 하나 선택 마다 select 쿼리 날리주는 중  나중에 수정 필요
         List<Movie> movieList = favoriteList.stream().map(
                 favorite -> movieRepository.findByIdOrElseThrow(favorite.getMovie().getId())
         ).toList();
-        return movieList.stream().map(MovieResponseDto::fromEntity).toList();
+        return PageResponseDto.<List<MovieResponseDto>>builder()
+                .totalElements(favoriteList.getTotalElements())
+                .totalPages(favoriteList.getTotalPages())
+                .currentPage(favoriteList.getNumber() + 1)
+                .pageSize(favoriteList.getSize())
+                .data(movieList.stream().map(MovieResponseDto::fromEntity).toList())
+                .build();
     }
 
     /**

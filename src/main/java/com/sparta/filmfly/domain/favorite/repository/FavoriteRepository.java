@@ -5,13 +5,16 @@ import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AlreadyExistsException;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 
-    List<Favorite> findAllByUserId(Long userId);
+    Page<Favorite> findAllByUserId(Long userId, Pageable pageable);
 
     boolean existsByMovieIdAndUserId(Long movieId, Long userId);
     default void existsByMovieIdAndUserIdOrElseThrow(Long movieId, Long userId) {
