@@ -65,6 +65,11 @@ public class UserService {
 
         UserRoleEnum userRole;
         if (requestDto.getAdminPassword() != null && !requestDto.getAdminPassword().isEmpty()) {
+
+            if (userRepository.existsByEmail(requestDto.getEmail())) {
+                throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
+            }
+
             if (!managerPassword.equals(requestDto.getAdminPassword())) {
                 throw new InformationMismatchException(ResponseCodeEnum.INVALID_ADMIN_PASSWORD);
             }
