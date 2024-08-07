@@ -376,7 +376,7 @@
                 }
             },
             function (xhr, status, error) {
-                alert('실패');
+                console.error('오늘의 랭킹 호출 실패');
             }
         )
 
@@ -442,7 +442,7 @@
                 applyRandomColorToTarget('.post-card', 'brightPastel');
             },
             function (xhr, status, error) {
-                alert('실패');
+                console.error('최신 게시물 호출 실패');
             }
         )
 
@@ -472,7 +472,7 @@
                 applyRandomColorToTarget('.review-card', 'pastel');
             },
             function (xhr, status, error) {
-                alert('실패');
+                console.error('최신 리뷰 호출 실패');
             }
         )
     })
