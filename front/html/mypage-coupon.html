@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>FilmFly</title>
+  <!-- 부트 스트랩 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- 공통 헤더 -->
+  <script src="../js/common.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <script src="../js/apiModule.js"></script>
+  <script src="../js/jquery.twbsPagination.js"></script>
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="container">
+  <!-- 공통 헤더 -->
+  <header id="common-header"></header>
+
+  <div class="d-flex justify-content-between mb-3">
+    <p class="align-content-center">받은 쿠폰</p>
+    <select id="coupon-filter" class="form-select w-auto" aria-label="쿠폰 옵션">
+      <option value="1" selected>전체</option>
+      <option value="2">사용가능</option>
+      <option value="3">기간만료</option>
+    </select>
+  </div>
+
+  <div id="coupon-box"></div>
+  <ul id="pagination-coupons" class="pagination-sm d-flex justify-content-center"></ul>
+</div>
+
+<script>
+  function generateCouponHtml(coupon) {
+    const isExpired = new Date(coupon.expirationDate) < new Date();
+    const couponHtml = `
+        <div data-coupon-id="${coupon.id}" class="border rounded border-secondary-subtle justify-content-between p-2 d-flex mb-3 ${isExpired
+        ? 'opacity-50' : ''}">
+          <div class="d-flex flex-column align-content-center flex-grow-1 gap-2">
+            <div>${coupon.expirationDate} 까지</div>
+            <div class="fw-bold">${coupon.title}</div>
+            <div>${coupon.description}</div>
+            <div class="mt-3">쿠폰 번호: ${coupon.title}</div>
+          </div>
+          <button class="btn-copy-coupon btn btn-primary" ${isExpired ? 'disabled'
+        : ''} data-coupon-number="${coupon.title}">복사</button>
+        </div>
+      `;
+    return couponHtml;
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const userId = urlParams.get('user');
+
+  let coupons = "";
+  $(document).ready(function () {
+    // 쿠폰 로드
+    loadCoupons(1);
+  });
+
+  function loadCoupons(page) {
+    //API 호출
+    apiModule.GET("/coupons/users/" + userId + "?page=" + page,
+        function (result) {
+          if (result.data && result.data.content) {
+            coupons = result.data.content;
+            $('#coupon-box').empty();
+            coupons.forEach(coupon => {
+              const couponHtml = generateCouponHtml(coupon);
+              $('#coupon-box').append(couponHtml)
+            });
+
+            $('#pagination-coupons').twbsPagination('destroy');
+            $('#pagination-coupons').twbsPagination({
+              totalPages: result.data.totalPages,
+              startPage: page,
+              initiateStartPageClick: false,
+              onPageClick: function (event, page) {
+                loadCoupons(page);
+                $('html, body').animate({
+                  scrollTop: $('#coupon-box').offset().top
+                }, 'fast');
+              }
+            });
+          } else {
+            alert("쿠폰 데이터를 불러오는 데 실패했습니다.");
+          }
+        },
+        function () {
+          alert(" API 호출 실패");
+        });
+  }
+
+  function renderCoupons(filter) {
+    $('#coupon-box').empty();
+    let filteredCoupons;
+
+    if (filter === '1') {
+      filteredCoupons = coupons;
+    } else if (filter === '2') {
+      filteredCoupons = coupons.filter(coupon => new Date(coupon.expirationDate) >= new Date());
+    } else if (filter === '3') {
+      filteredCoupons = coupons.filter(coupon => new Date(coupon.expirationDate) < new Date());
+    }
+
+    filteredCoupons.forEach(coupon => {
+      const isExpired = new Date(coupon.expirationDate) < new Date();
+      const couponHtml = `
+        <div data-coupon-id="${coupon.couponId}" class="border rounded border-secondary-subtle justify-content-between p-2 d-flex mb-3 ${isExpired
+          ? 'opacity-50' : ''}">
+          <div class="d-flex flex-column align-content-center flex-grow-1 gap-2">
+            <div>${coupon.expirationDate} 까지</div>
+            <div class="fw-bold">${coupon.couponTitle}</div>
+            <div>${coupon.couponContent}</div>
+            <div class="mt-3">쿠폰 번호: ${coupon.couponNumber}</div>
+          </div>
+          <button class="btn-copy-coupon btn btn-primary" ${isExpired ? 'disabled'
+          : ''} data-coupon-number="${coupon.couponNumber}">복사</button>
+        </div>
+      `;
+      $('#coupon-box').append(couponHtml);
+    });
+  }
+
+  // 정렬 목록
+  $('#coupon-filter').on('change', function () {
+    const filterValue = $(this).val();
+    renderCoupons(filterValue);
+  });
+
+  // 쿠폰 복사 버튼
+  $('#coupon-box').on('click', '.btn-copy-coupon', function () {
+    const couponNumber = $(this).attr('data-coupon-number');
+    navigator.clipboard.writeText(couponNumber).then(() => {
+      alert(`쿠폰 번호가 복사되었습니다: ${couponNumber}`);
+    }).catch(err => {
+      alert('쿠폰 번호 복사 실패');
+    });
+  });
+
+  // 페이지 로드 시 전체 쿠폰을 렌더링
+  renderCoupons('1');
+</script>
+</body>
+</html>

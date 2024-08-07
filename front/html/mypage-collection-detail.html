@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>FilmFly</title>
+  <!-- 부트 스트랩 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- 공통 헤더 -->
+  <script src="../js/common.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <script src="../js/apiModule.js"></script>
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .card {
+      position: relative;
+    }
+    .delete-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: red;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- 공통 헤더 -->
+  <header id="common-header"></header>
+
+  <div class="collection-detail">
+    <div class="mb-3">
+      <div class="d-flex justify-content-end gap-2">
+        <button id="btnUpdateCollection" class="btn btn-primary">수정</button>
+        <button id="btnDeleteCollection" class="btn btn-primary">삭제</button>
+      </div>
+      <p class="fs-4 mb-2">컬렉션 제목</p>
+      <p class="fs-6 mb-3">컬렉션 설명</p>
+      <hr>
+    </div>
+
+    <div id="collection-detail-content" class="row row-cols-1 row-cols-md-4 g-4">
+    </div>
+  </div>
+</div>
+
+<script>
+  const movies = [
+    {
+      "movieId": 1,
+      "movieUrl": "../images/logo.png",
+      "title": "가나다라마바사아자차카타파하가나다라마바사아자차카타"
+    },
+    {
+      "movieId": 2,
+      "movieUrl": "../images/logo.png",
+      "title": "영화 제목 2"
+    },
+    {
+      "movieId": 3,
+      "movieUrl": "../images/logo.png",
+      "title": "영화 제목 3"
+    },
+    {
+      "movieId": 4,
+      "movieUrl": "../images/logo.png",
+      "title": "영화 제목 4"
+    }
+  ];
+
+  movies.forEach(movie => {
+    const movieHtml = `
+    <div class="col" data-movie-id="${movie.movieId}">
+      <div class="card h-100">
+        <img src="${movie.movieUrl}" class="card-img-top img-big-size" alt="영화 포스터">
+        <i class="fa-solid fa-trash-can delete-icon" data-movie-id="${movie.movieId}"></i>
+        <div class="card-body">
+          <h5 class="card-title">${movie.title}</h5>
+        </div>
+      </div>
+    </div>
+    `;
+    $('#collection-detail-content').append(movieHtml);
+  });
+
+  $('#btnUpdateCollection').on('click', function () {
+    location.href = './create-collection.html?edit=1';
+  });
+
+  $('#btnDeleteCollection').on('click', function () {
+    if (confirm("해당 컬렉션을 삭제하시겠습니까?")) {
+      const title = $('#inputCollectionTitle').val();
+      const description = $('#inputCollectionDescription').val();
+
+      const data = {
+        title: title,
+        description: description
+      };
+
+      $.ajax({
+        type: 'DELETE',
+        url: '',
+        data: JSON.stringify(data),
+        contentType: "application/json;charset=utf-8"
+      })
+      .done(function (result, status, xhr) {
+        location.replace("/");
+      })
+      .fail(function (xhr, status, er) {
+        alert("보관함 삭제 실패");
+      });
+    }
+  });
+
+  $('.col').on('click', function (e) {
+    if ($(e.target).hasClass('delete-icon')) {
+      return;
+    }
+    const movieId = $(this).attr('data-movie-id');
+    const url = `/movie/${movieId}`;
+    alert(`영화 번호 : ${url}`);
+  });
+
+  $(document).on('click', '.delete-icon', function (e) {
+    e.stopPropagation();
+    const movieId = $(this).data('movie-id');
+    if (confirm("해당 영화를 삭제하시겠습니까?")) {
+      $(`[data-movie-id="${movieId}"]`).remove();
+      // AJAX 요청을 보내서 영화를 삭제합니다.
+      // $.ajax({
+      //   type: 'DELETE',
+      //   url: `/movies/${movieId}`,
+      //   success: function (result) {
+      //     alert("영화가 삭제되었습니다.");
+      //     // 삭제가 완료되면 영화 카드도 삭제합니다.
+      //     $(`[data-movie-id="${movieId}"]`).remove();
+      //   },
+      //   error: function (xhr, status, er) {
+      //     alert("영화 삭제 실패");
+      //   }
+      // });
+    }
+  });
+</script>
+</body>
+</html>

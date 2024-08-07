@@ -1,0 +1,12 @@
+### 영화 단건 조회
+@movieId = 280180
+GET http://localhost:8080/movies/{{movieId}}
+
+
+### 인기 영화 조회
+GET http://localhost:8080/movies/trend
+
+
+# http://localhost:8080/movies?page=&size=10&sortBy=&isAsc=&search=
+### 영화 검색 (페이징)
+GET http://localhost:8080/movies?page=1

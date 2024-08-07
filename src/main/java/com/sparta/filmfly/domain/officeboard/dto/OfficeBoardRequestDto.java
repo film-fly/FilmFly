@@ -1,5 +1,7 @@
 package com.sparta.filmfly.domain.officeboard.dto;
 
+import com.sparta.filmfly.domain.officeboard.entity.OfficeBoard;
+import com.sparta.filmfly.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,9 +19,12 @@ public class OfficeBoardRequestDto {
     String content;
 
     @Builder
-    public OfficeBoardRequestDto(String title, String content) {
-        this.title = title;
-        this.content = content;
+    public OfficeBoard toEntity(User user) {
+        return OfficeBoard.builder()
+                .user(user)
+                .title(title)
+                .content(content)
+                .build();
     }
 
 }

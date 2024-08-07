@@ -1,0 +1,101 @@
+### ADMIN 회원가입
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "Test12345!",
+  "email" : "dmarb0313@gmail.com",
+  "adminPassword": "1234",
+  "nickname": "admin"
+}
+
+### ADMIN 로그인
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username" : "admin1",
+  "password": "Test12345!"
+}
+
+### 영화 API 데이터 크롤링 1
+POST http://localhost:8080/movies/api/discover
+Content-Type: application/json
+
+{
+  "sort_by": "VOTE_AVERAGE_DESC",
+  "vote_count__gte": 1000
+}
+### 영화 장르별로 가져오기
+GET http://localhost:8080/movies?genreIds=12
+Content-Type: application/json
+
+### 영화 API 데이터 크롤링 2
+POST http://localhost:8080/movies/api/search
+Content-Type: application/json
+
+{
+  "query": "범죄도시"
+}
+### 영화 API 데이터 크롤링 3
+POST http://localhost:8080/movies/api
+Content-Type: application/json
+
+{
+  "page": 3
+}
+### 영화 API 데이터 크롤링 4
+POST http://localhost:8080/movies/api
+Content-Type: application/json
+
+{
+  "page": 4
+}
+### 영화 API 데이터 크롤링 5
+POST http://localhost:8080/movies/api
+Content-Type: application/json
+
+{
+  "page": 5
+}
+
+###검색 가능 항목
+# String certification;
+# String certification__gte;
+# String certification__lte;
+# String certification_country;
+# boolean include_adult;  // 기본 값 설정
+# boolean include_video;  // 기본 값 설정
+# LanguagesEnum language;  // 기본 값 설정
+# int page;  // 기본 값 설정
+# int primary_release_year;
+# LocalDate primary_release_date__gte;
+# LocalDate primary_release_date__lte;
+# String region;
+# LocalDate release_date__gte;
+# LocalDate release_date__lte;
+# SortByEnum sort_by;  // 기본 값 설정
+# float vote_average__gte;
+# float vote_average__lte;
+# float vote_count__gte;
+# float vote_count__lte;
+# String watch_region;
+# String with_cast;
+# String with_companies;
+# String with_crew;
+# String with_genres;
+# String with_keywords;
+# String with_origin_country;
+# OriginLanguageEnum with_original_language;
+# String with_people;
+# int with_release_type;
+# int with_runtime__gte;
+# int with_runtime__lte;
+# String with_watch_monetization_types;
+# String with_watch_providers;
+# String without_companies;
+# String without_genres;
+# String without_keywords;
+# String without_watch_providers;
+# int year;

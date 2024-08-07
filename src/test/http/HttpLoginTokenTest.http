@@ -1,0 +1,35 @@
+### ADMIN 로그인
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username" : "admin1",
+  "password": "Test12345!"
+}
+### ADMIN 로그인 2
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username" : "admin2221",
+  "password": "Test12345!"
+}
+
+### ADMIN 로그인 2
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username" : "admin222",
+  "password": "Test12345!"
+}
+### ADMIN 회원가입 2
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "Test12345!",
+  "email" : "dmarb0313@gmail.com",
+  "adminPassword": "1234"
+}

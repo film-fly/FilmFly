@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>FilmFly</title>
+  <!-- 부트 스트랩 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+          crossorigin="anonymous"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- 공통 헤더 -->
+  <script src="../js/common.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <script src="../js/apiModule.js"></script>
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="container">
+  <!-- 공통 헤더 -->
+  <header id="common-header"></header>
+
+  <div class="d-flex gap-3 flex-column">
+<!--    프로필 -->
+    <div id="profile-box" class="d-flex align-items-center gap-3" data-content-id="1" data-user-id="">
+    </div>
+
+<!--    영화 -->
+    <div id="movie-box" class="d-flex align-items-center">
+    </div>
+    <hr>
+<!--    리뷰 -->
+    <div id="review-box">
+    </div>
+
+<!--    리액션 -->
+    <div class="d-flex gap-3">
+      <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true">
+        <i class="fa-regular fa-face-smile">좋아요</i>
+      </button>
+      <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true">
+        <i class="fa-regular fa-face-angry">싫어요</i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addCollection" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">보관함 추가</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="collection-box">
+
+
+        </div>
+        <div class="modal-footer">
+          <button id="btnAddCollection" type="button" class="btn btn-primary">추가</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 신고, 차단 모달 -->
+<div class="modal fade" id="blockReportModal" tabindex="-1" aria-labelledby="blockReportModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="blockReportModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="inputBlockReport" class="mb-2">메모</label>
+        <textarea id="inputBlockReport" style="width: 100%;height: 200px;"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btnBlockReport">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const movieId = urlParams.get('movie');
+  const reviewId = urlParams.get('review');
+
+  $(document).ready(function () {
+    loadReview();
+
+    apiModule.GET(`/movies/${movieId}`,
+        function (result, status, xhr) {
+          let movie = result.data.movie;
+          let movieHtml = `
+          <img class="img-default-size me-3" src="https://image.tmdb.org/t/p/w220_and_h330_face${movie.posterPath}" alt="영화 프로필">
+          <div class="d-flex flex-column gap-3">
+            <div>${movie.title}</div>
+            <div>
+              <i class="fa-solid fa-star align-content-center">${result.data.avgRating}</i>
+            </div>
+          </div>
+          `;
+          $('#movie-box').append(movieHtml);
+        },
+        function (xhr, status, error) {
+        });
+  });
+
+  const initCollection = [
+    {
+      id: 333,
+      url: '../images/logo.png',
+      title: '영화 보관함 제목',
+      description: '영화 보관함 설명'
+    },
+    {
+      id: 222,
+      url: '../images/logo.png',
+      title: '영화 보관함 제목 zzz',
+      description: '영화 보관함 설명 zzz'
+    },
+  ];
+  initCollection.forEach(collection => {
+    let collectionHtml = `
+    <div class="collection-form d-flex flex-row card mb-3">
+      <div class="d-flex justify-content-center ms-3 me-3">
+        <input type="checkbox" class="checkCollection" aria-label="checkCollection" style="zoom: 1.5" value="${collection.id}">
+      </div>
+      <div class="collection-img-box">
+        <img src="${collection.url}" class="img-fluid rounded-start" alt="영화 포스터">
+      </div>
+      <div class="collection-text-box">
+        <div>
+          <p class="collection-title">${collection.title}</p>
+          <p class="collection-description">${collection.description}</p>
+        </div>
+      </div>
+    </div>
+  `;
+    $('#collection-box').append(collectionHtml);
+  });
+
+  $('#btnAddCollection').on('click', function () {
+    const selectedCollections = [];
+    $('#collection-box .checkCollection:checked').each(function () {
+      selectedCollections.push($(this).val());
+    });
+
+    if (selectedCollections.length === 0) {
+      alert("보관함을 하나 이상 선택해주세요.");
+      return;
+    }
+
+    const data = {
+      collections: selectedCollections
+    };
+
+    // $.ajax({
+    //   type: 'POST',
+    //   url: '/',  // 서버의 실제 엔드포인트로 변경
+    //   data: JSON.stringify(data),
+    //   contentType: "application/json;charset=utf-8"
+    // })
+    // .done(function (result, status, xhr) {
+    //   alert("보관함에 추가되었습니다.");
+    //   $('#addCollection').hide();
+    // })
+    // .fail(function (xhr, status, er) {
+    //   alert("보관함 추가 실패");
+    // });
+  });
+
+  function loadReview() {
+    apiModule.GET(`/reviews/${reviewId}`,
+        function (result, status, xhr) {
+          let review = result.data;
+          $('#profile-box').attr('data-content-id', review.id).attr('data-user-id', review.userId);
+
+          let profileHtml = `
+          <div>
+            <img class="img-profile-size" src="${review.pictureUrl || '../images/profileImg.png'}" alt="프로필 사진">
+          </div>
+          <div>
+            ${review.nickname}
+          </div>
+          <div>
+            ${review.createdAt}
+          </div>
+          <div class="d-flex justify-content-end flex-grow-1">
+            <i class="fa-solid fa-ellipsis-vertical settings-icon fs-4" data-bs-toggle="dropdown" aria-expanded="false"></i>
+            <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${review.userId}" data-content-id="${review.id}" data-content-type="REVIEW">
+              <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
+              <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
+            </ul>
+          </div>
+          `;
+          $('#profile-box').append(profileHtml);
+
+          let reviewHtml = `
+          <i class="fa-solid fa-star align-content-center">${review.rating}</i>
+          <div class="fs-4 my-3">
+            ${review.title}
+          </div>
+          <div>
+            ${review.content}
+          </div>
+          `;
+          $('#review-box').append(reviewHtml);
+        },
+        function (xhr, status, error) {
+        });
+  }
+</script>
+
+<script src="../js/reaction.js"></script>
+</body>
+</html>

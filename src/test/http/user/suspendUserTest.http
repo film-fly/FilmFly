@@ -1,0 +1,51 @@
+### 회원가입
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "Test12345!",
+  "email" : "dmarb031323@gmail.com",
+  "nickname": "admin23"
+}
+
+### 로그인
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "Test12345!"
+}
+
+### 회원가입2
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "Test12345!",
+  "email" : "dmarb031323@gmail.com",
+  "nickname": "admin23"
+}
+
+### 로그인2
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "Test12345!"
+}
+
+### ADMIN 로그인 2
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username" : "admin1212",
+  "password": "Test12345!"
+}
+
+### 사용자 정지 시키기
+PUT localhost:8080/users/suspend/1

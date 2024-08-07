@@ -1,0 +1,2 @@
+### 인기 영화 조회
+GET http://localhost:8080/movies/trend

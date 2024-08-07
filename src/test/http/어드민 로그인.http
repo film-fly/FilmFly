@@ -1,0 +1,41 @@
+### ADMIN1 회원가입
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "Test12345!",
+  "email" : "Admin1@gmail.com",
+  "nickname": "Admin1",
+  "adminPassword": "1234"
+}
+
+### ADMIN1 로그인
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username" : "admin1",
+  "password": "Test12345!"
+}
+
+### ADMIN2 회원가입
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "username": "admin2",
+  "password": "Test12345!",
+  "email" : "Admin2@gmail.com",
+  "nickname": "Admin2",
+  "adminPassword": "1234"
+}
+
+### ADMIN2 로그인
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username" : "admin2",
+  "password": "Test12345!"
+}

@@ -1,0 +1,35 @@
+### 로그인
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "Test12345!"
+}
+
+### 보드 생성
+POST http://localhost:8080/boards
+
+{
+  "title": "제목11",
+  "content": "내용22"
+}
+
+### 보드 조회
+GET http://localhost:8080/boards/23
+
+### 보드 페이징 조회
+GET http://localhost:8080/boards?page=1
+
+### 보드 수정
+PATCH http://localhost:8080/boards/23
+Content-Type: application/json
+
+{
+  "title": "게시판 제목 수정1",
+  "content": "게시판 내용 수정12345"
+}
+
+### 보드 삭제
+DELETE http://localhost:8080/boards/23
+Content-Type: application/json

@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>FilmFly</title>
+  <!-- 부트 스트랩 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- 공통 헤더 -->
+  <script src="../js/common.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <script src="../js/apiModule.js"></script>
+  <script src="../js/jquery.twbsPagination.js"></script>
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="container">
+  <!-- 공통 헤더 -->
+  <header id="common-header"></header>
+
+  <div class="mb-3">싫어요 목록</div>
+  <div class="tabs">
+    <input id="movie" type="radio" name="tab_item" checked>
+    <label class="tab_item" for="movie">MOVIE</label>
+    <input id="review" type="radio" name="tab_item" aria-label="asdf">
+    <label class="tab_item" for="review">REVIEW</label>
+    <input id="board" type="radio" name="tab_item">
+    <label class="tab_item" for="board">BOARD</label>
+    <input id="comment" type="radio" name="tab_item">
+    <label class="tab_item" for="comment">COMMENT</label>
+
+    <div class="tab_content" id="movie_content">
+      <div class="list-group list-group-flush" id="movie_list"></div>
+      <ul id="pagination-bad-movies" class="pagination-sm d-flex justify-content-center"></ul>
+    </div>
+    <div class="tab_content" id="review_content">
+      <div class="list-group list-group-flush" id="review_list"></div>
+      <ul id="pagination-bad-reviews" class="pagination-sm d-flex justify-content-center"></ul>
+    </div>
+    <div class="tab_content" id="board_content">
+      <div class="list-group list-group-flush" id="board_list"></div>
+      <ul id="pagination-bad-boards" class="pagination-sm d-flex justify-content-center"></ul>
+    </div>
+    <div class="tab_content" id="comment_content">
+      <div class="list-group list-group-flush" id="comment_list"></div>
+      <ul id="pagination-bad-comments" class="pagination-sm d-flex justify-content-center"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const userId = urlParams.get('user');
+
+  // 기본 프로필 이미지 경로
+  const defaultProfileImg = "../images/profileImg.png";
+
+  $(document).ready(function () {
+    if (userId == null) {
+      alert("user 누락! 페이지 오류!");
+      window.history.back();
+    }
+    // 영화 로드
+    loadMovies(1);
+    // 리뷰 로드
+    loadReviews(1);
+    // 게시물 로드
+    loadBoards(1);
+    // 댓글 로드
+    loadComments(1);
+  });
+
+  // 영화 로딩
+  function loadMovies(page) {
+    apiModule.GET(`/bads/movies/users/${userId}?page=${page}`,
+        function (result) {
+          const movies = result.data.data;
+          $('#movie_list').empty(); // 기존 영화 삭제
+          movies.forEach(movie => {
+            const movieHtml = generateMovieHtml(movie);
+            $('#movie_list').append(movieHtml);
+          });
+
+          $('#pagination-bad-movies').twbsPagination('destroy');
+          $('#pagination-bad-movies').twbsPagination({
+            totalPages: result.data.totalPages,
+            startPage: page,
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+              loadMovies(page);
+              $('html, body').animate({
+                scrollTop: $('#movie_content').offset().top
+              }, 'fast');
+            }
+          });
+        },
+        function () {
+        }
+    );
+  }
+
+  // 리뷰 로딩
+  function loadReviews(page) {
+    apiModule.GET(`/bads/reviews/users/${userId}?page=${page}`,
+        function (result) {
+          const reviews = result.data.data;
+          $('#review_list').empty(); // 기존 리뷰 삭제
+          reviews.forEach(review => {
+            const reviewHtml = generateReviewHtml(review);
+            $('#review_list').append(reviewHtml);
+          });
+
+          $('#pagination-bad-reviews').twbsPagination('destroy');
+          $('#pagination-bad-reviews').twbsPagination({
+            totalPages: result.data.totalPages,
+            startPage: page,
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+              loadReviews(page);
+              $('html, body').animate({
+                scrollTop: $('#review_content').offset().top
+              }, 'fast');
+            }
+          });
+        },
+        function () {
+        }
+    );
+  }
+
+  // 게시물 로딩
+  function loadBoards(page) {
+    apiModule.GET(`/bads/boards/users/${userId}?page=${page}`,
+        function (result) {
+          const boards = result.data.data;
+          $('#board_list').empty(); // 기존 게시물 삭제
+          boards.forEach(board => {
+            const boardHtml = generateBoardHtml(board);
+            $('#board_list').append(boardHtml);
+          });
+
+          $('#pagination-bad-boards').twbsPagination('destroy');
+          $('#pagination-bad-boards').twbsPagination({
+            totalPages: result.data.totalPages,
+            startPage: page,
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+              loadBoards(page);
+              $('html, body').animate({
+                scrollTop: $('#board_content').offset().top
+              }, 'fast');
+            }
+          });
+        },
+        function () {
+        }
+    );
+  }
+
+  // 댓글 목록 로드
+  function loadComments(page) {
+    apiModule.GET(`/bads/comments/users/${userId}?page=${page}`, function (result) {
+      if (result.data && result.data.data) {
+        comments = result.data.data;
+        $('#comment_list').empty(); // 기존 댓글 삭제
+        comments.forEach(comment => {
+          const commentHtml = generateCommentHtml(comment);
+          $('#comment_list').append(commentHtml);
+        });
+
+        $('#pagination-bad-comments').twbsPagination('destroy');
+        $('#pagination-bad-comments').twbsPagination({
+          totalPages: result.data.totalPages,
+          startPage: page,
+          initiateStartPageClick: false,
+          onPageClick: function (event, page) {
+            loadComments(page);
+            $('html, body').animate({
+              scrollTop: $('#comment_content').offset().top
+            }, 'fast');
+          }
+        });
+      } else {
+        alert("댓글 데이터를 불러오는 데 실패했습니다.");
+      }
+    }, function () {
+      console.log("API 호출 실패");
+    });
+  }
+
+  // 싫어요 취소
+  function removeBad(id, type) {
+    let data = {
+      contentId: id,
+      contentType: type
+    };
+
+    if (confirm("싫어요를 취소하시겠습니까?")) {
+      apiModule.DELETE(`/bads`, data, function (result) {
+            alert("싫어요가 취소되었습니다.");
+            location.reload();
+          }, function (result) {
+          }
+      );
+    }
+  }
+
+  // 영화 HTML 생성 함수
+  function generateMovieHtml(movie) {
+    return `
+      <div class="list-group-item d-flex p-3 movie-item">
+        <a href="./movie-detail.html?movie=${movie.movieId}" class="d-flex align-items-center flex-grow-1">
+          <div>
+            <img class="img-default-size" src="https://image.tmdb.org/t/p/w220_and_h330_face${movie.posterPath}" alt="${movie.title}">
+          </div>
+          <div class="d-flex flex-column gap-3 ms-3">
+            <div>${movie.title}</div>
+          </div>
+        </a>
+        <div class="d-flex align-items-center ms-3 gap-2">
+          <button type="button" class="btn btn-primary" onclick="removeBad(${movie.movieId}, 'movie')">취소</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // 리뷰 HTML 생성 함수
+  function generateReviewHtml(review) {
+    return `
+    <div class="list-group-item d-flex p-3 review-item" data-review-id="${review.id}">
+      <div class="d-flex flex-column flex-grow-1">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="me-3 d-flex flex-column">
+          <a href="./movie-detail.html?movie=${review.movieId}">
+            <div style="font-weight: bold; color: #FF6F61;">${review.movieTitle || '영화 제목 미확인'}</div>
+          </a>
+            <div class="d-flex align-items-center">
+              <img style="width: 52px; height: 52px;" src="${review.pictureUrl || defaultProfileImg}" alt="프로필사진" onerror="this.src='${defaultProfileImg}'">
+              <div>${review.nickname || '닉네임 없음'}</div>
+            </div>
+          </div>
+          <div class="d-flex flex-column align-items-end">
+            <div class="text-muted mb-1">
+              ${review.createdAt || '날짜 미제공'}
+            </div>
+            <div class="d-flex gap-3">
+              <i class="fa-solid fa-star"> ${review.rating || 0}</i>
+            </div>
+          </div>
+        </div>
+        <a href="./review-detail.html?movie=${review.movieId}&review=${review.reviewId}">
+          <div class="mt-3 mypage-entity-title">
+            ${review.title || '제목 없음'}
+          </div>
+        </a>
+      </div>
+      <div class="d-flex flex-column justify-content-center ms-3 gap-2">
+        <button type="button" class="btn btn-primary" onclick="removeBad(${review.reviewId}, 'review')">취소</button>
+      </div>
+    </div>
+  `;
+  }
+
+  // 게시물 HTML 생성 함수
+  function generateBoardHtml(board) {
+    return `
+      <div class="list-group-item d-flex p-3" data-board-id="${board.id}">
+        <a href="board-detail.html?board=${board.boardId}" class="d-flex flex-column flex-grow-1">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mypage-entity-title">${board.title || '제목 미확인'}</div>
+            <div class="text-muted">${board.createdAt}</div>
+          </div>
+          <div class="mt-2 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <div>${board.nickname || '닉네임 없음'}</div>
+            </div>
+            <div class="d-flex gap-3">
+              <div><i class="fa-regular fa-eye"></i> ${board.hits}</div>
+            </div>
+          </div>
+        </a>
+        <div class="ms-3 d-flex flex-column gap-2">
+          <button type="button" class="btn btn-primary" onclick="removeBad(${board.boardId}, 'board')">취소</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // 댓글 HTML 생성 함수
+  function generateCommentHtml(comment) {
+    return `
+      <div class="list-group-item d-flex p-3" data-comment-id="${comment.id}">
+        <a href="./board-detail.html?board=${comment.boardId}" class="d-flex flex-column flex-grow-1">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mypage-entity-title">${comment.content || '내용 없음'}</div>
+            <div class="text-muted">${comment.createdAt}</div>
+          </div>
+          <div class="mt-2 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <div>${comment.nickname}</div>
+            </div>
+          </div>
+        </a>
+        <div class="ms-3 d-flex flex-column gap-2">
+          <button type="button" class="btn btn-primary" onclick="removeBad(${comment.commentId}, 'comment')">취소</button>
+        </div>
+      </div>
+    `;
+  }
+</script>
+</body>
+</html>

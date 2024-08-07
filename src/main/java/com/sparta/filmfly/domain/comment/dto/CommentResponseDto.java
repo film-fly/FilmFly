@@ -1,31 +1,46 @@
 package com.sparta.filmfly.domain.comment.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.filmfly.domain.comment.entity.Comment;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
-@Getter
-@Builder
-public class CommentResponseDto {
-    @NotBlank
-    private String userName;
-    @NotBlank
-    private String content;
-    @NotNull
-    private LocalDateTime updatedAt;
-    @NotNull
-    private long goodCount;
+import java.time.LocalDateTime;
 
-    public CommentResponseDto fromEntity(Comment comment) {
-        return CommentResponseDto.builder()
-            .userName(comment.getUser().getNickname())
-            .content(comment.getContent())
-            .updatedAt(comment.getUpdatedAt())
-            .goodCount(comment.getGoodCount())
-            .build();
+@Getter
+public class CommentResponseDto {
+    private Long id;
+    private Long userId;
+    private Long boardId;
+    private String nickname;
+    private String content;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime createdAt;
+    private long goodCount;
+    private long badCount;
+
+    @Builder
+    public CommentResponseDto(Long id, Long userId,Long boardId, String nickname, String content, LocalDateTime createdAt, long goodCount, long badCount) {
+        this.id = id;
+        this.userId = userId;
+        this.boardId = boardId;
+        this.nickname = nickname;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.goodCount = goodCount;
+        this.badCount = badCount;
     }
 
+    public static CommentResponseDto fromEntity(Comment comment,Long goodCount, Long badCount) {
+        return CommentResponseDto.builder()
+                .id(comment.getId())
+                .userId(comment.getUser().getId())
+                .boardId(comment.getBoard().getId())
+                .nickname(comment.getUser().getNickname())
+                .content(comment.getContent())
+                .createdAt(comment.getCreatedAt())
+                .goodCount(goodCount)
+                .badCount(badCount)
+                .build();
+    }
 }
