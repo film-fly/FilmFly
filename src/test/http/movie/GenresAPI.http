@@ -2,5 +2,5 @@
 @access_token = ""
 
 ### GET request to example server
-GET http://localhost:8080/movies/genres/api
+GET http://localhost:8080/genres/api
 Authorization: {{access_token}}
