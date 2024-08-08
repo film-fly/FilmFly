@@ -12,43 +12,117 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <!-- 공통 헤더 -->
   <script src="../js/common.js"></script>
+  <script src="../js/mypageCommon.js"></script>
   <!-- Font Awesome -->
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="../js/apiModule.js"></script>
+  <script src="../js/jquery.twbsPagination.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
+
 </head>
 <body>
 <div class="container">
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
+  <div id="user-profile">
+    <!-- 유저 프로필 추가 영역 -->
+  </div>
   <div class="d-flex justify-content-between align-content-center mb-3">
-    <div style="display : flex; justify-content : center; align-items : center;">영화 보관함</div>
+    <div class="page-title">영화 보관함</div>
     <button id="btnCreateCollection" class="btn btn-primary"
             onclick="location.href='./create-collection.html'">보관함 추가
     </button>
   </div>
 
   <div id="collection-box">
+    <!-- 보관함 목록이 동적으로 추가될 영역 -->
+  </div>
+  <ul id="pagination-collection" class="pagination-sm d-flex justify-content-center mt-4"></ul>
+</div>
 
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const userId = urlParams.get('user');
+  console.log("user id : " + userId);
 
-    <div class="collection-form card mb-3">
-      <a href="mypage-collection-detail.html" class="d-flex">
+  $(document).ready(function () {
+    if (userId == null) {
+      alert("user 누락! 페이지 오류!");
+      window.history.back();
+    } else {
+      // 사용자 정보를 로드하고 페이지를 업데이트
+      loadUserInfo(userId, function(error, userInfo) {
+        if (!error) {
+          renderUserProfile(userId,userInfo);
+        }
+      });
+      loadCollections(1);
+    }
+  });
+
+  function loadCollections(page) {
+    // API 호출
+    apiModule.GET(`/collections/users/${userId}?page=${page}`, function (result) {
+      if (result.statusCode === 200) {
+        const collections = result.data.data;
+        $('#collection-box').empty(); // 기존 내용을 비움
+        collections.forEach(collection => {
+          const collectionHtml = generateCollectionHtml(collection);
+          $('#collection-box').append(collectionHtml);
+        });
+
+        if(result.data.totalElements === 0) {
+          $('#collection-box').append('<div class="text-danger">보관함이 존재하지 않습니다</div>');
+        }
+        else {
+          $('#pagination-collection').twbsPagination('destroy');
+          $('#pagination-collection').twbsPagination({
+            totalPages: result.data.totalPages,
+            startPage: page,
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+              loadCollections(page);
+              $('html, body').animate({
+                scrollTop: $('#collection-box').offset().top
+              }, 'fast');
+            }
+          });
+        }
+      } else {
+        alert("영화 보관함을 불러오는 데 실패했습니다.");
+      }
+    }, function () {
+      alert("서버 오류가 발생했습니다.");
+    });
+  }
+
+  function generateCollectionHtml(collection) {
+    return `
+    <div class="collection-form card mb-3" data-collection-id="${collection.collectionId}">
+      <a href="../html/mypage-collection-detail.html?collectionId=${collection.collectionId}&user=${userId}" class="d-flex">
         <div class="collection-img-box">
           <img src="../images/logo.png" class="img-fluid rounded-start" alt="영화 포스터">
         </div>
         <div class="collection-text-box">
           <div>
-            <p class="collection-title">영화 보관함 1</p>
-            <p class="collection-description">보관함 설명</p>
+            <p class="collection-title">${collection.collectionName}</p>
+            <p class="collection-description">${collection.collectionContent}</p>
           </div>
         </div>
       </a>
     </div>
-  </div>
-</div>
+    `;
+  }
+
+  $(document).on('click', '.collection-form', function (e) {
+    const collectionId = $(this).data('collection-id');
+    const url = `../html/mypage-collection-detail.html?collectionId=${collectionId}`;
+    location.href = url;
+  });
+</script>
 </body>
 </html>

@@ -12,16 +12,24 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <!-- 공통 헤더 -->
   <script src="../js/common.js"></script>
+  <script src="../js/mypageCommon.js"></script>
   <!-- Font Awesome -->
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="../js/apiModule.js"></script>
+  <script src="../js/jquery.twbsPagination.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
   <style>
     .card {
       position: relative;
+      border: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .card-img-top {
+      height: 300px;
+      object-fit: cover;
     }
     .delete-icon {
       position: absolute;
@@ -29,6 +37,19 @@
       right: 10px;
       color: red;
       cursor: pointer;
+      font-size: 30px;
+    }
+    .card-title {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .card-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3; /* Number of lines to show */
+      -webkit-box-orient: vertical;
     }
   </style>
 </head>
@@ -37,117 +58,178 @@
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
+  <div id="user-profile">
+    <!-- 유저 프로필 추가 영역 -->
+  </div>
   <div class="collection-detail">
     <div class="mb-3">
       <div class="d-flex justify-content-end gap-2">
         <button id="btnUpdateCollection" class="btn btn-primary">수정</button>
         <button id="btnDeleteCollection" class="btn btn-primary">삭제</button>
       </div>
-      <p class="fs-4 mb-2">컬렉션 제목</p>
-      <p class="fs-6 mb-3">컬렉션 설명</p>
+      <div class="page-title">보관함 제목</div>
+      <p class="fs-6 mb-3">보관함 설명</p>
       <hr>
     </div>
 
-    <div id="collection-detail-content" class="row row-cols-1 row-cols-md-4 g-4">
+    <div id="collection-detail-content" class="row row-cols-1 row-cols-md-3 g-4">
     </div>
+    <ul id="pagination-collection-detail" class="pagination-sm d-flex justify-content-center mt-4"></ul>
   </div>
 </div>
 
 <script>
-  const movies = [
-    {
-      "movieId": 1,
-      "movieUrl": "../images/logo.png",
-      "title": "가나다라마바사아자차카타파하가나다라마바사아자차카타"
-    },
-    {
-      "movieId": 2,
-      "movieUrl": "../images/logo.png",
-      "title": "영화 제목 2"
-    },
-    {
-      "movieId": 3,
-      "movieUrl": "../images/logo.png",
-      "title": "영화 제목 3"
-    },
-    {
-      "movieId": 4,
-      "movieUrl": "../images/logo.png",
-      "title": "영화 제목 4"
-    }
-  ];
+  const urlParams = new URLSearchParams(window.location.search);
+  const profileUserId = urlParams.get('user');
+  const collectionId = urlParams.get('collectionId');
+  console.log("profileUserId id : " + profileUserId);
+  console.log("collectionId: " + collectionId);
 
-  movies.forEach(movie => {
-    const movieHtml = `
-    <div class="col" data-movie-id="${movie.movieId}">
-      <div class="card h-100">
-        <img src="${movie.movieUrl}" class="card-img-top img-big-size" alt="영화 포스터">
-        <i class="fa-solid fa-trash-can delete-icon" data-movie-id="${movie.movieId}"></i>
-        <div class="card-body">
-          <h5 class="card-title">${movie.title}</h5>
-        </div>
-      </div>
-    </div>
-    `;
-    $('#collection-detail-content').append(movieHtml);
+  $(document).ready(function () {
+    if (collectionId == null) {
+      alert("보관함 누락! 페이지 오류!");
+      window.history.back();
+    } else {
+      // 사용자 정보를 로드하고 페이지를 업데이트
+      loadUserInfo(profileUserId, function(error, userInfo) {
+        if (!error) {
+          renderUserProfile(userId,userInfo);
+        }
+      });
+      loadCollectionInfo(); // 보관함 정보 불러오기
+      loadCollectionDetail(1); // 보관함 상세 불러오기
+    }
   });
 
+  let userId;
+  function loadCollectionInfo() {
+    apiModule.GET(`/collections/${collectionId}`, function (result) {
+      if (result.statusCode === 200) {
+        const collection = result.data;
+        $('.page-title').text(collection.collectionName);
+        $('.fs-6').text(collection.collectionContent);
+        userId = collection.userId;
+      } else {
+        alert("보관함 정보를 불러오는 데 실패했습니다.");
+      }
+    }, function () {
+      alert("서버 오류가 발생했습니다.");
+    });
+  }
+
+  function loadCollectionDetail(page) {
+    apiModule.GET(`/collections/${collectionId}/movies?page=${page}`, function (result) {
+      if (result.statusCode === 200) {
+        const collection = result.data.data;
+        $('#collection-detail-content').empty();
+
+        collection.forEach(movie => {
+          const movieHtml = generateMovieHtml(movie, collectionId);
+          $('#collection-detail-content').append(movieHtml);
+        });
+
+        if(result.data.totalElements === 0) {
+          $('#collection-detail-content').append('<div class="text-danger">보관한 영화가 존재하지 않습니다</div>');
+        }
+        else {
+          $('#pagination-collection-detail').twbsPagination('destroy');
+          $('#pagination-collection-detail').twbsPagination({
+            totalPages: result.data.totalPages,
+            startPage: page,
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+              loadCollectionDetail(page);
+              $('html, body').animate({
+                scrollTop: $('#collection-detail-content').offset().top
+              }, 'fast');
+            }
+          });
+        }
+      } else {
+        alert("보관함을 불러오는 데 실패했습니다.");
+      }
+    }, function () {
+      alert("서버 오류가 발생했습니다.");
+    });
+  }
+
+  function generateMovieHtml(movie, collectionId) {
+    const truncatedOverview = truncateText(movie.overview, 100);
+    return `
+      <div class="col" data-movie-id="${movie.id}" data-collection-id="${collectionId}">
+        <div class="card h-100">
+          <img src="https://image.tmdb.org/t/p/w500${movie.posterPath}" class="card-img-top" alt="영화 포스터">
+          <i class="fa-solid fa-trash-can delete-icon" data-movie-id="${movie.id}"></i>
+          <div class="card-body">
+            <h5 class="card-title mypage-entity-title">${movie.title}</h5>
+            <p class="card-text"><small class="text-muted">개봉일: ${movie.releaseDate}</small></p>
+            <br/>
+            <p class="card-text">${truncatedOverview}</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function truncateText(text, maxLength) {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + '...';
+    } else {
+      return text;
+    }
+  }
+
   $('#btnUpdateCollection').on('click', function () {
-    location.href = './create-collection.html?edit=1';
+    location.href = `./create-collection.html?collectionId=${collectionId}`;
   });
 
   $('#btnDeleteCollection').on('click', function () {
-    if (confirm("해당 컬렉션을 삭제하시겠습니까?")) {
-      const title = $('#inputCollectionTitle').val();
-      const description = $('#inputCollectionDescription').val();
-
-      const data = {
-        title: title,
-        description: description
-      };
-
-      $.ajax({
-        type: 'DELETE',
-        url: '',
-        data: JSON.stringify(data),
-        contentType: "application/json;charset=utf-8"
-      })
-      .done(function (result, status, xhr) {
-        location.replace("/");
-      })
-      .fail(function (xhr, status, er) {
-        alert("보관함 삭제 실패");
+    if (confirm("해당 보관함을 삭제하시겠습니까?")) {
+      apiModule.DELETE(`/collections/${collectionId}`, function (result) {
+        if (result.statusCode === 200) {
+          alert("보관함을 삭제하였습니다.");
+          const url = `../html/mypage-collection.html?user=${userId}`;
+          location.href = url;
+        } else {
+          alert("보관함 삭제 실패");
+        }
+      }, function (result) {
+        alert(result.responseJSON.message);
       });
     }
   });
 
-  $('.col').on('click', function (e) {
+  $(document).on('click', '.col', function (e) {
     if ($(e.target).hasClass('delete-icon')) {
       return;
     }
     const movieId = $(this).attr('data-movie-id');
-    const url = `/movie/${movieId}`;
-    alert(`영화 번호 : ${url}`);
+    const url = `../html/movie-detail.html?movie=${movieId}`;
+    location.href = url;
   });
 
   $(document).on('click', '.delete-icon', function (e) {
     e.stopPropagation();
     const movieId = $(this).data('movie-id');
-    if (confirm("해당 영화를 삭제하시겠습니까?")) {
-      $(`[data-movie-id="${movieId}"]`).remove();
-      // AJAX 요청을 보내서 영화를 삭제합니다.
-      // $.ajax({
-      //   type: 'DELETE',
-      //   url: `/movies/${movieId}`,
-      //   success: function (result) {
-      //     alert("영화가 삭제되었습니다.");
-      //     // 삭제가 완료되면 영화 카드도 삭제합니다.
-      //     $(`[data-movie-id="${movieId}"]`).remove();
-      //   },
-      //   error: function (xhr, status, er) {
-      //     alert("영화 삭제 실패");
-      //   }
-      // });
+    const collectionId = $(this).closest('.col').data('collection-id');
+
+    if (confirm("해당 영화를 보관함에서 삭제하시겠습니까?")) {
+      // JSON 형태의 데이터
+      const requestData = {
+        movieId: movieId,
+        collectionId: collectionId
+      };
+
+      apiModule.DELETE_DATA('/collections/delete-movie', requestData, function (result) {
+        if (result.statusCode === 200) {
+          alert("영화가 삭제되었습니다.");
+          $(`[data-movie-id="${movieId}"]`).remove();
+        } else {
+          alert("영화 삭제 실패");
+        }
+      }, function (result) {
+        alert(result.responseJSON.message);
+      }); // 요청 본문을 JSON 문자열로 변환하여 전달
     }
   });
 </script>

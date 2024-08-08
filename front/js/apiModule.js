@@ -3,7 +3,7 @@ const imageUrl = 'https://image.tmdb.org/t/p/w600_and_h900_bestv2';
 let apiModule = (function() {
   // 기본 설정
   let settings = {
-    // baseUrl: 'http://localhost:8080', // 기본 URL, 필요에 따라 변경
+     //baseUrl: 'http://localhost:8080', // 기본 URL, 필요에 따라 변경
     // baseUrl: 'http://3.34.139.188:8080', // 기본 URL, 필요에 따라 변경
     baseUrl: 'https://api.filmfly.life', // 기본 URL, 필요에 따라 변경
   };
@@ -57,7 +57,12 @@ let apiModule = (function() {
   }
 
   // DELETE 요청
-  function DELETE(url, data = null, successCallback, errorCallback, options) {
+  function DELETE(url, successCallback, errorCallback, options) {
+    ajaxRequest('DELETE', url, null, successCallback, errorCallback, options);
+  }
+
+  // DELETE + DATA 요청
+  function DELETE_DATA(url, data, successCallback, errorCallback, options) {
     ajaxRequest('DELETE', url, data, successCallback, errorCallback, options);
   }
 
@@ -68,6 +73,7 @@ let apiModule = (function() {
     PATCH: PATCH,
     PUT: PUT,
     DELETE: DELETE,
+    DELETE_DATA: DELETE_DATA,
     settings: settings // 설정을 외부에서 수정 가능
   };
 })();
