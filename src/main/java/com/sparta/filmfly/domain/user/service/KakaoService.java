@@ -161,8 +161,8 @@ public class KakaoService {
             isNewUser = true;
         }
 
-        String accessToken = jwtProvider.createAccessToken(user.getUsername(), user.getId());
-        String refreshToken = jwtProvider.createRefreshToken(user.getUsername(), user.getId());
+        String accessToken = jwtProvider.createAccessToken(user.getUsername());
+        String refreshToken = jwtProvider.createRefreshToken(user.getUsername());
 
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
