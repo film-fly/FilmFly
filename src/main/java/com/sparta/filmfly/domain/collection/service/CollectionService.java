@@ -1,20 +1,25 @@
 package com.sparta.filmfly.domain.collection.service;
 
+import com.sparta.filmfly.domain.collection.dto.CollectionWithUserResponseDto;
 import com.sparta.filmfly.domain.collection.dto.CollectionRequestDto;
 import com.sparta.filmfly.domain.collection.dto.CollectionResponseDto;
 import com.sparta.filmfly.domain.collection.dto.MovieCollectionRequestDto;
-import com.sparta.filmfly.domain.collection.dto.MovieCollectionResponseDto;
 import com.sparta.filmfly.domain.collection.entity.Collection;
 import com.sparta.filmfly.domain.collection.entity.MovieCollection;
 import com.sparta.filmfly.domain.collection.repository.CollectionRepository;
 import com.sparta.filmfly.domain.collection.repository.MovieCollectionRepository;
+import com.sparta.filmfly.domain.movie.dto.MovieResponseDto;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
-import com.sparta.filmfly.domain.review.entity.Review;
 import com.sparta.filmfly.domain.user.entity.User;
+import com.sparta.filmfly.global.common.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,7 +32,7 @@ public class CollectionService {
     /**
     * 보관함 생성
     */
-    public CollectionResponseDto createCollection(User user, CollectionRequestDto collectionRequestDto) {
+    public CollectionWithUserResponseDto createCollection(User user, CollectionRequestDto collectionRequestDto) {
         // 이미 있는 보관함인지 확인
         collectionRepository.existsByUserIdAndNameOrElseThrow(user.getId(), collectionRequestDto.getName());
 
@@ -38,7 +43,15 @@ public class CollectionService {
                 .content(collectionRequestDto.getContent())
                 .build();
         collection = collectionRepository.save(collection);
-        return CollectionResponseDto.fromEntity(collection);
+        return CollectionWithUserResponseDto.fromEntity(collection);
+    }
+
+    /**
+     * 보관함 단일 조회
+     */
+    public CollectionWithUserResponseDto getCollection(Long collectionId) {
+        Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
+        return CollectionWithUserResponseDto.fromEntity(collection);
     }
 
     /**
@@ -53,23 +66,63 @@ public class CollectionService {
     }
 
     /**
+     * 유저의 보관함 목록
+     */
+    public PageResponseDto<List<CollectionResponseDto>> getUsersCollections(Long userId, Pageable pageable) {
+        Page<Collection> collectionList = collectionRepository.findAllByUserId(userId,pageable);
+
+        return PageResponseDto.<List<CollectionResponseDto>>builder()
+                .totalElements(collectionList.getTotalElements())
+                .totalPages(collectionList.getTotalPages())
+                .currentPage(collectionList.getNumber() + 1)
+                .pageSize(collectionList.getSize())
+                .data(collectionList.stream().map(CollectionResponseDto::fromEntity).toList())
+                .build();
+    }
+
+    /**
      * 보관함 수정 권한 확인
      */
-    public Boolean getCollectionUpdatePermission(User user, Long collectionId) {
+    public Boolean getCollectionIdUpdatePermission(User user, Long collectionId) {
         Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
-        //admin이면 true 반환
-        if(!user.isAdmin()) {
-            collection.validateOwner(user);
-        }
+        collection.validateOwner(user);
         return true; //수정 권한 없으면 에러?
+    }
+
+    /**
+     * 보관함 수정 페이지 정보
+     */
+    public CollectionResponseDto forUpdateCollection(User user, Long collectionId) {
+        Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
+        collection.validateOwner(user);
+        return CollectionResponseDto.fromEntity(collection);
+    }
+
+    /**
+     * 보관함 수정
+     */
+    public CollectionResponseDto updateCollection(User user, CollectionRequestDto requestDto, Long collectionId) {
+        Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
+        collection.validateOwner(user);
+
+        collection.updateCollection(requestDto);
+        return CollectionResponseDto.fromEntity(collectionRepository.save(collection));
     }
 
     /**
     * 보관함 삭제
     */
+    @Transactional
     public void deleteCollection(User user, Long collectionId) {
         Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
         collection.validateOwner(user);
+
+        List<MovieCollection> movieCollectionList = movieCollectionRepository.findByCollection_id(collection.getId());
+        movieCollectionList.forEach(movieCollection -> {
+            movieCollectionRepository.delete(movieCollection);
+        });
+        movieCollectionRepository.deleteAllByCollectionId(collectionId); //보관함 외래키 연결된 영화들 부터 삭제
+
         collectionRepository.delete(collection);
     }
 
@@ -93,17 +146,27 @@ public class CollectionService {
         movieCollectionRepository.save(movieCollection);
     }
 
-    public MovieCollectionResponseDto getMovieCollection(User user, Long collectionId) {
+    public PageResponseDto<List<MovieResponseDto>> getMovieCollection(Long collectionId,Pageable pageable) {
         // 보관함 여부 확인
         Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
         // 보관함 주인 확인
-        collection.validateOwner(user);
+        //collection.validateOwner(user);
         // 보관함에서 영화목록 조회
-        List<MovieCollection> movieCollectionList = movieCollectionRepository.findByCollection_id(collection.getId());
-        // 응답데이터 변환 및 반환
-        return MovieCollectionResponseDto.fromEntity(collection, movieCollectionList.stream().map(
-                MovieCollection::getMovie
-        ).toList());
+        //List<MovieCollection> movieCollectionList = movieCollectionRepository.findByCollection_id(collection.getId());
+        Page<MovieCollection> movieCollectionList = movieCollectionRepository.findByCollection_id(collection.getId(),pageable);
+        List<MovieResponseDto> movieResponseDtoList = new ArrayList<>();
+        for (MovieCollection movieCollection : movieCollectionList) {
+            MovieResponseDto movieResponseDto = MovieResponseDto.fromEntity(movieCollection.getMovie());
+            movieResponseDtoList.add(movieResponseDto);
+        }
+
+        return PageResponseDto.<List<MovieResponseDto>>builder()
+                .totalElements(movieCollectionList.getTotalElements())
+                .totalPages(movieCollectionList.getTotalPages())
+                .currentPage(movieCollectionList.getNumber() + 1)
+                .pageSize(movieCollectionList.getSize())
+                .data(movieResponseDtoList)
+                .build();
     }
 
     public void deleteMovieCollection(User user, MovieCollectionRequestDto movieCollectionRequestDto) {

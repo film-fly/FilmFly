@@ -12,6 +12,7 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <!-- 공통 헤더 -->
   <script src="../js/common.js"></script>
+  <script src="../js/mypageCommon.js"></script>
   <!-- Font Awesome -->
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
@@ -26,6 +27,9 @@
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
+  <div id="user-profile">
+    <!-- 유저 프로필 추가 영역 -->
+  </div>
   <div class="page-title">작성한 게시물 목록</div>
   <div id="board-box" class="list-group list-group-flush"></div>
   <ul id="pagination-boards" class="pagination-sm d-flex justify-content-center"></ul>
@@ -40,8 +44,15 @@
     if(userId == null) {
       alert("user 누락! 페이지 오류!");
       window.history.back();
+    } else {
+      // 사용자 정보를 로드하고 페이지를 업데이트
+      loadUserInfo(userId, function(error, userInfo) {
+        if (!error) {
+          renderUserProfile(userId,userInfo);
+        }
+      });
+      loadBoards(1);
     }
-    loadBoards(1);
   });
 
   function generateBoardHtml(board) {
