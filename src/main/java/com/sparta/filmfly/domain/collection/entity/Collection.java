@@ -1,5 +1,6 @@
 package com.sparta.filmfly.domain.collection.entity;
 
+import com.sparta.filmfly.domain.collection.dto.CollectionRequestDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.TimeStampEntity;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
@@ -9,6 +10,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
@@ -17,6 +20,7 @@ import java.util.Objects;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Collection extends TimeStampEntity {
+    private static final Logger log = LoggerFactory.getLogger(Collection.class);
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,6 +42,11 @@ public class Collection extends TimeStampEntity {
         this.user = user;
         this.name = name;
         this.content = content;
+    }
+
+    public void updateCollection(CollectionRequestDto requestDto) {
+        if (requestDto.getName() != null) this.name = requestDto.getName();
+        if (requestDto.getContent() != null) this.content = requestDto.getContent();
     }
 
     /**

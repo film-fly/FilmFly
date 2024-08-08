@@ -4,6 +4,8 @@ import com.sparta.filmfly.domain.collection.entity.MovieCollection;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AlreadyExistsException;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -20,6 +22,8 @@ public interface MovieCollectionRepository extends JpaRepository<MovieCollection
     }
 
     List<MovieCollection> findByCollection_id(Long collectionId);
+    Page<MovieCollection> findByCollection_id(Long collectionId, Pageable pageable);
+    void deleteAllByCollectionId(Long collectionId);
 
     Optional<MovieCollection> findByCollectionIdAndMovieId(Long collectionId, Long movieId);
 

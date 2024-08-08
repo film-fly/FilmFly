@@ -5,6 +5,8 @@ import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AlreadyExistsException;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
 public interface CollectionRepository extends JpaRepository<Collection, Long> {
 
     List<Collection> findAllByUser(User user);
+    Page<Collection> findAllByUserId(Long userId, Pageable pageable);
 
     boolean existsByUserIdAndName(Long userId, String name);
     default void existsByUserIdAndNameOrElseThrow(Long userId, String name) {
