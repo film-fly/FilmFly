@@ -40,7 +40,7 @@ public class KakaoService {
     private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
 
-    @Value("${CLIENT_ID}")
+    @Value("${kakao.client_id}")
     private String clientId;
 
     @Value("${kakao.redirect-uri}")
