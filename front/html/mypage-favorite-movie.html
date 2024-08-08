@@ -12,6 +12,7 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <!-- 공통 헤더 -->
   <script src="../js/common.js"></script>
+  <script src="../js/mypageCommon.js"></script>
   <!-- Font Awesome -->
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
@@ -23,6 +24,12 @@
   <style>
     .card {
       position: relative;
+      border: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .card-img-top {
+      height: 300px; /* 통일된 이미지 높이 */
+      object-fit: cover; /* 이미지가 카드의 크기에 맞게 잘리거나 축소됨 */
     }
     .delete-icon {
       position: absolute;
@@ -30,6 +37,28 @@
       right: 10px;
       color: red;
       cursor: pointer;
+      font-size: 30px;
+    }
+    .card-title {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .card-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3; /* Number of lines to show */
+      -webkit-box-orient: vertical;
+    }
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    #pagination-favorites {
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -38,6 +67,9 @@
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
+  <div id="user-profile">
+    <!-- 유저 프로필 추가 영역 -->
+  </div>
   <div class="page-title">찜한 영화 목록</div>
   <div id="favorite-movie-box" class="row row-cols-1 row-cols-md-3 g-4">
   </div>
@@ -50,11 +82,18 @@
   console.log("user id : " + userId);
 
   $(document).ready(function () {
-    if(userId == null) {
+    if (userId == null) {
       alert("user 누락! 페이지 오류!");
       window.history.back();
+    } else {
+      // 사용자 정보를 로드하고 페이지를 업데이트
+      loadUserInfo(userId, function(error, userInfo) {
+        if (!error) {
+          renderUserProfile(userId,userInfo);
+        }
+      });
+      loadFavorites(1);
     }
-    loadFavorites(1);
   });
 
   function loadFavorites(page) {
@@ -69,18 +108,23 @@
                   $('#favorite-movie-box').append(movieHtml);
                 });
 
-                $('#pagination-favorites').twbsPagination('destroy');
-                $('#pagination-favorites').twbsPagination({
-                  totalPages: result.data.totalPages,
-                  startPage: page,
-                  initiateStartPageClick: false,
-                  onPageClick: function (event, page) {
-                    loadFavorites(page);
-                    $('html, body').animate({
-                      scrollTop: $('#favorite-movie-box').offset().top
-                    }, 'fast');
-                  }
-                });
+                if(result.data.totalElements === 0) {
+                  $('#favorite-movie-box').append('<div class="text-danger">찜한 영화가 존재하지 않습니다</div>');
+                }
+                else {
+                  $('#pagination-favorites').twbsPagination('destroy');
+                  $('#pagination-favorites').twbsPagination({
+                    totalPages: result.data.totalPages,
+                    startPage: page,
+                    initiateStartPageClick: false,
+                    onPageClick: function (event, page) {
+                      loadFavorites(page);
+                      $('html, body').animate({
+                        scrollTop: $('#favorite-movie-box').offset().top
+                      }, 'fast');
+                    }
+                  });
+                }
               } else {
                 alert("찜한 영화를 불러오는 데 실패했습니다.");
               }
@@ -100,18 +144,17 @@
     const maxLength = 100; // 원하는 최대 글자 수 설정
     const truncatedOverview = truncateText(movie.overview, maxLength);
     return `
-    <div class="col" data-movie-id="${movie.id}">
-      <div class="card h-100">
-        <img src="https://image.tmdb.org/t/p/w500${movie.posterPath}" class="card-img-top" alt="영화 포스터">
-        <i class="fa-solid fa-trash-can delete-icon" style="font-size: 30px;" data-movie-id="${movie.id}"></i>
-        <div class="card-body">
-          <h5 class="card-title mypage-entity-title">${movie.title}</h5>
-          <p class="card-text"><small class="text-muted">개봉일: ${movie.releaseDate}</small></p>
-          <br/>
-          <p class="card-text">${truncatedOverview}</p>
+      <div class="col" data-movie-id="${movie.id}">
+        <div class="card h-100">
+          <img src="https://image.tmdb.org/t/p/w500${movie.posterPath}" class="card-img-top" alt="영화 포스터">
+          <i class="fa-solid fa-trash-can delete-icon" data-movie-id="${movie.id}"></i>
+          <div class="card-body">
+            <h5 class="card-title">${movie.title}</h5>
+            <p class="card-text"><small class="text-muted">개봉일: ${movie.releaseDate}</small></p>
+            <p class="card-text">${truncatedOverview}</p>
+          </div>
         </div>
       </div>
-    </div>
     `;
   }
 
@@ -135,8 +178,8 @@
         } else {
           alert("영화 삭제 실패");
         }
-      }, function() {
-        alert("서버 오류가 발생했습니다.");
+      }, function(result) {
+        alert(result.responseJSON.message);
       });
     }
   });
