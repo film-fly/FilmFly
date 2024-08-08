@@ -43,7 +43,7 @@ public class KakaoService {
     @Value("${kakao.client_id}")
     private String clientId;
 
-    @Value("${kakao.redirect-uri}")
+    @Value("${kakao.redirect_uri}")
     private String redirectUri;
 
     public UserResponseDto kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
@@ -60,6 +60,7 @@ public class KakaoService {
      * Access Token 획득
      */
     private String getToken(String code) throws JsonProcessingException {
+        log.info("Kakao access code: {}", code);
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kauth.kakao.com")
                 .path("/oauth/token")

@@ -114,9 +114,9 @@
     <button type="button" id="btnLogin" class="btn btn-primary w-100 mb-3">로그인</button>
 
     <div class="text-center mb-3">
-      <a href="#" class="kakao-login-btn">
-        <img src="../images/kakao_login.png" alt="카카오톡 로그인">
-      </a>
+        <div class="kakao-login-btn">
+            <img src="../images/kakao_login.png" alt="카카오톡 로그인">
+        </div>
     </div>
 
     <button type="button" class="btn btn-link w-100 mt-2" onclick="location.href='./signup.html'">회원가입 하러 가기</button>
@@ -125,6 +125,8 @@
 
 <script>
   $(document).ready(function() {
+      kakaoCheck();
+
     $('#auth-form').on('keydown', function(event) {
       if (event.key === "Enter") {
         event.preventDefault();
@@ -156,6 +158,25 @@
                 alert(xhr.responseJSON.message);
               });
     });
+
+      function kakaoCheck() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const code = urlParams.get('code');
+          if(code){
+              apiModule.GET(`/users/kakao/callback?code=${code}`,
+                  function (response) {
+                      location.replace('./index.html');
+                  },
+                  function (xhr, status, error) {
+                      console.log('카카오 로그인 오류');
+                  });
+          }
+      }
+      // 카카오 로그인 버튼 클릭 이벤트 리스너
+      $('.kakao-login-btn').on('click', function () {
+          console.log('카카오 로그인 버튼');
+          window.location.href=`https://kauth.kakao.com/oauth/authorize?client_id=f05a3acaceda30592f534db56647e0e8&redirect_uri=https://www.filmfly.life/html/login.html&response_type=code`;
+      });
   });
 </script>
 </body>

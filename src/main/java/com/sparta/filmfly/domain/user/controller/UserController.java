@@ -63,7 +63,11 @@ public class UserController {
      * 카카오 콜백 처리
      */
     @GetMapping("/kakao/callback")
-    public ResponseEntity<?> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+    public ResponseEntity<?> kakaoLogin(
+            @RequestParam String code,
+            HttpServletResponse response
+    ) throws JsonProcessingException {
+        log.info("kakao login code: {}", code);
         UserResponseDto userResponseDto = kakaoService.kakaoLogin(code, response);
         if (userResponseDto != null) {
             return ResponseUtils.success(userResponseDto);
@@ -102,7 +106,7 @@ public class UserController {
      */
     @PostMapping("/check-nickname")
     public ResponseEntity<MessageResponseDto> checkNicknameDuplication(
-        @Valid @RequestBody UserNicknameCheckRequestDto requestDto
+            @Valid @RequestBody UserNicknameCheckRequestDto requestDto
     ) {
         userService.checkNicknameDuplication(requestDto.getNickname());
         return ResponseUtils.success();
@@ -132,7 +136,10 @@ public class UserController {
      * 로그아웃
      */
     @PostMapping("/logout")
-    public ResponseEntity<MessageResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletResponse response) {
+    public ResponseEntity<MessageResponseDto> logout(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            HttpServletResponse response
+    ) {
         userService.logout(userDetails.getUser());
 
         // 쿠키를 무효화하여 삭제
