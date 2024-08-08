@@ -181,12 +181,14 @@
         };
 
         apiModule.POST('/users/signup', data, function () {
+            alert("회원가입이 완료되었습니다.");
             location.replace("./login.html");
         }, function (xhr) {
             const errorMessage = xhr.responseJSON.data ? xhr.responseJSON.data[0] : xhr.responseJSON.message;
             alert(errorMessage);
         });
     });
+
 
     $('#adminCheck').on('click', function () {
         $('#adminPasswordForm').toggle();

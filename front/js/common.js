@@ -51,10 +51,10 @@ $(function () {
     // 로그아웃 버튼 클릭 이벤트
     $('#logoutBtn').on('click', function(event) {
       event.preventDefault();
-      if (confirm('로그아웃하시겠습니까?')) {
+      if (confirm('로그아웃 하시겠습니까?')) {
         apiModule.POST('/users/logout', {},
             function (result) {
-              alert('로그아웃되었습니다.');
+              alert('로그아웃 되었습니다.');
               localStorage.setItem('isLoggedIn', 'false'); // 로그인 상태 업데이트
               localStorage.removeItem('userRole'); // 사용자 역할 정보 제거
               localStorage.removeItem('loginTime'); // 로그인 시간 제거
