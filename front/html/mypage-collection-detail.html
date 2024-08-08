@@ -158,7 +158,7 @@
     return `
       <div class="col" data-movie-id="${movie.id}" data-collection-id="${collectionId}">
         <div class="card h-100">
-          <img src="https://image.tmdb.org/t/p/w500${movie.posterPath}" class="card-img-top" alt="영화 포스터">
+          <img src="${imageUrl}${movie.posterPath}" class="card-img-top" alt="영화 포스터">
           <i class="fa-solid fa-trash-can delete-icon" data-movie-id="${movie.id}"></i>
           <div class="card-body">
             <h5 class="card-title mypage-entity-title">${movie.title}</h5>

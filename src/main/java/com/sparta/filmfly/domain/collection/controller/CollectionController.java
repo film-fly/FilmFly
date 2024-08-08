@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -97,6 +98,7 @@ public class CollectionController {
     /**
      * 해당 보관함 수정 권한 확인
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{collectionId}/update-permission")
     public ResponseEntity<DataResponseDto<Boolean>> getCollectionIdUpdatePermission(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -109,6 +111,7 @@ public class CollectionController {
     /**
      * 보관함 수정 페이지 정보
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{collectionId}/for-update")
     public ResponseEntity<DataResponseDto<CollectionResponseDto>> forUpdateCollection(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
