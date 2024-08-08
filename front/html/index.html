@@ -339,6 +339,10 @@
                         <img src="${imageUrl}" class="d-block w-100" alt="Event 1">
                     `;
                     eventBanner.appendChild(element);
+                    // 클릭 이벤트 리스너 추가
+                    element.addEventListener('click', function () {
+                        location.href = `./board-detail.html?board=${board.id}`;
+                    });
                 }
             },
             function (xhr, status, error) {}
@@ -363,6 +367,10 @@
                     `;
 
                     movieIndex <= 6 ? rankingLeftBox.appendChild(element) : rankingRightBox.appendChild(element);
+                    // 클릭 이벤트 리스너 추가
+                    element.addEventListener('click', function () {
+                        location.href = `./movie-detail.html?movie=${movie.id}`;
+                    });
                 }
             },
             function (xhr, status, error) {
@@ -394,6 +402,10 @@
                                 </div>
                             `;
                             moviePost.appendChild(element);
+                            // 클릭 이벤트 리스너 추가
+                            element.addEventListener('click', function () {
+                                location.href = `./movie-detail.html?movie=${movie.id}`;
+                            });
                         }
                     },
                     function (xhr, status, error) {
@@ -415,7 +427,7 @@
                     const element = document.createElement('div');
                     element.className = 'card-fixed-size';
                     element.innerHTML = `
-                           <div class="card post-card">
+                           <div class="card post-card data-id="${board.id}"">
                                 <div class="card-body">
                                     <p class="nickname">${board.nickname}</p>
                                     <h5 class="card-title">${board.title}</h5>
@@ -428,6 +440,10 @@
                             </div>
                     `;
                     boardPost.appendChild(element);
+                    // 클릭 이벤트 리스너 추가
+                    element.addEventListener('click', function () {
+                        location.href = `./board-detail.html?board=${board.id}`;
+                    });
                 }
                 applyRandomColorToTarget('.post-card', 'brightPastel');
             },
@@ -458,6 +474,10 @@
                             </div>
                     `;
                     reviewPost.appendChild(element);
+                    // 클릭 이벤트 리스너 추가
+                    element.addEventListener('click', function () {
+                        location.href = `./review-detail.html?review=${review.id}`;
+                    });
                 }
                 applyRandomColorToTarget('.review-card', 'pastel');
             },
