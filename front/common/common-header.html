@@ -1,14 +1,14 @@
 <header style="display: flex; align-items: center; justify-content: space-between; margin: 20px 0;">
-  <a href="">
+  <a href="../html/index.html">
     <img src="../images/logo.png" alt="logo" style="width: 70px; height: 70px">
   </a>
   <div>
-    <ul style="display: flex; gap: 20px">
+    <ul id="authLinks" style="display: flex; gap: 20px">
       <li><a href="../html/signup.html">회원가입</a></li>
-      <li><a href="../html/login.html">로그인</a></li>
-      <li><a href="">로그아웃</a></li>
-      <li><a href="../html/mypage.html">마이 페이지</a></li>
-      <li><a href="">관리자 페이지</a></li>
+      <li id="loginLink"><a href="../html/login.html">로그인</a></li>
+      <li id="myPageLink" style="display: none;"><a href="../html/mypage.html">마이 페이지</a></li>
+      <li id="logoutLink" style="display: none;"><a href="#" id="logoutBtn">로그아웃</a></li>
     </ul>
   </div>
 </header>
+

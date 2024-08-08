@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>신고 상세보기 - FilmFly Admin</title>
+    <!-- AdminLTE CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <!-- 부트스트랩 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- AdminLTE JS -->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- 커스텀 CSS -->
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- 공통 JS -->
+    <script src="../js/common.js"></script>
+    <script src="../js/apiModule.js"></script>
+    <style>
+        .main-sidebar {
+            width: 250px;
+        }
+        #common-header {
+            display: flex;
+            width: 100%;
+            margin-left: 100px;
+            margin-right: 200px;
+        }
+        #common-header > header {
+            display: flex;
+            width: 100%;
+        }
+        .main-sidebar {
+            width: 250px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            margin-top: 30px;
+            margin-right: 120px;
+            background-color: white;
+        }
+        .card {
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .card-header {
+            background-color: #f4f6f9;
+            border-bottom: 1px solid #ddd;
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+        .info-box {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        .info-box-text {
+            margin-top: 3px;
+        }
+        .info-box-icon {
+            background-color: #007bff;
+            color: white;
+            flex: 0 0 auto;
+            height: 60px;
+            width: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .info-box-content {
+            flex: 1;
+            padding-left: 15px;
+        }
+        .report-content {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            width: 100%;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            width: 100%;
+        }
+        .summary .info-box {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 150px; /* 고정 너비 */
+            height: 200px; /* 고정 높이 */
+        }
+        .summary .info-box-content {
+            padding-left: 0;
+        }
+        .summary .info-box-text,
+        .summary .info-box-number {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <!-- 공통 헤더 -->
+        <header id="common-header"></header>
+    </nav>
+    <div class="content-wrapper">
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="adminpage.html" class="brand-link">
+                <span class="brand-text font-weight-light">FilmFly Admin</span>
+            </a>
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <li class="nav-item">
+                            <a href="adminpage-user-management.html" class="nav-link">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>유저 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="adminpage-report-management.html" class="nav-link">
+                                <i class="nav-icon fas fa-flag"></i>
+                                <p>신고 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="adminpage-coupon-management.html" class="nav-link">
+                                <i class="nav-icon fas fa-ticket-alt"></i>
+                                <p>쿠폰 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="adminpage-crawl-movies.html" class="nav-link">
+                                <i class="nav-icon fas fa-film"></i>
+                                <p>영화 크롤링</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    <div id="mainDiv">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">신고 상세 정보</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="summary">
+                                    <div class="info-box">
+                                        <span class="info-box-icon"><i class="fas fa-id-badge"></i></span>
+                                        <div class="info-box-content">
+                                            <span class="info-box-text">신고 번호</span>
+                                            <span class="info-box-number" id="reportId"></span>
+                                            <br>
+                                        </div>
+                                    </div>
+                                    <div class="info-box">
+                                        <span class="info-box-icon"><i class="fas fa-list"></i></span>
+                                        <div class="info-box-content">
+                                            <span class="info-box-text">타입</span>
+                                            <span class="info-box-number" id="type"></span>
+                                            <span class="info-box-text">ID: <span id="typeId"></span></span>
+                                        </div>
+                                    </div>
+                                    <div class="info-box">
+                                        <span class="info-box-icon"><i class="fas fa-user"></i></span>
+                                        <div class="info-box-content">
+                                            <span class="info-box-text">신고자 닉네임</span>
+                                            <span class="info-box-number" id="reporterNickname"></span>
+                                            <span class="info-box-text">ID: <span id="reporterId"></span></span>
+                                        </div>
+                                    </div>
+                                    <div class="info-box">
+                                        <span class="info-box-icon"><i class="fas fa-user-slash"></i></span>
+                                        <div class="info-box-content">
+                                            <span class="info-box-text">피신고자 닉네임</span>
+                                            <span class="info-box-number" id="reportedNickname"></span>
+                                            <span class="info-box-text">ID: <span id="reportedId"></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="info-box">
+                                    <span class="info-box-icon"><i class="fas fa-exclamation-circle"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">신고 이유</span>
+                                        <span class="info-box-number" id="reason"></span>
+                                    </div>
+                                </div>
+                                <div class="report-content">
+                                    <h5>신고 원본 내용</h5>
+                                    <p id="content"></p>
+                                </div>
+                                <div class="info-box">
+                                    <span class="info-box-icon"><i class="fas fa-calendar-alt"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">신고 날짜</span>
+                                        <span class="info-box-number" id="createdAt"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--/. container-fluid -->
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+    </div>
+</div>
+<!-- ./wrapper -->
+
+<script>
+    $(document).ready(function() {
+        const reportId = new URLSearchParams(window.location.search).get('reportId');
+        if (!reportId) {
+            alert('신고 ID가 없습니다.');
+            return;
+        }
+
+        apiModule.GET(`/admins/reports/${reportId}`,
+            function(response) {
+                const report = response.data;
+                $('#reportId').text(report.id);
+                $('#reporterNickname').text(report.reporterNickname);
+                $('#reporterId').text(report.reporterId);
+                $('#reportedNickname').text(report.reportedNickname);
+                $('#reportedId').text(report.reportedId);
+                $('#reason').text(report.reason);
+                $('#content').html(report.content.replace(/\n/g, '<br>'));
+                $('#type').text(report.type);
+                $('#typeId').text(report.typeId);
+                $('#createdAt').text(new Date(report.createdAt).toLocaleString());
+            },
+            function(xhr) {
+                alert(xhr.responseJSON.message);
+            }
+        );
+    });
+</script>
+</body>
+</html>

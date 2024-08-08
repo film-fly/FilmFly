@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>영화 크롤링 - FilmFly Admin</title>
+    <!-- AdminLTE CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <!-- 부트스트랩 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- AdminLTE JS -->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- 커스텀 CSS -->
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- 공통 JS -->
+    <script src="../js/common.js"></script>
+    <script src="../js/apiModule.js"></script>
+    <style>
+        #common-header {
+            display: flex;
+            width: 100%;
+            margin-left: 100px;
+            margin-right: 200px;
+        }
+        #common-header > header {
+            display: flex;
+            width: 100%;
+        }
+        .content-wrapper {
+            background-color: white;
+            width:76%;
+
+        }
+        .crawling-section {
+            margin-top: 30px;
+        }
+        .crawling-section .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .crawling-section .form-group input, .crawling-section .form-group select, .crawling-section .form-group button {
+            margin-right: 10px;
+            font-size: 13px;
+        }
+        .crawling-section .form-group button {
+            width: 150px;
+        }
+        .crawling-section .results {
+            margin-top: 20px;
+        }
+        .crawling-section .results table {
+            width: 100%;
+        }
+        .crawling-section .results table th,
+        .crawling-section .results table td {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .crawling-section .results table td.overview {
+            white-space: normal;
+            word-wrap: break-word;
+        }
+        .crawling-section .status {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #007bff;
+        }
+        #id {
+            width: 80px;
+        }
+        #title {
+            width: 150px;
+        }
+        .form-control{
+            width: 200px;
+        }
+        .form-select{
+            width: 200px;
+        }
+        .form-group{
+            width: 800px;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        #searchQuery {
+            width: 600px;
+            text-align: center;
+        }
+        #rate{
+            width: 130px;
+
+        }
+        #pop{
+            width: 100px;
+        }
+        #date{
+            width: 150px;
+        }
+        .overview{
+            width: 300px
+        }
+        #poster{
+            width: 250px;
+        }
+
+    </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <!-- 공통 헤더 -->
+        <header id="common-header"></header>
+    </nav>
+
+    <div class="content-wrapper">
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="adminpage.html" class="brand-link">
+                <span class="brand-text font-weight-light">FilmFly Admin</span>
+            </a>
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <li class="nav-item">
+                            <a href="adminpage-user-management.html" class="nav-link">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>유저 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="adminpage-report-management.html" class="nav-link">
+                                <i class="nav-icon fas fa-flag"></i>
+                                <p>신고 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="adminpage-coupon-management.html" class="nav-link">
+                                <i class="nav-icon fas fa-ticket-alt"></i>
+                                <p>쿠폰 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="adminpage-crawl-movies.html" class="nav-link">
+                                <i class="nav-icon fas fa-film"></i>
+                                <p>영화 크롤링</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    <div id="mainDiv">
+                        <!-- 크롤링 섹션 -->
+                        <div class="crawling-section">
+                            <h2>영화 크롤링</h2>
+                            <!-- 인기순/평점순/수익순/최신순 크롤링 -->
+                            <div class="form-group">
+                                <select class="form-select" id="sortCriteria">
+                                    <option value="POPULARITY_DESC">인기순</option>
+                                    <option value="VOTE_AVERAGE_DESC">평점순</option>
+                                    <option value="REVENUE_DESC">수익순</option>
+                                    <option value="PRIMARY_RELEASE_DATE_DESC">최신순</option>
+                                </select>
+                                <input type="number" class="form-control" id="startPage" placeholder="시작 페이지">
+                                <input type="number" class="form-control" id="endPage" placeholder="끝 페이지">
+                                <button type="button" class="btn btn-primary" id="crawlButton">옵션 크롤링</button>
+                            </div>
+                            <!-- 제목 검색 -->
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="searchQuery" placeholder="제목 검색">
+                                <button type="button" class="btn btn-primary" id="searchButton">제목 크롤링</button>
+                            </div>
+                            <div class="status" id="crawlStatus"></div>
+                            <div class="results">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th id="id">ID</th>
+                                        <th id="title">제목</th>
+                                        <th id ="date">개봉일</th>
+                                        <th id ="poster">포스터</th>
+                                        <th class="overview">개요</th>
+                                        <th id="rate">평점</th>
+                                        <th id="pop">인기도</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="crawlResults">
+                                    <!-- 크롤링 결과 표시 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--/. container-fluid -->
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+    </div>
+</div>
+<!-- ./wrapper -->
+<script>
+    $(document).ready(function() {
+        function fetchMovies(endpoint, data) {
+            $('#crawlStatus').text('크롤링 진행 중...');
+            $('#crawlResults').empty();
+
+            let successCount = 0;
+            let failureCount = 0;
+
+            const fetchData = (page) => {
+                data.page = page;
+                apiModule.POST(endpoint, data,
+                    function(response) {
+                        const movies = response.data;
+                        if (!movies || movies.length === 0) {
+                            $('#crawlStatus').text(`영화를 찾을 수 없습니다.`);
+                            return;
+                        }
+                        const results = movies.map(movie => `
+                        <tr>
+                            <td>${movie.id}</td>
+                            <td>${movie.title}</td>
+                            <td>${movie.release_date}</td>
+                            <td><img src="https://image.tmdb.org/t/p/w200${movie.poster_path}" alt="${movie.title} 포스터"></td>
+                            <td class="overview">${movie.overview.length > 20 ? movie.overview.substring(0, 300) + '...' : movie.overview}</td>
+                            <td><i class="fas fa-star" style="color: gold;"></i> ${movie.vote_average.toFixed(1)} (${movie.vote_count})</td>
+                            <td><i class="fas fa-fire" style="color: red;"></i> ${movie.popularity.toFixed(1)}</td>
+                        </tr>
+                    `);
+                        $('#crawlResults').append(results.join(''));
+                        successCount += movies.length;
+                        $('#crawlStatus').text(`크롤링 진행 중... (성공: ${successCount}, 실패: ${failureCount})`);
+
+                        if (page < data.endPage) {
+                            fetchData(page + 1);
+                        } else {
+                            $('#crawlStatus').text(`크롤링 완료 (성공: ${successCount}, 실패: ${failureCount})`);
+                        }
+                    },
+                    function(xhr) {
+                        failureCount++;
+                        $('#crawlStatus').text(`크롤링 진행 중... (성공: ${successCount}, 실패: ${failureCount})`);
+
+                        if (page < data.endPage) {
+                            fetchData(page + 1);
+                        } else {
+                            $('#crawlStatus').text(`크롤링 완료 (성공: ${successCount}, 실패: ${failureCount})`);
+                        }
+                    }
+                );
+            }
+
+            fetchData(data.startPage);
+        }
+
+        $('#crawlButton').on('click', function() {
+            const sortCriteria = $('#sortCriteria').val();
+            const startPage = parseInt($('#startPage').val());
+            const endPage = parseInt($('#endPage').val());
+
+            if (startPage && endPage && startPage <= endPage) {
+                let requestData = { sort_by: sortCriteria, startPage: startPage, endPage: endPage };
+
+                // 평점순 요청에 vote_count__gte 추가
+                if (sortCriteria === 'VOTE_AVERAGE_DESC') {
+                    requestData.vote_count__gte = 1000;
+                }
+
+                // 최신순 요청에 primary_release_date__lte 추가
+                if (sortCriteria === 'PRIMARY_RELEASE_DATE_DESC') {
+                    let today = new Date();
+                    let formattedDate = today.toISOString().split('T')[0];
+                    requestData.primary_release_date__lte = formattedDate;
+                }
+
+                fetchMovies('/movies/api/discover', requestData);
+            } else {
+                alert('유효한 페이지 번호를 입력하세요.');
+            }
+        });
+
+        $('#searchButton').on('click', function() {
+            const searchQuery = $('#searchQuery').val();
+            if (searchQuery) {
+                fetchMovies('/movies/api/search', { query: searchQuery, page: 1, endPage: 1 });
+            } else {
+                alert('검색어를 입력하세요.');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

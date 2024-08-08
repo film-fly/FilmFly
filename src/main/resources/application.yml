@@ -64,8 +64,8 @@ jwt_secret_key: ${JWT_SECRET_KEY}
 admin_password: ${ADMIN_PASSWORD}
 
 kakao:
-  client_id: ${CLIENT_ID}
-  redirect_uri: https://localhost/users/kakao/callback
+  client_id: ${KAKAO_CLIENT_ID}
+  redirect_uri: ${KAKAO_REDIRECT_URI}
 
 cloud:
   aws:

@@ -428,4 +428,11 @@ public class UserService {
                 .pictureUrl(user.getPictureUrl())
                 .build();
     }
+    /**
+     * 유저 수 반환
+     */
+    public long getUserCount() {
+        return userRepository.count();
+    }
+
 }
