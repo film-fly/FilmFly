@@ -15,12 +15,12 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="../js/apiModule.js"></script>
-
+  <script src="../js/common-auth.js"></script>
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
   <style>
     body {
-      margin-top: 60px ;
+      margin-top: 60px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -148,6 +148,8 @@
 
       apiModule.POST('/users/login', data,
               function (result, status, xhr) {
+                // 로그인 성공 시 로컬 스토리지에 정보 저장
+                localStorage.setItem('isLoggedIn', 'true');
                 location.replace('./index.html');
               },
               function (xhr, status, er) {
