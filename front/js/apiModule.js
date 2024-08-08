@@ -72,6 +72,10 @@ let apiModule = (function() {
     ajaxRequest('DELETE', url, data, successCallback, errorCallback, options);
   }
 
+  // DELETE + DATA 요청
+  function DELETE_DATA(url, data, successCallback, errorCallback, options) {
+    ajaxRequest('DELETE', url, data, successCallback, errorCallback, options);
+  }
   // 외부에 공개할 API
   return {
     GET: GET,
@@ -79,6 +83,7 @@ let apiModule = (function() {
     PATCH: PATCH,
     PUT: PUT,
     DELETE: DELETE,
+    DELETE_DATA: DELETE_DATA,
     settings: settings // 설정을 외부에서 수정 가능
   };
 })();
