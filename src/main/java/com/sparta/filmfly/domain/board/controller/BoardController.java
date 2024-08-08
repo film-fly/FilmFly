@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -87,6 +88,7 @@ public class BoardController {
     /**
      * 보드 수정 권한 확인
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{boardId}/update-permission")
     public ResponseEntity<DataResponseDto<Boolean>> getBoardUpdatePermission(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -99,6 +101,7 @@ public class BoardController {
     /**
      * 보드 수정 페이지 정보
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{boardId}/for-update")
     public ResponseEntity<DataResponseDto<BoardUpdateResponseDto>> forUpdateBoard(
             @AuthenticationPrincipal UserDetailsImpl userDetails,

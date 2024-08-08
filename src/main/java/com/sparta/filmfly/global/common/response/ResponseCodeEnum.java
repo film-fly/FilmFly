@@ -18,7 +18,7 @@ public enum ResponseCodeEnum {
 
     // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
-    PASSWORD_INCORRECT(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
+    PASSWORD_INCORRECT(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     USER_ALREADY_VERIFIED(HttpStatus.BAD_REQUEST, "사용자는 이미 인증되었습니다."),
     USER_ACTIVE(HttpStatus.BAD_REQUEST, "현재 활성화 상태입니다."),
     USER_DELETED(HttpStatus.BAD_REQUEST, "현재 탈퇴한 사용자입니다."),

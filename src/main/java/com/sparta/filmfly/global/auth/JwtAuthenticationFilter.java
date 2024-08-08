@@ -103,8 +103,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     private void handleTokenGeneration(HttpServletResponse response, User user) {
-        String accessToken = jwtProvider.createAccessToken(user.getUsername(), user.getId());
-        String refreshToken = jwtProvider.createRefreshToken(user.getUsername(), user.getId());
+        String accessToken = jwtProvider.createAccessToken(user.getUsername());
+        String refreshToken = jwtProvider.createRefreshToken(user.getUsername());
 
         ResponseCookie accessCookieBuilder = ResponseCookie.from("accessToken", accessToken)
                 .path("/")
