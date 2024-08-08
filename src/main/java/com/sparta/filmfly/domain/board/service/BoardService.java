@@ -133,4 +133,11 @@ public class BoardService {
 
         return "게시물이 삭제되었습니다.";
     }
+
+    /**
+     * 보드 수 반환
+     */
+    public long getBoardCount() {
+        return boardRepository.count();
+    }
 }

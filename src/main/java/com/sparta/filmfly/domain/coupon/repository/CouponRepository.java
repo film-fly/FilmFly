@@ -21,4 +21,11 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     Optional<Coupon> findTopByIssuedFalseOrderByCreatedAtAsc();
     // Status가 True(사용가능한 쿠폰) 이면서, 만료기간 오름차순으로 정렬
     List<Coupon> findAllByStatusTrueOrderByExpirationDateAsc();
+
+    Optional<Coupon> findTopByDescriptionAndIssuedFalseOrderByCreatedAtAsc(String description);
+
+    default Coupon findTopByDescriptionAndIssuedFalseOrderByCreatedAtAscOrElseThrow(String description) {
+        return findTopByDescriptionAndIssuedFalseOrderByCreatedAtAsc(description)
+                .orElseThrow(() -> new NotFoundException(ResponseCodeEnum.COUPON_NOT_FOUND));
+    }
 }
