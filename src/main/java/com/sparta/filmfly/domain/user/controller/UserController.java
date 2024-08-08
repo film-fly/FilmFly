@@ -106,7 +106,7 @@ public class UserController {
      */
     @PostMapping("/check-nickname")
     public ResponseEntity<MessageResponseDto> checkNicknameDuplication(
-            @Valid @RequestBody UserNicknameCheckRequestDto requestDto
+        @Valid @RequestBody UserNicknameCheckRequestDto requestDto
     ) {
         userService.checkNicknameDuplication(requestDto.getNickname());
         return ResponseUtils.success();
@@ -136,10 +136,7 @@ public class UserController {
      * 로그아웃
      */
     @PostMapping("/logout")
-    public ResponseEntity<MessageResponseDto> logout(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            HttpServletResponse response
-    ) {
+    public ResponseEntity<MessageResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletResponse response) {
         userService.logout(userDetails.getUser());
 
         // 쿠키를 무효화하여 삭제
@@ -207,5 +204,16 @@ public class UserController {
         return ResponseUtils.success(responseDtos);
     }
 
+    /**
+     * 본인 정보 확인 위한 API (ID, 닉네임, 한줄 소개, 프로필 Url)
+     * front 마이페이지 연동 위해 API 추가했습니다.
+     */
+    @GetMapping("/myInfo")
+    public ResponseEntity<DataResponseDto<UserResponseDto>> getMyUserInfo(
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ){
+        UserResponseDto responseDto = userService.getMyUserInfo(userDetails.getUser());
+        return ResponseUtils.success(responseDto);
+    }
 
 }

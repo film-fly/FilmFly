@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CouponScheduler {
 
-    private CouponRepository couponRepository;
+    private final CouponRepository couponRepository;
 
     // 매일 오전 1시에 쿠폰 만료 점검
     @Scheduled(cron = "0 0 1 * * *")
