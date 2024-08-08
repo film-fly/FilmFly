@@ -32,10 +32,10 @@ public class UserController {
     private final UserService userService;
     private final KakaoService kakaoService;
 
-    @Value("${CLIENT_ID}")
+    @Value("${kakao.client_id}")
     private String clientId;
 
-    @Value("${kakao.redirect-uri}")
+    @Value("${kakao.redirect_uri}")
     private String redirectUri;
 
     /**
@@ -63,7 +63,11 @@ public class UserController {
      * 카카오 콜백 처리
      */
     @GetMapping("/kakao/callback")
-    public ResponseEntity<?> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+    public ResponseEntity<?> kakaoLogin(
+            @RequestParam String code,
+            HttpServletResponse response
+    ) throws JsonProcessingException {
+        log.info("kakao login code: {}", code);
         UserResponseDto userResponseDto = kakaoService.kakaoLogin(code, response);
         if (userResponseDto != null) {
             return ResponseUtils.success(userResponseDto);

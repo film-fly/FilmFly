@@ -1,5 +1,7 @@
 package com.sparta.filmfly.domain.user.controller;
 
+import com.sparta.filmfly.domain.board.service.BoardService;
+import com.sparta.filmfly.domain.movie.service.MovieService;
 import com.sparta.filmfly.domain.report.dto.ReportPageResponseDto;
 import com.sparta.filmfly.domain.report.dto.ReportResponseDto;
 import com.sparta.filmfly.domain.report.service.ReportService;
@@ -14,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/admins")
@@ -22,6 +27,8 @@ public class AdminController {
 
     private final UserService userService;
     private final ReportService reportService;
+    private final BoardService boardService;
+    private final MovieService movieService;
 
     /**
      * 유저 검색 조회
@@ -94,5 +101,21 @@ public class AdminController {
         return ResponseUtils.success(userResponseDto);
     }
 
+    /**
+     * 주요 데이터 통계 정보 조회
+     */
+    @GetMapping("/statistics")
+    public ResponseEntity<DataResponseDto<Map<String, Long>>> getStats() {
+        long userCount = userService.getUserCount();
+        long postCount = boardService.getBoardCount();
+        long movieCount = movieService.getMovieCount();
+
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("userCount", userCount);
+        stats.put("boardCount", postCount);
+        stats.put("movieCount", movieCount);
+
+        return ResponseUtils.success(stats);
+    }
 
 }

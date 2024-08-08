@@ -15,20 +15,20 @@ public class TestController {
 
     @GetMapping("/")
     public ResponseEntity<String> test0() {
-        log.info("test0");
-        return ResponseEntity.ok("00000000000000000000000000");
+        log.info("Request : /");
+        return ResponseEntity.ok("요청 성공 (~˘▾˘)~");
     }
 
     @GetMapping("/test/1")
-    public String test1() {
+    public ResponseEntity<String> test1() {
         log.info("test1");
-        return "test2";
+        return ResponseEntity.ok("첫번째 테스트를 성공하셨습니다.");
     }
 
     @GetMapping("/test/2")
     public ResponseEntity<String> test2() {
         log.info("test2");
-        return ResponseEntity.ok("이것은 테스트2의 성공인 것이야");
+        return ResponseEntity.ok("이것은 테스트2의 성공인 것이야!");
     }
 
     @GetMapping("/test/3")

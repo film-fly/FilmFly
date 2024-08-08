@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>신고 관리 - FilmFly Admin</title>
+    <!-- AdminLTE CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <!-- 부트스트랩 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- AdminLTE JS -->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- 커스텀 CSS -->
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- 공통 JS -->
+    <script src="../js/common.js"></script>
+    <script src="../js/apiModule.js"></script>
+    <style>
+        .main-sidebar {
+            width: 250px;
+        }
+        #common-header {
+            display: flex;
+            width: 100%;
+            margin-left: 100px;
+            margin-right: 200px;
+        }
+        #common-header > header {
+            display: flex;
+            width: 100%;
+        }
+        .main-sidebar {
+            width: 250px;
+        }
+        .content-wrapper {
+            margin-top: 30px;
+            background-color:white;
+            width: 75%;}
+        .content {
+            width: 100%;
+            margin-right: 10px;
+            box-sizing: border-box;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .pagination button {
+            margin: 0 5px;
+        }
+        #totalCount {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        tr[data-report-id]:hover {
+            transform: scaleY(1.1);
+            transition: transform 0.1s ease-in-out;
+            cursor: pointer;
+        }
+        #reportSearchResults {
+            font-size: 15px;
+        }
+        td.wrap-text {
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 100px;
+            overflow: auto;
+        }
+        #reason {
+            width: 300px;
+            height: 20px;
+        }
+
+    </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <!-- 공통 헤더 -->
+        <header id="common-header"></header>
+    </nav>
+
+    <div class="content-wrapper">
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="adminpage.html" class="brand-link">
+                <span class="brand-text font-weight-light">FilmFly Admin</span>
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <li class="nav-item">
+                            <a href="adminpage-user-management.html" class="nav-link">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>유저 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="adminpage-report-management.html" class="nav-link">
+                                <i class="nav-icon fas fa-flag"></i>
+                                <p>신고 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="adminpage-coupon-management.html" class="nav-link">
+                                <i class="nav-icon fas fa-ticket-alt"></i>
+                                <p>쿠폰 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="adminpage-crawl-movies.html" class="nav-link">
+                                <i class="nav-icon fas fa-film"></i>
+                                <p>영화 크롤링</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    <div id="mainDiv">
+                        <h2>신고 관리</h2>
+                        <div id="totalCount"></div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th>번호</th>
+                                    <th>신고자</th>
+                                    <th>피신고자</th>
+                                    <th id="reason">사유</th>
+                                    <th>신고 날짜</th>
+                                </tr>
+                                </thead>
+                                <tbody id="reportSearchResults">
+                                <!-- 검색 결과 표시 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination" id="pagination">
+                            <!-- 페이징네이션 표시 -->
+                        </div>
+                    </div>
+                </div><!--/. container-fluid -->
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+    </div>
+</div>
+<!-- ./wrapper -->
+<script>
+    $(document).ready(function() {
+        function getReports(page = 1) {
+            let url = `/admins/reports?page=${page}&size=10`;
+
+            apiModule.GET(url,
+                function(response) {
+                    renderReports(response.data.reports);
+                    renderPagination(response.data.totalPages, response.data.currentPage);
+                    $('#totalCount').text(`총 ${response.data.totalElements}건의 신고가 있습니다.`);
+                },
+                function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
+            );
+        }
+
+        function renderReports(reports) {
+            const results = reports.map(report => {
+                const reason = report.reason.length > 20 ? report.reason.substring(0, 20) + '...' : report.reason;
+                return `
+                    <tr data-report-id="${report.id}">
+                        <td>${report.id}</td>
+                        <td>${report.reporterNickname}</td>
+                        <td>${report.reportedNickname}</td>
+                        <td class="wrap-text">${reason}</td>
+                        <td>${new Date(report.createdAt).toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+            $('#reportSearchResults').html(results.join(''));
+        }
+
+        function renderPagination(totalPages, currentPage) {
+            const pagination = $('#pagination');
+            pagination.empty();
+
+            const maxVisiblePages = 10; // 한 번에 표시할 최대 페이지 수
+            const halfVisiblePages = Math.floor(maxVisiblePages / 2);
+
+            let startPage = Math.floor((currentPage - 1) / maxVisiblePages) * maxVisiblePages + 1;
+            let endPage = startPage + maxVisiblePages - 1;
+
+            if (endPage > totalPages) {
+                endPage = totalPages;
+            }
+
+            const previousPageSet = Math.max(startPage - maxVisiblePages, 1);
+            const nextPageSet = Math.min(startPage + maxVisiblePages, totalPages);
+
+            pagination.append(`<button class="btn btn-outline-primary" data-page="${previousPageSet}">이전</button>`);
+
+            for (let i = startPage; i <= endPage; i++) {
+                const button = $('<button>')
+                    .addClass('btn btn-outline-primary')
+                    .text(i)
+                    .data('page', i);
+
+                if (i === currentPage) {
+                    button.addClass('active');
+                }
+
+                pagination.append(button);
+            }
+
+            pagination.append(`<button class="btn btn-outline-primary" data-page="${nextPageSet}">다음</button>`);
+        }
+
+        $(document).on('click', '.pagination button', function() {
+            const page = $(this).data('page');
+            getReports(page);
+        });
+
+        $(document).on('click', 'tr[data-report-id]', function() {
+            const reportId = $(this).data('report-id');
+            window.location.href = `adminpage-report-detail.html?reportId=${reportId}`;
+        });
+
+        // 초기 로드 시 전체 신고 목록 로드
+        getReports();
+    });
+</script>
+
+</body>
+</html>

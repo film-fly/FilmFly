@@ -112,15 +112,14 @@ public class CouponService {
     }
 
     /**
-     * 유저에게 쿠폰 발급
+     * 유저 쿠폰 발급
      */
     @Transactional
-    public CouponResponseDto distributeCoupons(User user) {
+    public CouponResponseDto distributeCoupons(User user, String description) {
+        Coupon coupon;
 
-        // 쿠폰 발급이 더이상 불가능하면 예외처리
-        Coupon coupon = couponRepository.findTopByIssuedFalseOrderByCreatedAtAsc().orElseThrow(
-                () -> new NotFoundException(ResponseCodeEnum.COUPON_EXHAUSTED)
-        );
+        // 특정 description을 가진 쿠폰 중 발급되지 않은 쿠폰을 조회하고 예외 처리
+        coupon = couponRepository.findTopByDescriptionAndIssuedFalseOrderByCreatedAtAscOrElseThrow(description);
 
         // 발급 완료되면 Issued = true
         coupon.updateIssuedTrue();
