@@ -39,24 +39,10 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}}
-          aws-secret-access-key: ${{secrets.AWS_SECRET_KEY}}
-          aws-region: ${{env.REGION}}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ env.REGION }}
 
-#      #.3. 단계 | 프로젝트 관련 종속성을 설치할 노드 설치
-#      - uses: actions/setup-node@v4
-#        with:
-#          node-version: '20'
-#
-#      # 4. 단계 | 종속성 설치(node_modules)
-#      - name: Install Dependencies
-#        run: |
-#          node --version
-#          npm ci          # OR 타입스크립트 안 쓰면 npm ci --production
-#
-#      # 5. 단계 | 정적 파일 빌드(build 생성)
-#      - name: Build
-#        run: npm run build
 
       # 6. 단계 | AWS CLI 를 사용하여 S3 에 배포 파일을 복사(즉, 업로드)
       - name: Copy files to the production website with the AWS CLI
@@ -72,6 +58,20 @@ jobs:
             --paths "/*"
 
 
+#      #.3. 단계 | 프로젝트 관련 종속성을 설치할 노드 설치
+#      - uses: actions/setup-node@v4
+#        with:
+#          node-version: '20'
+#
+#      # 4. 단계 | 종속성 설치(node_modules)
+#      - name: Install Dependencies
+#        run: |
+#          node --version
+#          npm ci          # OR 타입스크립트 안 쓰면 npm ci --production
+#
+#      # 5. 단계 | 정적 파일 빌드(build 생성)
+#      - name: Build
+#        run: npm run build
 
 #    steps:
 #      # SOURCE 단계 - 저장소 Checkout
