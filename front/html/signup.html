@@ -195,21 +195,17 @@
     function checkNickname() {
         const nickname = $('#nickname').val();
         const data = { nickname: nickname };
+        const feedback = $('#nicknameFeedback');
 
         apiModule.POST('/users/check-nickname', data,
             function (result, status, xhr) {
-                const feedback = $('#nicknameFeedback');
-                if (result.statusCode === 200) {
-                    feedback.text('사용 가능한 닉네임입니다.').css('color', 'green');
-                    flagNickname = true;
-                    alert('사용 가능한 닉네임입니다.');
-                } else {
-                    feedback.text('이미 사용 중인 닉네임입니다.').css('color', 'red');
-                    alert('이미 사용 중인 닉네임입니다.');
-                }
+                feedback.text('사용 가능한 닉네임입니다.').css('color', 'green');
+                flagNickname = true;
+                alert('사용 가능한 닉네임입니다.');
             },
             function (xhr, status, er) {
-                alert(xhr.responseJSON.message);
+                feedback.text('이미 사용 중인 닉네임입니다.').css('color', 'red');
+                alert('이미 사용 중인 닉네임입니다.');
             });
     }
 
