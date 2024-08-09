@@ -44,7 +44,7 @@ function imageUploader(file, el) {
 
 function imageDelete(imageName) {
 
-  apiModule.DELETE(`/image/delete?imageName=${imageName}`, function(response) {
+  apiModule.DELETE(`/image/delete?imageName=${imageName}`,null, function(response) {
     console.log("Image deleted: ", response);
   }, function(error) {
     console.error("Image delete failed: ", error);
