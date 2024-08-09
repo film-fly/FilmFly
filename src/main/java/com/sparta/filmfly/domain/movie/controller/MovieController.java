@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class MovieController {
     /**
     * API 데이터 크롤링
     */
+    @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
     @PostMapping("/movies/api/discover")
     public ResponseEntity<DataResponseDto<List<ApiMovieResponseDto>>> apiDiscoverMovieRequest(
             @RequestBody ApiDiscoverMovieRequestDto apiDiscoverMovieRequestDto
@@ -49,6 +51,7 @@ public class MovieController {
     /**
      * API 데이터 크롤링
      */
+    @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
     @PostMapping("/movies/api/search")
     public ResponseEntity<DataResponseDto<List<ApiMovieResponseDto>>> apiSearchMovieRequest(
             @RequestBody ApiSearchMovieRequestDto apiSearchMovieRequestDto
@@ -62,6 +65,7 @@ public class MovieController {
     /**
      * 장르 api 가져오기
      */
+    @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
     @GetMapping("/genres/api")
     public ResponseEntity<MessageResponseDto> apiGenresRequest() {
         log.info("In apiGenresRequest");

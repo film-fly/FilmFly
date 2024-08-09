@@ -44,11 +44,10 @@ public class JwtProvider {
     /**
      * JWT 토큰 생성
      */
-    private String createToken(String username, Long userId, long expirationTime) {
+    private String createToken(String username, long expirationTime) {
         Date now = new Date();
         JwtBuilder builder = Jwts.builder()
                 .setSubject(username)
-                .claim(USER_ID_CLAIM, userId)
                 .setExpiration(new Date(now.getTime() + expirationTime))
                 .setIssuedAt(now)
                 .signWith(key, signatureAlgorithm);
@@ -59,15 +58,15 @@ public class JwtProvider {
     /**
      * 액세스 토큰 생성
      */
-    public String createAccessToken(String username, Long userId) {
-        return createToken(username, userId, ACCESS_TOKEN_TIME);
+    public String createAccessToken(String username) {
+        return createToken(username, ACCESS_TOKEN_TIME);
     }
 
     /**
      * 리프레시 토큰 생성
      */
-    public String createRefreshToken(String username, Long userId) {
-        return createToken(username, userId, REFRESH_TOKEN_TIME);
+    public String createRefreshToken(String username) {
+        return createToken(username, REFRESH_TOKEN_TIME);
     }
 
     /**

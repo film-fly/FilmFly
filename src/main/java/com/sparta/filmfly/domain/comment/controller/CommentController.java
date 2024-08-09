@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -87,6 +88,7 @@ public class CommentController {
     /**
      * 댓글 수정 권한 확인
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/comments/{commentId}/update-permission")
     public ResponseEntity<DataResponseDto<Boolean>> getCommentUpdatePermission(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -99,6 +101,7 @@ public class CommentController {
     /**
      * 댓글 수정 정보
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/comments/{commentId}/for-update")
     public ResponseEntity<DataResponseDto<CommentUpdateResponseDto>> forUpdateComment(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
