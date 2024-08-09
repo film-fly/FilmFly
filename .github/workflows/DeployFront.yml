@@ -1,0 +1,48 @@
+# github repository actions 페이지에 나타날 이름
+name: Deploy - CI/CD Pipeline
+
+# event trigger
+# main이나 develop 브랜치에 push가 되었을 때 실행
+on:
+  push:
+    # dev 나 main 으로 push 를 하거나
+    branches:
+      - main
+      - 346-feat-front-s3-deploy
+    # dev 가 pull request 를 생성시
+#  pull_request:
+#    branches:
+#      - dev
+#env:
+#  DOCKER_IMAGE_TAG_NAME: film-fly
+#  AWS_REGION: ap-northeast-2
+
+jobs:
+  build-and-deploy-front:
+    # 실행 환경
+    runs-on: ubuntu-latest
+    env: # 환경변수 설정
+      BUCKET: filmfly-front # 버켓이름
+
+    steps: # build-and-deploy 워크 플로 작업 실행 시 순차적으로 실행할 작업의 순서
+      # 깃허브 리포지토리 접근
+      - name: Checkout # 작업 이름
+        uses: actions/checkout@v4 # 워크 플로 작업을 위한 저장소 액세스를 위한 도구
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ secrets.REGION }}
+
+      - name: Copy files to the production website with the AWS CLI
+        run: |
+          aws s3 sync front/ s3://${{env.BUCKET}}/ --delete
+
+      # 캐시 무효화 : 즉, 이전 정적 파일 캐시 버리고, 새로 업로드된 파일이 보이도록
+      - name: Clear Cash
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUD_FRONT_ID }} \
+            --paths "/*"
