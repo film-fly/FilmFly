@@ -1,6 +1,5 @@
 package com.sparta.filmfly.domain.reaction.controller;
 
-import com.sparta.filmfly.domain.movie.dto.MovieSimpleResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.BadRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodRequestDto;
 import com.sparta.filmfly.domain.reaction.dto.GoodResponseDto;
@@ -9,7 +8,6 @@ import com.sparta.filmfly.domain.reaction.dto.ReactionCommentResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionMovieResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionReviewResponseDto;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
-import com.sparta.filmfly.domain.review.dto.ReviewUserResponseDto;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
