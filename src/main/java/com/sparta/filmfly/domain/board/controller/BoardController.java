@@ -34,7 +34,6 @@ public class BoardController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody BoardRequestDto requestDto
     ) {
-        log.error("test : {}",requestDto.getContent());
         BoardResponseDto responseDto = boardService.createBoard(userDetails.getUser(),requestDto);
         return ResponseUtils.success(responseDto);
     }

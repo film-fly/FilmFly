@@ -135,6 +135,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                     .and(qBad.type.eq(ReactionContentTypeEnum.COMMENT))
             )
             .where(qComment.id.in(commentIds))
+            .orderBy(qComment.createdAt.asc())
             .fetch();
 
         return fetch;

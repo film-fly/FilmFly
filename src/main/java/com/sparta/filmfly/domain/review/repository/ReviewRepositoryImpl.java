@@ -226,6 +226,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
             .select(
                 Projections.constructor(
                     ReviewReactionCheckResponseDto.class,
+                    qReview.id,
                     qGood.id.isNotNull(),
                     qBad.id.isNotNull(),
                     qBlock.id.isNotNull()
@@ -246,6 +247,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                     .and(qReview.user.id.eq(qBlock.blocked.id))
             )
             .where(qReview.id.in(reviewIds))
+            .orderBy(qReview.createdAt.desc())
             .fetch();
 
         return fetch;

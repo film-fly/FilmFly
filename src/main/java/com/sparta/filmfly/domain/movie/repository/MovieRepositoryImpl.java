@@ -118,7 +118,8 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
                     qMovie.title,
                     qMovie.originalTitle,
                     qMovie.posterPath,
-                    qMovie.backdropPath
+                    qMovie.backdropPath,
+                    qMovie.overview
                 ),
                 Projections.constructor(CreditSimpleResponseDto.class,
                     qCredit.id,

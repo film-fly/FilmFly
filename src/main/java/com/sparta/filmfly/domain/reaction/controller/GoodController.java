@@ -57,7 +57,6 @@ public class GoodController {
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @Valid @RequestBody GoodRequestDto requestDto
     ) {
-        log.info("requestDto: {}", requestDto);
         GoodResponseDto responseDto = goodService.removeGood(userDetails.getUser(), requestDto);
         return ResponseUtils.success(responseDto);
     }

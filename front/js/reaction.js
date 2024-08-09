@@ -23,22 +23,8 @@ $(document).ready(function() {
 // 좋아요 or 싫어요를 클릭했을 때
 $(document).on('click', '.btnReaction', function () {
   let button = $(this);
-  let isAdding;
-  let isGood;
-
-  if (button.hasClass('btn-outline-primary')) {
-    button.removeClass('btn-outline-primary').addClass('btn-primary');
-    isAdding = true;
-  } else if (button.hasClass('btn-primary')) {
-    button.removeClass('btn-primary').addClass('btn-outline-primary');
-    isAdding = false;
-  }
-
-  if (button.attr('data-good')) {
-    isGood = true;
-  } else if (button.attr('data-bad')) {
-    isGood = false;
-  }
+  let isAdding = button.hasClass('btn-outline-primary');
+  let isGood = button.attr('data-good') ? true : false;
 
   let contentType = button.attr('data-type');
   let contentId = button.attr('data-content-id');
@@ -47,29 +33,39 @@ $(document).on('click', '.btnReaction', function () {
     contentType: contentType
   };
 
-  let test = '';
-  isAdding ? test += 'POST : ' : test += 'DELETE : ';
-  isGood ? test += '/goods' : test += '/bads';
-  alert(test + '\n' + JSON.stringify(data));
+  if (!contentId || !contentType) {
+    alert(JSON.stringify(data) + '\n컨텐츠가 부족함');
+    return;
+  }
 
-  // $.ajax({
-  //   type: isAdding ? 'POST' : 'DELETE',
-  //   url: isGood ? '/goods' : '/bads',
-  //   data: JSON.stringify(data),
-  //   contentType: "application/json;charset=utf-8"
-  // })
-  // .done(function (result, status, xhr) {
-  //   let reactionType = '';
-  //   isGood ? reactionType = 'data-good-id' : reactionType = 'data-bad-id';
-  //   if (isAdding) {
-  //     button.attr(reactionType, result.goodId);
-  //   } else {
-  //     button.removeAttr(reactionType);
-  //   }
-  // })
-  // .fail(function (xhr, status, er) {
-  //   alert("리액션 저장 실패");
-  // });
+  // 좋아요, 싫어요 추가
+  let reactionUrl = isGood ? '/goods' : '/bads';
+  let text = isGood ? '좋아요' : '싫어요';
+
+  let reactionCount = button.find('i').text().trim();
+  if (isAdding) {
+    text += '를 등록하시겠습니까?';
+    if (confirm(text)) {
+      apiModule.POST(reactionUrl, data, function (result) {
+        button.removeClass('btn-outline-primary').addClass('btn-primary');
+        button.find('i').text(' ' + ++reactionCount);
+      }, function (xhr) {
+        button.removeClass('btn-primary').addClass('btn-outline-primary');
+        alert(xhr.responseJSON.message);
+      });
+    }
+  } else {
+    text += '를 취소하시겠습니까?';
+    if (confirm(text)) {
+      apiModule.DELETE(reactionUrl, data, function (result) {
+        button.removeClass('btn-primary').addClass('btn-outline-primary');
+        button.find('i').text(' ' + --reactionCount);
+      }, function (xhr) {
+        button.removeClass('btn-outline-primary').addClass('btn-primary');
+        alert(xhr.responseJSON.message);
+      });
+    }
+  }
 });
 
 // 신고 할 content id 초기화

@@ -46,7 +46,7 @@ public enum ResponseCodeEnum {
     NOT_BLOCKED_TARGET(HttpStatus.NOT_FOUND, "차단된 상대가 아닙니다."),
 
     // Favorite
-    FAVORITE_ALREADY_EXISTS(HttpStatus.ALREADY_REPORTED, "찜이 이미 등록되어있습니다."),
+    FAVORITE_ALREADY_EXISTS(HttpStatus.CONFLICT, "찜이 이미 등록되어있습니다."),
     FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "찜을 하지 않은 영화입니다."),
 
 
