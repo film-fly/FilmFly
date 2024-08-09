@@ -186,6 +186,19 @@
   </div>
 </div>
 
+<div class="container">
+  <!-- 컨테이너의 내용 -->
+
+  <!-- 비밀번호 입력 모달 -->
+  <div id="passwordModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; box-shadow:0px 0px 10px rgba(0,0,0,0.1);">
+    <div style="display: flex; align-items: center;">
+      <label for="passwordInput" style="margin-right: 10px;">비밀번호를 입력해주세요:</label>
+      <input type="password" id="passwordInput" class="form-control" style="width: 200px; margin-right: 10px;"/>
+      <button id="confirmPassword" class="btn btn-primary" style="margin-right: 10px;">확인</button>
+      <button id="cancelPassword" class="btn btn-secondary">취소</button>
+    </div>
+  </div>
+</div>
 <script>
   $(document).ready(function () {
     let urlParams = new URLSearchParams(window.location.search);
@@ -238,13 +251,48 @@
     }
 
     $('#btnWithdraw').on('click', function () {
-      alert('탈퇴 하시겠습니까?');
+      if (confirm('정말로 탈퇴하시겠습니까?')) {
+        // 비밀번호 입력 모달 표시
+        $('#passwordModal').show();
+
+        $('#confirmPassword').on('click', function () {
+          let password = $('#passwordInput').val();
+          if (password) {
+            $('#passwordModal').hide(); // 입력 모달 숨기기
+
+            // 비밀번호를 서버로 전송
+            apiModule.DELETE('/users/withdraw', { password: password }, function (response) {
+              alert('회원 탈퇴가 완료되었습니다.');
+              location.href = '/film-fly/front/html/index.html'; // 탈퇴 후 메인 페이지로 리디렉션
+            }, function (xhr) {
+              if (xhr.status === 400) {
+                alert('비밀번호가 올바르지 않습니다.');
+              } else {
+                alert('회원 탈퇴에 실패했습니다. 다시 시도해 주세요.');
+              }
+            });
+          }
+        });
+
+        $('#cancelPassword').on('click', function () {
+          $('#passwordModal').hide(); // 취소 버튼을 누르면 모달 창 닫기
+        });
+      }
     });
 
     $('#btnActiveUser').on('click', function () {
-      alert('복구 하시겠습니까?');
+      if (confirm('정말로 계정을 복구하시겠습니까?')) {
+        // 계정 복구 요청
+        apiModule.PATCH('/users/activate', null, function (response) {
+          alert('계정 복구가 완료되었습니다.');
+          location.href = '/film-fly/front/html/index.html'; // 복구 후 메인 페이지로 리디렉션
+        }, function (xhr) {
+          alert('계정 복구에 실패했습니다. 다시 시도해 주세요.');
+        });
+      } else {
+        history.back(); // 취소 버튼 누르면 뒤로 가기
+      }
     });
-
   });
 </script>
 
