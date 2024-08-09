@@ -7,24 +7,20 @@ on:
 
 jobs:
   deploy-server:
-    # 실행 환경
     runs-on: ubuntu-latest
     steps:
-      # SOURCE 단계 - 저장소 Checkout
       - name: Checkout
         uses: actions/checkout@v3
-      # JDK setting - github actions에서 사용할 JDK 설정 (프로젝트나 AWS의 java 버전과 달라도 무방)
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # 권한 부여
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # Build
       - name: Build with Gradle
         run: ./gradlew clean build
         env:
@@ -39,7 +35,6 @@ jobs:
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
           TMDB_API_AUTHORIZATION: ${{ secrets.TMDB_API_AUTHORIZATION }}
 
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -52,7 +47,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 도커에 업로드
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -61,7 +55,6 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_TAG_NAME }}:latest
 
-      # 서버 배포
       - name: Deploy to filmfly-2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -75,21 +68,19 @@ jobs:
               sudo docker stop $CONTAINER_ID
               sudo docker rm $CONTAINER_ID
             fi
-          # 도커에서 다운로드
+
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_TAG_NAME }}:latest
             sudo docker run -d -p 8080:8080 --env-file ./test.env \
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_TAG_NAME }}:latest
 
   deploy-front:
-    # 실행 환경
     runs-on: ubuntu-latest
-    env: # 환경변수 설정
-      BUCKET: filmfly-front # 버켓이름
+    env:
+      BUCKET: filmfly-front
 
-    steps: # build-and-deploy 워크 플로 작업 실행 시 순차적으로 실행할 작업의 순서
-      # 깃허브 리포지토리 접근
-      - name: Checkout # 작업 이름
-        uses: actions/checkout@v4 # 워크 플로 작업을 위한 저장소 액세스를 위한 도구
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -102,8 +93,7 @@ jobs:
         run: |
           aws s3 sync front/ s3://${{env.BUCKET}}/ --delete
 
-      # 캐시 무효화 : 즉, 이전 정적 파일 캐시 버리고, 새로 업로드된 파일이 보이도록
-      - name: Clear Cash
+      - name: Clear Cache  # 여기서 "Clear Cash" 오타도 수정했습니다.
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CLOUD_FRONT_ID }} \
