@@ -2,6 +2,8 @@ package com.sparta.filmfly.domain.comment.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.filmfly.domain.comment.entity.Comment;
+import com.sparta.filmfly.domain.reaction.dto.ReactionCheckResponseDto;
+import com.sparta.filmfly.domain.review.dto.ReviewReactionCheckResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,6 +20,8 @@ public class CommentResponseDto {
     private LocalDateTime createdAt;
     private long goodCount;
     private long badCount;
+    private Boolean isGood;
+    private Boolean isBad;
 
     @Builder
     public CommentResponseDto(Long id, Long userId,Long boardId, String nickname, String content, LocalDateTime createdAt, long goodCount, long badCount) {
@@ -29,6 +33,8 @@ public class CommentResponseDto {
         this.createdAt = createdAt;
         this.goodCount = goodCount;
         this.badCount = badCount;
+        this.isGood = false;
+        this.isBad = false;
     }
 
     public static CommentResponseDto fromEntity(Comment comment,Long goodCount, Long badCount) {
@@ -42,5 +48,10 @@ public class CommentResponseDto {
                 .goodCount(goodCount)
                 .badCount(badCount)
                 .build();
+    }
+
+    public void setReactions(ReactionCheckResponseDto dto) {
+        this.isGood = dto.getIsGood();
+        this.isBad = dto.getIsBad();
     }
 }

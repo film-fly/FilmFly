@@ -8,10 +8,12 @@ import com.sparta.filmfly.domain.comment.dto.CommentUpdateResponseDto;
 import com.sparta.filmfly.domain.comment.entity.Comment;
 import com.sparta.filmfly.domain.comment.repository.CommentRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
+import com.sparta.filmfly.domain.reaction.dto.ReactionBoardResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionCheckResponseDto;
 import com.sparta.filmfly.domain.reaction.service.BadService;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
 import com.sparta.filmfly.domain.user.entity.User;
-import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
+import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,11 +60,20 @@ public class CommentService {
      * 댓글 페이지 조회
      */
     @Transactional(readOnly = true)
-    public PageResponseDto<List<CommentResponseDto>> gerPageComment(Long boardId, Pageable pageable) {
+    public PageResponseDto<List<CommentResponseDto>> gerPageComment(UserDetailsImpl userDetails, Long boardId, Pageable pageable) {
         //정렬은 생성 시간, get으로 넘겨주는 댓글은 수정 시간
         boardRepository.existsByIdOrElseThrow(boardId); // 보드가 존재하지 않으면 에러
 
-        return commentRepository.findAllByBoardIdWithReactions(boardId, pageable);
+        PageResponseDto<List<CommentResponseDto>> pageComments = commentRepository.findAllByBoardIdWithReactions(boardId, pageable);
+        if (userDetails != null) {
+            List<CommentResponseDto> comments = pageComments.getData();
+            List<Long> commentIds = comments.stream().map(CommentResponseDto::getId).toList();
+            List<ReactionCheckResponseDto> reactions = commentRepository.checkCommentReaction(userDetails.getUser(), commentIds);
+            for (int i = 0; i < comments.size(); ++i) {
+                comments.get(i).setReactions(reactions.get(i));
+            }
+        }
+        return pageComments;
     }
 
     /**

@@ -6,8 +6,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.filmfly.domain.comment.dto.CommentResponseDto;
 import com.sparta.filmfly.domain.comment.entity.QComment;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
+import com.sparta.filmfly.domain.reaction.dto.ReactionCheckResponseDto;
 import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;
+import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
+    @Override
     public PageResponseDto<List<CommentResponseDto>> findAllByBoardIdWithReactions(Long boardId, Pageable pageable) {
         QComment comment = QComment.comment;
         QGood good = QGood.good;
@@ -64,6 +67,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 .build();
     }
 
+    @Override
     public PageResponseDto<List<CommentResponseDto>> findAllByUserId(Long userId, Pageable pageable) {
         QComment comment = QComment.comment;
         QGood good = QGood.good;
@@ -103,5 +107,36 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 .pageSize(page.getSize())
                 .data(content)
                 .build();
+    }
+
+    @Override
+    public List<ReactionCheckResponseDto> checkCommentReaction(User user, List<Long> commentIds) {
+        QComment qComment = QComment.comment;
+        QGood qGood = QGood.good;
+        QBad qBad = QBad.bad;
+
+        List<ReactionCheckResponseDto> fetch = queryFactory
+            .select(
+                Projections.constructor(
+                    ReactionCheckResponseDto.class,
+                    qGood.id.isNotNull(),
+                    qBad.id.isNotNull()
+                )
+            )
+            .from(qComment)
+            .leftJoin(qGood).on(
+                qGood.user.eq(user)
+                    .and(qComment.id.eq(qGood.typeId))
+                    .and(qGood.type.eq(ReactionContentTypeEnum.COMMENT))
+            )
+            .leftJoin(qBad).on(
+                qBad.user.eq(user)
+                    .and(qComment.id.eq(qBad.typeId))
+                    .and(qBad.type.eq(ReactionContentTypeEnum.COMMENT))
+            )
+            .where(qComment.id.in(commentIds))
+            .fetch();
+
+        return fetch;
     }
 }

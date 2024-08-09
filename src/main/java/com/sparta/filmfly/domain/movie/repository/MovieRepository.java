@@ -22,7 +22,11 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieReposi
     List<Movie> findMoviesByTitleContaining(String keyword, Pageable pageable);
 
     long countByTitleContaining(String keyword);
-
-    List<Movie> findByIdIn(List<Long> ids);
     long count();
+
+    default void existsByIdOrElseThrow(Long movieId) {
+        if (!existsById(movieId)) {
+            throw new NotFoundException(ResponseCodeEnum.MOVIE_NOT_FOUND);
+        }
+    }
 }

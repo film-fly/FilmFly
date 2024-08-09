@@ -64,6 +64,8 @@ public class ReviewService {
      */
     @Transactional(readOnly = true)
     public PageResponseDto<List<ReviewResponseDto>> getPageReview(UserDetailsImpl userDetails, Long movieId, Pageable pageable) {
+        movieRepository.existsByIdOrElseThrow(movieId);
+
         PageResponseDto<List<ReviewResponseDto>> pageReview = reviewRepository.getPageReviewByMovieId(movieId, pageable);
         if (userDetails != null) {
             List<ReviewResponseDto> reviews = pageReview.getData();

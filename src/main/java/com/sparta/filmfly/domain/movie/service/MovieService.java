@@ -243,6 +243,8 @@ public class MovieService {
      * 영화 단건 조회
      */
     public MovieDetailSimpleResponseDto getMovie(UserDetailsImpl userDetails, Long movieId) {
+        movieRepository.existsByIdOrElseThrow(movieId);
+
         MovieDetailSimpleResponseDto responseDto = movieRepository.getMovie(movieId);
         MovieReactionCheckResponseDto reactions = MovieReactionCheckResponseDto.setupFalse();
         if (userDetails != null) {
