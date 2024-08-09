@@ -1,9 +1,6 @@
 package com.sparta.filmfly.domain.collection.controller;
 
-import com.sparta.filmfly.domain.collection.dto.CollectionWithUserResponseDto;
-import com.sparta.filmfly.domain.collection.dto.CollectionRequestDto;
-import com.sparta.filmfly.domain.collection.dto.CollectionResponseDto;
-import com.sparta.filmfly.domain.collection.dto.MovieCollectionRequestDto;
+import com.sparta.filmfly.domain.collection.dto.*;
 import com.sparta.filmfly.domain.collection.service.CollectionService;
 import com.sparta.filmfly.domain.movie.dto.MovieResponseDto;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
@@ -16,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,13 +50,14 @@ public class CollectionController {
     }
 
     /**
-     * 보관함 목록 조회
+     * 자신의 보관함 목록 조회
      */
     @GetMapping
-    public ResponseEntity<DataResponseDto<List<CollectionResponseDto>>> getAllCollection(
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+    public ResponseEntity<DataResponseDto<List<CollectionStatusResponseDto>>> getAllCollection(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(required = false) Long movieId
     ) {
-        List<CollectionResponseDto> collectionResponseDtoList = collectionService.getAllCollection(userDetails.getUser());
+        List<CollectionStatusResponseDto> collectionResponseDtoList = collectionService.getAllCollection(userDetails.getUser(),movieId);
         return ResponseUtils.success(collectionResponseDtoList);
     }
 
@@ -97,6 +96,7 @@ public class CollectionController {
     /**
      * 해당 보관함 수정 권한 확인
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{collectionId}/update-permission")
     public ResponseEntity<DataResponseDto<Boolean>> getCollectionIdUpdatePermission(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -109,6 +109,7 @@ public class CollectionController {
     /**
      * 보관함 수정 페이지 정보
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{collectionId}/for-update")
     public ResponseEntity<DataResponseDto<CollectionResponseDto>> forUpdateCollection(
             @AuthenticationPrincipal UserDetailsImpl userDetails,

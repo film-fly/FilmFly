@@ -92,9 +92,12 @@ $(document).ready(function() {
     $('#blockReportModal').removeAttr('data-block');
     $('#blockReportModal').removeAttr('data-report');
     selectedUserId = $(this).closest('.dropdown-menu').attr('data-user-id');
+    selectedContentId = $(this).closest('.dropdown-menu').attr('data-content-id');
+    selectedContentType = $(this).closest('.dropdown-menu').attr('data-content-type');
 
     $('#inputBlockReport').val(''); // 텍스트 지우기
     $('#blockReportModalLabel').text('차단하기');
+    $('#reasonLabel').text('차단 사유');
     $('#btnBlockReport').text('차단하기');
     $('#blockReportModal').attr('data-block', true);
     $('#blockReportModal').modal('show'); // 모달 표시
@@ -111,6 +114,7 @@ $(document).ready(function() {
 
     $('#inputBlockReport').val(''); // 텍스트 지우기
     $('#blockReportModalLabel').text('신고하기');
+    $('#reasonLabel').text('신고 사유');
     $('#btnBlockReport').text('신고하기');
     $('#blockReportModal').attr('data-report', true);
     $('#blockReportModal').modal('show'); // 모달 표시
@@ -126,21 +130,51 @@ $(document).ready(function() {
         "memo": memo
       };
 
+      //alert('차단하기\nuser id : ' + selectedUserId + '\ncontent id : ' + selectedContentId + '\ncontent type : ' + selectedContentType);
       blockUser(data);
     } else if ($('#blockReportModal').attr('data-report')) {
-      alert('신고하기\nuser id : ' + selectedUserId + '\ncontent id : '
-          + selectedContentId + '\ncontent type : ' + selectedContentType);
+      let reason = $('#inputBlockReport').val();
+
+      let data = {
+        "reportedId": selectedUserId,
+        "typeId": selectedContentId,
+        "type": selectedContentType.toUpperCase(),
+        "reason": reason
+      };
+
+      //alert('신고하기\nuser id : ' + selectedUserId + '\ncontent id : ' + selectedContentId + '\ncontent type : ' + selectedContentType);
+      reportUser(data);
     } else {
       alert('신고, 차단 안됨');
     }
+
   });
 });
 
 function blockUser(data) {
   apiModule.POST('/blocks', data,
-      function () {
-        location.reload();
+      function (result) {
+        if (result.statusCode === 200) {
+          console.log(result);
+          alert("선택한 유저를 차단했습니다.");
+          location.reload();
+        }
       },
-      function () {
+      function (result) {
+        alert(result.responseJSON.message);
+      });
+}
+
+function reportUser(data) {
+  apiModule.POST('/reports', data,
+      function (result) {
+        if (result.statusCode === 200) {
+          console.log(result);
+          alert("신고가 접수되었습니다.");
+          location.reload();
+        }
+      },
+      function (result) {
+        console.log("fail : " + result);
       });
 }
