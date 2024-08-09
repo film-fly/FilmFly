@@ -1,4 +1,3 @@
-# github repository actions 페이지에 나타날 이름
 name: Deploy - CI/CD Pipeline
 
 on:
