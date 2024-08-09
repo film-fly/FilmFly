@@ -30,18 +30,14 @@ $(function () {
       console.log('User role:', userRole);
       if (checkLoginStatus()) {
         $('#loginLink').hide();
+        $('#signupLink').hide();
         $('#logoutLink').show();
         $('#myPageLink').show();
-        if (userRole === 'ROLE_ADMIN') {
-          $('#adminPageLink').show();
-        } else {
-          $('#adminPageLink').hide();
-        }
       } else {
         $('#loginLink').show();
+        $('#signupLink').show();
         $('#logoutLink').hide();
         $('#myPageLink').hide();
-        $('#adminPageLink').hide();
       }
     }
 
