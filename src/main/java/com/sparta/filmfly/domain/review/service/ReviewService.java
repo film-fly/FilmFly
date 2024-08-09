@@ -1,5 +1,7 @@
 package com.sparta.filmfly.domain.review.service;
 
+import com.sparta.filmfly.domain.block.repository.BlockRepository;
+import com.sparta.filmfly.domain.movie.dto.MovieReactionCheckResponseDto;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
@@ -9,7 +11,9 @@ import com.sparta.filmfly.domain.review.dto.*;
 import com.sparta.filmfly.domain.review.entity.Review;
 import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.domain.user.entity.User;
+import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +31,7 @@ public class ReviewService {
     private final MovieRepository movieRepository;
     private final GoodRepository goodRepository;
     private final BadRepository badRepository;
+    private final BlockRepository blockRepository;
 
     /**
      * 리뷰 저장
@@ -58,8 +63,17 @@ public class ReviewService {
      * 특정 영화에 대한 리뷰 전체 조회
      */
     @Transactional(readOnly = true)
-    public PageResponseDto<List<ReviewResponseDto>> getPageReview(Long movieId, Pageable pageable) {
-        return reviewRepository.getPageReviewByMovieId(movieId, pageable);
+    public PageResponseDto<List<ReviewResponseDto>> getPageReview(UserDetailsImpl userDetails, Long movieId, Pageable pageable) {
+        PageResponseDto<List<ReviewResponseDto>> pageReview = reviewRepository.getPageReviewByMovieId(movieId, pageable);
+        if (userDetails != null) {
+            List<ReviewResponseDto> reviews = pageReview.getData();
+            List<Long> reviewIds = reviews.stream().map(ReviewResponseDto::getId).toList();
+            List<ReviewReactionCheckResponseDto> reactions = reviewRepository.checkReviewReaction(userDetails.getUser(), reviewIds);
+            for (int i = 0; i < reviews.size(); ++i) {
+                reviews.get(i).setReactions(reactions.get(i));
+            }
+        }
+        return pageReview;
     }
 
     /**
