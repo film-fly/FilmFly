@@ -67,13 +67,24 @@
 
     apiModule[method](url, data, function(result) {
       if (result.statusCode === 200) {
-        history.back(); // Go back to the previous page on successful save
         if(method === 'PATCH') {
           location.href = `./mypage-collection-detail.html?collectionId=${collectionId}`;
         }
         else if(method === 'POST') {
-          let userId = result.data.userId;
-          location.href = `./mypage-collection.html?user=${userId}`;
+          const referrer = document.referrer;
+          // 리다이렉트 URL 결정
+          let redirectUrl;
+          if (referrer.includes('movie-detail.html')) {
+            // 이전 페이지가 movie-detail.html인 경우
+            // 이전 페이지의 URL을 가져옵니다.
+            const referrer = document.referrer;
+            //history.back(); 얘는 새로 고침이 아니라서 아래꺼 사용
+            location.href = referrer;
+          } else {
+            // 아니면 유저의 보관함으로 이동
+            let userId = result.data.userId;
+            location.href = `./mypage-collection.html?user=${userId}`;
+          }
         }
       } else {
         alert(result.message);

@@ -8,6 +8,7 @@ import com.sparta.filmfly.domain.movie.repository.GenreRepository;
 import com.sparta.filmfly.domain.movie.repository.MovieCreditRepository;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.review.repository.ReviewRepository;
+import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.common.util.JsonFormatter;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Request.Builder;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -185,7 +187,7 @@ public class MovieService {
     }
 
     private Request requestBuilder(String url) {
-        return new Request.Builder()
+        return new Builder()
                 .url(url)
                 .get()
                 .addHeader("accept", "application/json")
@@ -240,18 +242,35 @@ public class MovieService {
     /*
      * 영화 단건 조회
      */
-    public MovieDetailResponseDto getMovie(Long movieId) {
-        Movie movie = movieRepository.findByIdOrElseThrow(movieId);
-        List<Credit> creditList = creditRepository.findByMovieId(movieId);
+    public MovieDetailSimpleResponseDto getMovie(UserDetailsImpl userDetails, Long movieId) {
+        movieRepository.existsByIdOrElseThrow(movieId);
+
+        MovieDetailSimpleResponseDto responseDto = movieRepository.getMovie(movieId);
+        MovieReactionCheckResponseDto reactions = MovieReactionCheckResponseDto.setupFalse();
+        if (userDetails != null) {
+            reactions = movieRepository.checkMovieReaction(userDetails.getUser(), movieId);
+        }
         Float avgRating = reviewRepository.getAverageRatingByMovieId(movieId);
 
-        return MovieDetailResponseDto.builder()
-                .movie(MovieResponseDto.fromEntity(movie))
-                .creditList(creditList.stream()
-                        .map(CreditResponseDto::fromEntity)
-                        .collect(Collectors.toList()))
-                .avgRating(avgRating)
-                .build();
+        responseDto.updateReaction(reactions);
+        responseDto.updateAvgRating(avgRating);
+
+        return responseDto;
+
+
+
+
+//        Movie movie = movieRepository.findByIdOrElseThrow(movieId);
+//        List<Credit> creditList = creditRepository.findByMovieId(movieId);
+//        Float avgRating = reviewRepository.getAverageRatingByMovieId(movieId);
+//
+//        return MovieDetailResponseDto.builder()
+//                .movie(MovieResponseDto.fromEntity(movie))
+//                .creditList(creditList.stream()
+//                        .map(CreditResponseDto::fromEntity)
+//                        .collect(Collectors.toList()))
+//                .avgRating(avgRating)
+//                .build();
     }
 
     /**

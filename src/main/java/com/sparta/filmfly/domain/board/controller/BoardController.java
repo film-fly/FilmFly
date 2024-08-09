@@ -34,7 +34,6 @@ public class BoardController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody BoardRequestDto requestDto
     ) {
-        log.error("test : {}",requestDto.getContent());
         BoardResponseDto responseDto = boardService.createBoard(userDetails.getUser(),requestDto);
         return ResponseUtils.success(responseDto);
     }
@@ -43,10 +42,11 @@ public class BoardController {
      * 보드 조회
      */
     @GetMapping("/{boardId}")
-    public ResponseEntity<DataResponseDto<BoardResponseDto>> getBoard(
-            @PathVariable Long boardId
+    public ResponseEntity<DataResponseDto<BoardReactionResponseDto>> getBoard(
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long boardId
     ) {
-        BoardResponseDto responseDto = boardService.getBoard(boardId);
+        BoardReactionResponseDto responseDto = boardService.getBoard(userDetails, boardId);
         return ResponseUtils.success(responseDto);
     }
 

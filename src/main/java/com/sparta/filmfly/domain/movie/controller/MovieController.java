@@ -4,6 +4,7 @@ import com.sparta.filmfly.domain.movie.dto.*;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.entity.OriginLanguageEnum;
 import com.sparta.filmfly.domain.movie.service.MovieService;
+import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -150,11 +152,12 @@ public class MovieController {
      * 영화 상세(단건) 조회
      */
     @GetMapping("/movies/{movieId}")
-    public ResponseEntity<DataResponseDto<MovieDetailResponseDto>> getMovie(
+    public ResponseEntity<DataResponseDto<MovieDetailSimpleResponseDto>> getMovie(
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long movieId
     ) {
         log.info("In getMovie");
-        MovieDetailResponseDto movieDetailResponseDto = movieService.getMovie(movieId);
-        return ResponseUtils.success(movieDetailResponseDto);
+        MovieDetailSimpleResponseDto responseDto = movieService.getMovie(userDetails, movieId);
+        return ResponseUtils.success(responseDto);
     }
 }

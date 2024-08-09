@@ -19,9 +19,57 @@
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .profile-header {
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-picture {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid white;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-info {
+      flex-grow: 1;
+      margin-left: 20px;
+    }
+
+    .profile-info h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .profile-info p {
+      font-size: 1.2rem;
+      margin-bottom: 0;
+    }
+
+    .profile-info button {
+      margin-top: 10px;
+    }
+    .btn-light{
+      margin-left: 460px;
+    }
+    .nickname-section {
+      margin-bottom: 20px;
+    }
+
+    .introduce-section {
+      border-top: 1px solid white;
+      padding-top: 10px;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
+<div class="container mt-5">
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
@@ -54,24 +102,23 @@
     </div>
     <div class="mt-2">
       <p class="fs-5 fw-bold">한줄 소개</p>
-      <p class="p-3" id="introduce">등록된 소개가 없습니다.</p>
+      <p class="p-3" id="introduce">${user.introduce}</p>
     </div>
   </div>
 
-  <div id="mypage-details">
-    <div class="card w-100 my-5">
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">
-          <div id="btnActiveUser" class="d-flex justify-content-between"
-               style="padding: 12px 0; cursor:pointer;">
-            <span style="font-size: 20px; color: red">탈퇴한 계정 복구하기</span>
-            <div>
-              <i class="fa-solid fa-chevron-right"></i>
-            </div>
+  <div class="card w-100 my-5">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        <div id="btnActiveUser" class="d-flex justify-content-between" style="padding: 12px 0; cursor:pointer;">
+          <span style="font-size: 20px; color: red">탈퇴한 계정 복구하기</span>
+          <div>
+            <!--            <span>12</span>-->
+            <i class="fa-solid fa-chevron-right"></i>
           </div>
-        </li>
-      </ul>
-    </div>
+        </div>
+      </li>
+    </ul>
+  </div>
 
     <div class="card w-100 mb-3">
       <ul class="list-group list-group-flush">

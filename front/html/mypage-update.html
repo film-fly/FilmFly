@@ -13,42 +13,61 @@
   <!-- 공통 헤더 -->
   <script src="../js/common.js"></script>
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="../js/apiModule.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+    }
+    .card-link:hover {
+      text-decoration: none;
+      color: inherit;
+    }
+    .card-link .card {
+      transition: transform 0.2s;
+    }
+    .card-link .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .card-icon {
+      font-size: 1.5rem;
+      margin-right: 10px;
+    }
+    #common-header{
+      margin-bottom: 100px;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
+<div class="container mt-5">
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
-  <div class="card w-100 mb-3">
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">
-        <a href="./mypage-update-profile.html">
-          <span>프로필 수정</span>
-          <div>
-            <i class="fa-solid fa-chevron-right"></i>
-          </div>
-        </a>
-      </li>
-    </ul>
-  </div>
+  <a href="./mypage-update-profile.html" class="card-link">
+    <div class="card w-100 mb-3">
+      <div class="card-body d-flex align-items-center">
+        <i class="fa-solid fa-user card-icon"></i>
+        <span class="flex-grow-1">프로필 수정</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+    </div>
+  </a>
 
-  <div class="card w-100 mb-3">
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">
-        <a href="./mypage-update-password.html">
-          <span>비밀번호 변경</span>
-          <div>
-            <i class="fa-solid fa-chevron-right"></i>
-          </div>
-        </a>
-      </li>
-    </ul>
-  </div>
+  <a href="./mypage-update-password.html" class="card-link">
+    <div class="card w-100 mb-3">
+      <div class="card-body d-flex align-items-center">
+        <i class="fa-solid fa-key card-icon"></i>
+        <span class="flex-grow-1">비밀번호 변경</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+    </div>
+  </a>
 </div>
 
 <!-- 부트스트랩 JS -->
