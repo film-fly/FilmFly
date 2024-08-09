@@ -8,7 +8,6 @@ on:
     # dev 나 main 으로 push 를 하거나
     branches:
       - main
-      - 346-feat-front-s3-deploy
     # dev 가 pull request 를 생성시
 #  pull_request:
 #    branches:
