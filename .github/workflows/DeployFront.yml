@@ -17,7 +17,7 @@ on:
 #  AWS_REGION: ap-northeast-2
 
 jobs:
-  build-and-deploy-front:
+  deploy-front:
     # 실행 환경
     runs-on: ubuntu-latest
     env: # 환경변수 설정
