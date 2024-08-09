@@ -1,9 +1,6 @@
 package com.sparta.filmfly.domain.collection.service;
 
-import com.sparta.filmfly.domain.collection.dto.CollectionWithUserResponseDto;
-import com.sparta.filmfly.domain.collection.dto.CollectionRequestDto;
-import com.sparta.filmfly.domain.collection.dto.CollectionResponseDto;
-import com.sparta.filmfly.domain.collection.dto.MovieCollectionRequestDto;
+import com.sparta.filmfly.domain.collection.dto.*;
 import com.sparta.filmfly.domain.collection.entity.Collection;
 import com.sparta.filmfly.domain.collection.entity.MovieCollection;
 import com.sparta.filmfly.domain.collection.repository.CollectionRepository;
@@ -21,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,12 +55,33 @@ public class CollectionService {
     /**
     * 보관함 목록 조회
     */
-    public List<CollectionResponseDto> getAllCollection(User user) {
+    public List<CollectionStatusResponseDto> getAllCollection(User user, Long movieId) {
         // 자신이 생성한 보관함들 조회
         List<Collection> collectionList = collectionRepository.findAllByUser(user);
-        return collectionList.stream().map(
-                CollectionResponseDto::fromEntity
-        ).toList();
+
+        List<CollectionStatusResponseDto> collectionStatusResponseDtoList;
+        if(movieId != null) {
+            // 영화 유무확인
+            Movie movie = movieRepository.findByIdOrElseThrow(movieId);
+
+            // 컬렉션 리스트를 스트림으로 변환하여 각 보관함에 대해 CollectionStatusResponseDto를 생성
+            collectionStatusResponseDtoList = collectionList.stream()
+                    .map(collection -> {
+                        Boolean isRegistered = movieCollectionRepository.existsByCollectionIdAndMovieId(collection.getId(), movie.getId());
+                        return CollectionStatusResponseDto.fromEntity(collection, isRegistered);
+                    })
+                    .collect(Collectors.toList()); // 결과를 리스트로 수집
+        }
+        else {
+            // movie 정보가 없으면 일반적인 조회 isRegistered에 nyll 넣고 데이터 없이 그냥 전송
+            collectionStatusResponseDtoList = collectionList.stream()
+                    .map(collection -> {
+                        return CollectionStatusResponseDto.fromEntity(collection, null);
+                    })
+                    .collect(Collectors.toList()); // 결과를 리스트로 수집
+        }
+
+        return collectionStatusResponseDtoList;
     }
 
     /**
