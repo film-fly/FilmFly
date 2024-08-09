@@ -253,7 +253,7 @@
 
   function deleteBoard() {
     if (confirm('삭제 하시겠습니까?')) {
-      apiModule.DELETE(`/boards/${boardId}`, function (result, status, xhr) {
+      apiModule.DELETE(`/boards/${boardId}`, null, function (result, status, xhr) {
         alert('삭제 성공');
         location.replace('./board.html');
       }, function (xhr, status, error) {

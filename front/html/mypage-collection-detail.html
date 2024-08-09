@@ -24,32 +24,45 @@
   <style>
     .card {
       position: relative;
+      transition: background-color 0.3s, box-shadow 0.3s;
       border: none;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-    .card-img-top {
-      height: 300px;
-      object-fit: cover;
+
+    .card:hover {
+      background-color: #f8f9fa; /* 마우스 오버 시 카드의 배경색 변경 */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 카드에 그림자 추가 */
     }
+
     .delete-icon {
       position: absolute;
       top: 10px;
       right: 10px;
+      font-size: 2rem;
       color: red;
       cursor: pointer;
-      font-size: 30px;
+      display: none; /* 기본적으로 삭제 아이콘 숨기기 */
+      transition: color 0.3s;
     }
-    .card-title {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+
+    .card:hover .delete-icon {
+      display: block; /* 카드에 마우스를 올렸을 때 삭제 아이콘 표시 */
     }
-    .card-text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 3; /* Number of lines to show */
-      -webkit-box-orient: vertical;
+
+    .card {
+      position: relative;
+      border: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .card-img-top {
+      transition: transform 0.3s;
+      height: 300px; /* 통일된 이미지 높이 */
+      object-fit: cover; /* 이미지가 카드의 크기에 맞게 잘리거나 축소됨 */
+    }
+
+    .card:hover .card-img-top {
+      transform: scale(1.05); /* 카드 이미지 확대 효과 */
     }
   </style>
 </head>
@@ -185,7 +198,7 @@
 
   $('#btnDeleteCollection').on('click', function () {
     if (confirm("해당 보관함을 삭제하시겠습니까?")) {
-      apiModule.DELETE(`/collections/${collectionId}`, function (result) {
+      apiModule.DELETE(`/collections/${collectionId}`,null , function (result) {
         if (result.statusCode === 200) {
           alert("보관함을 삭제하였습니다.");
           const url = `../html/mypage-collection.html?user=${userId}`;
@@ -220,7 +233,7 @@
         collectionId: collectionId
       };
 
-      apiModule.DELETE_DATA('/collections/delete-movie', requestData, function (result) {
+      apiModule.DELETE('/collections/delete-movie', requestData, function (result) {
         if (result.statusCode === 200) {
           alert("영화가 삭제되었습니다.");
           $(`[data-movie-id="${movieId}"]`).remove();

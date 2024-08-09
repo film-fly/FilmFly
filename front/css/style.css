@@ -241,3 +241,31 @@ input[name="tab_item"] {
   font-weight: bold;
   color: #0F73D9;
 }
+/*mypage 리뷰, 댓글, 게시글 카드 효과*/
+.mypage-interactive-item {
+  position: relative;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.mypage-interactive-item:hover {
+  background-color: #f8f9fa; /* 기본 항목에 마우스 오버 시 배경색 변경 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 기본 항목에 마우스 오버 시 그림자 추가 */
+}
+
+.mypage-interactive-item:hover img {
+  transform: scale(1.05); /* 이미지 확대 효과 */
+}
+
+.mypage-interactive-item .btn-primary {
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.mypage-interactive-item .btn-primary:hover {
+  background-color: #0056b3; /* 버튼에 마우스 오버 시 배경색 변경 */
+  border-color: #0056b3; /* 버튼에 마우스 오버 시 테두리 색상 변경 */
+}
+
+.mypage-interactive-item .btn-primary:active {
+  background-color: #003d7a; /* 버튼 클릭 시 배경색 변경 */
+  border-color: #003d7a; /* 버튼 클릭 시 테두리 색상 변경 */
+}
