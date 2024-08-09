@@ -21,6 +21,7 @@ import java.util.List;
 public class BoardRepositoryImpl implements BoardRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
+    @Override
     public PageResponseDto<List<BoardPageDto>> findAllWithFilters(Pageable pageable, Long filterGoodCount, Long filterHits, String search) {
         QBoard board = QBoard.board;
         QGood good = QGood.good;
@@ -72,6 +73,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
                 .build();
     }
 
+    @Override
     public PageResponseDto<List<BoardPageDto>> findAllByUserId(Long userId, Pageable pageable) {
         QBoard board = QBoard.board;
         QGood good = QGood.good;

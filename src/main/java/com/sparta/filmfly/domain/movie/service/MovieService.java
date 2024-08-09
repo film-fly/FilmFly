@@ -253,6 +253,8 @@ public class MovieService {
         responseDto.updateReaction(reactions);
         responseDto.updateAvgRating(avgRating);
 
+        log.info("responseDto: {}", responseDto);
+
         return responseDto;
 
 

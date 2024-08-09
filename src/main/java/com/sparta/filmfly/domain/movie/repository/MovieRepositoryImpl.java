@@ -109,6 +109,8 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
         QMovie qMovie = QMovie.movie;
         QCredit qCredit = QCredit.credit;
         QMovieCredit qMovieCredit = QMovieCredit.movieCredit;
+        QGood qGood = QGood.good;
+        QBad qBad = QBad.bad;
 
         List<Tuple> tuples = queryFactory.select(
                 Projections.constructor(MovieSimpleResponseDto.class,
@@ -116,31 +118,49 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
                     qMovie.title,
                     qMovie.originalTitle,
                     qMovie.posterPath,
-                    qMovie.backdropPath),
+                    qMovie.backdropPath
+                ),
                 Projections.constructor(CreditSimpleResponseDto.class,
                     qCredit.id,
                     qCredit.name,
                     qCredit.originalName,
-                    qCredit.profilePath))
+                    qCredit.profilePath
+                ),
+                qGood.id.count().as("goodCount"),
+                qBad.id.count().as("badCount")
+            )
             .from(qMovieCredit)
             .join(qMovie).on(qMovieCredit.movie.id.eq(qMovie.id))
             .join(qCredit).on(qMovieCredit.credit.id.eq(qCredit.id))
+            .leftJoin(qGood).on(qGood.typeId.eq(qMovie.id)
+                .and(qGood.type.eq(ReactionContentTypeEnum.MOVIE))
+            )
+            .leftJoin(qBad).on(qBad.typeId.eq(qMovie.id)
+                .and(qBad.type.eq(ReactionContentTypeEnum.MOVIE))
+            )
             .where(qMovie.id.eq(movieId))
+            .groupBy(qMovie.id, qCredit.id)
             .fetch();
 
         MovieSimpleResponseDto movieDto = null;
         List<CreditSimpleResponseDto> creditDtos = null;
+        Long goodCount = null;
+        Long badCount = null;
 
         if (!tuples.isEmpty()) {
             movieDto = tuples.get(0).get(0, MovieSimpleResponseDto.class);
             creditDtos = tuples.stream()
                 .map(tuple -> tuple.get(1, CreditSimpleResponseDto.class))
                 .toList();
+            goodCount = tuples.get(0).get(2, Long.class);
+            badCount = tuples.get(0).get(3, Long.class);
         }
 
         return MovieDetailSimpleResponseDto.builder()
             .movie(movieDto)
             .credits(creditDtos)
+            .goodCount(goodCount)
+            .badCount(badCount)
             .build();
     }
 
