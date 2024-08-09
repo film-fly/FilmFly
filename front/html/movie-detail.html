@@ -439,7 +439,7 @@
     const collectionElement = $(this).closest('.collection-form'); // 삭제 버튼이 포함된 항목의 부모 요소
 
     if (confirm("해당 보관함을 삭제하시겠습니까?")) {
-      apiModule.DELETE(`/collections/${collectionId}`, function (result) {
+      apiModule.DELETE(`/collections/${collectionId}`, null, function (result) {
         if (result.statusCode === 200) {
           alert("보관함을 삭제하였습니다.");
           collectionElement.remove(); // DOM에서 해당 항목 제거

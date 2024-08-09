@@ -358,7 +358,7 @@
         // 쿠폰 삭제
         $(document).on('click', '.deleteCouponButton', function() {
             const couponId = $(this).data('id');
-            apiModule.DELETE(`/coupons/${couponId}`, function(response) {
+            apiModule.DELETE(`/coupons/${couponId}`,null, function(response) {
                 console.log("Coupon Deleted:", response); // 삭제된 쿠폰 데이터를 콘솔에 출력
                 alert('쿠폰이 성공적으로 삭제되었습니다.');
                 loadCouponStats();

@@ -34,6 +34,7 @@
   <div class="page-title">작성한 리뷰 목록</div>
   <div id="review-box" class="list-group list-group-flush">
   </div>
+  <br/>
   <ul id="pagination-reviews" class="pagination-sm d-flex justify-content-center"></ul>
 </div>
 
@@ -62,7 +63,7 @@
   // 리뷰 HTML 생성 함수
   function generateReviewHtml(review) {
     return `
-    <div class="list-group-item d-flex p-3 review-item" data-review-id="${review.id}">
+    <div class="list-group-item d-flex p-3 mypage-interactive-item" data-review-id="${review.id}">
       <a href="../html/movie-detail.html?movie=${review.movieId}" class="d-flex flex-column flex-grow-1">
         <div class="d-flex align-items-center justify-content-between">
           <div class="me-2 d-flex flex-column">
@@ -171,7 +172,7 @@
 
   function removeReview(reviewId) {
     if (confirm("리뷰를 삭제하시겠습니까?")) {
-      apiModule.DELETE("/reviews/" + reviewId,
+      apiModule.DELETE("/reviews/" + reviewId, null,
               function(result) {
                 // 성공적으로 데이터를 받아왔을 때
                 alert("리뷰가 삭제되었습니다.");
