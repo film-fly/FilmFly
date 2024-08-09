@@ -6,10 +6,13 @@ import com.sparta.filmfly.domain.board.repository.BoardRepository;
 import com.sparta.filmfly.domain.file.service.FileService;
 import com.sparta.filmfly.domain.media.entity.MediaTypeEnum;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
+import com.sparta.filmfly.domain.reaction.dto.ReactionBoardResponseDto;
+import com.sparta.filmfly.domain.reaction.dto.ReactionCheckResponseDto;
 import com.sparta.filmfly.domain.reaction.service.BadService;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
+import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +30,6 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final GoodService goodService;
     private final BadService badService;
-
     private final FileService fileService;
     /**
      * 보드 생성
@@ -51,15 +53,26 @@ public class BoardService {
      * 보드 조회
      */
     @Transactional
-    public BoardResponseDto getBoard(Long boardId) {
-        Board board = boardRepository.findByIdOrElseThrow(boardId);
+    public BoardReactionResponseDto getBoard(UserDetailsImpl userDetails, Long boardId) {
+        Board findBoard = boardRepository.findByIdOrElseThrow(boardId);
+        findBoard.addHits();
 
-        board.addHits();
-        Board savedBoard = boardRepository.save(board);
+        BoardResponseDto board = boardRepository.getBoard(boardId);
+        ReactionCheckResponseDto reactions = ReactionCheckResponseDto.setupFalse();
+        if (userDetails != null) {
+            reactions = boardRepository.checkBoardReaction(userDetails.getUser(), boardId);
+        }
 
-        Long goodCount = goodService.getCountByTypeTypeId(ReactionContentTypeEnum.BOARD,boardId);
-        Long badCount = badService.getCountByTypeTypeId(ReactionContentTypeEnum.BOARD,boardId);
-        return BoardResponseDto.fromEntity(savedBoard,goodCount,badCount);
+        return BoardReactionResponseDto.of(board, reactions);
+
+//        Board board = boardRepository.findByIdOrElseThrow(boardId);
+//
+//        board.addHits();
+//        Board savedBoard = boardRepository.save(board);
+//
+//        Long goodCount = goodService.getCountByTypeTypeId(ReactionContentTypeEnum.BOARD,boardId);
+//        Long badCount = badService.getCountByTypeTypeId(ReactionContentTypeEnum.BOARD,boardId);
+//        return BoardResponseDto.fromEntity(savedBoard, goodCount, badCount);
     }
 
     /**

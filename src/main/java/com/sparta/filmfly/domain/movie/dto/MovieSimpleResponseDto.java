@@ -14,6 +14,7 @@ public class MovieSimpleResponseDto {
     private String originalTitle;
     private String posterPath;
     private String backdropPath;
+    private String overview;
 
     public static MovieSimpleResponseDto fromEntity(Movie movie) {
         return MovieSimpleResponseDto.builder()
@@ -22,6 +23,7 @@ public class MovieSimpleResponseDto {
             .originalTitle(movie.getOriginalTitle())
             .posterPath(movie.getPosterPath())
             .backdropPath(movie.getBackdropPath())
+            .overview(movie.getOverview())
             .build();
     }
 }

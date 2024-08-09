@@ -58,6 +58,7 @@ public class CommentController {
      */
     @GetMapping("/boards/{boardId}/comments")
     public ResponseEntity<DataResponseDto<PageResponseDto<List<CommentResponseDto>>>> gerPageComment(
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
         @PathVariable Long boardId,
         @RequestParam(required = false, defaultValue = "1") int page,
         @RequestParam(required = false, defaultValue = "10") int size,
@@ -65,7 +66,7 @@ public class CommentController {
         @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<CommentResponseDto>> responseDto = commentService.gerPageComment(boardId,pageable);
+        PageResponseDto<List<CommentResponseDto>> responseDto = commentService.gerPageComment(userDetails, boardId, pageable);
         return ResponseUtils.success(responseDto);
     }
 

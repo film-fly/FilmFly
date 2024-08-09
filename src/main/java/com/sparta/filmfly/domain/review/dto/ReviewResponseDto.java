@@ -23,8 +23,31 @@ public class ReviewResponseDto {
     private LocalDateTime createdAt;
     private Long goodCount;
     private Long badCount;
+    private Boolean isGood;
+    private Boolean isBad;
+    private Boolean isBlock;
 
-    public static ReviewResponseDto fromEntity(Review review, Long goodCount, Long badCount) {
+    public ReviewResponseDto(Long id, Long userId, String nickname, String pictureUrl, Float rating,
+        String title, String content, LocalDateTime createdAt, Long goodCount, Long badCount) {
+        this.id = id;
+        this.userId = userId;
+        this.nickname = nickname;
+        this.pictureUrl = pictureUrl;
+        this.rating = rating;
+        this.title = title;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.goodCount = goodCount;
+        this.badCount = badCount;
+        this.isGood = false;
+        this.isBad = false;
+        this.isBlock = false;
+    }
+
+    public static ReviewResponseDto fromEntity(
+        Review review, Long goodCount, Long badCount,
+        Boolean isGood, Boolean isBad, Boolean isBlock
+    ) {
         return ReviewResponseDto.builder()
             .id(review.getId())
             .userId(review.getUser().getId())
@@ -33,13 +56,26 @@ public class ReviewResponseDto {
             .rating(review.getRating())
             .title(review.getTitle())
             .content(review.getContent())
+            .createdAt(review.getCreatedAt())
             .goodCount(goodCount)
             .badCount(badCount)
-            .createdAt(review.getCreatedAt())
+            .isGood(isGood)
+            .isBad(isBad)
+            .isBlock(isBlock)
             .build();
     }
 
+    public static ReviewResponseDto fromEntity(Review review, Long goodCount, Long badCount) {
+        return fromEntity(review, goodCount, badCount, false, false, false);
+    }
+
     public static ReviewResponseDto fromEntity(Review review) {
-        return fromEntity(review, 0L, 0L);
+        return fromEntity(review, 0L, 0L, false, false, false);
+    }
+
+    public void setReactions(ReviewReactionCheckResponseDto dto) {
+        this.isGood = dto.getIsGood();
+        this.isBad = dto.getIsBad();
+        this.isBlock = dto.getIsBlock();
     }
 }
