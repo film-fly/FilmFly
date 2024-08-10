@@ -86,7 +86,7 @@
 
   function unblock(userId, buttonElement) {
     let blockUserId = { "blockedId": userId }; // 객체로 변경
-    apiModule.DELETE_DATA("/blocks", blockUserId, function (result) {
+    apiModule.DELETE("/blocks", blockUserId, function (result) {
       // 삭제할 요소를 찾아서 제거
       $(buttonElement).closest("div[data-block-id='" + userId + "']").remove();
       alert("차단이 해제되었습니다");
