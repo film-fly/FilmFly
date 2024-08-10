@@ -11,9 +11,9 @@ class RandomEntityUserAndBoardAndCommentTest {
             "원지연", "백원하", "이은규", "한호진", "강준모"
     };
     private static final String FIXED_PASSWORD = "$2a$12$rQpJST/20h27oYcjOZ20XOqusfj5O.x2u9W1nnZ9RYdZWYU3IQwxu";
-    public static final int NUMBER_OF_USER_RECORDS = 25; // 생성할 유저 레코드 수
-    public static final int NUMBER_OF_BOARD_RECORDS = 100; // 생성할 보드 레코드 수
-    public static final int NUMBER_OF_COMMENT_RECORDS = 300; // 생성할 댓글 레코드 수
+    public static final int NUMBER_OF_USER_RECORDS = 50; // 생성할 유저 레코드 수
+    public static final int NUMBER_OF_BOARD_RECORDS = 600; // 생성할 보드 레코드 수
+    public static final int NUMBER_OF_COMMENT_RECORDS = 2000; // 생성할 댓글 레코드 수
     public static final int DAYS_BEFORE = 30; // 기준 날짜로부터 몇 일 전
 
     @Test
@@ -209,7 +209,8 @@ class RandomEntityUserAndBoardAndCommentTest {
 
     private String generateRandomKoreanName(Random random) {
         String[] familyNames = {"김", "이", "박", "정", "최", "원", "강", "한", "백"};
-        String[] givenNames = {"가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "지", "연", "준", "모", "원", "하", "은", "규", "호", "진"};
+        String[] givenNames = {"가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "지", "연", "준", "모", "원", "하", "은", "규", "호", "진",
+        "손", "흥", "민", "황", "희", "찬", "이", "강", "인", "김", "민", "재", "유", "재", "석", "김", "종", "국"};
 
         String familyName = familyNames[random.nextInt(familyNames.length)];
         String givenName = givenNames[random.nextInt(givenNames.length)] +
