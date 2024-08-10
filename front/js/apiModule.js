@@ -80,7 +80,6 @@ let apiModule = (function() {
     ajaxRequest('DELETE', url, data, successCallback, errorCallback, options);
   }
 
-
   // 외부에 공개할 API
   return {
     GET: GET,
