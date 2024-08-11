@@ -67,7 +67,7 @@ jobs:
       - name: Deploy to filmfly-test
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ec2-TEST-HOSTNAME.ap-northeast-2.compute.amazonaws.com  # 테스트 서버의 EC2 호스트 이름으로 변경
+          host: ec2-15-165-235-183.ap-northeast-2.compute.amazonaws.com # 테스트 서버의 EC2 호스트 이름
           username: ${{ secrets.AWS_USER }}  # 본 서버와 테스트 서버에 공통으로 사용할 SSH 사용자 이름
           key: ${{ secrets.AWS_KEY }}  # 본 서버와 테스트 서버에 공통으로 사용할 SSH 키
           script: |
