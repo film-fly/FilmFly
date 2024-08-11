@@ -54,4 +54,4 @@ jobs:
             ls -R
 
             # 정확한 경로에서 JAR 파일 실행
-            java -jar build/libs/film-fly-0.0.1-SNAPSHOT.jar --spring.config.location=../../application-test.yml
+            java -jar build/libs/film-fly-0.0.1-SNAPSHOT.jar --spring.config.location=../../application.yml
