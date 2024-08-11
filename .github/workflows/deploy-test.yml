@@ -50,7 +50,8 @@ jobs:
           username: ${{ secrets.AWS_USER }}  # 본 서버와 테스트 서버에 공통으로 사용할 SSH 사용자 이름
           key: ${{ secrets.AWS_KEY }}  # 본 서버와 테스트 서버에 공통으로 사용할 SSH 키
           script: |
-            cd build/libs
-            ls -l  # 빌드된 JAR 파일을 확인하기 위해
-            java -jar film-fly-0.0.1-SNAPSHOT.jar --spring.config.location=../../application-test.yml
-          
+            # 전체 디렉토리 구조 출력
+            ls -R
+
+            # 정확한 경로에서 JAR 파일 실행
+            java -jar build/libs/film-fly-0.0.1-SNAPSHOT.jar --spring.config.location=../../application-test.yml
