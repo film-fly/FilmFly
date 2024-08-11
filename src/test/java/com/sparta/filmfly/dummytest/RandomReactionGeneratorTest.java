@@ -8,8 +8,8 @@ import java.util.*;
 class RandomReactionGeneratorTest {
     private static final List<Long> MOVIE_IDS = RandomReviewGeneratorTest.MOVIE_IDS;
     private static final int NUMBER_OF_REVIEWS = RandomReviewGeneratorTest.NUMBER_OF_REVIEWS; // 리뷰 수
-    private static final int NUMBER_OF_GOOD_REACTIONS = 1100; // 생성할 좋아요 리액션 수
-    private static final int NUMBER_OF_BAD_REACTIONS = 700; // 생성할 싫어요 리액션 수
+    private static final int NUMBER_OF_GOOD_REACTIONS = 5000; // 생성할 좋아요 리액션 수
+    private static final int NUMBER_OF_BAD_REACTIONS = 2000; // 생성할 싫어요 리액션 수
     private static final int NUMBER_OF_USERS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_USER_RECORDS; // 생성할 유저 수
     private static final int NUMBER_OF_BOARDS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_BOARD_RECORDS; // 생성할 보드 수
     private static final int NUMBER_OF_COMMENTS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_COMMENT_RECORDS; // 생성할 댓글 수

@@ -156,6 +156,9 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
             goodCount = tuples.get(0).get(2, Long.class);
             badCount = tuples.get(0).get(3, Long.class);
         }
+        log.info("movieDto: {}", movieDto);
+        log.info("creditDtos: {}", creditDtos);
+        log.info("goodCount: {}, badCount: {}", goodCount, badCount);
 
         return MovieDetailSimpleResponseDto.builder()
             .movie(movieDto)
