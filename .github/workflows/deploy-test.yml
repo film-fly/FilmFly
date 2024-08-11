@@ -9,7 +9,6 @@ on:
       - 350-test-테스트브랜치
 
 env:
-  DOCKER_IMAGE_TAG_NAME: film-fly-test
   AWS_REGION: ap-northeast-2
 
 jobs:
@@ -44,26 +43,6 @@ jobs:
           TMDB_API_AUTHORIZATION: ${{ secrets.TMDB_API_AUTHORIZATION }}
           MEMCACHED_HOST: ${{ secrets.MEMCACHED_HOST }}
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
-
       - name: Deploy to filmfly-test
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -71,39 +50,6 @@ jobs:
           username: ${{ secrets.AWS_USER }}  # 본 서버와 테스트 서버에 공통으로 사용할 SSH 사용자 이름
           key: ${{ secrets.AWS_KEY }}  # 본 서버와 테스트 서버에 공통으로 사용할 SSH 키
           script: |
-            CONTAINER_ID=$(sudo docker ps -q --filter "publish=8080-8080")
-
-            if [ ! -z "$CONTAINER_ID" ]; then
-              sudo docker stop $CONTAINER_ID
-              sudo docker rm $CONTAINER_ID
-            fi
-
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
-            sudo docker run -d -p 8080:8080 --env-file ./test.env \
-            ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
-
-  deploy-front:
-    runs-on: ubuntu-latest
-    env:
-      BUCKET: filmfly-test-front
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Copy files to the production website with the AWS CLI
-        run: |
-          aws s3 sync front/ s3://${{env.BUCKET}}/ --delete
-
-      - name: Clear Cache
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUD_FRONT_TEST_ID }} \
-            --paths "/*"
+            # Gradle 빌드 결과물을 EC2에 복사하고, 해당 서버에서 실행하는 명령어를 작성합니다.
+            # 예: java -jar /path/to/your-app.jar
+            java -jar /path/to/your-app.jar --spring.config.location=./application-test.yml
