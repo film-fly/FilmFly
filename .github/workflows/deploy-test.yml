@@ -35,7 +35,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}  # 테스트용 데이터베이스 비밀번호
           MAIL_ACCOUNT: ${{ secrets.MAIL_ACCOUNT }}
           MAIL_APP_PASSWORD: ${{ secrets.MAIL_APP_PASSWORD }}
-          JWT_SECRET_KEY: ${{ secrets.JWT_TEST_SECRET_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
