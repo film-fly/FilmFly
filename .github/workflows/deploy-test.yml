@@ -9,6 +9,7 @@ on:
       - 350-test-테스트브랜치
 
 env:
+  DOCKER_IMAGE_TAG_NAME: film-fly-test
   AWS_REGION: ap-northeast-2
 
 jobs:
@@ -50,8 +51,12 @@ jobs:
           username: ${{ secrets.AWS_USER }}  # 본 서버와 테스트 서버에 공통으로 사용할 SSH 사용자 이름
           key: ${{ secrets.AWS_KEY }}  # 본 서버와 테스트 서버에 공통으로 사용할 SSH 키
           script: |
-            # 전체 디렉토리 구조 출력
-            ls -R
-
-            # 정확한 경로에서 JAR 파일 실행
-            java -jar build/libs/film-fly-0.0.1-SNAPSHOT.jar --spring.config.location=../../src/main/resources/application.yml
+            CONTAINER_ID=$(sudo docker ps -q --filter "publish=8080-8080")
+            
+            if [ ! -z "$CONTAINER_ID" ]; then
+              sudo docker stop $CONTAINER_ID
+              sudo docker rm $CONTAINER_ID
+            fi
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
+            sudo docker run -d -p 8080:8080 --env-file ./test.env \
+            ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
