@@ -20,13 +20,10 @@ public class MemcachedConfig {
     @Value("${memcached.port}")
     private int memcachedPort;
 
-    long memcachedTimeout = 7000L;  // 7초로 타임아웃 설정
-
-
     @Bean
     public MemcachedClient memcachedClient() throws IOException {
-        ConnectionFactoryBuilder builder = new ConnectionFactoryBuilder()
-                .setOpTimeout(memcachedTimeout); // 타임아웃 설정
+        ConnectionFactoryBuilder builder = new ConnectionFactoryBuilder();
+        // 타임아웃 설정 제거됨
 
         List<InetSocketAddress> addresses = Collections.singletonList(new InetSocketAddress(memcachedHost, memcachedPort));
 
