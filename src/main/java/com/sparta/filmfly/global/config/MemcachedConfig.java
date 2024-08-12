@@ -1,5 +1,6 @@
 package com.sparta.filmfly.global.config;
 
+import lombok.extern.slf4j.Slf4j;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.MemcachedClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,10 +14,9 @@ import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @Configuration
 public class MemcachedConfig {
-
-    private static final Logger logger = LoggerFactory.getLogger(MemcachedConfig.class);
 
     @Value("${memcached.host}")
     private String memcachedHost;
@@ -28,7 +28,7 @@ public class MemcachedConfig {
 
     @Bean
     public MemcachedClient memcachedClient() throws IOException {
-        logger.info("Setting Memcached timeout to {} ms", memcachedTimeout);
+        log.info("Setting Memcached timeout to {} ms", memcachedTimeout);
 
         ConnectionFactoryBuilder builder = new ConnectionFactoryBuilder()
                 .setOpTimeout(memcachedTimeout); // 타임아웃 설정
@@ -39,9 +39,9 @@ public class MemcachedConfig {
         // 연결 성공 여부를 확인하고 로그를 남김
         try {
             client.get("testConnection"); // 간단한 get 요청으로 연결 확인
-            logger.info("Successfully connected to Memcached at {}:{}", memcachedHost, memcachedPort);
+            log.info("Successfully connected to Memcached at {}:{}", memcachedHost, memcachedPort);
         } catch (Exception e) {
-            logger.error("Failed to connect to Memcached at {}:{}", memcachedHost, memcachedPort, e);
+            log.error("Failed to connect to Memcached at {}:{}", memcachedHost, memcachedPort, e);
         }
 
         return client;
