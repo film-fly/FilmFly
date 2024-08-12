@@ -26,7 +26,7 @@ public class MemcachedConfig {
     @Bean
     public MemcachedClient memcachedClient() throws IOException {
         ConnectionFactoryBuilder builder = new ConnectionFactoryBuilder()
-                .setOpTimeout(memcachedTimeout); // 타임아웃 설정
+                .setOpTimeout(memcachedTimeout); // 타임아웃 설정.
 
         List<InetSocketAddress> addresses = Collections.singletonList(new InetSocketAddress(memcachedHost, memcachedPort));
 
