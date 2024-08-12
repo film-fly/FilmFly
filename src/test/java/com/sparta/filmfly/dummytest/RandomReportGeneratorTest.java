@@ -17,21 +17,21 @@ class RandomReportGeneratorTest {
     private static final int NUMBER_OF_COMMENTS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_COMMENT_RECORDS; // 댓글 수
 
     private static final Map<ReportTypeEnum, List<String>> REASONS_BY_TYPE = Map.of(
-            ReportTypeEnum.BOARD, Arrays.asList(
-                    "게시물에 부적절한 내용이 포함되어 있습니다.",
-                    "게시물에서 욕설과 비방이 발견되었습니다.",
-                    "게시물의 정보가 허위로 보입니다."
-            ),
-            ReportTypeEnum.REVIEW, Arrays.asList(
-                    "리뷰의 내용이 과장되거나 사실과 다릅니다.",
-                    "리뷰가 불쾌감을 주며 정확하지 않습니다.",
-                    "리뷰의 일부 내용이 부적절합니다."
-            ),
-            ReportTypeEnum.COMMENT, Arrays.asList(
-                    "댓글에 욕설이나 비방이 포함되어 있습니다.",
-                    "댓글이 스팸 또는 광고로 보입니다.",
-                    "댓글의 내용이 부적절하여 불쾌감을 줍니다."
-            )
+        ReportTypeEnum.BOARD, Arrays.asList(
+            "게시물에 부적절한 내용이 포함되어 있습니다.",
+            "게시물에서 욕설과 비방이 발견되었습니다.",
+            "게시물의 정보가 허위로 보입니다."
+        ),
+        ReportTypeEnum.REVIEW, Arrays.asList(
+            "리뷰의 내용이 과장되거나 사실과 다릅니다.",
+            "리뷰가 불쾌감을 주며 정확하지 않습니다.",
+            "리뷰의 일부 내용이 부적절합니다."
+        ),
+        ReportTypeEnum.COMMENT, Arrays.asList(
+            "댓글에 욕설이나 비방이 포함되어 있습니다.",
+            "댓글이 스팸 또는 광고로 보입니다.",
+            "댓글의 내용이 부적절하여 불쾌감을 줍니다."
+        )
     );
 
     @Test
@@ -48,17 +48,30 @@ class RandomReportGeneratorTest {
         }
 
         // 신고 데이터 생성
-        Set<String> reports = new HashSet<>();
+        List<ReportData> reports = new ArrayList<>();
         generateReports(NUMBER_OF_REPORTS, userIds, reports, random, startDate, secondsBetween);
 
+        // 생성 날짜 기준으로 정렬
+        reports.sort(Comparator.comparing(ReportData::getCreatedAt));
+
         // 결과 출력
-        System.out.println("INSERT INTO report (reporter_id, reported_id, content, type_id, type, reason, created_at, updated_at) VALUES");
-        System.out.println(String.join(",\n", reports) + ";");
-        System.out.println("\n\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO report (reporter_id, reported_id, content, type_id, type, reason, created_at, updated_at) VALUES\n");
+        for (int i = 0; i < reports.size(); i++) {
+            ReportData report = reports.get(i);
+            sb.append(String.format("(%d, %d, '%s', %d, '%s', '%s', '%s', '%s')",
+                report.getReporterId(), report.getReportedId(), report.getContent(), report.getTypeId(), report.getType(), report.getReason(), report.getCreatedAt(), report.getUpdatedAt()));
+
+            if (i < reports.size() - 1) {
+                sb.append(",\n");
+            }
+        }
+        sb.append(";");
+        System.out.println(sb.toString());
     }
 
-    private void generateReports(int numberOfReports, List<Long> userIds, Set<String> reports, Random random,
-                                 LocalDateTime startDate, long secondsBetween) {
+    private void generateReports(int numberOfReports, List<Long> userIds, List<ReportData> reports, Random random,
+        LocalDateTime startDate, long secondsBetween) {
         Set<String> uniqueReports = new HashSet<>();
         while (uniqueReports.size() < numberOfReports) {
             Long reporterId = getRandomElement(userIds, random);
@@ -79,9 +92,8 @@ class RandomReportGeneratorTest {
                     String formattedCreationDate = reportCreationDate.toString().replace("T", " ");
                     String formattedUpdateDate = reportUpdateDate.toString().replace("T", " ");
 
-                    String reportInsertKey = String.format("(%d, %d, '%s', %d, '%s', '%s', '%s', '%s')",
-                            reporterId, reportedId, content, typeId, type, reason, formattedCreationDate, formattedUpdateDate);
-                    reports.add(reportInsertKey);
+                    // ReportData 객체로 신고 기록을 저장
+                    reports.add(new ReportData(reporterId, reportedId, content, typeId, type, reason, formattedCreationDate, formattedUpdateDate));
                 }
             }
         }
@@ -101,6 +113,61 @@ class RandomReportGeneratorTest {
                 return (long) (random.nextInt(NUMBER_OF_COMMENTS) + 1);
             default:
                 throw new IllegalArgumentException("Unknown ReportTypeEnum: " + type);
+        }
+    }
+
+    // 신고 데이터를 담기 위한 내부 클래스
+    static class ReportData {
+        private final long reporterId;
+        private final long reportedId;
+        private final String content;
+        private final long typeId;
+        private final ReportTypeEnum type;
+        private final String reason;
+        private final String createdAt;
+        private final String updatedAt;
+
+        public ReportData(long reporterId, long reportedId, String content, long typeId, ReportTypeEnum type, String reason, String createdAt, String updatedAt) {
+            this.reporterId = reporterId;
+            this.reportedId = reportedId;
+            this.content = content;
+            this.typeId = typeId;
+            this.type = type;
+            this.reason = reason;
+            this.createdAt = createdAt;
+            this.updatedAt = updatedAt;
+        }
+
+        public long getReporterId() {
+            return reporterId;
+        }
+
+        public long getReportedId() {
+            return reportedId;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public long getTypeId() {
+            return typeId;
+        }
+
+        public ReportTypeEnum getType() {
+            return type;
+        }
+
+        public String getReason() {
+            return reason;
+        }
+
+        public String getCreatedAt() {
+            return createdAt;
+        }
+
+        public String getUpdatedAt() {
+            return updatedAt;
         }
     }
 }

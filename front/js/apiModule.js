@@ -4,7 +4,7 @@ const imageUrl = 'https://image.tmdb.org/t/p/w220_and_h330_face';
 let apiModule = (function() {
   // 기본 설정
   let settings = {
-     // baseUrl: 'http://localhost:8080', // 기본 URL, 필요에 따라 변경
+    // baseUrl: 'http://localhost:8080', // 기본 URL, 필요에 따라 변경
     // baseUrl: 'http://3.34.139.188:8080', // 기본 URL, 필요에 따라 변경
     baseUrl: 'https://api.filmfly.life', // 기본 URL, 필요에 따라 변경
   };
@@ -12,14 +12,10 @@ let apiModule = (function() {
   // 내부 함수: Ajax 요청을 보내는 함수
   function ajaxRequest(method, url, data, successCallback, errorCallback, options = {}) {
     let fullUrl = settings.baseUrl + url;
-    $.ajax({
+    let ajaxOptions = {
       url: fullUrl,
       type: method,
-      data: options.processData === false ? data : (data ? JSON.stringify(data) : null),
       headers: settings.headers,
-      contentType: options.contentType !== undefined ? options.contentType : 'application/json',
-      processData: options.processData !== undefined ? options.processData : true,
-      enctype: options.enctype,
       xhrFields: {
         withCredentials: true
       },
@@ -44,7 +40,19 @@ let apiModule = (function() {
         }
         if (errorCallback) {}errorCallback(xhr, status, error);
       }
-    });
+    };
+
+    if (options.processData === false) {
+      ajaxOptions.data = data;
+      ajaxOptions.contentType = options.contentType;
+      ajaxOptions.processData = options.processData;
+    } else {
+      ajaxOptions.data = data ? JSON.stringify(data) : null;
+      ajaxOptions.contentType = 'application/json';
+      ajaxOptions.processData = true;
+    }
+
+    $.ajax(ajaxOptions);
   }
 
   // GET 요청

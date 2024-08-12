@@ -8,8 +8,8 @@ import java.util.*;
 class RandomReactionGeneratorTest {
     private static final List<Long> MOVIE_IDS = RandomReviewGeneratorTest.MOVIE_IDS;
     private static final int NUMBER_OF_REVIEWS = RandomReviewGeneratorTest.NUMBER_OF_REVIEWS; // 리뷰 수
-    private static final int NUMBER_OF_GOOD_REACTIONS = 500; // 생성할 좋아요 리액션 수
-    private static final int NUMBER_OF_BAD_REACTIONS = 200; // 생성할 싫어요 리액션 수
+    private static final int NUMBER_OF_GOOD_REACTIONS = 5000; // 생성할 좋아요 리액션 수
+    private static final int NUMBER_OF_BAD_REACTIONS = 2000; // 생성할 싫어요 리액션 수
     private static final int NUMBER_OF_USERS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_USER_RECORDS; // 생성할 유저 수
     private static final int NUMBER_OF_BOARDS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_BOARD_RECORDS; // 생성할 보드 수
     private static final int NUMBER_OF_COMMENTS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_COMMENT_RECORDS; // 생성할 댓글 수
@@ -25,24 +25,6 @@ class RandomReactionGeneratorTest {
         List<Long> userIds = new ArrayList<>();
         for (long i = 1; i <= NUMBER_OF_USERS; i++) {
             userIds.add(i);
-        }
-
-        // 보드 데이터 생성
-        List<Long> boardIds = new ArrayList<>();
-        for (long i = 1; i <= NUMBER_OF_BOARDS; i++) {
-            boardIds.add(i);
-        }
-
-        // 댓글 데이터 생성
-        List<Long> commentIds = new ArrayList<>();
-        for (long i = 1; i <= NUMBER_OF_COMMENTS; i++) {
-            commentIds.add(i);
-        }
-
-        // 리뷰 ID 생성
-        List<Long> reviewIds = new ArrayList<>();
-        for (long i = 1; i <= NUMBER_OF_REVIEWS; i++) {
-            reviewIds.add(i);
         }
 
         // 리액션 데이터 생성
@@ -67,9 +49,10 @@ class RandomReactionGeneratorTest {
     }
 
     private void generateReactions(int numberOfReactions, List<Long> userIds, ReactionContentTypeEnum[] types,
-                                   Set<String> reactions, Random random) {
+        Set<String> reactions, Random random) {
         Map<Long, Set<String>> userReactionMap = new HashMap<>();
-        for (int i = 0; i < numberOfReactions; i++) {
+
+        while (reactions.size() < numberOfReactions) {
             Long userId = getRandomElement(userIds, random);
             ReactionContentTypeEnum type = getRandomElement(Arrays.asList(types), random);
             Long typeId = null;
@@ -84,18 +67,14 @@ class RandomReactionGeneratorTest {
                 typeId = getRandomElement(getCommentIds(), random);
             }
 
-            String reactionKey = String.format("(%d, '%s', %d)", userId, type.getContentType(), typeId);
+            String reactionKey = String.format("%s_%d", type.getContentType(), typeId);
 
             // 유저가 해당 타입과 ID로 리액션을 한 적이 있는지 확인
-            if (!userReactionMap.containsKey(userId)) {
-                userReactionMap.put(userId, new HashSet<>());
-            }
+            userReactionMap.putIfAbsent(userId, new HashSet<>());
 
-            if (!userReactionMap.get(userId).contains(reactionKey)) {
-                userReactionMap.get(userId).add(reactionKey);
-                reactions.add(reactionKey);
-            } else {
-                i--; // 이미 존재하는 경우 반복
+            if (userReactionMap.get(userId).add(reactionKey)) { // 중복이 아니라면 추가
+                String reactionInsertKey = String.format("(%d, '%s', %d)", userId, type.getContentType(), typeId);
+                reactions.add(reactionInsertKey);
             }
         }
     }

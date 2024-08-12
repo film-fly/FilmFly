@@ -11,6 +11,9 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
           integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
           crossorigin="anonymous"></script>
+  <!-- 부트스트랩 아이콘 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <!-- 공통 헤더 -->
@@ -31,6 +34,30 @@
       word-break: break-all;
       width: 70px;
     }
+
+    .collection-form.active {
+      background-color: #d4edda; /* 활성화된 상태의 배경색 */
+      border-color: #c3e6cb; /* 활성화된 상태의 테두리 색상 */
+    }
+
+    .collection-form.inactive {
+      background-color: #f8d7da; /* 비활성화된 상태의 배경색 */
+      border-color: #f5c6cb; /* 비활성화된 상태의 테두리 색상 */
+      opacity: 0.5; /* 비활성화된 상태의 투명도 */
+    }
+
+    .collection-form input[type="checkbox"][disabled] {
+      cursor: not-allowed; /* 비활성화된 체크박스의 커서 스타일 */
+    }
+
+    .status-message {
+      color: #721c24; /* 메시지 텍스트 색상 */
+      background-color: #f8d7da; /* 메시지 배경색 */
+      border: 1px solid #f5c6cb; /* 메시지 테두리 색상 */
+      padding: 5px; /* 메시지 패딩 */
+      border-radius: 3px; /* 메시지 테두리 둥글기 */
+      margin-top: 10px; /* 메시지 상단 여백 */
+    }
   </style>
 </head>
 <body>
@@ -46,12 +73,8 @@
     </div>
     <hr>
     <div class="d-flex justify-content-between">
-      <button class="btnReaction btn btn-outline-primary fa-regular fa-face-smile fs-4 p-3"
-              data-content-id="" data-type="MOVIE" data-good="true">좋아요
-      </button>
-      <button class="btnReaction btn btn-outline-primary fa-regular fa-face-angry fs-4 p-3"
-              data-content-id="" data-type="MOVIE" data-bad="true">싫어요
-      </button>
+      <button id="btnMovieGood" class="btnReaction btn btn-outline-primary fs-4 p-3" data-content-id="" data-type="MOVIE" data-good="true"><i class="fa-regular fa-face-smile"></i></button>
+      <button id="btnMovieBad" class="btnReaction btn btn-outline-primary fs-4 p-3" data-content-id="" data-type="MOVIE" data-bad="true"><i class="fa-regular fa-face-angry"></i></button>
       <button id="btnFavorite" class="btn btn-outline-primary fa-regular fa-bookmark fs-4 p-3">찜하기
       </button>
       <button class="btn btn-outline-primary fa-regular fa-floppy-disk fs-4 p-3"
@@ -62,10 +85,15 @@
     <hr>
     <div id="credit-box" class="my-4">
       <div class="mb-4">
+        <p>
+          줄거리
+        </p>
         <div id="movie-description"></div>
       </div>
       <div>
-        출연진
+        <p>
+          출연진
+        </p>
         <div id="movie-actor-box" class="d-flex overflow-auto gap-4 pb-1">
         </div>
       </div>
@@ -82,7 +110,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="collectionModalLabel">보관함 추가</h1>
+        <h1 class="modal-title fs-5" id="collectionModalLabel" style="font-weight: bold;">보관함 추가</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -90,6 +118,8 @@
 
         </div>
         <div class="modal-footer">
+          <!-- 보관함 생성 버튼 추가 -->
+          <button id="btnCreateCollection" type="button" class="btn btn-secondary">보관함 생성</button>
           <button id="btnAddCollection" type="button" class="btn btn-primary">추가</button>
         </div>
       </div>
@@ -106,11 +136,11 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <label for="inputBlockReport" class="mb-2">메모</label>
+        <label for="inputBlockReport" class="mb-2" id="reasonLabel">사유</label>
         <textarea id="inputBlockReport" style="width: 100%;height: 200px;"></textarea>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="btnBlockReport">저장</button>
+      <div class="modal-footer d-flex justify-content-center">
+        <button type="button" class="btn btn-primary" id="btnBlockReport" style="width: 35%;">차단하기</button>
       </div>
     </div>
   </div>
@@ -129,126 +159,6 @@
 
     loadReviews(1);
   });
-  const initData = {
-    "movieId": 1,
-    "movieTitle": "영화 제목",
-    "movieRating": 4.2,
-    "movieImageUrl": "../images/logo.png",
-    "reviews": [
-      {
-        "id": 1,
-        "userId": 1,
-        "title": "리뷰 제목 1",
-        "nickname": "닉네임 1",
-        "rating": 3.2,
-        "profileImg": "../images/profileImg.png",
-        "goodId": 3,
-        "badId": null,
-        "isBlock": false
-      },
-      {
-        "id": 2,
-        "userId": 2,
-        "title": "리뷰 제목 2",
-        "nickname": "닉네임 2",
-        "rating": 4.4,
-        "profileImg": "../images/profileImg.png",
-        "goodId": null,
-        "badId": null,
-        "isBlock": true
-      },
-      {
-        "id": 3,
-        "userId": 3,
-        "title": "리뷰 제목 3",
-        "nickname": "닉네임 3",
-        "rating": 2.6,
-        "profileImg": "../images/profileImg.png",
-        "goodId": null,
-        "badId": 3,
-        "isBlock": false
-      },
-      {
-        "id": 4,
-        "userId": 4,
-        "title": "리뷰 제목 4",
-        "nickname": "닉네임 4",
-        "rating": 4.1,
-        "profileImg": "../images/profileImg.png",
-        "goodId": 2,
-        "badId": 2,
-        "isBlock": true
-      }
-    ]
-  }
-
-  initData.reviews.forEach(review => {
-    let reviewHtml = `
-      <div class="profile-box list-group-item d-flex flex-column p-3">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="me-3 d-flex flex-column">
-            <div class="d-flex align-items-center gap-3">
-              <img class="img-profile-size" src="${review.profileImg}" alt="프로필사진">
-              <div>${review.nickname}</div>
-              <div>
-              $.....{review.createdAt}
-              </div>
-              <i class="fa-solid fa-star">${review.rating}</i>
-            </div>
-          </div>
-          <div class="d-flex align-items-center gap-3">
-            <div class="dropstart">
-              <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
-              <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${review.userId}" data-content-id="${review.id}" data-content-type="REVIEW">
-                <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
-                <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
-              </ul>
-            </div>
-            `;
-    const urlParams = new URL(location.href).searchParams;
-    const movieId = urlParams.get('movie');
-    reviewHtml += `
-          </div>
-        </div>
-        <a href="./review-detail.html?movie=${movieId}&review=${review.id}">
-          ${review.title}
-        </a>
-        <div class="mt-3">`;
-
-    if (review.goodId) {
-      reviewHtml += `
-            <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>
-    `;
-    } else {
-      reviewHtml += `
-            <button class="btnReaction btn btn-outline-primary" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>
-    `;
-    }
-    if (review.badId) {
-      reviewHtml += `
-            <button class="btnReaction btn btn-primary" data-content-id="${review.badId}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>
-    `;
-    } else {
-      reviewHtml += `
-            <button class="btnReaction btn btn-outline-primary" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>
-    `;
-    }
-      reviewHtml += `</div></div>
-    `;
-
-    if (review.isBlock) {
-      reviewHtml = `
-      <div class="blocked-review">
-        <button class="btn btn-warning btn-unblock mt-4 mb-3">차단한 사용자입니다. 내용을 보시려면 클릭해주세요.</button>
-        <div class="review-content" style="display: none;">
-          ${reviewHtml}
-        </div>
-      </div>
-    `;
-    }
-
-    // $('#review-box').append(reviewHtml);
-  });
 
   $(document).on('click', '.btn-unblock', function () {
     $(this).next('.review-content').toggle();
@@ -256,72 +166,174 @@
   });
 
   $('#btnFavorite').on('click', function () {
-    const urlParams = new URL(location.href).searchParams;
-    const movieId = urlParams.get('detail');
-
     let isAdding;
     if ($(this).hasClass('btn-outline-primary')) {
-      $(this).removeClass('btn-outline-primary').addClass('btn-primary');
       isAdding = true;
     } else if ($(this).hasClass('btn-primary')) {
-      $(this).removeClass('btn-primary').addClass('btn-outline-primary');
       isAdding = false;
     }
 
-    const data = {
-      movieId: movieId
-    };
-
-    // $.ajax({
-    //   type: isAdding ? 'POST' : 'DELETE',
-    //   url: '/favorites',
-    //   data: JSON.stringify(data),
-    //   contentType: "application/json;charset=utf-8"
-    // })
-    // .done(function (result, status, xhr) {
-    //   if (isAdding) {
-    //     $(this).attr('data-content-id', result.favoriteId);
-    //   } else {
-    //     $(this).removeAttr('data-content-id');
-    //   }
-    // })
-    // .fail(function (xhr, status, er) {
-    //   alert("보관함 저장 실패");
-    // });
+    let favoriteUrl = `/favorites/movies/${movieId}`;
+    if (isAdding) {
+      // 찜 등록
+      if (confirm('이 영화를 찜하시겠습니까?')) {
+        apiModule.POST(favoriteUrl, null, function (result) {
+          $('#btnFavorite').removeClass('btn-outline-primary').addClass('btn-primary');
+        }, function (xhr) {
+          alert(`${xhr.responseJSON.message}`);
+        });
+      }
+    }
+    // 찜 취소
+    else {
+      if (confirm('찜을 취소하시겠습니까?')) {
+        apiModule.DELETE(favoriteUrl, null, function (result) {
+          $('#btnFavorite').removeClass('btn-primary').addClass('btn-outline-primary');
+        }, function (xhr) {
+          alert(`${xhr.responseJSON.message}`);
+        });
+      }
+    }
   });
 
-  const initCollection = [
-    {
-      id: 333,
-      url: '../images/logo.png',
-      title: '영화 보관함 제목',
-      description: '영화 보관함 설명'
-    },
-    {
-      id: 222,
-      url: '../images/logo.png',
-      title: '영화 보관함 제목 zzz',
-      description: '영화 보관함 설명 zzz'
-    },
-  ];
-  initCollection.forEach(collection => {
-    let collectionHtml = `
-    <div class="collection-form d-flex flex-row card mb-3">
-      <div class="d-flex justify-content-center ms-3 me-3">
-        <input type="checkbox" class="checkCollection" aria-label="checkCollection" style="zoom: 1.5" value="${collection.id}">
+  document.addEventListener('DOMContentLoaded', function() {
+    // "보관함 생성" 버튼 클릭 시 페이지 이동
+    document.getElementById('btnCreateCollection').addEventListener('click', function() {
+    // mypage-collection.html로 이동
+    location.href = '../html/create-collection.html';
+    });
+
+    // 추가 버튼 클릭 시 처리 로직
+    document.getElementById('btnAddCollection').addEventListener('click', function() {
+      // 기존 추가 버튼 처리 로직
+    });
+  });
+
+  // jQuery로 모달이 열릴 때 이벤트 핸들링
+  $('#addCollection').on('shown.bs.modal', function () {
+    // 모달이 열리면 보관함 목록을 가져오는 함수를 호출
+    loadCollections(1);
+  });
+
+  // 전역 변수로 collection data를 저장합니다.
+  let collectionsData = {};
+
+  function loadCollections(page) {
+    // API 호출
+    // 페이지 미구현
+    apiModule.GET(`/collections?movieId=${movieId}&page=${page}`, function (result) {
+      if (result.statusCode === 200) {
+        collectionsData = result.data; // 데이터 저장
+        const collections = result.data;
+        $('#collection-box').empty(); // 기존 내용을 비움
+        collections.forEach(collection => {
+          const collectionHtml = generateCollectionHtml(collection);
+          $('#collection-box').append(collectionHtml);
+        });
+
+        if(result.data.totalElements === 0) {
+          $('#collection-box').append('<div class="text-danger">보관함이 존재하지 않습니다</div>');
+        }
+        else {
+          $('#pagination-collection').twbsPagination('destroy');
+          $('#pagination-collection').twbsPagination({
+            totalPages: result.data.totalPages,
+            startPage: page,
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+              loadCollections(page);
+              $('html, body').animate({
+                scrollTop: $('#collection-box').offset().top
+              }, 'fast');
+            }
+          });
+        }
+      } else {
+        alert("영화 보관함을 불러오는 데 실패했습니다.");
+      }
+    }, function () {
+      alert("서버 오류가 발생했습니다.");
+    });
+  }
+
+  function generateCollectionHtml(collection) {
+    // isRegistered가 true이면 비활성화 상태로 설정
+    const statusClass = collection.isRegistered ? 'inactive' : 'active';
+    const statusText = collection.isRegistered ? '<p class="status-message">이미 보관함에 등록되어 있습니다</p>' : '';
+
+    return `
+    <div class="collection-form d-flex flex-row card mb-3 ${statusClass}" style="display: flex; align-items: center; position: relative; transition: box-shadow 0.3s;">
+      <div class="d-flex justify-content-center ms-3 me-3" style="flex-shrink: 0;">
+        <input type="checkbox" class="checkCollection" aria-label="checkCollection" style="zoom: 2; margin: 0; cursor: pointer;" value="${collection.collectionId}" ${collection.isRegistered ? 'disabled' : ''}>
       </div>
-      <div class="collection-img-box">
-        <img src="${collection.url}" class="img-fluid rounded-start" alt="영화 포스터">
+      <div class="collection-img-box" style="flex-shrink: 0; width: 100px; height: 150px; display: flex; align-items: center; justify-content: center;">
+        <img src="../images/logo.png" class="img-fluid rounded-start" alt="영화 포스터" style="max-width: 100%; max-height: 100%; object-fit: cover;">
       </div>
-      <div class="collection-text-box">
+      <div class="collection-text-box" style="flex-grow: 1; padding: 10px;">
         <div>
-          <p class="collection-title">${collection.title}</p>
-          <p class="collection-description">${collection.description}</p>
+          <p class="collection-title" style="font-weight: bold;">${collection.collectionName}</p>
+          <p class="collection-description">${collection.collectionContent}</p>
+          ${statusText} <!-- 상태 메시지 추가 -->
         </div>
+      </div>
+      <div class="text-end" style="position: absolute; top: 10px; right: 10px;">
+        <button class="btn btn-sm btn-danger btn-delete" style="display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px;" data-collection-id="${collection.collectionId}">
+          <i class="bi bi-trash"></i> <!-- Bootstrap Icons 사용 -->
+        </button>
+        <button class="btn btn-sm btn-primary btn-move" style="display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px; margin-left: 5px;" data-collection-id="${collection.collectionId}">
+          <i class="bi bi-arrow-right"></i> <!-- Bootstrap Icons 사용 -->
+        </button>
       </div>
     </div>
   `;
-    $('#collection-box').append(collectionHtml);
+  }
+
+  // 클릭 이벤트를 체크박스와 이미지 모두에 적용
+  $(document).on('click', '.collection-form', function(e) {
+    // 클릭된 요소가 체크박스가 아닌 경우에만
+    if (!$(e.target).is('input.checkCollection')) {
+      const checkbox = $(this).find('input.checkCollection');
+      if (!checkbox.prop('disabled')) {
+        checkbox.prop('checked', !checkbox.prop('checked'));
+      }
+    }
+  });
+
+  $(document).on('click', '.btn-move', function (e) {
+    e.stopPropagation(); // 부모 요소의 클릭 이벤트가 발생하지 않도록
+    const collectionId = $(this).data('collection-id');
+
+    if (collectionId) {
+      const url = `./mypage-collection-detail.html?collectionId=${collectionId}`;
+      window.location.href = url; // 페이지 이동
+    } else {
+      alert("Collection ID가 올바르지 않습니다.");
+    }
+  });
+
+  $(document).on('click', '.btn-delete', function () {
+    const collectionId = $(this).data('collection-id');
+    const collectionElement = $(this).closest('.collection-form'); // 삭제 버튼이 포함된 항목의 부모 요소
+
+    if (confirm("해당 보관함을 삭제하시겠습니까?")) {
+      apiModule.DELETE(`/collections/${collectionId}`, null, function (result) {
+        if (result.statusCode === 200) {
+          alert("보관함을 삭제하였습니다.");
+          collectionElement.remove(); // DOM에서 해당 항목 제거
+        } else {
+          alert("보관함 삭제 실패");
+        }
+      }, function (result) {
+        alert(result.responseJSON.message);
+      });
+    }
+  });
+
+  // 마우스 오버 시 카드 스타일 변경
+  $(document).on('mouseover', '.collection-form', function() {
+    $(this).css('box-shadow', '0 4px 8px rgba(0, 0, 0, 0.2)');
+  }).on('mouseout', '.collection-form', function() {
+    $(this).css('box-shadow', 'none');
   });
 
   $('#btnAddCollection').on('click', function () {
@@ -335,24 +347,50 @@
       return;
     }
 
-    const data = {
-      collections: selectedCollections
-    };
+    // 모든 API 요청을 Promise 배열로 만듭니다.
+    const requests = selectedCollections.map(collectionsId => {
+      const data = {
+        movieId: movieId,
+        collectionId: collectionsId
+      };
 
-    // $.ajax({
-    //   type: 'POST',
-    //   url: '/',  // 서버의 실제 엔드포인트로 변경
-    //   data: JSON.stringify(data),
-    //   contentType: "application/json;charset=utf-8"
-    // })
-    // .done(function (result, status, xhr) {
-    //   alert("보관함에 추가되었습니다.");
-    //   $('#addCollection').hide();
-    // })
-    // .fail(function (xhr, status, er) {
-    //   alert("보관함 추가 실패");
-    // });
+      // apiModule.POST는 Promise를 반환하지 않으므로, 직접 Promise를 생성합니다.
+      return new Promise((resolve, reject) => {
+        apiModule.POST(`/collections/add-movie`, data, function (result) {
+          if (result.statusCode === 200) {
+            resolve(result.message);
+          } else if (result.statusCode === 208) {
+            // collectionsData에서 collectionName을 가져옵니다.
+            // collectionsData의 collectionId와 비교할 때 타입 변환 적용
+            const collectionIdNumber = Number(collectionsId);
+            const collection = collectionsData.find(c => c.collectionId === collectionIdNumber);
+            const collectionName = collection ? collection.collectionName : '이름 없음';
+            reject({ message: `\"${collectionName}\"  ${result.message}` });
+          }
+        }, function (result) {
+          reject({ message: "서버 오류가 발생했습니다." });
+        });
+      });
+    });
+
+    // 모든 요청이 완료될 때까지 기다립니다.
+    Promise.allSettled(requests).then(results => {
+      // 요청 중 하나라도 실패한 경우, 해당 오류 메시지를 표시합니다.
+      const failed = results.some(result => result.status === 'rejected');
+      if (failed) {
+        results.forEach(result => {
+          if (result.status === 'rejected') {
+            alert(result.reason.message);
+          }
+        });
+      } else {
+        alert("선택한 보관함에 영화가 추가되었습니다.");
+      }
+      // 모달 닫기
+      $('#addCollection').modal('hide');
+    });
   });
+
 
   $(document).on('click', '.block-user', function () {
     $('#blockReportModalLabel').text('차단하기');
@@ -368,6 +406,7 @@
   function loadMovie() {
     apiModule.GET(`/movies/${movieId}`,
         function (result, status, xhr) {
+          // 영화 데이터
           let movie = result.data.movie;
           let movieHtml = `
             <div class="d-flex mb-3">
@@ -385,7 +424,8 @@
           $('#movie-box').append(movieHtml);
           $('#movie-description').text(movie.overview);
 
-          let credits = result.data.creditList;
+          // 영화배우 데이터
+          let credits = result.data.credits;
           credits.forEach(credit => {
             let creditHtml = `
               <div>
@@ -395,6 +435,28 @@
           `;
             $('#movie-actor-box').append(creditHtml);
           });
+
+        //   영화에 대한 좋아요, 싫어요, 찜하기 버튼 활성화
+          let reactions = result.data.reactions;
+          if (reactions.isGood) {
+            $('#btnMovieGood').removeClass('btn-outline-primary').addClass('btn-primary');
+          } else {
+            $('#btnMovieGood').removeClass('btn-primary').addClass('btn-outline-primary');
+          }
+          if (reactions.isBad) {
+            $('#btnMovieBad').removeClass('btn-outline-primary').addClass('btn-primary');
+          } else {
+            $('#btnMovieBad').removeClass('btn-primary').addClass('btn-outline-primary');
+          }
+          if (reactions.isFavorite) {
+            $('#btnFavorite').removeClass('btn-outline-primary').addClass('btn-primary');
+          } else {
+            $('#btnFavorite').removeClass('btn-primary').addClass('btn-outline-primary');
+          }
+
+          // 영화 좋아요, 싫어요 수 표시
+          $('#btnMovieGood').find('i').text(' ' + result.data.goodCount);
+          $('#btnMovieBad').find('i').text(' ' + result.data.badCount);
         },
         function (xhr, status, error) {
         });
@@ -431,44 +493,41 @@
               <a href="./review-detail.html?movie=${movieId}&review=${review.id}">
                 ${review.title}
               </a>
-              <div class="mt-3">
-                <button class="btnReaction btn btn-outline-primary" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>
-                <button class="btnReaction btn btn-outline-primary" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>
-              </div>
+              <div class="mt-3">`;
+
+            if (review.isGood) {
+              reviewHtml += `
+                    <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile"> ${review.goodCount}</i></button>
+            `;
+            } else {
+              reviewHtml += `
+                    <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile"> ${review.goodCount}</i></button>
+            `;
+            }
+            if (review.isBad) {
+              reviewHtml += `
+                    <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry"> ${review.badCount}</i></button>
+            `;
+            } else {
+              reviewHtml += `
+                    <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry"> ${review.badCount}</i></button>
+            `;
+            }
+
+              reviewHtml += `</div>
             </div>
             `;
 
-
-            //         if (review.goodId) {
-            //           reviewHtml += `
-            //         <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>
-            // `;
-            //         } else {
-            //           reviewHtml += `
-            //         <button class="btnReaction btn btn-outline-primary" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>
-            // `;
-            //         }
-            //         if (review.badId) {
-            //           reviewHtml += `
-            //         <button class="btnReaction btn btn-primary" data-content-id="${review.badId}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>
-            // `;
-            //         } else {
-            //           reviewHtml += `
-            //         <button class="btnReaction btn btn-outline-primary" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>
-            // `;
-            //         }
-            //         reviewHtml += `<!--</div></div>-->`;
-
-            // if (review.isBlock) {
-            //   reviewHtml = `
-            //   <div class="blocked-review">
-            //     <button class="btn btn-warning btn-unblock mt-4 mb-3">차단한 사용자입니다. 내용을 보시려면 클릭해주세요.</button>
-            //     <div class="review-content" style="display: none;">
-            //       ${reviewHtml}
-            //     </div>
-            //   </div>
-            //   `;
-            // }
+            if (review.isBlock) {
+              reviewHtml = `
+              <div class="blocked-review">
+                <button class="btn btn-warning btn-unblock mt-4 mb-3">차단한 사용자입니다. 내용을 보시려면 클릭해주세요.</button>
+                <div class="review-content" style="display: none;">
+                  ${reviewHtml}
+                </div>
+              </div>
+              `;
+            }
 
             $('#review-box').append(reviewHtml);
           });

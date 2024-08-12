@@ -1,22 +1,26 @@
 package com.sparta.filmfly.domain.review.repository;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sparta.filmfly.domain.block.entity.QBlock;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;
+import com.sparta.filmfly.domain.review.dto.ReviewReactionCheckResponseDto;
 import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
 import com.sparta.filmfly.domain.review.dto.ReviewUserResponseDto;
 import com.sparta.filmfly.domain.review.entity.QReview;
+import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @Repository
@@ -25,6 +29,9 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * 특정 영화에 대한 리뷰 전체 조회
+     */
     @Override
     public PageResponseDto<List<ReviewResponseDto>> getPageReviewByMovieId(Long movieId, Pageable pageable) {
         QReview qReview = QReview.review;
@@ -32,7 +39,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         QBad qBad = QBad.bad;
 
         List<ReviewResponseDto> fetch = queryFactory.select(Projections.constructor(
-            ReviewResponseDto.class,
+                ReviewResponseDto.class,
                 qReview.id,
                 qReview.user.id,
                 qReview.user.nickname,
@@ -82,50 +89,54 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         QGood qGood = QGood.good;
         QBad qBad = QBad.bad;
 
-        List<ReviewUserResponseDto> fetch = queryFactory.select(Projections.constructor(
-                        ReviewUserResponseDto.class,
-                        qReview.id,
-                        qReview.user.id,
-                        qReview.movie.id,
-                        qReview.movie.title,
-                        qReview.user.nickname,
-                        qReview.user.pictureUrl,
-                        qReview.rating,
-                        qReview.title,
-                        qReview.content,
-                        qReview.createdAt,
-                        qGood.id.count().as("goodCount"),
-                        qBad.id.count().as("badCount")
-                ))
-                .from(qReview)
-                .leftJoin(qGood).on(qGood.type.eq(ReactionContentTypeEnum.REVIEW)
-                        .and(qGood.typeId.eq(qReview.id)))
-                .leftJoin(qBad).on(qBad.type.eq(ReactionContentTypeEnum.REVIEW)
-                        .and(qBad.typeId.eq(qReview.id)))
-                .where(qReview.user.id.eq(userId))
-                .groupBy(qReview.id)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(qReview.createdAt.desc())
-                .fetch();
+        List<ReviewUserResponseDto> fetch = queryFactory
+            .select(Projections.constructor(
+                ReviewUserResponseDto.class,
+                qReview.id,
+                qReview.user.id,
+                qReview.movie.id,
+                qReview.movie.title,
+                qReview.user.nickname,
+                qReview.user.pictureUrl,
+                qReview.rating,
+                qReview.title,
+                qReview.content,
+                qReview.createdAt,
+                qGood.id.count().as("goodCount"),
+                qBad.id.count().as("badCount")
+            ))
+            .from(qReview)
+            .leftJoin(qGood).on(qGood.type.eq(ReactionContentTypeEnum.REVIEW)
+                .and(qGood.typeId.eq(qReview.id)))
+            .leftJoin(qBad).on(qBad.type.eq(ReactionContentTypeEnum.REVIEW)
+                .and(qBad.typeId.eq(qReview.id)))
+            .where(qReview.user.id.eq(userId))
+            .groupBy(qReview.id)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .orderBy(qReview.createdAt.desc())
+            .fetch();
 
         Long total = queryFactory
-                .select(qReview.count())
-                .from(qReview)
-                .where(qReview.user.id.eq(userId))
-                .fetchOne();
+            .select(qReview.count())
+            .from(qReview)
+            .where(qReview.user.id.eq(userId))
+            .fetchOne();
 
         PageImpl<ReviewUserResponseDto> page = new PageImpl<>(fetch, pageable, total);
 
         return PageResponseDto.<List<ReviewUserResponseDto>>builder()
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .currentPage(page.getNumber() + 1)
-                .pageSize(page.getSize())
-                .data(fetch)
-                .build();
+            .totalElements(page.getTotalElements())
+            .totalPages(page.getTotalPages())
+            .currentPage(page.getNumber() + 1)
+            .pageSize(page.getSize())
+            .data(fetch)
+            .build();
     }
 
+    /**
+     * 특정 영화의 평균 평점 조회
+     */
     @Override
     public Float getAverageRatingByMovieId(Long movieId) {
         QReview qReview = QReview.review;
@@ -158,46 +169,87 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         LocalDateTime oneMonthAgo = now.minusMonths(1);
 
         List<ReviewUserResponseDto> fetch = queryFactory.select(Projections.constructor(
-                        ReviewUserResponseDto.class,
-                        qReview.id,
-                        qReview.user.id,
-                        qReview.movie.id,
-                        qReview.movie.title,
-                        qReview.user.nickname,
-                        qReview.user.pictureUrl,
-                        qReview.rating,
-                        qReview.title,
-                        qReview.content,
-                        qReview.createdAt,
-                        qGood.id.count().as("goodCount"),
-                        qBad.id.count().as("badCount")
-                ))
-                .from(qReview)
-                .leftJoin(qGood).on(qGood.type.eq(ReactionContentTypeEnum.REVIEW)
-                        .and(qGood.typeId.eq(qReview.id)))
-                .leftJoin(qBad).on(qBad.type.eq(ReactionContentTypeEnum.REVIEW)
-                        .and(qBad.typeId.eq(qReview.id)))
-                .where(qReview.createdAt.after(oneMonthAgo))
-                .groupBy(qReview.id)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(qReview.createdAt.desc())
-                .fetch();
+                ReviewUserResponseDto.class,
+                qReview.id,
+                qReview.user.id,
+                qReview.movie.id,
+                qReview.movie.title,
+                qReview.user.nickname,
+                qReview.user.pictureUrl,
+                qReview.rating,
+                qReview.title,
+                qReview.content,
+                qReview.createdAt,
+                qGood.id.count().as("goodCount"),
+                qBad.id.count().as("badCount")
+            ))
+            .from(qReview)
+            .leftJoin(qGood).on(qGood.type.eq(ReactionContentTypeEnum.REVIEW)
+                .and(qGood.typeId.eq(qReview.id)))
+            .leftJoin(qBad).on(qBad.type.eq(ReactionContentTypeEnum.REVIEW)
+                .and(qBad.typeId.eq(qReview.id)))
+            .where(qReview.createdAt.after(oneMonthAgo))
+            .groupBy(qReview.id)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .orderBy(qReview.createdAt.desc())
+            .fetch();
 
         Long total = queryFactory
-                .select(qReview.count())
-                .from(qReview)
-                .where(qReview.createdAt.after(oneMonthAgo))
-                .fetchOne();
+            .select(qReview.count())
+            .from(qReview)
+            .where(qReview.createdAt.after(oneMonthAgo))
+            .fetchOne();
 
         PageImpl<ReviewUserResponseDto> page = new PageImpl<>(fetch, pageable, total);
 
         return PageResponseDto.<List<ReviewUserResponseDto>>builder()
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .currentPage(page.getNumber() + 1)
-                .pageSize(page.getSize())
-                .data(fetch)
-                .build();
+            .totalElements(page.getTotalElements())
+            .totalPages(page.getTotalPages())
+            .currentPage(page.getNumber() + 1)
+            .pageSize(page.getSize())
+            .data(fetch)
+            .build();
+    }
+
+    /**
+     * 리뷰 조회 시 해당 사용자가 리뷰에 대해 좋아요, 싫어요, 차단을 눌렀는지 확인하는 코드
+     */
+    @Override
+    public List<ReviewReactionCheckResponseDto> checkReviewReaction(User user, List<Long> reviewIds) {
+        QReview qReview = QReview.review;
+        QGood qGood = QGood.good;
+        QBad qBad = QBad.bad;
+        QBlock qBlock = QBlock.block;
+
+        List<ReviewReactionCheckResponseDto> fetch = queryFactory
+            .select(
+                Projections.constructor(
+                    ReviewReactionCheckResponseDto.class,
+                    qReview.id,
+                    qGood.id.isNotNull(),
+                    qBad.id.isNotNull(),
+                    qBlock.id.isNotNull()
+                ))
+            .from(qReview)
+            .leftJoin(qGood).on(
+                qGood.user.eq(user)
+                    .and(qReview.id.eq(qGood.typeId))
+                    .and(qGood.type.eq(ReactionContentTypeEnum.REVIEW))
+            )
+            .leftJoin(qBad).on(
+                qBad.user.eq(user)
+                    .and(qReview.id.eq(qBad.typeId))
+                    .and(qBad.type.eq(ReactionContentTypeEnum.REVIEW))
+            )
+            .leftJoin(qBlock).on(
+                qBlock.blocker.eq(user)
+                    .and(qReview.user.id.eq(qBlock.blocked.id))
+            )
+            .where(qReview.id.in(reviewIds))
+            .orderBy(qReview.createdAt.desc())
+            .fetch();
+
+        return fetch;
     }
 }

@@ -16,6 +16,7 @@
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="../js/apiModule.js"></script>
+  <script src="../js/jquery.twbsPagination.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -27,54 +28,77 @@
 
   <div>차단한 사용자 목록</div>
   <div id="block-box" class="list-group list-group-flush">
+    <ul id="pagination-blocks" class="pagination-sm d-flex justify-content-center"></ul>
   </div>
 </div>
-<script>
-  const blocks = [
-    {
-      "id": 1,
-      "description": "차단 사유1",
-      "userId": 1,
-      "nickname": "닉네임 1"
-    },
-    {
-      "id": 2,
-      "description": "차단 사유2",
-      "userId": 2,
-      "nickname": "닉네임 2"
-    },
-    {
-      "id": 3,
-      "description": "차단 사유3",
-      "userId": 3,
-      "nickname": "닉네임 3"
-    },
-    {
-      "id": 4,
-      "description": "차단 사유4",
-      "userId": 4,
-      "nickname": "닉네임 4"
-    }
-  ]
 
-  blocks.forEach(block => {
-    const blockHtml = `
-      <div class="list-group-item d-flex p-3" data-block-id="${block.id}">
-        <div class="d-flex flex-column flex-grow-1 gap-3">
-          <div>${block.nickname}</div>
-          <div>${block.description}</div>
-        </div>
-        <div class="ms-3">
-          <button type="button" class="btn btn-primary" onclick="unblock(${block.userId})">해제</button>
-        </div>
-      </div>
-    `;
-    $('#block-box').append(blockHtml);
+<script>
+  $(document).ready(function () {
+    loadBlocks(1);
   });
 
-  function unblock(userId) {
-    alert('차단 해제할 사용자 아이디: ' + userId);
+  function loadBlocks(page) {
+    //API 호출
+    apiModule.GET("/blocks?page=" + page, function (result) {
+      if (result.data && result.data.users) {
+        const blocks = result.data.users;
+        $('#block-box').empty();
+        blocks.forEach(block => {
+          const blockHtml = `
+            <div class="list-group-item d-flex p-3" data-block-id="${block.id}">
+              <div class="d-flex flex-column flex-grow-1 gap-3">
+                <div>${block.nickname}</div>
+                <div>${block.memo}</div>
+              </div>
+              <div class="ms-3">
+                <button type="button" class="btn btn-primary" onclick="confirmUnblock(${block.id}, this)">해제</button>
+              </div>
+            </div>
+          `;
+          $('#block-box').append(blockHtml);
+        });
+
+        $('#pagination-blocks').twbsPagination('destroy');
+        $('#pagination-blocks').twbsPagination({
+          totalPages: result.data.totalPages,
+          startPage: page,
+          initiateStartPageClick: false,
+          onPageClick: function (event, page) {
+            loadBlocks(page);
+            $('html, body').animate({
+              scrollTop: $('#block-box').offset().top
+            }, 'fast');
+          }
+        });
+      } else {
+        alert("차단 데이터를 불러오는 데 실패했습니다.");
+      }
+    }, function () {
+      alert("API 호출 실패");
+    });
+  }
+
+  function confirmUnblock(userId, buttonElement) {
+    if (confirm("해당 유저를 차단 목록에서 삭제하시겠습니까?")) {
+      unblock(userId, buttonElement);
+    }
+  }
+
+  function unblock(userId, buttonElement) {
+    let blockUserId = { "blockedId": userId }; // 객체로 변경
+    apiModule.DELETE("/blocks", blockUserId, function (result) {
+      // 삭제할 요소를 찾아서 제거
+      $(buttonElement).closest("div[data-block-id='" + userId + "']").remove();
+      alert("차단이 해제되었습니다");
+    }, function () {
+      alert("차단 해제 실패");
+    });
   }
 </script>
+
+<!-- 부트 스트랩 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-p53gCrZMH7y9K3A1/puuV4M7T7zrRX94caT9i7neZmQxHDhyb2nkvOY3Uwe1F4Tv"
+        crossorigin="anonymous"></script>
 </body>
 </html>

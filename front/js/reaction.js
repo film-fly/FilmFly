@@ -23,22 +23,8 @@ $(document).ready(function() {
 // 좋아요 or 싫어요를 클릭했을 때
 $(document).on('click', '.btnReaction', function () {
   let button = $(this);
-  let isAdding;
-  let isGood;
-
-  if (button.hasClass('btn-outline-primary')) {
-    button.removeClass('btn-outline-primary').addClass('btn-primary');
-    isAdding = true;
-  } else if (button.hasClass('btn-primary')) {
-    button.removeClass('btn-primary').addClass('btn-outline-primary');
-    isAdding = false;
-  }
-
-  if (button.attr('data-good')) {
-    isGood = true;
-  } else if (button.attr('data-bad')) {
-    isGood = false;
-  }
+  let isAdding = button.hasClass('btn-outline-primary');
+  let isGood = button.attr('data-good') ? true : false;
 
   let contentType = button.attr('data-type');
   let contentId = button.attr('data-content-id');
@@ -47,29 +33,39 @@ $(document).on('click', '.btnReaction', function () {
     contentType: contentType
   };
 
-  let test = '';
-  isAdding ? test += 'POST : ' : test += 'DELETE : ';
-  isGood ? test += '/goods' : test += '/bads';
-  alert(test + '\n' + JSON.stringify(data));
+  if (!contentId || !contentType) {
+    alert(JSON.stringify(data) + '\n컨텐츠가 부족함');
+    return;
+  }
 
-  // $.ajax({
-  //   type: isAdding ? 'POST' : 'DELETE',
-  //   url: isGood ? '/goods' : '/bads',
-  //   data: JSON.stringify(data),
-  //   contentType: "application/json;charset=utf-8"
-  // })
-  // .done(function (result, status, xhr) {
-  //   let reactionType = '';
-  //   isGood ? reactionType = 'data-good-id' : reactionType = 'data-bad-id';
-  //   if (isAdding) {
-  //     button.attr(reactionType, result.goodId);
-  //   } else {
-  //     button.removeAttr(reactionType);
-  //   }
-  // })
-  // .fail(function (xhr, status, er) {
-  //   alert("리액션 저장 실패");
-  // });
+  // 좋아요, 싫어요 추가
+  let reactionUrl = isGood ? '/goods' : '/bads';
+  let text = isGood ? '좋아요' : '싫어요';
+
+  let reactionCount = button.find('i').text().trim();
+  if (isAdding) {
+    text += '를 등록하시겠습니까?';
+    if (confirm(text)) {
+      apiModule.POST(reactionUrl, data, function (result) {
+        button.removeClass('btn-outline-primary').addClass('btn-primary');
+        button.find('i').text(' ' + ++reactionCount);
+      }, function (xhr) {
+        button.removeClass('btn-primary').addClass('btn-outline-primary');
+        alert(xhr.responseJSON.message);
+      });
+    }
+  } else {
+    text += '를 취소하시겠습니까?';
+    if (confirm(text)) {
+      apiModule.DELETE(reactionUrl, data, function (result) {
+        button.removeClass('btn-primary').addClass('btn-outline-primary');
+        button.find('i').text(' ' + --reactionCount);
+      }, function (xhr) {
+        button.removeClass('btn-outline-primary').addClass('btn-primary');
+        alert(xhr.responseJSON.message);
+      });
+    }
+  }
 });
 
 // 신고 할 content id 초기화
@@ -92,9 +88,12 @@ $(document).ready(function() {
     $('#blockReportModal').removeAttr('data-block');
     $('#blockReportModal').removeAttr('data-report');
     selectedUserId = $(this).closest('.dropdown-menu').attr('data-user-id');
+    selectedContentId = $(this).closest('.dropdown-menu').attr('data-content-id');
+    selectedContentType = $(this).closest('.dropdown-menu').attr('data-content-type');
 
     $('#inputBlockReport').val(''); // 텍스트 지우기
     $('#blockReportModalLabel').text('차단하기');
+    $('#reasonLabel').text('차단 사유');
     $('#btnBlockReport').text('차단하기');
     $('#blockReportModal').attr('data-block', true);
     $('#blockReportModal').modal('show'); // 모달 표시
@@ -111,6 +110,7 @@ $(document).ready(function() {
 
     $('#inputBlockReport').val(''); // 텍스트 지우기
     $('#blockReportModalLabel').text('신고하기');
+    $('#reasonLabel').text('신고 사유');
     $('#btnBlockReport').text('신고하기');
     $('#blockReportModal').attr('data-report', true);
     $('#blockReportModal').modal('show'); // 모달 표시
@@ -126,21 +126,51 @@ $(document).ready(function() {
         "memo": memo
       };
 
+      //alert('차단하기\nuser id : ' + selectedUserId + '\ncontent id : ' + selectedContentId + '\ncontent type : ' + selectedContentType);
       blockUser(data);
     } else if ($('#blockReportModal').attr('data-report')) {
-      alert('신고하기\nuser id : ' + selectedUserId + '\ncontent id : '
-          + selectedContentId + '\ncontent type : ' + selectedContentType);
+      let reason = $('#inputBlockReport').val();
+
+      let data = {
+        "reportedId": selectedUserId,
+        "typeId": selectedContentId,
+        "type": selectedContentType.toUpperCase(),
+        "reason": reason
+      };
+
+      //alert('신고하기\nuser id : ' + selectedUserId + '\ncontent id : ' + selectedContentId + '\ncontent type : ' + selectedContentType);
+      reportUser(data);
     } else {
       alert('신고, 차단 안됨');
     }
+
   });
 });
 
 function blockUser(data) {
   apiModule.POST('/blocks', data,
-      function () {
-        location.reload();
+      function (result) {
+        if (result.statusCode === 200) {
+          console.log(result);
+          alert("선택한 유저를 차단했습니다.");
+          location.reload();
+        }
       },
-      function () {
+      function (result) {
+        alert(result.responseJSON.message);
+      });
+}
+
+function reportUser(data) {
+  apiModule.POST('/reports', data,
+      function (result) {
+        if (result.statusCode === 200) {
+          console.log(result);
+          alert("신고가 접수되었습니다.");
+          location.reload();
+        }
+      },
+      function (result) {
+        console.log("fail : " + result);
       });
 }

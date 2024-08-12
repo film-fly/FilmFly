@@ -2,13 +2,17 @@ package com.sparta.filmfly.domain.board.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.filmfly.domain.board.entity.Board;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import lombok.ToString;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@ToString
 public class BoardResponseDto {
     private Long id;
     private Long userId;

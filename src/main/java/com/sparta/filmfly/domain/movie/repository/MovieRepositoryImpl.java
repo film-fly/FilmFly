@@ -1,15 +1,26 @@
 package com.sparta.filmfly.domain.movie.repository;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sparta.filmfly.domain.favorite.entity.QFavorite;
+import com.sparta.filmfly.domain.movie.dto.CreditSimpleResponseDto;
+import com.sparta.filmfly.domain.movie.dto.MovieCreditResponseDto;
+import com.sparta.filmfly.domain.movie.dto.MovieDetailSimpleResponseDto;
+import com.sparta.filmfly.domain.movie.dto.MovieReactionCheckResponseDto;
 import com.sparta.filmfly.domain.movie.dto.MovieReactionsResponseDto;
 import com.sparta.filmfly.domain.movie.dto.MovieSearchCond;
+import com.sparta.filmfly.domain.movie.dto.MovieSimpleResponseDto;
 import com.sparta.filmfly.domain.movie.entity.Movie;
+import com.sparta.filmfly.domain.movie.entity.QCredit;
 import com.sparta.filmfly.domain.movie.entity.QMovie;
+import com.sparta.filmfly.domain.movie.entity.QMovieCredit;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;
+import com.sparta.filmfly.domain.user.entity.User;
+import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
 import java.time.LocalDate;
 import java.util.List;
@@ -88,6 +99,111 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
             .pageSize(page.getSize())
             .data(fetch)
             .build();
+    }
+
+    /**
+     * 영화 단일 조회
+     */
+    @Override
+    public MovieDetailSimpleResponseDto getMovie(Long movieId) {
+        QMovie qMovie = QMovie.movie;
+        QCredit qCredit = QCredit.credit;
+        QMovieCredit qMovieCredit = QMovieCredit.movieCredit;
+        QGood qGood = QGood.good;
+        QBad qBad = QBad.bad;
+
+        List<Tuple> tuples = queryFactory.select(
+                Projections.constructor(MovieSimpleResponseDto.class,
+                    qMovie.id,
+                    qMovie.title,
+                    qMovie.originalTitle,
+                    qMovie.posterPath,
+                    qMovie.backdropPath,
+                    qMovie.overview
+                ),
+                Projections.constructor(CreditSimpleResponseDto.class,
+                    qCredit.id,
+                    qCredit.name,
+                    qCredit.originalName,
+                    qCredit.profilePath
+                ),
+                qGood.id.count().as("goodCount"),
+                qBad.id.count().as("badCount")
+            )
+            .from(qMovieCredit)
+            .join(qMovie).on(qMovieCredit.movie.id.eq(qMovie.id))
+            .join(qCredit).on(qMovieCredit.credit.id.eq(qCredit.id))
+            .leftJoin(qGood).on(qGood.typeId.eq(qMovie.id)
+                .and(qGood.type.eq(ReactionContentTypeEnum.MOVIE))
+            )
+            .leftJoin(qBad).on(qBad.typeId.eq(qMovie.id)
+                .and(qBad.type.eq(ReactionContentTypeEnum.MOVIE))
+            )
+            .where(qMovie.id.eq(movieId))
+            .groupBy(qMovie.id, qCredit.id)
+            .fetch();
+
+        MovieSimpleResponseDto movieDto = null;
+        List<CreditSimpleResponseDto> creditDtos = null;
+        Long goodCount = null;
+        Long badCount = null;
+
+        if (!tuples.isEmpty()) {
+            movieDto = tuples.get(0).get(0, MovieSimpleResponseDto.class);
+            creditDtos = tuples.stream()
+                .map(tuple -> tuple.get(1, CreditSimpleResponseDto.class))
+                .toList();
+            goodCount = tuples.get(0).get(2, Long.class);
+            badCount = tuples.get(0).get(3, Long.class);
+        }
+        log.info("movieDto: {}", movieDto);
+        log.info("creditDtos: {}", creditDtos);
+        log.info("goodCount: {}, badCount: {}", goodCount, badCount);
+
+        return MovieDetailSimpleResponseDto.builder()
+            .movie(movieDto)
+            .credits(creditDtos)
+            .goodCount(goodCount)
+            .badCount(badCount)
+            .build();
+    }
+
+    /**
+     * 영화 단일 조회 시 해당 사용자가 영화를 좋아요, 싫어요, 찜하기를 눌렀는지 확인하는 코드
+     */
+    @Override
+    public MovieReactionCheckResponseDto checkMovieReaction(User user, Long movieId) {
+        QMovie qMovie = QMovie.movie;
+        QGood qGood = QGood.good;
+        QBad qBad = QBad.bad;
+        QFavorite qFavorite = QFavorite.favorite;
+
+        MovieReactionCheckResponseDto fetchOne = queryFactory.select(
+                Projections.constructor(
+                    MovieReactionCheckResponseDto.class,
+                    qGood.id.isNotNull(),
+                    qBad.id.isNotNull(),
+                    qFavorite.id.isNotNull()
+                ))
+            .from(qMovie)
+            .leftJoin(qGood).on(
+                qGood.user.eq(user)
+                    .and(qMovie.id.eq(qGood.typeId))
+                    .and(qGood.type.eq(ReactionContentTypeEnum.MOVIE))
+            )
+            .leftJoin(qBad).on(
+                qBad.user.eq(user)
+                    .and(qMovie.id.eq(qBad.typeId))
+                    .and(qBad.type.eq(ReactionContentTypeEnum.MOVIE))
+            )
+            .leftJoin(qFavorite).on(
+                qFavorite.user.eq(user)
+                    .and(qMovie.id.eq(qFavorite.movie.id))
+            )
+            .where(qMovie.id.eq(movieId))
+            .fetchOne();
+
+        return fetchOne;
     }
 
     private BooleanExpression searchPredicate(MovieSearchCond searchOptions) {

@@ -12,13 +12,13 @@ class RandomBlockGeneratorTest {
     private static final int DAYS_BEFORE = RandomEntityUserAndBoardAndCommentTest.DAYS_BEFORE; // 기준 날짜로부터 몇 일 전
 
     private static final List<String> MEMOS = Arrays.asList(
-            "스팸 메시지 전송",
-            "불쾌한 언행",
-            "비매너 행동",
-            "거래 사기",
-            "욕설 사용",
-            "광고성 메시지",
-            "허위 정보 제공"
+        "스팸 메시지 전송",
+        "불쾌한 언행",
+        "비매너 행동",
+        "거래 사기",
+        "욕설 사용",
+        "광고성 메시지",
+        "허위 정보 제공"
     );
 
     @Test
@@ -35,19 +35,32 @@ class RandomBlockGeneratorTest {
         }
 
         // 차단 데이터 생성
-        Set<String> blocks = new HashSet<>();
+        List<BlockData> blocks = new ArrayList<>();
         generateBlocks(NUMBER_OF_BLOCKS, userIds, blocks, random, startDate, secondsBetween);
 
+        // 생성 날짜 기준으로 정렬
+        blocks.sort(Comparator.comparing(BlockData::getCreatedAt));
+
         // 결과 출력
-        System.out.println("INSERT INTO block (blocker_id, blocked_id, memo, created_at, updated_at) VALUES");
-        System.out.println(String.join(",\n", blocks) + ";");
-        System.out.println("\n\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO block (blocker_id, blocked_id, memo, created_at, updated_at) VALUES\n");
+        for (int i = 0; i < blocks.size(); i++) {
+            BlockData block = blocks.get(i);
+            sb.append(String.format("(%d, %d, '%s', '%s', '%s')",
+                block.getBlockerId(), block.getBlockedId(), block.getMemo(), block.getCreatedAt(), block.getUpdatedAt()));
+
+            if (i < blocks.size() - 1) {
+                sb.append(",\n");
+            }
+        }
+        sb.append(";");
+        System.out.println(sb.toString());
     }
 
-    private void generateBlocks(int numberOfBlocks, List<Long> userIds, Set<String> blocks, Random random,
-                                LocalDateTime startDate, long secondsBetween) {
+    private void generateBlocks(int numberOfBlocks, List<Long> userIds, List<BlockData> blocks, Random random,
+        LocalDateTime startDate, long secondsBetween) {
         Set<String> uniqueBlocks = new HashSet<>();
-        while (uniqueBlocks.size() < numberOfBlocks) {
+        while (blocks.size() < numberOfBlocks) {
             Long blockerId = getRandomElement(userIds, random);
             Long blockedId = getRandomElement(userIds, random);
 
@@ -63,9 +76,8 @@ class RandomBlockGeneratorTest {
                     String formattedCreationDate = blockCreationDate.toString().replace("T", " ");
                     String formattedUpdateDate = blockUpdateDate.toString().replace("T", " ");
 
-                    String blockInsertKey = String.format("(%d, %d, '%s', '%s', '%s')",
-                            blockerId, blockedId, memo, formattedCreationDate, formattedUpdateDate);
-                    blocks.add(blockInsertKey);
+                    // BlockData 객체로 차단 기록을 저장
+                    blocks.add(new BlockData(blockerId, blockedId, memo, formattedCreationDate, formattedUpdateDate));
                 }
             }
         }
@@ -73,5 +85,42 @@ class RandomBlockGeneratorTest {
 
     private <T> T getRandomElement(List<T> list, Random random) {
         return list.get(random.nextInt(list.size()));
+    }
+
+    // Block 데이터를 담기 위한 내부 클래스
+    static class BlockData {
+        private final long blockerId;
+        private final long blockedId;
+        private final String memo;
+        private final String createdAt;
+        private final String updatedAt;
+
+        public BlockData(long blockerId, long blockedId, String memo, String createdAt, String updatedAt) {
+            this.blockerId = blockerId;
+            this.blockedId = blockedId;
+            this.memo = memo;
+            this.createdAt = createdAt;
+            this.updatedAt = updatedAt;
+        }
+
+        public long getBlockerId() {
+            return blockerId;
+        }
+
+        public long getBlockedId() {
+            return blockedId;
+        }
+
+        public String getMemo() {
+            return memo;
+        }
+
+        public String getCreatedAt() {
+            return createdAt;
+        }
+
+        public String getUpdatedAt() {
+            return updatedAt;
+        }
     }
 }
