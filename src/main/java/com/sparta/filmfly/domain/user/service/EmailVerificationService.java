@@ -5,6 +5,7 @@ import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
 import com.sparta.filmfly.global.exception.custom.detail.LimitedException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.spy.memcached.MemcachedClient;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmailVerificationService {
 
     private final MemcachedClient memcachedClient;
@@ -36,7 +38,7 @@ public class EmailVerificationService {
         // 전송 횟수 확인
         String sendCountKey = email + ":sendCount";
         Integer sendCount = (Integer) memcachedClient.get(sendCountKey);
-
+        log.info("sendCount:"+sendCount);
         if (sendCount == null) {
             sendCount = 0;
         }
