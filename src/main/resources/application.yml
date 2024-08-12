@@ -54,9 +54,10 @@ spring:
 
 logging.level:
   root: info
-#  org.hibernate.SQL: debug
+#  org.hibernate:SQL: debug
 #  org.springframework.security: debug
 #  org.springframework.web: debug
+#  org.springframework.jdbc: debug
 
 # 혹시나 에러가 뜨면 "_"에서 "-"으로 바꾸기
 
@@ -76,3 +77,6 @@ cloud:
       static: ap-northeast-2
     s3:
       bucket: filmfly-backend
+    redis:
+      host: ${REDIS_HOST}
+      port: 6379

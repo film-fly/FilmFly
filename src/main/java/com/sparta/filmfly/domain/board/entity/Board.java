@@ -58,6 +58,10 @@ public class Board extends TimeStampEntity {
         hits += 1;
     }
 
+    public void updateHits(Long hits) {
+        this.hits = hits;
+    }
+
     /**
      * 요청한 유저가 해당 보드의 소유주인지 확인
      */

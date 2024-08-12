@@ -40,4 +40,8 @@ public class BoardResponseDto {
                 .hits(board.getHits())
                 .build();
     }
+
+    public void updateHits(Long hits) {
+        this.hits = hits;
+    }
 }

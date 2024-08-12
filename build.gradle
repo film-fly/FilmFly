@@ -66,6 +66,8 @@ dependencies {
     // JAXB 라이브러리 (XML 데이터를 Java 객체로 변환하거나 그 반대로 변환하는 기능)  CustomMultipartFile에 사용
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+    // Redis (Lettuce)
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {

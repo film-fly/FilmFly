@@ -6,7 +6,6 @@ import com.sparta.filmfly.domain.board.repository.BoardRepository;
 import com.sparta.filmfly.domain.file.service.FileService;
 import com.sparta.filmfly.domain.media.entity.MediaTypeEnum;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
-import com.sparta.filmfly.domain.reaction.dto.ReactionBoardResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionCheckResponseDto;
 import com.sparta.filmfly.domain.reaction.service.BadService;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
@@ -14,23 +13,30 @@ import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardService {
 
+    private static final String BOARD_HITS_PREFIX = "board:hits:";
+
     private final BoardRepository boardRepository;
     private final GoodService goodService;
     private final BadService badService;
     private final FileService fileService;
+    private final RedisTemplate<String, String> redisTemplate;
+
     /**
      * 보드 생성
      */
@@ -52,18 +58,20 @@ public class BoardService {
     /**
      * 보드 조회
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public BoardReactionResponseDto getBoard(UserDetailsImpl userDetails, Long boardId) {
         Board findBoard = boardRepository.findByIdOrElseThrow(boardId);
-        findBoard.addHits();
 
-        BoardResponseDto board = boardRepository.getBoard(boardId);
+        Long hits = plusBoardHits(findBoard);
+
+        BoardResponseDto boardDto = boardRepository.getBoard(boardId);
+        boardDto.updateHits(hits);
         ReactionCheckResponseDto reactions = ReactionCheckResponseDto.setupFalse();
         if (userDetails != null) {
             reactions = boardRepository.checkBoardReaction(userDetails.getUser(), boardId);
         }
 
-        return BoardReactionResponseDto.of(board, reactions);
+        return BoardReactionResponseDto.of(boardDto, reactions);
 
 //        Board board = boardRepository.findByIdOrElseThrow(boardId);
 //
@@ -152,5 +160,39 @@ public class BoardService {
      */
     public long getBoardCount() {
         return boardRepository.count();
+    }
+
+    /**
+     * redis로 해당 게시물 조회수 +1 (redis)
+     */
+    private Long plusBoardHits(Board board) {
+        String key = BOARD_HITS_PREFIX + board.getId();
+
+        // Redis에서 조회수 가져오기
+        String redisHits = redisTemplate.opsForValue().get(key);
+        Long currentHits;
+
+        // 레디스가 빈값이면 DB의 조회수 가져오기
+        if (!StringUtils.hasText(redisHits)) {
+            currentHits = board.getHits();
+            redisTemplate.opsForValue().set(key, currentHits.toString(), Duration.ofHours(25)); // 25시간 TTL 설정
+        }
+
+        // 조회수 1 증가
+        Long updatedHits = redisTemplate.opsForValue().increment(key);
+
+        redisTemplate.expire(key, Duration.ofHours(25)); // 매번 조회 시 TTL 연장
+
+        return updatedHits;
+    }
+
+
+    /**
+     * 해당 게시물 조회수 가져오기 (redis)
+     */
+    private Long getBoardHits(Long boardId) {
+        String key = BOARD_HITS_PREFIX + boardId;
+        String viewCountStr = redisTemplate.opsForValue().get(key);
+        return viewCountStr != null ? Long.parseLong(viewCountStr) : 0L;
     }
 }
