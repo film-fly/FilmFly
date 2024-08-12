@@ -62,8 +62,7 @@ jobs:
           context: .
           file: ./docker/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_TAG_NAME }}:latest
-
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
 
       - name: Deploy to filmfly-test
         uses: appleboy/ssh-action@v1.0.3
