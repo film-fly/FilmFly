@@ -80,4 +80,4 @@ cloud:
 memcached:
   host: ${MEMCACHED_HOST}
   port: ${MEMCACHED_PORT:11211}
-  timeout: 2500
+  timeout: 7000
