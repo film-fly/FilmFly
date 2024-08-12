@@ -32,8 +32,6 @@ public class EmailVerificationService {
      */
     @Transactional
     public void sendVerificationEmail(String email) {
-        long startTime = System.currentTimeMillis(); // 시작 시간 측정
-        log.info("In Service sendVerificationEmail");
         // 이메일 존재 여부 확인
         userRepository.existsByEmail(email);
 
@@ -41,7 +39,6 @@ public class EmailVerificationService {
         String sendCountKey = email + ":sendCount";
         Integer sendCount = (Integer) memcachedClient.get(sendCountKey);
         log.info("sendCount:"+sendCount);
-        log.info("Time: "+ (System.currentTimeMillis() - startTime));
         if (sendCount == null) {
             sendCount = 0;
         }
@@ -53,7 +50,6 @@ public class EmailVerificationService {
         // 인증 코드 생성
         String verificationCode = generateVerificationCode();
 
-        log.info("Time: "+ (System.currentTimeMillis() - startTime));
         // Memcached에 인증 코드 저장 (3분간 유효)
         memcachedClient.set(email, (int) EXPIRATION_TIME, verificationCode);
 
@@ -64,11 +60,9 @@ public class EmailVerificationService {
         // 이메일 발송
         sendEmail(email, "이메일 인증 코드는 다음과 같습니다: " + verificationCode);
 
-        log.info("Time: "+ (System.currentTimeMillis() - startTime));
         // 인증 상태 초기화 (아직 인증되지 않음)
         String verificationStatusKey = email + ":verified";
         memcachedClient.set(verificationStatusKey, (int) EXPIRATION_TIME, false);
-        log.info("Time: "+ (System.currentTimeMillis() - startTime));
     }
 
     private void sendEmail(String to, String text) {
@@ -112,14 +106,5 @@ public class EmailVerificationService {
         return UUID.randomUUID().toString().substring(0, 6);
     }
 
-    public void setTest() {
-        log.info("In Service setTest");
-        memcachedClient.set("test", 300, "99544f8");
-        log.info("Complete setTest");
-    }
 
-    public void getTest() {
-        log.info("In Service getTest");
-        log.info("Complete getTest, result: " + memcachedClient.get("test"));
-    }
 }
