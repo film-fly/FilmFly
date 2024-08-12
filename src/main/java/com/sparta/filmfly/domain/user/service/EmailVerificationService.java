@@ -111,4 +111,15 @@ public class EmailVerificationService {
     private String generateVerificationCode() {
         return UUID.randomUUID().toString().substring(0, 6);
     }
+
+    public void setTest() {
+        log.info("In Service setTest");
+        memcachedClient.set("test", 300, "99544f8");
+        log.info("Complete setTest");
+    }
+
+    public void getTest() {
+        log.info("In Service getTest");
+        log.info("Complete getTest, result: " + memcachedClient.get("test"));
+    }
 }

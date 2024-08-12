@@ -39,4 +39,18 @@ public class EmailVerificationController {
         emailVerificationService.verifyEmailCode(requestDto.getEmail(), requestDto.getCode());
         return ResponseUtils.success();
     }
+
+    @GetMapping("/setTest")
+    public ResponseEntity<MessageResponseDto> setTest() {
+        log.info("In setTest");
+        emailVerificationService.setTest();
+        return ResponseUtils.success();
+    }
+
+    @GetMapping("/getTest")
+    public ResponseEntity<MessageResponseDto> getTest() {
+        log.info("In getTest");
+        emailVerificationService.getTest();
+        return ResponseUtils.success();
+    }
 }
