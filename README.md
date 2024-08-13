@@ -19,7 +19,9 @@
 <br/><br/>
 # 🖼️ 프로젝트 상세 소개 및 이미지
 <img src="https://github.com/user-attachments/assets/9f8ae500-ba16-4136-a4a2-ca8654ed6192" alt="FilmFlyLogo" style="width: 100px;">
-프론트 이미지들
+
+프론트 이미지들 넣기
+
 🙏🙏🤝🎉✨🎟️🎫🎁🖼️🎨🛠️⚙️🖥️💻🪪🎥🎬📽️📺✏️🗓️📋📌
 
 <br/><br/>
@@ -116,14 +118,7 @@
 <br/><br/>
 # 📋 API 명세서 
 <details>
-    <summary>API</summary>
-    <img src="https://github.com/user-attachments/assets/17624789-8894-430b-8e42-aea0ee5648b9" alt="FilmFlyAPI" style="max-width: 100%;">
-
-[API Page](https://www.notion.so/881c458a10c5490596763ab364969407?v=ebdbcfe22004485d833995bdaed92ac3)
-</details>
-
-<details>
-    <summary>API Full</summary>
+    <summary>API 명세서</summary>
     <img src="https://github.com/user-attachments/assets/aa5b058a-2d19-4588-ad68-32a7616f6bec" alt="FilmFlyAPI" style="max-width: 100%;">
 
 [API Page](https://www.notion.so/881c458a10c5490596763ab364969407?v=ebdbcfe22004485d833995bdaed92ac3)
@@ -133,62 +128,513 @@
 <br/><br/>
 # 🗃️ Code Convention
 <details>
-    <summary>Code Convention</summary>
-    <img src="https://github.com/user-attachments/assets/47346984-70b5-4436-a9fd-27de31fff137" alt="FilmFlyAPI" style="max-width: 100%;">
+  <summary>Code Convention</summary>
+
+  -------
+<details>
+  <summary>Controller 작성 방법</summary>
+
+```java
+@RequestMapping("/review")
+
+@PatchMapping("/{reviewId}")
+public ResponseEntity<DataResponseDto<ReviewResponseDto>> updateReview(
+    @AuthenticationPrincipal UserDetailsImpl userDetails,
+    @Valid @RequestBody ReviewUpdateRequestDto requestDto,
+    @PathVariable Long reviewId
+) {
+    ReviewResponseDto responseDto = reviewService.updateReview(userDetails.getUser(), requestDto, reviewId);
+    return ResponseUtils.success(responseDto);
+}
+```
+
+1. 매개변수 순서
+    - @AuthenticationPrincipal → @RequestBody → @PathVariable → @RequestParam
+3. Controller 반환 타입
+    - ResponseEntity<DataResponseDto<T>> 혹은 ResponseEntity<MessageResponseDto>
+    - ResponseUtils.success(data) 혹은 ResponseUtils.success() 를 호출하여 반환
 </details>
 
-[Code Convention](https://sprinkle-ton-1f3.notion.site/Code-Convention-407d9a87619d4d5e888914e7edb238d2?pvs=4)
+<details>
+  <summary>Service 작성 방법</summary>
+
+```java
+@Transactional // 반드시 붙이기
+public ReviewResponseDto updateReview(User loginUser, ReviewUpdateRequestDto requestDto, Long reviewId) {
+    Review findReview = reviewRepository.findByIdOrElseThrow(reviewId);
+
+    // 수정하려는 리뷰가 내가 작성한 리뷰인지 검사
+    findReview.checkReviewOwner(loginUser); // 유효성 검사는 엔티티에
+
+    findReview.updateReview(requestDto);
+    return ReviewResponseDto.fromEntity(findReview.getUser(), findReview);
+}
+```
+
+1. 메서드 이름은 Controller랑 똑같이
+2. @Transactional 혹은 @Transactional(readOnly = true) 반드시 붙이기
+3. 유효성 검사 하는 코드는 Entity에 넣기 (상황에 따라 알아서 하기)
+</details>
+
+<details>
+  <summary>Repository 작성 방법</summary>
+
+```java
+public interface ReviewRepository extends JpaRepository<Review, Long> {
+
+	default Review findByIdOrElseThrow(Long reviewId) {
+	    return findById(reviewId)
+	        .orElseThrow(() -> new NotFoundException(ResponseCodeEnum.REVIEW_NOT_FOUND));
+}
+```
+
+1. findById()는 `default`를 사용해서 `findByIdOrElse()`로 이름 짓기
+</details>
+
+<details>
+  <summary>Entity 작성 방법</summary>
+
+```java
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Review extends TimeStampEntity {
+
+    // 생략
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private String content;
+
+    @Column(nullable = false)
+    private Float rating;
+
+    // 생략
+    
+    // 생성자 대신 @Builder 사용
+    @Builder
+    public Review(User user, Movie movie, String title, String content, Float rating) {
+        this.user = user;
+        this.movie = movie;
+        this.title = title;
+        this.content = content;
+        this.rating = rating;
+        this.goodCount = 0L;
+        this.badCount = 0L;
+    }
+
+		// @Setter 대신 이름을 붙여서 사용
+    public void updateReview(ReviewUpdateRequestDto requestDto) {
+        if (requestDto.getTitle() != null) this.title = requestDto.getTitle();
+        if (requestDto.getContent() != null) this.content = requestDto.getContent();
+        if (requestDto.getRating() != null) this.rating = requestDto.getRating();
+    }
+    
+    // 유효성 검사
+    public void checkReviewOwner(User loginUser) {
+        if (!Objects.equals(this.user.getId(), loginUser.getId())) {
+            throw new NotOwnerException(ResponseCodeEnum.REVIEW_NOT_OWNER);
+        }
+    }
+}
+```
+
+1. @NoArgsConstructor 는 무조건 `(access = AccessLevel.PROTECTED)` 달아주기
+2. `@Setter사용 절대 금지`  
+3. 생성자 대신 @Builder 사용하기
+4. Service에서 하던 유효성 검사는 엔티티에 작성 (Service의 코드 간소화)
+5. 필요에 따라 `@Column(nullable = false)` 옵션 달아주기
+</details>
+
+<details>
+  <summary>메서드명 규칙</summary>
+
+- CRUD
+    1. 생성 : create 로 시작 ex) `createReview`
+    2. 조회 : get 으로 시작 ex) `getReview`
+        1. List인 경우 getList… 로 시작 ex) `getListReview`
+        2. page인 경우 getPage… 로 시작 ex) `getPageReview`
+    3. 수정 : update 로 시작 ex) `updateReview`
+    4. 삭제 : delete 로 시작 ex) `deleteReview`
+- DTO
+    
+    Entity + 기능 + Request 혹은 Response + Dto
+    ex ) `ReviewUpdateRequestDto` | `ReviewResponseDto`
+</details>
+
+<details>
+  <summary>RequestDto → Entity | Entity → ResponseDto 변환 방법</summary>
+
+- `@Setter` 사용 금지
+- RequestDto → Entity
+RequestDto 안에 `toEntity` 생성
+    
+    ```java
+    @Getter
+    public class ReviewCreateRequestDto {
+     
+        // 생략
+    
+        // static 없음
+        public Review toEntity(User user, Movie movie) {
+            return Review.builder()
+                .title(this.title)
+                .content(this.content)
+                .rating(this.rating)
+                .movie(movie)
+                .user(user)
+                .build();
+        }
+    }
+    ```
+
+    ## Service에서 사용법
+    
+    ```java
+    @Transactional
+    public ReviewResponseDto saveReview(User loginUser, ReviewCreateRequestDto requestDto) {
+    
+        // 생략
+    
+        Review review = requestDto.toEntity(loginUser, findMovie); 
+    
+        // 생략
+    }
+    ```
+    
+- Entity → ResponseDto
+ResponseDto 안에 `fromEntity` 만들기
+    
+    ```java
+    @Getter
+    @Builder
+    public class ReviewResponseDto {
+    
+        // 생략
+    
+        // static 있음 !!!!
+        public static ReviewResponseDto fromEntity(User user, Review review) {
+            return ReviewResponseDto.builder()
+                .id(review.getId())
+                .nickname(user.getNickname())
+                .pictureUrl(user.getPictureUrl())
+                .rating(review.getRating())
+                .title(review.getTitle())
+                .content(review.getContent())
+                .goodCount(review.getGoodCount())
+                .badCount(review.getBadCount())
+                .createdAt(review.getUpdatedAt())
+                .build();
+        }
+    }
+    ```
+    
+    ## Service 에서 사용법
+    
+    ```java
+    @Transactional
+    public ReviewResponseDto saveReview(User loginUser, ReviewCreateRequestDto requestDto) {
+    
+        // 생략
+    
+        return ReviewResponseDto.fromEntity(loginUser, savedReview);
+    }
+    ```
+</details>
+
+<details>
+  <summary>환경변수 관리</summary>
+
+- env 파일로 관리
+    - 파일 경로 : `src/main/resources/properties/env.properties`
+    
+    ```java
+    DB_URL=jdbc:mysql://localhost:3306/film_fly
+    DB_USERNAME=root
+    ```
+    
+- config 설정 : `src/main/domain/config/AppConfig`
+</details>
+
+<details>
+  <summary>Directory Package 구조</summary>
+
+- 도메인형 구조
+    - 각각의 도메인 별로 패키지 분리가 가능하여 관리에 있어서 계층형 방식보다 직관적
+    - 이러한 도메인 구조는 낮은 의존성을 갖기 유리해 코드의 재활용성이 향상됨
+    - 기능별로 분리되어 프로젝트 확장 및 유지보수 유리
+    
+    ```jsx
+    com
+     ㄴ projectGroup
+         ㄴ projectTitle
+             ㄴ domain
+             |   ㄴ user
+             |   |   ㄴ controller
+             |   |   ㄴ application
+             |   |   ㄴ dao
+             |   |   ㄴ domain
+             |   |   ㄴ dto
+             |   ㄴ video
+             |   |   ㄴ api
+             |   |   ㄴ application
+             |   |   ㄴ dao
+             |   |   ㄴ domain
+             |   |   ㄴ dto
+             |   ...
+             ㄴ global
+                 ㄴ auth
+                 ㄴ common
+                 ㄴ config
+                 ㄴ error
+                 ㄴ infra
+                 ㄴ util
+    ```
+    
+- 계층형  구조
+    
+    ```jsx
+    com
+     ㄴ projectGroup
+         ㄴ projectTitle
+             ㄴ config
+             ㄴ controller
+             ㄴ service
+             ㄴ repository
+             ㄴ security
+             ㄴ exception
+    ```
+    
+</details>
+
+<details>
+  <summary>HTTP Request 테스트 Tool</summary>
+
+- Spring HTTP Request 사용
+    - PostMan 대비 장점
+        - 테스트 속도 향상
+        - 테스트 코드 접근성 향상
+        - 협업 능력 향상 (IntelliJ Code With Me 활용)
+</details>
+
+<details>
+  <summary>정적 팩토리 메서드 패턴</summary>
+
+- https://inpa.tistory.com/entry/GOF-💠-정적-팩토리-메서드-생성자-대신-사용하자
+- 메서드 이름은 `from` 혹은 `of`로 시작하거나 명확한 이름이 있다면 명확하게 네이밍
+- Entity를 parameter로 받아와야함.
+- 정적 팩토리 메서드 패턴 사용 예시
+
+```java
+@Getter
+@Builder
+public class OfficeBoardResponseDto {
+
+		// 생략
+
+		public static OfficeBoardResponseDto fromEntity(OfficeBoard officeBoard){    
+				return OfficeBoardResponseDto.*builder*()
+						.id(officeBoard.getId())
+						.title(officeBoard.getTitle())
+						.content(officeBoard.getContent())
+						.nickName(officeBoard.getUser()
+						.getNickname())
+						.hits(officeBoard.getHits())
+						.goodCount(officeBoard.getGoodCount())
+						.createdAt(officeBoard.getUpdatedAt())
+						.build();
+		}
+}
+```
+</details>
+
+<details>
+  <summary>Builder 패턴</summary>
+
+- 생성자를 만들 때 Builder 패턴을 사용
+- 필요한 것만 생성자로 사용
+- 필요한 것만 아래에 기본 초기 값 작성
+- Builder 패턴 사용 예시
+
+```java
+@Builder
+public Board(User user, String title, String content) {
+    this.user = user;
+    this.title = title;
+    this.content = content;
+
+    this.goodCount = 0L;
+    this.badCount = 0L;
+    this.hits = 0L;
+}
+```
+</details>
+
+<details>
+  <summary>공통 예외 처리</summary>
+
+1. GlobalException을 상속을 받아 Custom Exception을 만든다.
+Custom Exception을 만들 때 다른 곳에서 공통으로 사용할 만 하게 `기능 위주`로 만든다.
+
+```java
+public class NotOwnerException extends GlobalException {
+    public NotOwnerException(ResponseCodeEnum responseCodeEnum) {
+        super(responseCodeEnum);
+    }
+}
+```
+
+```java
+public void checkReviewOwner(User loginUser) {
+    if (!Objects.equals(this.user.getId(), loginUser.getId())) {
+        throw new NotOwnerException(ResponseCodeEnum.REVIEW_NOT_OWNER);
+    }
+}
+```
+</details>
+
+<details>
+  <summary>주석 처리</summary>
+
+메서드 위에 주석은 `JavaDoc`을 사용해 메서드 자체를 설명하는 주석 달기
+
+메서드 내부의 주석은 `//` 를 사용해 기능을 설명하는 주석 달기
+
+```java
+/**
+* 리뷰 수정
+*/
+@Transactional
+public ReviewResponseDto updateReview(User loginUser, ReviewUpdateRequestDto requestDto, Long reviewId) {
+    Review findReview = reviewRepository.findByIdOrElseThrow(reviewId);
+
+    // 자기가 작성한 리뷰가 맞는지 체크
+    findReview.checkReviewOwner(loginUser);
+
+    findReview.updateReview(requestDto);
+    return ReviewResponseDto.fromEntity(findReview.getUser(), findReview);
+}
+```
+</details>
+
+<details>
+  <summary>기능 구현하면 팀 노션에 Request, Response 정보 작성하기</summary>
+
+# Request
+
+```json
+{
+    "name":"호파스타",
+    "address":"서울시 광진구",
+    "category":"양식",
+    "description":"라구 파스타가 맛있음"
+}
+```
+
+# Response
+
+```json
+{
+	"statusCode": 200,
+	"message": "가게 등록이 완료되었습니다.",
+	"data": {
+		"name": "호파스타 ",
+		"address": "서울시 광진구",
+		"categoryEnum": "WESTERN",
+		"description": "라구 파스타가 맛있음",
+		"createdAt": "2024-06-24T18:52:23.105005"
+	}
+}
+```
+</details>
+
+<details>
+  <summary>AWS</summary>
+
+- AWS EC2 Linux Ubuntu
+- RDS
+    - Mysql
+    - DynamoDB : 교체 예정
+- Domain
+    - 구매 : 가비아
+        - [gabia 웹을 넘어 클라우드로. 가비아](https://www.gabia.com/?utm_source=google&utm_medium=cpc&utm_term=%EA%B0%80%EB%B9%84%EC%95%84&utm_campaign=%EA%B0%80%EB%B9%84%EC%95%84)
+- Elastic Load Balancing
+    - 인스턴스가 예기치 못하게 종료되어도 서버를 유지하기 위해 설정
+- 탄력적 IP
+    - 로드 밸런서로 할당되는 IP를 고정시키기 위해 설정
+- S3
+    - 이미지, 영상 등 파일 저장소
+- Redis
+    - 동시성 제어
+</details>
+</details>
+
 
 <br/><br/>
 # 🤝 Github Rules
 <details>
-    <summary>1. 이슈</summary>
-    <ul>
-        <li>메인 기능에 대한 이슈를 만들고 세부 이슈를 만들기 ex) [FEAT] 리뷰 기능</li>
-        <li>Assignees, Labels, Projects 달아 주기</li>
-    </ul>
-</details>
-<details>
-    <summary>2. 브랜치</summary>
-    <ul>
-        <li>이슈를 만들고 이슈창 오른쪽에 Development에서 create a branch 를 클릭해서 기본으로 정해주는 이름으로 브랜치 만들기</li>
-        <li>세부 이슈라면? Branch Source 를 메인 브랜치로 선택하기</li>
-            - main → dev → feat / refactor / fix
-            - **`feat/기능명` → 이케!**
-    </ul>
-</details>
-3. 커밋 메세지
+  <summary>1. 이슈</summary>
+ 
+ - 메인 기능에 대한 이슈를 만들고 세부 이슈를 만들기 ex) `[FEAT] 리뷰 기능` 
+ - Assignees, Labels, Projects 달아 주기
 
-[타입] 제목
+<img src="https://github.com/user-attachments/assets/c2c57018-1efa-4ed6-8f30-a918c5803247" alt="FilmFlyWireFrame" style="max-width: 100%;">
+</details>
+
+<details>
+  <summary>2. 브랜치</summary>
+ 
+- 이슈를 만들고 이슈창 오른쪽에 Development에서 `create a branch` 를 클릭해서 기본으로 정해주는 이름으로 브랜치 만들기
+
+- 세부 이슈라면? `Branch Source` 를 메인 브랜치로 선택하기
+
+<img src="https://github.com/user-attachments/assets/cd6a6ea1-8cc1-4ae6-a08e-5c98b56f6ead" alt="FilmFlyWireFrame" style="max-width: 100%;">
+
+- main → dev → feat / refactor / fix
+    - **`feat/기능명` → 이케!**
+
+</details>
+
+<details>
+  <summary>3. 커밋 메세지</summary>
+ 
+`[타입] 제목`
 
 | 타입 | 설명 |
 | --- | --- |
 | FEAT | 새로운 기능 추가 |
 | BUGFIX | 버그 해결 |
-| REFACTOR | 코드 리팩토링, 새로운 기능/버그 해결 X |
+| REFACTOR | 코드 리팩토링, 
+새로운 기능/버그 해결 X |
 | TEST | 테스트 코드 작성 |
 
+`타입 [#이슈번호] : 제목`
 
-타입 [#이슈번호] : 제목
 | 타입 | 설명 |
 | --- | --- |
 | Feat | 새로운 기능 추가 |
 | Fix | 버그 해결 |
-| Refactor | 코드 리팩토링, 새로운 기능/버그 해결 X |
+| Refactor | 코드 리팩토링, 
+새로운 기능/버그 해결 X |
 | Move | 파일 옮김/정리 |
 | Rename | 파일/폴더 이름 수정 |
 | Remove | 파일/폴더 삭제 |
 | Test | 테스트 코드 작성 |
 
-<details>
-    <summary>4. Pull Request</summary>
-    <ul>
-        <li>`기능만 입력` 더 설명할 내용이 있으면 안쪽에 적기</li>
-        <li>세부 브랜치에서 메인 브랜치로 PR을 날리고 메인 브랜치의 기능이 다 끝나면 dev로 PR
-Assignees, Labels, Projects 달아 주기</li>
-    </ul>
 </details>
 
+<details>
+  <summary>4. Pull Request</summary>
+
+`기능만 입력` 더 설명할 내용이 있으면 안쪽에 적기
+
+세부 브랜치에서 메인 브랜치로 PR을 날리고 메인 브랜치의 기능이 다 끝나면 dev로 PR
+Assignees, Labels, Projects 달아 주기
+<img src="https://github.com/user-attachments/assets/df25e8ac-321a-4228-9bc7-48faea4da99a" alt="FilmFlyWireFrame" style="max-width: 100%;">
+<img src="https://github.com/user-attachments/assets/d3fe3f80-0093-401c-a573-97832c5b17a4" alt="FilmFlyWireFrame" style="max-width: 100%;">
+</details>
 
 <br/><br/>
 # ✍️ KPT 회고
