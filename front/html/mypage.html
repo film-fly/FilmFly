@@ -302,6 +302,13 @@
         // 비밀번호 입력 모달 표시
         $('#passwordModal').show();
 
+        // 비밀번호 입력 후 엔터 키 눌렀을 때 확인 버튼 클릭 처리
+        $('#passwordInput').on('keypress', function (e) {
+          if (e.which === 13) { // 13은 Enter 키의 코드 값입니다.
+            $('#confirmPassword').click(); // 확인 버튼 클릭 이벤트 트리거
+          }
+        });
+
         $('#confirmPassword').on('click', function () {
           let password = $('#passwordInput').val();
           if (password) {
@@ -310,7 +317,11 @@
             // 비밀번호를 서버로 전송
             apiModule.DELETE('/users/withdraw', { password: password }, function (response) {
               alert('회원 탈퇴가 완료되었습니다.');
-              location.href = '/film-fly/front/html/index.html'; // 탈퇴 후 메인 페이지로 리디렉션
+              localStorage.setItem('isLoggedIn', 'false'); // 로그인 상태 업데이트
+              localStorage.removeItem('userRole'); // 사용자 역할 정보 제거
+              localStorage.removeItem('loginTime'); // 로그인 시간 제거
+              location.href = './index.html'; // 탈퇴 후 메인 페이지로 리디렉션
+              updateAuthLinks();
             }, function (xhr) {
               if (xhr.status === 400) {
                 alert('비밀번호가 올바르지 않습니다.');
