@@ -29,7 +29,7 @@
             margin: 0 auto;
             padding: 0;
             overflow: hidden;
-            padding-bottom: 50px; /* 추가: 아래쪽에 공간을 주기 위해 패딩을 추가 */
+            padding-bottom: 50px;
         }
 
         header {
@@ -92,6 +92,7 @@
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
             cursor: pointer;
             z-index: 1;
+            border: 1px solid transparent;
         }
 
         .carousel-item:hover {
@@ -185,8 +186,8 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, border-color 2.5s ease-in-out;
-            border: 2px solid transparent;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            border: 1px solid transparent;
         }
 
         .card-item:hover {
@@ -244,21 +245,34 @@
             margin-right: 5px;
         }
 
-        /* 네온 테두리 효과 */
+        /* 네온 테두리 효과 (최신 리뷰와 최신 게시물에만 적용) */
         .neon-border {
-            border-width: 2px;
-            border-style: solid;
-            animation: neonBorderGlow 3s infinite alternate;
+            border-width: 1px;
+            animation: neonGlow 1.5s infinite alternate;
         }
 
-        @keyframes neonBorderGlow {
-            0%, 100% {
+        @keyframes neonGlow {
+            0% {
+                box-shadow: 0 0 1px currentColor ;
                 border-color: transparent;
             }
-            50% {
-                border-color: inherit;
+            100% {
+                box-shadow: 0 0 1px currentColor;
             }
         }
+
+        #review-carousel .card-item,
+        #post-carousel .card-item {
+            border-color: inherit;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        #review-carousel .card-item:hover,
+        #post-carousel .card-item:hover {
+            transform: scale(1.05);
+            z-index: 2;
+        }
+
         #review-carousel{
             height: 200px;
         }
@@ -277,6 +291,7 @@
             bottom: 10px;
             left: 0;
         }
+
         .btn-search-movies {
             background-color: transparent;
             border: 1px solid transparent;
@@ -291,7 +306,6 @@
             margin: 10px auto;
             width: 270px;
             font-size: 18px;
-
         }
 
         .btn-search-movies i {
@@ -410,7 +424,10 @@
                                     <span><i class="fa fa-eye"></i> ${item.hits || item.views || 0}</span>
                                 </div>
                             `;
-                        applyRandomNeonColor(element);
+
+                        if (itemType !== 'movie') { // 영화 섹션이 아닌 경우에만 네온 효과 적용
+                            applyRandomNeonColor(element);
+                        }
                         carousel.appendChild(element);
                         // 클릭 이벤트 리스너 추가
                         element.addEventListener('click', function () {
@@ -473,9 +490,10 @@
     });
 
     function applyRandomNeonColor(element) {
-        const colors = ['#FF00FF', '#00FFFF', '#FF0000', '#00FF00', '#FFFF00', '#FF00FF'];
+        const colors = ['#FF00FF', '#00FFFF', '#FF0000', '#00FF00', '#FFFF00', '#FF00FF', '#FF9900', '#9900FF', '#FF69B4', '#00FF99'];
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
         element.style.borderColor = randomColor;
+        element.style.color = randomColor;
     }
 </script>
 </body>
