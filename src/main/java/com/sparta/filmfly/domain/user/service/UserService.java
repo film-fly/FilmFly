@@ -420,13 +420,13 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public UserResponseDto getMyUserInfo(User user) {
-        log.info(user.getIntroduce());
         return UserResponseDto.builder()
-                .id(user.getId())
-                .nickname(user.getNickname())
-                .introduce(user.getIntroduce())
-                .pictureUrl(user.getPictureUrl())
-                .build();
+            .id(user.getId())
+            .nickname(user.getNickname())
+            .introduce(user.getIntroduce())
+            .pictureUrl(user.getPictureUrl())
+            .deletedAt(user.getDeletedAt())
+            .build();
     }
     /**
      * 유저 수 반환

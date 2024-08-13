@@ -18,6 +18,7 @@ public class BoardPageDto {
     private Long goodCount;
     private Long badCount;
     private Long hits;
+    private Boolean isOwner;
 
     @Builder
     public BoardPageDto(Long id, Long userId, String title, String nickname, LocalDateTime createdAt, Long goodCount, Long badCount, Long hits) {
@@ -29,6 +30,7 @@ public class BoardPageDto {
         this.goodCount = goodCount;
         this.badCount = badCount;
         this.hits = hits;
+        this.isOwner = false;
     }
 
     public static BoardPageDto fromEntity(Board board, Long goodCount) {
@@ -42,5 +44,9 @@ public class BoardPageDto {
                 .badCount(goodCount)
                 .hits(goodCount)
                 .build();
+    }
+
+    public void setOwner(Boolean owner) {
+        isOwner = owner;
     }
 }

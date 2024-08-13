@@ -140,7 +140,7 @@
               <div>
                 <img class="img-profile-size" src="${board.profileUrl === null ? '../images/profileImg.png' : board.profileUrl}" alt="프로필 사진">
               </div>
-              <div>${board.nickname}</div>
+              <div><a href="./mypage.html?user=${board.userId}">${board.nickname}</a></div>
             </div>
             <div>${board.createdAt}</div>
             <div>조회수(${board.hits})</div>
@@ -171,13 +171,17 @@
           }
 
           boardHtml += `</div>
-            <div>
+            <div id="board-update-box">
               <button class="btn btn-primary" onclick="location.href='./create-board.html?board=${boardId}'">수정</button>
               <button class="btn btn-primary" onclick="deleteBoard()">삭제</button>
             </div>
           </div>
           `;
           $('#board-box').append(boardHtml);
+
+          if (!result.data.isOwner) {
+            $('#board-update-box').hide();
+          }
         },
         function (xhr, status, error) {
           alert('게시물 로드 실패');
@@ -198,12 +202,8 @@
                 <div>
                   <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">
                 </div>
-                <div>
-                  ${comment.nickname}
-                </div>
-                <div>
-                  ${comment.createdAt}
-                </div>
+                <div><a href="./mypage.html?user=${comment.userId}">${comment.nickname}</a></div>
+                <div>${comment.createdAt}</div>
               </div>
               <div class="d-flex align-items-center gap-3">
                 <div class="d-flex justify-content-end flex-grow-1">
@@ -212,14 +212,16 @@
                     <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
                     <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
                   </ul>
-                </div>
-                <div>
-                  <button class="btn btn-primary edit-comment">수정</button>
-                  <button class="btn btn-primary delete-comment">삭제</button>
-                  <button class="btn btn-primary save-comment" style="display:none;">저장</button>
-                  <button class="btn btn-primary cancel-edit" style="display:none;">취소</button>
-                </div>
-              </div>
+                </div>`;
+                if (comment.isOwner) {
+                  commentHtml += `<div>
+                      <button class="btn btn-primary edit-comment">수정</button>
+                      <button class="btn btn-primary delete-comment">삭제</button>
+                      <button class="btn btn-primary save-comment" style="display:none;">저장</button>
+                      <button class="btn btn-primary cancel-edit" style="display:none;">취소</button>
+                    </div>`;
+                }
+              commentHtml += `</div>
             </div>
             <div class="comment-content mb-3">
               ${comment.content}

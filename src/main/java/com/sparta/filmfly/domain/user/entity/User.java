@@ -138,6 +138,7 @@ public class User extends TimeStampEntity {
      */
     public void updateVerified() {
         this.userStatus = UserStatusEnum.ACTIVE;
+        this.deletedAt = null;
     }
 
     /**

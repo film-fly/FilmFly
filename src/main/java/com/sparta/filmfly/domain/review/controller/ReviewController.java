@@ -44,9 +44,10 @@ public class ReviewController {
      */
     @GetMapping("/reviews/{reviewId}")
     public ResponseEntity<DataResponseDto<ReviewResponseDto>> getReview(
-            @PathVariable Long reviewId
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long reviewId
     ) {
-        ReviewResponseDto responseDto = reviewService.getReview(reviewId);
+        ReviewResponseDto responseDto = reviewService.getReview(userDetails, reviewId);
         return ResponseUtils.success(responseDto);
     }
 
@@ -74,14 +75,15 @@ public class ReviewController {
      */
     @GetMapping("/reviews/users/{userId}")
     public ResponseEntity<DataResponseDto<PageResponseDto<List<ReviewUserResponseDto>>>> getUsersReviews(
-            @PathVariable Long userId,
-            @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam(required = false, defaultValue = "10") int size,
-            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
-            @RequestParam(required = false, defaultValue = "false") boolean isAsc
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long userId,
+        @RequestParam(required = false, defaultValue = "1") int page,
+        @RequestParam(required = false, defaultValue = "10") int size,
+        @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+        @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<ReviewUserResponseDto>> responseDto = reviewService.getUsersReviews(userId,pageable);
+        PageResponseDto<List<ReviewUserResponseDto>> responseDto = reviewService.getUsersReviews(userDetails, userId, pageable);
         return ResponseUtils.success(responseDto);
     }
 

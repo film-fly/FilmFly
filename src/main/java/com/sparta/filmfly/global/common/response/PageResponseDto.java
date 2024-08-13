@@ -12,7 +12,11 @@ public class PageResponseDto<T> {
     private int pageSize;
     private T data;
 
-//    private List<T> data;
+    public void updateData(T data) {
+        this.data = data;
+    }
+
+    //    private List<T> data;
 //    public static <T> PageResponseDto<T> of(PageImpl<T> page) {
 //        return PageResponseDto.<T>builder()
 //            .totalElements(page.getTotalElements())
