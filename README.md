@@ -101,7 +101,7 @@
 
 
 <br/><br/>
-# 🎨 ERD, 와이어프레임, API 
+# 🎨 ERD, 와이어프레임
 <details>
     <summary>ERD</summary>
     <img src="https://github.com/user-attachments/assets/ac21cbb8-feec-4523-b46b-5d8ada18a7ee" alt="FilmFlyERD" style="max-width: 100%;">
@@ -122,21 +122,22 @@
 [API Page](https://www.notion.so/881c458a10c5490596763ab364969407?v=ebdbcfe22004485d833995bdaed92ac3)
 </details>
 
+<details>
+    <summary>API Full</summary>
+    <img src="https://github.com/user-attachments/assets/aa5b058a-2d19-4588-ad68-32a7616f6bec" alt="FilmFlyAPI" style="max-width: 100%;">
+
+[API Page](https://www.notion.so/881c458a10c5490596763ab364969407?v=ebdbcfe22004485d833995bdaed92ac3)
+</details>
+
 
 <br/><br/>
 # 🗃️ Code Convention
-[Code Convention](https://teamsparta.notion.site/Code-Convention-9919eb53435a4ca68192b5939cf42c10)
-
 <details>
-    <summary>1. 이슈</summary>
-    <ul>
-        <li>메인 기능에 대한 이슈를 만들고 세부 이슈를 만들기 ex) [FEAT] 리뷰 기능</li>
-        <li>Assignees, Labels, Projects 달아 주기</li>
-                  
-    </ul>
-    
+    <summary>Code Convention</summary>
+    <img src="https://github.com/user-attachments/assets/47346984-70b5-4436-a9fd-27de31fff137" alt="FilmFlyAPI" style="max-width: 100%;">
 </details>
 
+[Code Convention](https://sprinkle-ton-1f3.notion.site/Code-Convention-407d9a87619d4d5e888914e7edb238d2?pvs=4)
 
 <br/><br/>
 # 🤝 Github Rules
