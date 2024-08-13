@@ -18,7 +18,7 @@
 
 <br/><br/>
 # 🖼️ 프로젝트 상세 소개 및 이미지
-<img src="https://private-user-images.githubusercontent.com/167170478/357312039-9f8ae500-ba16-4136-a4a2-ca8654ed6192.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MjM1MzM5NDcsIm5iZiI6MTcyMzUzMzY0NywicGF0aCI6Ii8xNjcxNzA0NzgvMzU3MzEyMDM5LTlmOGFlNTAwLWJhMTYtNDEzNi1hNGEyLWNhODY1NGVkNjE5Mi5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjQwODEzJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI0MDgxM1QwNzIwNDdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1jZTMyY2RhZjc1YTRlMjE2ZjExNGM0Yjc5YWU2NzhhYzk5YWRhZDU4N2QwZjYyNmNjODZhYjE0NzhhYTFjNDA3JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZhY3Rvcl9pZD0wJmtleV9pZD0wJnJlcG9faWQ9MCJ9.ShtWppUmBI30IsLPqNALIFGVwos-dzOGuCzOHv5KPVU" alt="FilmFlyLogo" style="width: 100px;">
+<img src="https://github.com/user-attachments/assets/9f8ae500-ba16-4136-a4a2-ca8654ed6192" alt="FilmFlyLogo" style="width: 100px;">
 프론트 이미지들
 🙏🙏🤝🎉✨🎟️🎫🎁🖼️🎨🛠️⚙️🖥️💻🪪🎥🎬📽️📺✏️🗓️📋📌
 
@@ -41,7 +41,10 @@
 
 <br/><br/>
 # 🖥️ Project Architecture
-
+<details>
+    <summary>Architecture</summary>
+    <img src="https://github.com/user-attachments/assets/54b077a1-2779-4e9a-87c9-572f919cb384" alt="FilmFly-아키텍처" style="max-width: 100%;">
+</details>
 
 <br/><br/>
 # 🪪 팀원 / 역할분담   (본인들이 알아서 추가, 수정 할 것)
@@ -101,16 +104,24 @@
 # 🎨 ERD, 와이어프레임, API 
 <details>
     <summary>ERD</summary>
-    <img src="https://private-user-images.githubusercontent.com/167170478/357311894-ac21cbb8-feec-4523-b46b-5d8ada18a7ee.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MjM1MzM5NDcsIm5iZiI6MTcyMzUzMzY0NywicGF0aCI6Ii8xNjcxNzA0NzgvMzU3MzExODk0LWFjMjFjYmI4LWZlZWMtNDUyMy1iNDZiLTVkOGFkYTE4YTdlZS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjQwODEzJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI0MDgxM1QwNzIwNDdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1mZjU2NDZlY2VmNDgxOTI5ZTk2ZjU2NjZmMjU3ZmQ1ZDAwZjM1ZTRhMTI1MjA1Mjk5ODNlZmVkNDhkMTY4OGYzJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZhY3Rvcl9pZD0wJmtleV9pZD0wJnJlcG9faWQ9MCJ9.DzTD9wwncmeYYE61cLhR1jg73DunAXt8sOhgKZASzSA" alt="FilmFlyERD" style="max-width: 100%;">
+    <img src="https://github.com/user-attachments/assets/ac21cbb8-feec-4523-b46b-5d8ada18a7ee" alt="FilmFlyERD" style="max-width: 100%;">
 </details>
 
 <details>
     <summary>WireFrame</summary>
-    <img src="https://private-user-images.githubusercontent.com/167170478/357311964-68a8aed5-4192-4f78-aef5-368de4c73bd7.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MjM1MzM5NDcsIm5iZiI6MTcyMzUzMzY0NywicGF0aCI6Ii8xNjcxNzA0NzgvMzU3MzExOTY0LTY4YThhZWQ1LTQxOTItNGY3OC1hZWY1LTM2OGRlNGM3M2JkNy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjQwODEzJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI0MDgxM1QwNzIwNDdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1lN2Y5YjRjYWE1Nzg5ZTQyN2Q2ZDYyNmU3YzM5MzUyYTNhY2JiMGM2Nzk1MzljZTA5Mzc2ZjlhN2M5NjllMjc3JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZhY3Rvcl9pZD0wJmtleV9pZD0wJnJlcG9faWQ9MCJ9.F0WA6pLTGIzhhNoNKtIK_Ue_KCbckSQqc8utDxdc68U" alt="FilmFlyWireFrame" style="max-width: 100%;">
+    <img src="https://github.com/user-attachments/assets/68a8aed5-4192-4f78-aef5-368de4c73bd7" alt="FilmFlyWireFrame" style="max-width: 100%;">
 </details>
 
 
-# 팀 목표, 규칙? 
+<br/><br/>
+# 📋 API 명세서 
+<details>
+    <summary>API</summary>
+    <img src="https://github.com/user-attachments/assets/17624789-8894-430b-8e42-aea0ee5648b9" alt="FilmFlyAPI" style="max-width: 100%;">
+
+[API Page](https://www.notion.so/881c458a10c5490596763ab364969407?v=ebdbcfe22004485d833995bdaed92ac3)
+</details>
+
 
 <br/><br/>
 # 🗃️ Code Convention
@@ -121,6 +132,7 @@
     <ul>
         <li>메인 기능에 대한 이슈를 만들고 세부 이슈를 만들기 ex) [FEAT] 리뷰 기능</li>
         <li>Assignees, Labels, Projects 달아 주기</li>
+                  
     </ul>
     
 </details>
