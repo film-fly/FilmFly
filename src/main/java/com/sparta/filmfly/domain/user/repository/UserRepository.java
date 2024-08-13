@@ -56,4 +56,6 @@ public interface UserRepository extends JpaRepository<User, Long>, SoftDeletable
 
     List<User> findAllByDeletedAtBefore(LocalDateTime deletionThresholdDate);
 
+    void deleteAllByDeletedAtBefore(LocalDateTime deletionThresholdDate);
+
 }

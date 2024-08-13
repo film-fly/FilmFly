@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Component
 @AllArgsConstructor
 public class HardDeleteTasklet<T> implements Tasklet {
 
@@ -25,11 +24,9 @@ public class HardDeleteTasklet<T> implements Tasklet {
         // 삭제 기준일 (3개월 전의 날짜를 계산)
         LocalDateTime deletionThresholdDate = LocalDateTime.now().minusMonths(3);
 
-        // deleted_at 필드가 삭제 기준일 이전인 엔티티들 찾기
-        List<T> entitiesToDelete = repository.findAllByDeletedAtBefore(deletionThresholdDate);
+        // deleted_at 필드가 삭제 기준일 이전인 엔티티들 삭제
+        repository.deleteAllByDeletedAtBefore(deletionThresholdDate);
 
-        // 해당 엔티티들을 하드 딜리트
-        repository.deleteAll(entitiesToDelete);
 
         return RepeatStatus.FINISHED;
     }

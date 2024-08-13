@@ -7,6 +7,5 @@ import java.util.List;
 
 @Repository
 public interface SoftDeletableRepository<T> {
-    List<T> findAllByDeletedAtBefore(LocalDateTime deletionThresholdDate);
-    void deleteAll(List<T> entities);
+    void deleteAllByDeletedAtBefore(LocalDateTime deletionThresholdDate);
 }
