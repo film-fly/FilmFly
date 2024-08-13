@@ -12,7 +12,6 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="../js/common.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-  <script src="../js/jquery.twbsPagination.js"></script>
   <script src="../js/apiModule.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
@@ -30,11 +29,16 @@
     }
 
     .container {
-      max-width: 100%;
-      margin: 0 auto;
+      width: 1000px; /* 원하는 고정 크기로 설정 */
+      max-width: 1000px; /* 최대 크기를 고정 크기와 동일하게 설정 */
+      height: 1800px;
+      margin: 0 auto; /* 중앙 정렬 */
       padding: 0;
       overflow: hidden;
       padding-bottom: 50px;
+    }
+    .card{
+      height: 300px;
     }
 
     header {
@@ -305,8 +309,6 @@
       color: #ffffff;
     }
 
-
-
     .modal-footer {
       background-color: #333;
       border-top: none;
@@ -320,26 +322,47 @@
       padding: 5px;
     }
 
-
-
-    #genre-box{
+    #genre-box {
       margin-top: 10px;
     }
-    #adult{
+
+    #adult {
       margin-bottom: 8px;
     }
-    #inputMovieSearch{
+
+    #inputMovieSearch {
       background-color: white;
     }
-    #btnMovieSearch{
+
+    #btnMovieSearch {
       background-color: white;
       color: black;
     }
-    #option{
+
+    #option {
       background-color: white;
       color: black;
       cursor: pointer;
     }
+    .card-body{
+      height: 70px;
+    }
+    .btn-outline-primary{
+      border-color: transparent;
+      color: white;
+    }
+
+    .btn-outline-primary:hover,
+    .btn-outline-primary:active,
+    .btn-outline-primary.active,
+    .btn-outline-primary:focus,
+    .btn-outline-primary.focus,
+    .btn-outline-primary:visited {
+      background-color: transparent !important; /* 부모의 배경색을 유지 */
+      border-color: white !important; /* 보더 색상을 흰색으로 변경 */
+      color: white !important;
+    }
+
   </style>
 </head>
 <body>
@@ -448,6 +471,15 @@
     loadMovies(1);
 
     $('#btnMovieSearch').on('click', function () {
+      loadMovies(1);
+    });
+
+    $('#movie-box').on('click', '.col', function () {
+      let movieId = $(this).attr('data-movie-id');
+      location.href = `movie-detail.html?movie=${movieId}`;
+    });
+
+    function loadMovies(page, queryString = '') {
       let searchText = $('#inputMovieSearch').val();
       let selectedGenres = [];
       $('input[name="genre"]:checked').each(function() {
@@ -459,59 +491,91 @@
       });
       let releaseDateFrom = $('#releaseDateFrom').val();
       let releaseDateTo = $('#releaseDateTo').val();
+
       let queryParams = new URLSearchParams({
         search: searchText,
         releaseDateFrom: releaseDateFrom,
         releaseDateTo: releaseDateTo
       });
+
       selectedGenres.forEach(genreId => queryParams.append('genreIds', genreId));
       adults.forEach(adult => queryParams.append('adults', adult));
 
-      loadMovies(1, queryParams.toString());
+      apiModule.GET(`/movies?page=${page}&${queryParams.toString()}`,
+              function (result) {
+                $('#movie-box').empty();
+                result.data.data.forEach(movie => {
+                  const movieHtml = `
+                        <div class="col" data-movie-id="${movie.id}">
+                          <div class="card h-100 neon-border">
+                            <img src="${imageUrl}${movie.posterPath}" class="card-img-top" alt="영화 포스터">
+                            <div class="card-body">
+                              <h5 class="card-title">${movie.title}</h5>
+                            </div>
+                            <div class="card-stats">
+                              <span><i class="fa fa-thumbs-up"></i> ${movie.goodCount}</span>
+                              <span><i class="fa fa-thumbs-down"></i> ${movie.badCount}</span>
+                            </div>
+                          </div>
+                        </div>
+                        `;
+                  $('#movie-box').append(movieHtml);
+                });
+
+                renderPagination(result.data.totalPages, page);
+              },
+              function (xhr, status, error) {
+                alert('영화 데이터 가져오기 실패');
+              });
+    }
+
+    function renderPagination(totalPages, currentPage) {
+      const pagination = $('#pagination-movies');
+      pagination.empty();
+
+      const maxVisiblePages = 10;
+      let startPage = Math.floor((currentPage - 1) / maxVisiblePages) * maxVisiblePages + 1;
+      let endPage = startPage + maxVisiblePages - 1;
+
+      if (endPage > totalPages) {
+        endPage = totalPages;
+      }
+
+      const previousPageSet = Math.max(startPage - maxVisiblePages, 1);
+      const nextPageSet = Math.min(startPage + maxVisiblePages, totalPages);
+
+      pagination.append(`<button class="btn btn-outline-primary" data-page="${previousPageSet}">이전</button>`);
+
+      for (let i = startPage; i <= endPage; i++) {
+        const button = $('<button>')
+                .addClass('btn btn-outline-primary')
+                .text(i)
+                .data('page', i);
+
+        if (i === currentPage) {
+          button.addClass('active');
+        }
+
+        pagination.append(button);
+      }
+
+      pagination.append(`<button class="btn btn-outline-primary" data-page="${nextPageSet}">다음</button>`);
+    }
+
+    $(document).on('click', '.pagination-sm button', function () {
+      const page = $(this).data('page');
+
+      // 현재 스크롤 위치를 저장
+      const currentScrollPosition = $(window).scrollTop();
+
+      loadMovies(page);
+
+      // 스크롤 위치를 다시 복원
+      $(window).scrollTop(currentScrollPosition);
     });
 
-    $('#movie-box').on('click', '.col', function () {
-      let movieId = $(this).attr('data-movie-id');
-      location.href = `movie-detail.html?movie=${movieId}`;
-    });
   });
-
-  function loadMovies(page, queryString = '') {
-    apiModule.GET(`/movies?page=${page}&${queryString}`,
-            function (result, status, xhr) {
-              $('#movie-box').empty();
-              result.data.data.forEach(movie => {
-                const movieHtml = `
-                <div class="col" data-movie-id="${movie.id}">
-                  <div class="card h-100 neon-border">
-                    <img src="${imageUrl}${movie.posterPath}" class="card-img-top" alt="영화 포스터">
-                    <div class="card-body">
-                      <h5 class="card-title">${movie.title}</h5>
-                    </div>
-                    <div class="card-stats">
-                      <span><i class="fa fa-thumbs-up"></i> ${movie.goodCount}</span>
-                      <span><i class="fa fa-thumbs-down"></i> ${movie.badCount}</span>
-                    </div>
-                  </div>
-                </div>
-                `;
-                $('#movie-box').append(movieHtml);
-              });
-
-              $('#pagination-movies').twbsPagination('destroy');
-              $('#pagination-movies').twbsPagination({
-                totalPages: result.data.totalPages,
-                startPage: page,
-                initiateStartPageClick: false,
-                onPageClick: function (event, page) {
-                  loadMovies(page, queryString);
-                }
-              });
-            },
-            function (xhr, status, error) {
-              alert('영화 데이터 가져오기 실패');
-            });
-  }
+ ;
 </script>
 </body>
 </html>
