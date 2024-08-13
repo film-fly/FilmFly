@@ -232,17 +232,6 @@ public class UserService {
     }
 
     /**
-     * 오래된 소프트 딜리트된 유저 삭제
-     */
-    @Transactional
-    public void deleteOldSoftDeletedUsers() {
-        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30); // 30일 지나면 하드 삭제
-
-        // 유저 삭제
-        userRepository.deleteOldSoftDeletedUsers(cutoffDate);
-    }
-
-    /**
      * 유저 상세 조회(관리자 기능)
      */
     @Transactional(readOnly = true)

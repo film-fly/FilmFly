@@ -1,4 +1,4 @@
-package com.sparta.filmfly.global.common.batch;
+package com.sparta.filmfly.global.common.batch.crawling;
 
 import com.sparta.filmfly.domain.movie.dto.ApiSearchMovieRequestDto;
 import com.sparta.filmfly.domain.movie.entity.LanguagesEnum;

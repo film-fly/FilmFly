@@ -2,6 +2,7 @@ package com.sparta.filmfly.domain.collection.repository;
 
 import com.sparta.filmfly.domain.collection.entity.Collection;
 import com.sparta.filmfly.domain.user.entity.User;
+import com.sparta.filmfly.global.common.batch.hardDelete.SoftDeletableRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AlreadyExistsException;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
@@ -11,7 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface CollectionRepository extends JpaRepository<Collection, Long> {
+public interface CollectionRepository extends JpaRepository<Collection, Long>, SoftDeletableRepository<Collection> {
 
     List<Collection> findAllByUser(User user);
     Page<Collection> findAllByUserId(Long userId, Pageable pageable);
