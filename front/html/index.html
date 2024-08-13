@@ -27,9 +27,8 @@
         .container {
             max-width: 100%;
             margin: 0 auto;
-            padding: 0;
             overflow: hidden;
-            padding-bottom: 50px;
+            padding: 0 0 50px;
         }
 
         header {
@@ -193,7 +192,7 @@
         .card-item:hover {
             transform: scale(1.05);
             z-index: 2;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            /*box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);*/
         }
 
         .card-item .movie-title {
@@ -247,24 +246,26 @@
 
         /* 네온 테두리 효과 (최신 리뷰와 최신 게시물에만 적용) */
         .neon-border {
-            border-width: 1px;
-            animation: neonGlow 1.5s infinite alternate;
+            border: 1px solid transparent;
+            /*animation: neonGlow 10s infinite alternate;*/
+            box-shadow: 0 0 3px currentColor;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, color 2s ease-in-out;
         }
 
-        @keyframes neonGlow {
-            0% {
-                box-shadow: 0 0 1px currentColor ;
-                border-color: transparent;
-            }
-            100% {
-                box-shadow: 0 0 1px currentColor;
-            }
-        }
+        /*@keyframes neonGlow {*/
+        /*    0% {*/
+        /*        !*border: 1px solid transparent;*!*/
+        /*        box-shadow: 0 0 3px currentColor;*/
+        /*    }*/
+        /*    100% {*/
+        /*        !*border: 1px solid white;*!*/
+        /*        box-shadow: 0 0 3px currentColor;*/
+        /*    }*/
+        /*}*/
 
         #review-carousel .card-item,
         #post-carousel .card-item {
-            border-color: inherit;
-            box-shadow: 0 0 10px currentColor;
+            /*border-color: inherit;*/
         }
 
         #review-carousel .card-item:hover,
@@ -304,8 +305,9 @@
             align-items: center;
             gap: 30px;
             margin: 10px auto;
-            width: 270px;
+            width: 280px;
             font-size: 18px;
+            white-space: nowrap;
         }
 
         .btn-search-movies i {
@@ -491,10 +493,19 @@
 
     function applyRandomNeonColor(element) {
         const colors = ['#FF00FF', '#00FFFF', '#FF0000', '#00FF00', '#FFFF00', '#FF00FF', '#FF9900', '#9900FF', '#FF69B4', '#00FF99'];
-        const randomColor = colors[Math.floor(Math.random() * colors.length)];
-        element.style.borderColor = randomColor;
-        element.style.color = randomColor;
+        element.style.color = colors[Math.floor(Math.random() * colors.length)];
     }
+
+    // 모든 .neon-border 요소에 랜덤 색상 적용
+    function updateNeonColors() {
+        const neonBorders = document.querySelectorAll('.neon-border');
+        neonBorders.forEach(element => {
+            applyRandomNeonColor(element);
+        });
+    }
+
+    // 주기적으로 색상 변경 (예: 1초마다)
+    setInterval(updateNeonColors, 2000);
 </script>
 </body>
 </html>
