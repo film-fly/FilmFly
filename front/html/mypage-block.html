@@ -26,8 +26,8 @@
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
-  <div>차단한 사용자 목록</div>
-  <div id="block-box" class="list-group list-group-flush">
+  <div class="page-title">차단한 사용자 목록</div>
+  <div id="block-box" class="list-group">
     <ul id="pagination-blocks" class="pagination d-flex justify-content-center"></ul>
   </div>
 </div>
@@ -47,7 +47,7 @@
           const blockHtml = `
             <div class="list-group-item d-flex p-3" data-block-id="${block.id}">
               <div class="d-flex flex-column flex-grow-1 gap-3">
-                <div>${block.nickname}</div>
+                <div class="mypage-entity-title">${block.nickname}</div>
                 <div>${block.memo}</div>
               </div>
               <div class="ms-3">
