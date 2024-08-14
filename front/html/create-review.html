@@ -19,6 +19,53 @@
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .rating {
+      display: flex;
+      flex-direction: row-reverse;
+      font-size: 2rem; /* 별의 크기 조절 */
+      unicode-bidi: bidi-override;
+      direction: rtl;
+      margin-bottom: 1em;
+    }
+
+    .rating input[type="radio"] {
+      display: none;
+    }
+
+    .rating label {
+      color: gray;
+      cursor: pointer;
+      position: relative;
+      display: inline-block;
+      width: 2em; /* 별의 크기 */
+      height: 2em; /* 별의 크기 */
+      text-align: center;
+      line-height: 2em; /* 별의 크기와 일치시킴 */
+    }
+
+    .rating label::before {
+      content: "\f005"; /* Font Awesome 별 아이콘 */
+      font-family: "Font Awesome 5 Free";
+      font-weight: 900;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .rating input:checked ~ label::before {
+      color: gold;
+    }
+
+    .rating input:checked ~ label {
+      color: gold;
+    }
+
+    .rating input:checked ~ label[data-checked="true"]::before {
+      content: "\f005"; /* Font Awesome 별 아이콘 */
+      color: gold;
+    }
+  </style>
 </head>
 <body>
 <div class="container">
@@ -31,19 +78,18 @@
     <label for="inputReviewContent">리뷰 설명</label>
     <textarea id="inputReviewContent" class="form-control" style="height: 200px;"></textarea>
     <label for="inputReviewRating">별점</label>
-    <select id="inputReviewRating" class="form-select" aria-label="별점 선택">
-      <option value selected>선택</option>
-      <option value="0.5">0.5</option>
-      <option value="1">1.0</option>
-      <option value="1.5">1.5</option>
-      <option value="2">2.0</option>
-      <option value="2.5">2.5</option>
-      <option value="3">3.0</option>
-      <option value="3.5">3.5</option>
-      <option value="4">4.0</option>
-      <option value="4.5">4.5</option>
-      <option value="5">5.0</option>
-    </select>
+    <div class="rating">
+      <input type="radio" id="star5" name="rating" value="5"><label for="star5" data-checked="true"></label>
+      <input type="radio" id="star4.5" name="rating" value="4.5"><label for="star4.5" data-checked="true"></label>
+      <input type="radio" id="star4" name="rating" value="4"><label for="star4" data-checked="true"></label>
+      <input type="radio" id="star3.5" name="rating" value="3.5"><label for="star3.5" data-checked="true"></label>
+      <input type="radio" id="star3" name="rating" value="3"><label for="star3" data-checked="true"></label>
+      <input type="radio" id="star2.5" name="rating" value="2.5"><label for="star2.5" data-checked="true"></label>
+      <input type="radio" id="star2" name="rating" value="2"><label for="star2" data-checked="true"></label>
+      <input type="radio" id="star1.5" name="rating" value="1.5"><label for="star1.5" data-checked="true"></label>
+      <input type="radio" id="star1" name="rating" value="1"><label for="star1" data-checked="true"></label>
+      <input type="radio" id="star0.5" name="rating" value="0.5"><label for="star0.5" data-checked="true"></label>
+    </div>
   </div>
   <button id="btnReview" class="btn btn-primary mt-3" onclick="createReview()">저장</button>
 </div>
@@ -54,26 +100,24 @@
   const reviewId = urlParams.get('review');
   if (reviewId) {
     apiModule.GET(`/reviews/${reviewId}`,
-        function (result, status, xhr) {
-          let review = result.data;
-          $('#inputReviewTitle').val(`${review.title}`);
-          $('#inputReviewContent').val(`${review.content}`);
-          if ($('#inputReviewRating').find(`option[value="${review.rating}"]`).length) {
-            $('#inputReviewRating').val(`${review.rating}`);
-          } else {
-            $('#inputReviewRating').val($('#inputReviewRating option:first').val());
-          }
-          $('#btnReview').text("수정");
-        }, function (xhr, status, error) {
-          alert('수정할 데이터를 불러오는데 실패했습니다.');
-        });
+            function (result, status, xhr) {
+              let review = result.data;
+              $('#inputReviewTitle').val(`${review.title}`);
+              $('#inputReviewContent').val(`${review.content}`);
+              if ($(`input[name="rating"][value="${review.rating}"]`).length) {
+                $(`input[name="rating"][value="${review.rating}"]`).prop('checked', true);
+              }
+              $('#btnReview').text("수정");
+            }, function (xhr, status, error) {
+              alert('수정할 데이터를 불러오는데 실패했습니다.');
+            });
   }
 
   // 리뷰 생성
   $('#btnReview').on('click', function () {
     const title = $('#inputReviewTitle').val();
     const content = $('#inputReviewContent').val();
-    const rating = $('#inputReviewRating').val();
+    const rating = $('input[name="rating"]:checked').val();
 
     if (!invalidInput(title, content, rating)) {
       return;
@@ -89,26 +133,26 @@
     if (!reviewId) {
       if (confirm('생성 하시겠습니까?')) {
         apiModule.POST(`/movies/${movieId}/reviews`, data
-            , function (result, status, xhr) {
-              let id = result.data.id;
-              location.replace(`./review-detail.html?movie=${movieId}&review=${id}`);
-            },
-            function (xhr, status, error) {
-              alert('리뷰 생성 실패\n');
-            });
+                , function (result, status, xhr) {
+                  let id = result.data.id;
+                  location.replace(`./review-detail.html?movie=${movieId}&review=${id}`);
+                },
+                function (xhr, status, error) {
+                  alert('리뷰 생성 실패\n');
+                });
       }
     }
     // 리뷰 수정
     else {
       if (confirm('수정 하시겠습니까?')) {
         apiModule.PATCH(`/reviews/${reviewId}`, data
-            , function (result, status, xhr) {
-              let id = result.data.id;
-              location.replace(`./review-detail.html?movie=${movieId}&review=${id}`);
-            },
-            function (xhr, status, error) {
-              alert('리뷰 수정 실패\n');
-            });
+                , function (result, status, xhr) {
+                  let id = result.data.id;
+                  location.replace(`./review-detail.html?movie=${movieId}&review=${id}`);
+                },
+                function (xhr, status, error) {
+                  alert('리뷰 수정 실패\n');
+                });
       }
     }
   });
