@@ -106,7 +106,7 @@ class RandomEntityUserAndBoardAndCommentTest {
             long userId = userIndex + 1; // 유저 ID는 1부터 시작
 
             // 랜덤 hits 값 (0~1000)
-            long randomHits = random.nextInt(1001); // 0부터 1000까지의 랜덤 숫자
+            long randomHits = random.nextInt(35); // 0부터 1000까지의 랜덤 숫자
 
             // 보드 제목과 내용에 한글 추가
             String title = getRandomBoardTitle(random);
