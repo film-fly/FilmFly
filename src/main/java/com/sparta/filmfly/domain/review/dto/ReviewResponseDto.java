@@ -15,6 +15,8 @@ public class ReviewResponseDto {
 
     private Long id;
     private Long userId;
+    private Long movieId;
+    private String movieTitle;
     private String nickname;
     private String pictureUrl;
     private Float rating;
@@ -29,10 +31,12 @@ public class ReviewResponseDto {
     private Boolean isBlock;
     private Boolean isOwner;
 
-    public ReviewResponseDto(Long id, Long userId, String nickname, String pictureUrl, Float rating,
+    public ReviewResponseDto(Long id, Long userId, Long movieId, String movieTitle, String nickname, String pictureUrl, Float rating,
         String title, String content, LocalDateTime createdAt, Long goodCount, Long badCount) {
         this.id = id;
         this.userId = userId;
+        this.movieId = movieId;
+        this.movieTitle = movieTitle;
         this.nickname = nickname;
         this.pictureUrl = pictureUrl;
         this.rating = rating;
