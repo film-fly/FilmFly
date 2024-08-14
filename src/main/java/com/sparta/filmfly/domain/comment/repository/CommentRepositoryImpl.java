@@ -80,6 +80,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                         comment.user.id,
                         comment.board.id,
                         comment.user.nickname,
+                        comment.user.pictureUrl,
                         comment.content,
                         comment.updatedAt,
                         good.id.count().as("goodCount"),
