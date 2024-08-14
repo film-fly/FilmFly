@@ -262,11 +262,14 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         QReview review = QReview.review;
         QGood good = QGood.good;
         QBad bad = QBad.bad;
+        Review a;
         // 메인 쿼리에서 좋아요와 싫어요 개수를 계산하여 데이터를 조회
         JPQLQuery<ReviewResponseDto> query = queryFactory
                 .select(Projections.constructor(ReviewResponseDto.class,
                         review.id,
                         review.user.id,
+                        review.movie.id,
+                        review.movie.title,
                         review.user.nickname,
                         review.user.pictureUrl,
                         review.rating,
