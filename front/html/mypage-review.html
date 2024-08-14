@@ -32,7 +32,7 @@
     <!-- 유저 프로필 추가 영역 -->
   </div>
   <div class="page-title">작성한 리뷰 목록</div>
-  <div id="review-box" class="list-group list-group-flush">
+  <div id="review-box" class="list-group">
   </div>
   <br/>
   <ul id="pagination-reviews" class="pagination d-flex justify-content-center"></ul>
@@ -62,7 +62,7 @@
   // 리뷰 HTML 생성 함수
   function generateReviewHtml(review) {
     let reviewHtml = `
-    <div class="list-group-item d-flex p-3 mypage-interactive-item" data-review-id="${review.id}">
+    <div class="d-flex p-3 list-group-item mypage-interactive-item" data-review-id="${review.id}">
       <a href="../html/movie-detail.html?movie=${review.movieId}" class="d-flex flex-column flex-grow-1">
         <div class="d-flex align-items-center justify-content-between">
           <div class="me-2 d-flex flex-column">
