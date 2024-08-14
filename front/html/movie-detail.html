@@ -475,7 +475,7 @@
                 <div class="me-3 d-flex flex-column">
                   <div class="d-flex align-items-center gap-3">
                     <img class="img-profile-size" src="${review.pictureUrl === null ? '../images/profileImg.png' : review.pictureUrl}" alt="프로필사진">
-                    <div>${review.nickname}</div>
+                    <div><a href="./mypage.html?user=${review.userId}">${review.nickname}</a></div>
                     <div>${review.createdAt}</div>
                     <i class="fa-solid fa-star">${review.rating}</i>
                   </div>

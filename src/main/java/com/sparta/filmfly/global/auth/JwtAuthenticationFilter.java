@@ -59,12 +59,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 throw new SuspendedException(ResponseCodeEnum.USER_SUSPENDED);
             }
 
-            if (user.getUserStatus() == UserStatusEnum.DELETED) {
-                handleTokenGeneration(response, user);
-                response.setStatus(ResponseCodeEnum.USER_DELETED.getHttpStatus().value());
-                ResponseEntity<MessageResponseDto> responseEntity = ResponseUtils.of(ResponseCodeEnum.USER_DELETED.getHttpStatus(), ResponseCodeEnum.USER_DELETED.getMessage());
-                writeResponseBody(response, responseEntity);
-            }
+//            if (user.getUserStatus() == UserStatusEnum.DELETED) {
+//                handleTokenGeneration(response, user);
+//                response.setStatus(ResponseCodeEnum.USER_DELETED.getHttpStatus().value());
+//                ResponseEntity<MessageResponseDto> responseEntity = ResponseUtils.of(ResponseCodeEnum.USER_DELETED.getHttpStatus(), ResponseCodeEnum.USER_DELETED.getMessage());
+//                writeResponseBody(response, responseEntity);
+//            }
 
             List<SimpleGrantedAuthority> authorities = (user.getUserRole() == UserRoleEnum.ROLE_ADMIN)
                     ? List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))

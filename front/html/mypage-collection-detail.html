@@ -76,7 +76,7 @@
   </div>
   <div class="collection-detail">
     <div class="mb-3">
-      <div class="d-flex justify-content-end gap-2">
+      <div id="tool-box" class="d-flex justify-content-end invisible gap-2">
         <button id="btnUpdateCollection" class="btn btn-primary">수정</button>
         <button id="btnDeleteCollection" class="btn btn-primary">삭제</button>
       </div>
@@ -95,8 +95,6 @@
   const urlParams = new URLSearchParams(window.location.search);
   const profileUserId = urlParams.get('user');
   const collectionId = urlParams.get('collectionId');
-  console.log("profileUserId id : " + profileUserId);
-  console.log("collectionId: " + collectionId);
 
   $(document).ready(function () {
     if (collectionId == null) {
@@ -122,6 +120,9 @@
         $('.page-title').text(collection.collectionName);
         $('.fs-6').text(collection.collectionContent);
         userId = collection.userId;
+        if (collection.isOwner) {
+          $('#tool-box').removeClass('invisible');
+        }
       } else {
         alert("보관함 정보를 불러오는 데 실패했습니다.");
       }
@@ -198,11 +199,10 @@
 
   $('#btnDeleteCollection').on('click', function () {
     if (confirm("해당 보관함을 삭제하시겠습니까?")) {
-      apiModule.DELETE(`/collections/${collectionId}`,null , function (result) {
+      apiModule.DELETE(`/collections/${collectionId}`, null, function (result) {
         if (result.statusCode === 200) {
           alert("보관함을 삭제하였습니다.");
-          const url = `../html/mypage-collection.html?user=${userId}`;
-          location.href = url;
+          location.replace(`./mypage-collection.html?user=${userId}`);
         } else {
           alert("보관함 삭제 실패");
         }
@@ -217,8 +217,7 @@
       return;
     }
     const movieId = $(this).attr('data-movie-id');
-    const url = `../html/movie-detail.html?movie=${movieId}`;
-    location.href = url;
+    location.href = `../html/movie-detail.html?movie=${movieId}`;
   });
 
   $(document).on('click', '.delete-icon', function (e) {
