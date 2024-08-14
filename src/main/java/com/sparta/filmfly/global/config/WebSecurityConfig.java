@@ -78,6 +78,7 @@ public class WebSecurityConfig {
                     .requestMatchers("/test/**").permitAll()
                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                     .requestMatchers("/emails/**").permitAll()
+                    .requestMatchers("/users/signup").permitAll()
                     .requestMatchers("/admins/**").hasRole("ADMIN")
                     .requestMatchers("/users/kakao/authorize", "/users/kakao/callback", "/users/check-nickname").permitAll()
                     .requestMatchers(HttpMethod.GET, "/users/*").permitAll()

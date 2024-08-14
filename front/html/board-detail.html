@@ -138,7 +138,7 @@
           <div class="d-flex align-items-center gap-3">
             <div class="profile-box d-flex align-items-center gap-2">
               <div>
-                <img class="img-profile-size" src="${board.profileUrl === null ? '../images/profileImg.png' : board.profileUrl}" alt="프로필 사진">
+                <img class="img-profile-size rounded-circle" src="${board.profileUrl === null ? '../images/profileImg.png' : board.profileUrl}" alt="프로필 사진">
               </div>
               <div><a href="./mypage.html?user=${board.userId}">${board.nickname}</a></div>
             </div>
@@ -199,8 +199,8 @@
           <li class="list-group-item" data-content-id="${comment.id}">
             <div class="profile-box d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center gap-2">
-                <div>
-                  <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">
+                <div class="my-2">
+                  <img class="img-profile-size rounded-circle" src="${comment.profileImg || '../images/profileImg.png'}" alt="프로필 사진">
                 </div>
                 <div><a href="./mypage.html?user=${comment.userId}">${comment.nickname}</a></div>
                 <div>${comment.createdAt}</div>

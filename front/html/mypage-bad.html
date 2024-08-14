@@ -243,7 +243,7 @@
             <div style="font-weight: bold; color: #FF6F61;">${review.movieTitle || '영화 제목 미확인'}</div>
           </a>
             <div class="d-flex align-items-center">
-              <img style="width: 52px; height: 52px;" src="${review.pictureUrl || defaultProfileImg}" alt="프로필사진" onerror="this.src='${defaultProfileImg}'">
+              <img style="width: 52px; height: 52px;" class="rounded-circle" src="${review.pictureUrl || defaultProfileImg}" alt="프로필사진" onerror="this.src='${defaultProfileImg}'">
               <div>${review.nickname || '닉네임 없음'}</div>
             </div>
           </div>

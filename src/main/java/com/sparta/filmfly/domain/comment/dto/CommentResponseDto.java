@@ -15,6 +15,7 @@ public class CommentResponseDto {
     private Long userId;
     private Long boardId;
     private String nickname;
+    private String profileImg;
     private String content;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
@@ -25,11 +26,12 @@ public class CommentResponseDto {
     private Boolean isOwner;
 
     @Builder
-    public CommentResponseDto(Long id, Long userId,Long boardId, String nickname, String content, LocalDateTime createdAt, long goodCount, long badCount, Boolean isGood, Boolean isBad) {
+    public CommentResponseDto(Long id, Long userId,Long boardId, String nickname, String profileImg, String content, LocalDateTime createdAt, long goodCount, long badCount, Boolean isGood, Boolean isBad) {
         this.id = id;
         this.userId = userId;
         this.boardId = boardId;
         this.nickname = nickname;
+        this.profileImg = profileImg;
         this.content = content;
         this.createdAt = createdAt;
         this.goodCount = goodCount;
@@ -39,12 +41,13 @@ public class CommentResponseDto {
         this.isOwner = false;
     }
 
-    public CommentResponseDto(Long id, Long userId, Long boardId, String nickname, String content,
-        LocalDateTime createdAt, long goodCount, long badCount) {
+    public CommentResponseDto(Long id, Long userId, Long boardId, String nickname, String profileImg,
+        String content, LocalDateTime createdAt, long goodCount, long badCount) {
         this.id = id;
         this.userId = userId;
         this.boardId = boardId;
         this.nickname = nickname;
+        this.profileImg = profileImg;
         this.content = content;
         this.createdAt = createdAt;
         this.goodCount = goodCount;
@@ -54,15 +57,16 @@ public class CommentResponseDto {
 
     public static CommentResponseDto fromEntity(Comment comment,Long goodCount, Long badCount) {
         return CommentResponseDto.builder()
-                .id(comment.getId())
-                .userId(comment.getUser().getId())
-                .boardId(comment.getBoard().getId())
-                .nickname(comment.getUser().getNickname())
-                .content(comment.getContent())
-                .createdAt(comment.getCreatedAt())
-                .goodCount(goodCount)
-                .badCount(badCount)
-                .build();
+            .id(comment.getId())
+            .userId(comment.getUser().getId())
+            .boardId(comment.getBoard().getId())
+            .nickname(comment.getUser().getNickname())
+            .profileImg(comment.getUser().getPictureUrl())
+            .content(comment.getContent())
+            .createdAt(comment.getCreatedAt())
+            .goodCount(goodCount)
+            .badCount(badCount)
+            .build();
     }
 
     public void setReactions(ReactionCheckResponseDto dto) {

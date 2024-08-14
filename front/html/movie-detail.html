@@ -482,9 +482,10 @@
               if (credits && credits.length > 0) {
                 $('#movie-actor-box').empty();
                 credits.forEach(credit => {
+                  let actorImg = credit.profilePath === null ? '../images/profileImg.png' : `${imageUrl}${credit.profilePath}`;
                   let creditHtml = `
                         <div>
-                            <img src="${imageUrl}${credit.profilePath}" class="movie-actor" alt="영화배우사진">
+                            <img src="${actorImg}" class="movie-actor" alt="영화배우사진">
                             <p class="movie-actor-name">${checkHangle(credit.originalName) ? credit.originalName : credit.name}</p>
                         </div>
                     `;
@@ -541,7 +542,7 @@
               <div class="d-flex align-items-center justify-content-between mb-3">
                 <div class="me-3 d-flex flex-column">
                   <div class="d-flex align-items-center gap-3">
-                    <img class="img-profile-size" src="${review.pictureUrl === null ? '../images/profileImg.png' : review.pictureUrl}" alt="프로필사진">
+                    <img class="img-profile-size rounded-circle" src="${review.pictureUrl === null ? '../images/profileImg.png' : review.pictureUrl}" alt="프로필사진">
                     <div><a href="./mypage.html?user=${review.userId}">${review.nickname}</a></div>
                     <div>${review.createdAt}</div>
                     <i class="fa-solid fa-star"> ${review.rating}</i>
