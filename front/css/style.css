@@ -3,6 +3,23 @@ body {
     color: #e5e5e5;
 }
 
+.btn {
+  background-color: transparent;
+  color: white;
+  border: 1px solid white;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.btn:hover {
+  background-color: white;
+  color: black;
+}
+
+.btn.active {
+  background-color: white;
+  color: black;
+}
+
 .container {
   width: 800px;
   margin: 0 auto 30px auto;
@@ -34,6 +51,10 @@ body {
   display: flex;
   justify-content: space-between;
   padding: 12px 0;
+}
+
+.list-group .list-group-item {
+  background-color: #333; color: white;
 }
 
 /*.collection-form {*/
@@ -236,7 +257,7 @@ input[name="tab_item"] {
 .page-title {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #333333; /* 제목 색상 */
+  color: white; /* 제목 색상 */
   margin-bottom: 20px; /* 제목과 목록 사이 간격 */
   border-bottom: 2px solid #333333; /* 제목 하단 테두리 */
   padding-bottom: 10px; /* 제목과 테두리 간격 */
@@ -253,7 +274,7 @@ input[name="tab_item"] {
 }
 
 .mypage-interactive-item:hover {
-  background-color: #f8f9fa; /* 기본 항목에 마우스 오버 시 배경색 변경 */
+  background-color: #555555; /* 기본 항목에 마우스 오버 시 배경색 변경 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 기본 항목에 마우스 오버 시 그림자 추가 */
 }
 
@@ -265,12 +286,6 @@ input[name="tab_item"] {
   transition: background-color 0.3s, border-color 0.3s;
 }
 
-.mypage-interactive-item .btn-primary:hover {
-  background-color: #0056b3; /* 버튼에 마우스 오버 시 배경색 변경 */
-  border-color: #0056b3; /* 버튼에 마우스 오버 시 테두리 색상 변경 */
-}
-
-.mypage-interactive-item .btn-primary:active {
-  background-color: #003d7a; /* 버튼 클릭 시 배경색 변경 */
-  border-color: #003d7a; /* 버튼 클릭 시 테두리 색상 변경 */
+.text-createTime {
+  color: white;
 }

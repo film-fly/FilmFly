@@ -29,15 +29,14 @@
   <header id="common-header"></header>
 
   <div class="d-flex gap-3 flex-column">
-<!--    프로필 -->
-    <div id="profile-box" class="d-flex align-items-center gap-3" data-content-id="1" data-user-id="">
-    </div>
-
-<!--    영화 -->
+    <!--    영화 -->
     <div id="movie-box" class="d-flex align-items-center">
     </div>
     <hr>
-<!--    리뷰 -->
+    <!--    프로필 -->
+    <div id="profile-box" class="d-flex align-items-center gap-3" data-content-id="1" data-user-id="">
+    </div>
+    <!--    리뷰 -->
     <div id="review-box">
     </div>
 
@@ -148,20 +147,20 @@
           <div>`;
           if (review.isGood) {
               toolHtml += `
-                    <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile"> ${review.goodCount}</i></button>
+                    <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-thumbs-up"> ${review.goodCount}</i></button>
             `;
             } else {
               toolHtml += `
-                    <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile"> ${review.goodCount}</i></button>
+                    <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-thumbs-up"> ${review.goodCount}</i></button>
             `;
             }
             if (review.isBad) {
               toolHtml += `
-                    <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry"> ${review.badCount}</i></button>
+                    <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-thumbs-down"> ${review.badCount}</i></button>
             `;
             } else {
               toolHtml += `
-                    <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry"> ${review.badCount}</i></button>
+                    <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-thumbs-down"> ${review.badCount}</i></button>
             `;
             }
           toolHtml += `</div>
