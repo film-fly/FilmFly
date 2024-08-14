@@ -1,15 +1,10 @@
 package com.sparta.filmfly;
 
-import org.apache.catalina.Context;
-import org.apache.catalina.connector.Connector;
-import org.apache.tomcat.util.descriptor.web.SecurityCollection;
-import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
+import jakarta.annotation.PostConstruct;
+import java.util.TimeZone;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
@@ -19,6 +14,11 @@ public class SpringInitTemplateApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SpringInitTemplateApplication.class, args);
+    }
+
+    @PostConstruct
+    void started(){
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
     }
 
 //    @Component
