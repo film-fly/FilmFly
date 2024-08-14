@@ -199,7 +199,6 @@
         const data = { nickname: nickname };
         const feedback = $('#nicknameFeedback');
 
-
         apiModule.POST('/users/check-nickname', data,
             function (result, status, xhr) {
                 feedback.text('사용 가능한 닉네임입니다.').css('color', 'green');

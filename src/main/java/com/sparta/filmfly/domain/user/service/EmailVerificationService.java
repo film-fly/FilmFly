@@ -1,55 +1,70 @@
 package com.sparta.filmfly.domain.user.service;
 
-import com.sparta.filmfly.domain.user.entity.EmailVerification;
-import com.sparta.filmfly.domain.user.repository.EmailVerificationRepository;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
-import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
+import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
+import com.sparta.filmfly.global.exception.custom.detail.LimitedException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.spy.memcached.MemcachedClient;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmailVerificationService {
 
-    private final EmailVerificationRepository emailVerificationRepository;
-    private final UserRepository userRepository;
+    private final MemcachedClient memcachedClient;
     private final JavaMailSender mailSender;
+    private final UserRepository userRepository;
+
+    private static final long EXPIRATION_TIME = 3 * 60; // 3분 (180초)
+    private static final long SEND_LIMIT_RESET_TIME = 60 * 60; // 1시간 (3600초)
+    private static final int MAX_SEND_COUNT = 5;
 
     /**
      * 이메일 인증 코드를 전송
      */
     @Transactional
     public void sendVerificationEmail(String email) {
-        // 사용자 테이블에서 이메일 중복 확인
-        if (userRepository.existsByEmail(email)) {
-            throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
+        // 이메일 존재 여부 확인
+        userRepository.existsByEmail(email);
+
+        // 전송 횟수 확인
+        String sendCountKey = email + ":sendCount";
+        Integer sendCount = (Integer) memcachedClient.get(sendCountKey);
+        log.info("sendCount:"+sendCount);
+        if (sendCount == null) {
+            sendCount = 0;
         }
 
-        // 이메일 인증 엔티티 조회, 존재하지 않으면 새로 생성
-        EmailVerification emailVerification = emailVerificationRepository.findByEmailOrCreateNew(email);
+        if (sendCount >= MAX_SEND_COUNT) {
+            throw new LimitedException(ResponseCodeEnum.EMAIL_RESEND_LIMIT);
+        }
 
-        // 재전송 제한 체크
-        emailVerification.validateSendLimit();
+        // 인증 코드 생성
+        String verificationCode = generateVerificationCode();
 
-        // 새로운 인증 코드 생성 및 갱신
-        emailVerification.updateEmailVerificationToken();
-        emailVerification.incrementSendCount();
-        emailVerification.updateLastResendTime(LocalDateTime.now());
-        emailVerificationRepository.save(emailVerification);
+        // Memcached에 인증 코드 저장 (3분간 유효)
+        memcachedClient.set(email, (int) EXPIRATION_TIME, verificationCode);
+
+        // 전송 횟수 증가 및 갱신
+        sendCount++;
+        memcachedClient.set(sendCountKey, (int) SEND_LIMIT_RESET_TIME, sendCount);
 
         // 이메일 발송
-        sendEmail(email, "이메일 인증 코드는 다음과 같습니다: " + emailVerification.getEmailVerificationToken());
+        sendEmail(email, "이메일 인증 코드는 다음과 같습니다: " + verificationCode);
+
+        // 인증 상태 초기화 (아직 인증되지 않음)
+        String verificationStatusKey = email + ":verified";
+        memcachedClient.set(verificationStatusKey, (int) EXPIRATION_TIME, false);
     }
 
-    /**
-     * 이메일을 전송
-     */
     private void sendEmail(String to, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
@@ -59,33 +74,37 @@ public class EmailVerificationService {
         mailSender.send(message);
     }
 
-    /**
-     * 이메일 인증 코드를 검증
-     */
     @Transactional
     public void verifyEmailCode(String email, String code) {
-        EmailVerification emailVerification = emailVerificationRepository.findByEmailOrElseThrow(email);
-        emailVerification.validateToken(code);
-        emailVerification.validateExpiryTime();
-        emailVerification.verify();
-        emailVerificationRepository.save(emailVerification);
+        String storedCode = (String) memcachedClient.get(email);
+
+        if (storedCode == null) {
+            throw new AccessDeniedException(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
+        }
+
+        if (!storedCode.equals(code)) {
+            throw new AccessDeniedException(ResponseCodeEnum.EMAIL_VERIFICATION_TOKEN_MISMATCH);
+        }
+
+        // 인증 성공 후, Memcached에서 코드 삭제 및 인증 상태 업데이트
+        memcachedClient.delete(email);
+        String verificationStatusKey = email + ":verified";
+        memcachedClient.set(verificationStatusKey, (int) EXPIRATION_TIME, true);
     }
 
-    /**
-     * 이메일이 인증되었는지 확인
-     */
     @Transactional
     public void checkIfEmailVerified(String email) {
-        EmailVerification emailVerification = emailVerificationRepository.findByEmailOrElseThrow(email);
-        emailVerification.validateVerifiedStatus();
+        String verificationStatusKey = email + ":verified";
+        Boolean isVerified = (Boolean) memcachedClient.get(verificationStatusKey);
+
+        if (isVerified == null || !isVerified) {
+            throw new AccessDeniedException(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
+        }
     }
 
-    /**
-     * 이메일 인증 데이터를 삭제
-     */
-    @Transactional
-    public void deleteEmailVerificationByEmail(String email) {
-        EmailVerification emailVerification = emailVerificationRepository.findByEmailOrElseThrow(email);
-        emailVerificationRepository.delete(emailVerification);
+    private String generateVerificationCode() {
+        return UUID.randomUUID().toString().substring(0, 6);
     }
+
+
 }
