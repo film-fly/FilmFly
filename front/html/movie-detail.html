@@ -173,10 +173,10 @@
         <span id="reviewCount"></span>
       </div>
       <div class="button-box">
-        <button id="btnMovieGood" class="btnReaction btn btn-outline-primary me-2" data-content-id="" data-type="MOVIE" data-good="true"><i class="fa-regular fa-thumbs-up"></i></button>
-        <button id="btnMovieBad" class="btnReaction btn btn-outline-primary me-2" data-content-id="" data-type="MOVIE" data-bad="true"><i class="fa-regular fa-thumbs-down"></i></button>
-        <button id="btnFavorite" class="btn btn-outline-primary me-2"><i class="fa-regular fa-bookmark"></i> 찜하기</button>
-        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addCollection"><i class="fa-regular fa-floppy-disk"></i> 보관함 추가</button>
+        <button id="btnMovieGood" class="btnReaction btn btn-outline-light me-2" data-content-id="" data-type="MOVIE" data-good="true"><i class="fa-regular fa-thumbs-up"></i></button>
+        <button id="btnMovieBad" class="btnReaction btn btn-outline-light me-2" data-content-id="" data-type="MOVIE" data-bad="true"><i class="fa-regular fa-thumbs-down"></i></button>
+        <button id="btnFavorite" class="btn btn-outline-light me-2"><i class="fa-regular fa-bookmark"></i> 찜하기</button>
+        <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#addCollection"><i class="fa-regular fa-floppy-disk"></i> 보관함 추가</button>
       </div>
       <p id="movie-description" class="text-center">영화의 줄거리가 여기에 표시됩니다...</p>
     </div>
@@ -214,7 +214,7 @@
       </div>
       <div class="modal-footer">
         <button id="btnCreateCollection" type="button" class="btn btn-secondary">보관함 생성</button>
-        <button id="btnAddCollection" type="button" class="btn btn-primary">추가</button>
+        <button id="btnAddCollection" type="button" class="btn btn-light">추가</button>
       </div>
     </div>
   </div>
@@ -233,7 +233,7 @@
         <textarea id="inputBlockReport" style="width: 100%;height: 200px;"></textarea>
       </div>
       <div class="modal-footer d-flex justify-content-center">
-        <button type="button" class="btn btn-primary" id="btnBlockReport" style="width: 35%;">차단하기</button>
+        <button type="button" class="btn btn-light" id="btnBlockReport" style="width: 35%;">차단하기</button>
       </div>
     </div>
   </div>
@@ -258,9 +258,9 @@
 
   $('#btnFavorite').on('click', function () {
     let isAdding;
-    if ($(this).hasClass('btn-outline-primary')) {
+    if ($(this).hasClass('btn-outline-light')) {
       isAdding = true;
-    } else if ($(this).hasClass('btn-primary')) {
+    } else if ($(this).hasClass('btn-light')) {
       isAdding = false;
     }
 
@@ -268,7 +268,7 @@
     if (isAdding) {
       if (confirm('이 영화를 찜하시겠습니까?')) {
         apiModule.POST(favoriteUrl, null, function (result) {
-          $('#btnFavorite').removeClass('btn-outline-primary').addClass('btn-primary');
+          $('#btnFavorite').removeClass('btn-outline-light').addClass('btn-light');
         }, function (xhr) {
           alert(`${xhr.responseJSON.message}`);
         });
@@ -276,7 +276,7 @@
     } else {
       if (confirm('찜을 취소하시겠습니까?')) {
         apiModule.DELETE(favoriteUrl, null, function (result) {
-          $('#btnFavorite').removeClass('btn-primary').addClass('btn-outline-primary');
+          $('#btnFavorite').removeClass('btn-light').addClass('btn-outline-light');
         }, function (xhr) {
           alert(`${xhr.responseJSON.message}`);
         });
@@ -358,7 +358,7 @@
         <button class="btn btn-sm btn-danger btn-delete" style="display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px;" data-collection-id="${collection.collectionId}">
           <i class="bi bi-trash"></i>
         </button>
-        <button class="btn btn-sm btn-primary btn-move" style="display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px; margin-left: 5px;" data-collection-id="${collection.collectionId}">
+        <button class="btn btn-sm btn-light btn-move" style="display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px; margin-left: 5px;" data-collection-id="${collection.collectionId}">
           <i class="bi bi-arrow-right"></i>
         </button>
       </div>
@@ -496,19 +496,19 @@
 
               let reactions = result.data.reactions || {};
               if (reactions.isGood) {
-                $('#btnMovieGood').removeClass('btn-outline-primary').addClass('btn-primary');
+                $('#btnMovieGood').removeClass('btn-outline-light').addClass('btn-light');
               } else {
-                $('#btnMovieGood').removeClass('btn-primary').addClass('btn-outline-primary');
+                $('#btnMovieGood').removeClass('btn-light').addClass('btn-outline-light');
               }
               if (reactions.isBad) {
-                $('#btnMovieBad').removeClass('btn-outline-primary').addClass('btn-primary');
+                $('#btnMovieBad').removeClass('btn-outline-light').addClass('btn-light');
               } else {
-                $('#btnMovieBad').removeClass('btn-primary').addClass('btn-outline-primary');
+                $('#btnMovieBad').removeClass('btn-light').addClass('btn-outline-light');
               }
               if (reactions.isFavorite) {
-                $('#btnFavorite').removeClass('btn-outline-primary').addClass('btn-primary');
+                $('#btnFavorite').removeClass('btn-outline-light').addClass('btn-light');
               } else {
-                $('#btnFavorite').removeClass('btn-primary').addClass('btn-outline-primary');
+                $('#btnFavorite').removeClass('btn-light').addClass('btn-outline-light');
               }
 
               // 좋아요 및 싫어요 숫자 업데이트
@@ -564,20 +564,20 @@
 
                 if (review.isGood) {
                   reviewHtml += `
-                    <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-thumbs-up"> ${review.goodCount}</i></button>
+                    <button class="btnReaction btn btn-light" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-thumbs-up"> ${review.goodCount}</i></button>
             `;
                 } else {
                   reviewHtml += `
-                    <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-thumbs-up"> ${review.goodCount}</i></button>
+                    <button class="btnReaction btn btn-outline-light" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-thumbs-up"> ${review.goodCount}</i></button>
             `;
                 }
                 if (review.isBad) {
                   reviewHtml += `
-                    <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-thumbs-down"> ${review.badCount}</i></button>
+                    <button class="btnReaction btn btn-light" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-thumbs-down"> ${review.badCount}</i></button>
             `;
                 } else {
                   reviewHtml += `
-                    <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-thumbs-down"> ${review.badCount}</i></button>
+                    <button class="btnReaction btn btn-outline-light" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-thumbs-down"> ${review.badCount}</i></button>
             `;
                 }
 
@@ -613,11 +613,11 @@
               const previousPageSet = Math.max(startPage - maxVisiblePages, 1);
               const nextPageSet = Math.min(startPage + maxVisiblePages, result.data.totalPages);
 
-              pagination.append(`<button class="btn btn-outline-primary" data-page="${previousPageSet}">이전</button>`);
+              pagination.append(`<button class="btn btn-outline-light" data-page="${previousPageSet}">이전</button>`);
 
               for (let i = startPage; i <= endPage; i++) {
                 const button = $('<button>')
-                        .addClass('btn btn-outline-primary')
+                        .addClass('btn btn-outline-light')
                         .text(i)
                         .data('page', i);
 
@@ -628,7 +628,7 @@
                 pagination.append(button);
               }
 
-              pagination.append(`<button class="btn btn-outline-primary" data-page="${nextPageSet}">다음</button>`);
+              pagination.append(`<button class="btn btn-outline-light" data-page="${nextPageSet}">다음</button>`);
 
               $(document).on('click', '.pagination-sm button', function () {
                 const page = $(this).data('page');

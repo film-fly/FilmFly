@@ -20,7 +20,7 @@ body {
   color: black;
 }
 
-.btn-primary {
+.btn-light {
   background-color: white;
   color: black;
 }
@@ -287,7 +287,7 @@ input[name="tab_item"] {
   transform: scale(1.05); /* 이미지 확대 효과 */
 }
 
-.mypage-interactive-item .btn-primary {
+.mypage-interactive-item .btn-light {
   transition: background-color 0.3s, border-color 0.3s;
 }
 
