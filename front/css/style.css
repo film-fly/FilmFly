@@ -286,6 +286,22 @@ input[name="tab_item"] {
   transition: background-color 0.3s, border-color 0.3s;
 }
 
-.text-createTime {
+.text-create-time {
   color: white;
+}
+
+.modal-dialog {
+  color: white;
+}
+
+.modal-content {
+  background-color: #333;
+}
+
+.btn-close {
+  background-color: white;
+}
+
+.textarea-common {
+  background-color: #cccccc;
 }

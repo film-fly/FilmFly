@@ -248,7 +248,7 @@
             </div>
           </div>
           <div class="d-flex flex-column align-items-end">
-            <div class="text-muted mb-1">
+            <div class="text-create-time mb-1">
               ${review.createdAt || '날짜 미제공'}
             </div>
             <div class="d-flex gap-3">
@@ -276,7 +276,7 @@
         <a href="board-detail.html?board=${board.boardId}" class="d-flex flex-column flex-grow-1">
           <div class="d-flex justify-content-between align-items-center">
             <div class="mypage-entity-title">${board.title || '제목 미확인'}</div>
-            <div class="text-muted">${board.createdAt}</div>
+            <div class="text-create-time">${board.createdAt}</div>
           </div>
           <div class="mt-2 d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
@@ -301,7 +301,7 @@
         <a href="./board-detail.html?board=${comment.boardId}" class="d-flex flex-column flex-grow-1">
           <div class="d-flex justify-content-between align-items-center">
             <div class="mypage-entity-title">${comment.content || '내용 없음'}</div>
-            <div class="text-muted">${comment.createdAt}</div>
+            <div class="text-create-time">${comment.createdAt}</div>
           </div>
           <div class="mt-2 d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
