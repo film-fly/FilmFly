@@ -28,6 +28,11 @@
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
   <style>
+    body {
+      background-color: #1b1b1b;
+      color: #f5f5f5;
+    }
+
     .movie-actor {
       width: 80px;
       height: 120px;
@@ -46,11 +51,11 @@
       gap: 10px;
       overflow-x: auto;
       padding-bottom: 10px;
-      white-space: nowrap; /* 스크롤이 강제로 생기도록 설정 */
+      white-space: nowrap;
     }
 
     #movie-actor-box > div {
-      display: inline-block; /* 가로 스크롤을 위한 설정 */
+      display: inline-block;
     }
 
     #movie-actor-box::-webkit-scrollbar {
@@ -66,22 +71,7 @@
       background-color: #555;
     }
 
-    .btn {
-      background-color: transparent;
-      color: white;
-      border: 1px solid white;
-      transition: background-color 0.3s, color 0.3s;
-    }
 
-    .btn:hover {
-      background-color: white;
-      color: black;
-    }
-
-    .btn.active {
-      background-color: white;
-      color: black;
-    }
 
     .img-profile-size {
       width: 50px;
@@ -91,8 +81,8 @@
     }
 
     #review-box {
-      max-height: none; /* 스크롤바 제거 */
-      overflow-y: visible; /* 스크롤바 제거 */
+      max-height: none;
+      overflow-y: visible;
     }
 
     .title-box {
@@ -144,17 +134,17 @@
     }
     .movie-actor-name {
       height: 25px;
-      word-wrap: break-word; /* 텍스트가 길어질 경우 줄바꿈 */
-      word-break: break-word; /* 단어 단위로 줄바꿈 */
-      white-space: normal; /* 텍스트를 여러 줄로 표시 */
+      word-wrap: break-word;
+      word-break: break-word;
+      white-space: normal;
     }
-    #movie-actor-box{
+    #movie-actor-box {
       height: 200px;
     }
-    .modal-header{
+    .modal-header {
       color: black;
     }
-    #btnBlockReport{
+    #btnBlockReport {
       border-color: #1b1b1b;
       color: #1b1b1b;
     }
@@ -163,7 +153,6 @@
 </head>
 <body>
 <div class="container">
-  <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
   <button type="button" class="btn review-btn" onclick="moveToCreateReview()">
@@ -181,15 +170,13 @@
       <div class="rating-box">
         <i class="fa-solid fa-star"></i>
         <span id="movieRating"></span>
-        <span id="reviewCount"></span> <!-- 리뷰 개수 추가 -->
+        <span id="reviewCount"></span>
       </div>
       <div class="button-box">
         <button id="btnMovieGood" class="btnReaction btn btn-outline-primary me-2" data-content-id="" data-type="MOVIE" data-good="true"><i class="fa-regular fa-thumbs-up"></i></button>
         <button id="btnMovieBad" class="btnReaction btn btn-outline-primary me-2" data-content-id="" data-type="MOVIE" data-bad="true"><i class="fa-regular fa-thumbs-down"></i></button>
-        <button id="btnFavorite" class="btn btn-outline-primary me-2"><i
-                class="fa-regular fa-bookmark"></i> 찜하기</button>
-        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addCollection"><i
-                class="fa-regular fa-floppy-disk"></i> 보관함 추가</button>
+        <button id="btnFavorite" class="btn btn-outline-primary me-2"><i class="fa-regular fa-bookmark"></i> 찜하기</button>
+        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addCollection"><i class="fa-regular fa-floppy-disk"></i> 보관함 추가</button>
       </div>
       <p id="movie-description" class="text-center">영화의 줄거리가 여기에 표시됩니다...</p>
     </div>
@@ -260,7 +247,6 @@
   const movieId = urlParams.get('movie');
 
   $(document).ready(function () {
-    // 영화 데이터 로드
     loadMovie();
     loadReviews(1);
   });
@@ -492,9 +478,8 @@
 
               $('#movie-description').text(movie.overview);
 
-              // 출연진 데이터 처리
-              let credits = result.data.creditList;  // credits 배열 사용
-              if (credits && credits.length > 0) {  // credits 배열이 존재하고 비어 있지 않은 경우
+              let credits = result.data.credits;
+              if (credits && credits.length > 0) {
                 $('#movie-actor-box').empty();
                 credits.forEach(credit => {
                   let creditHtml = `
@@ -525,13 +510,16 @@
               } else {
                 $('#btnFavorite').removeClass('btn-primary').addClass('btn-outline-primary');
               }
+
+              // 좋아요 및 싫어요 숫자 업데이트
+              $('#btnMovieGood i').text(` ${result.data.goodCount}`);
+              $('#btnMovieBad i').text(` ${result.data.badCount}`);
             },
             function (xhr, status, error) {
               console.error("영화 정보를 불러오는 데 실패했습니다:", error);
             }
     );
   }
-
 
   function loadReviews(page) {
     apiModule.GET(`/movies/${movieId}/reviews?page=${page}`,
@@ -611,7 +599,6 @@
                 $('#review-box').append(reviewHtml);
               });
 
-              // 페이지네이션 처리
               const pagination = $('#pagination-reviews');
               pagination.empty();
 
@@ -645,13 +632,8 @@
 
               $(document).on('click', '.pagination-sm button', function () {
                 const page = $(this).data('page');
-
-                // 현재 스크롤 위치를 저장
                 const currentScrollPosition = $(window).scrollTop();
-
                 loadReviews(page);
-
-                // 스크롤 위치를 다시 복원
                 $(window).scrollTop(currentScrollPosition);
               });
             }, function (xhr, status, error) {
