@@ -411,29 +411,34 @@
                         element.className = isRanking || itemType === 'movie' ? 'carousel-item' : 'card-item neon-border';
                         element.innerHTML = isRanking || itemType === 'movie' ?
                             `
-                                ${isRanking ? `<div class="ranking-badge">${rank++}</div>` : ''}
-                                <img src="${imageUrl + (item.posterPath || item.moviePosterPath)}" alt="${item.title || item.movieTitle}">
-                                <div class="carousel-info">
-                                    <h5>${item.title || item.movieTitle}</h5>
-                                </div>
-                            ` :
+                        ${isRanking ? `<div class="ranking-badge">${rank++}</div>` : ''}
+                        <img src="${imageUrl + (item.posterPath || item.moviePosterPath)}" alt="${item.title || item.movieTitle}">
+                        <div class="carousel-info">
+                            <h5>${item.title || item.movieTitle}</h5>
+                        </div>
+                    ` :
                             `
-                                <p class="movie-title">${itemType === 'review' ? item.movieTitle : ''}</p>
-                                <h5>${item.title || item.nickname}</h5>
-                                <div class="card-stats">
-                                    <span><i class="fa fa-thumbs-up"></i> ${item.goodCount || 0}</span>
-                                    <span><i class="fa fa-thumbs-down"></i> ${item.badCount || 0}</span>
-                                    <span><i class="fa fa-eye"></i> ${item.hits || item.views || 0}</span>
-                                </div>
-                            `;
+                        <p class="movie-title">${itemType === 'review' ? item.movieTitle : ''}</p>
+                        <h5>${item.title || item.nickname}</h5>
+                        <div class="card-stats">
+                            <span><i class="fa fa-thumbs-up"></i> ${item.goodCount || 0}</span>
+                            <span><i class="fa fa-thumbs-down"></i> ${item.badCount || 0}</span>
+                            <span><i class="fa fa-eye"></i> ${item.hits || item.views || 0}</span>
+                        </div>
+                    `;
 
                         if (itemType !== 'movie') { // 영화 섹션이 아닌 경우에만 네온 효과 적용
                             applyRandomNeonColor(element);
                         }
                         carousel.appendChild(element);
+
                         // 클릭 이벤트 리스너 추가
                         element.addEventListener('click', function () {
-                            location.href = `./${itemType}-detail.html?${itemType}=${item.id}`;
+                            if (itemType === 'review') {
+                                location.href = `./review-detail.html?movie=${item.movieId}&review=${item.id}`;
+                            } else {
+                                location.href = `./${itemType}-detail.html?${itemType}=${item.id}`;
+                            }
                         });
                     }
                 },
@@ -442,6 +447,7 @@
                 }
             );
         }
+
 
         /* 추천 영화 섹션 데이터 로딩 */
         apiModule.GET("/genres",
