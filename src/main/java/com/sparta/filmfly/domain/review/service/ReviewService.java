@@ -152,7 +152,7 @@ public class ReviewService {
      * 최신 리뷰 목록
      */
     @Transactional(readOnly = true)
-    public PageResponseDto<List<ReviewResponseDto>> getReviews(Long filterGoodCount, Long filterHits, String search, Pageable pageable) {
+    public PageResponseDto<List<ReviewResponseDto>> getReviews(Long filterGoodCount, String search, Pageable pageable) {
         return reviewRepository.findAllWithFilters(pageable, filterGoodCount, search);
     }
 }

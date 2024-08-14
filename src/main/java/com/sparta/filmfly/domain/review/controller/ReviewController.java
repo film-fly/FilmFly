@@ -135,11 +135,10 @@ public class ReviewController {
             @RequestParam(required = false, defaultValue = "createdAt") String sortBy,  
             @RequestParam(required = false, defaultValue = "false") boolean isAsc,
             @RequestParam(value = "filterGoodCount", required = false) final Long filterGoodCount,
-            @RequestParam(value = "filterHits", required = false) final Long filterHits,
             @RequestParam(value = "search", required = false) final String search
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<ReviewResponseDto>> responseDto = reviewService.getReviews(filterGoodCount,filterHits,search,pageable);
+        PageResponseDto<List<ReviewResponseDto>> responseDto = reviewService.getReviews(filterGoodCount,search,pageable);
         return ResponseUtils.success(responseDto);
     }
 }
