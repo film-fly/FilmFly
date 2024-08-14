@@ -45,7 +45,7 @@
 # 🖥️ Project Architecture
 <details>
     <summary>Architecture</summary>
-    <img src="https://github.com/user-attachments/assets/54b077a1-2779-4e9a-87c9-572f919cb384" alt="FilmFly-아키텍처" style="max-width: 100%;">
+    <img src="https://github.com/user-attachments/assets/503b186e-6b1d-4cac-bc8d-5eda3d3885d6" alt="FilmFly-아키텍처" style="max-width: 100%;">
 </details>
 
 <br/><br/>
@@ -119,7 +119,7 @@
 # 📋 API 명세서 
 <details>
     <summary>API 명세서</summary>
-    <img src="https://github.com/user-attachments/assets/aa5b058a-2d19-4588-ad68-32a7616f6bec" alt="FilmFlyAPI" style="max-width: 100%;">
+    <img src="https://github.com/user-attachments/assets/8566c881-7a28-4061-b59a-a176d47c1538" alt="FilmFlyAPI" style="max-width: 100%;">
 
 [API Page](https://www.notion.so/881c458a10c5490596763ab364969407?v=ebdbcfe22004485d833995bdaed92ac3)
 </details>
@@ -580,7 +580,7 @@ public ReviewResponseDto updateReview(User loginUser, ReviewUpdateRequestDto req
  - 메인 기능에 대한 이슈를 만들고 세부 이슈를 만들기 ex) `[FEAT] 리뷰 기능` 
  - Assignees, Labels, Projects 달아 주기
 
-<img src="https://github.com/user-attachments/assets/c2c57018-1efa-4ed6-8f30-a918c5803247" alt="FilmFlyWireFrame" style="max-width: 100%;">
+<img src="https://github.com/user-attachments/assets/c2c57018-1efa-4ed6-8f30-a918c5803247" alt="FilmFly-GithubRules1" style="max-width: 100%;">
 </details>
 
 <details>
@@ -590,7 +590,7 @@ public ReviewResponseDto updateReview(User loginUser, ReviewUpdateRequestDto req
 
 - 세부 이슈라면? `Branch Source` 를 메인 브랜치로 선택하기
 
-<img src="https://github.com/user-attachments/assets/cd6a6ea1-8cc1-4ae6-a08e-5c98b56f6ead" alt="FilmFlyWireFrame" style="max-width: 100%;">
+<img src="https://github.com/user-attachments/assets/cd6a6ea1-8cc1-4ae6-a08e-5c98b56f6ead" alt="FilmFly-GithubRules2" style="max-width: 100%;">
 
 - main → dev → feat / refactor / fix
     - **`feat/기능명` → 이케!**
@@ -632,8 +632,8 @@ public ReviewResponseDto updateReview(User loginUser, ReviewUpdateRequestDto req
 
 세부 브랜치에서 메인 브랜치로 PR을 날리고 메인 브랜치의 기능이 다 끝나면 dev로 PR
 Assignees, Labels, Projects 달아 주기
-<img src="https://github.com/user-attachments/assets/df25e8ac-321a-4228-9bc7-48faea4da99a" alt="FilmFlyWireFrame" style="max-width: 100%;">
-<img src="https://github.com/user-attachments/assets/d3fe3f80-0093-401c-a573-97832c5b17a4" alt="FilmFlyWireFrame" style="max-width: 100%;">
+<img src="https://github.com/user-attachments/assets/df25e8ac-321a-4228-9bc7-48faea4da99a" alt="FilmFly-GithubRules3" style="max-width: 100%;">
+<img src="https://github.com/user-attachments/assets/d3fe3f80-0093-401c-a573-97832c5b17a4" alt="FilmFly-GithubRules4" style="max-width: 100%;">
 </details>
 
 <br/><br/>
