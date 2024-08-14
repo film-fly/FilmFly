@@ -55,7 +55,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_TAG_NAME }}:latest
 
-      - name: Deploy to filmfly-2
+      - name: Deploy to filmfly
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ec2-3-34-139-188.ap-northeast-2.compute.amazonaws.com
@@ -63,7 +63,7 @@ jobs:
           key: ${{ secrets.AWS_KEY }}
           script: |
             CONTAINER_ID=$(sudo docker ps -q --filter "publish=8080-8080")
-
+            
             if [ ! -z "$CONTAINER_ID" ]; then
               sudo docker stop $CONTAINER_ID
               sudo docker rm $CONTAINER_ID

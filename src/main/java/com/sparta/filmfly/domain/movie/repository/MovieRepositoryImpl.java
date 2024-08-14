@@ -246,7 +246,7 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
         if (!adults.isEmpty()) {
             for (Integer adult : adults) {
                 BooleanExpression expression = qMovie.adult.eq(adult == 1);
-                predicate = (predicate == null) ? expression : predicate.and(expression);
+                predicate = (predicate == null) ? expression : predicate.or(expression);
             }
         }
         return predicate;

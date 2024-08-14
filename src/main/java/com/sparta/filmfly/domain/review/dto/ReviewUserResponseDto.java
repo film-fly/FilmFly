@@ -26,6 +26,23 @@ public class ReviewUserResponseDto {
     private LocalDateTime createdAt;
     private Long goodCount;
     private Long badCount;
+    private Boolean isOwner;
+
+    public ReviewUserResponseDto(Long id, Long userId, Long movieId, String movieTitle, String nickname, String pictureUrl, Float rating, String title, String content, LocalDateTime createdAt, Long goodCount, Long badCount) {
+        this.id = id;
+        this.userId = userId;
+        this.movieId = movieId;
+        this.movieTitle = movieTitle;
+        this.nickname = nickname;
+        this.pictureUrl = pictureUrl;
+        this.rating = rating;
+        this.title = title;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.goodCount = goodCount;
+        this.badCount = badCount;
+        this.isOwner = false;
+    }
 
     public static ReviewUserResponseDto fromEntity(Review review, Long goodCount, Long badCount) {
         return ReviewUserResponseDto.builder()
@@ -46,5 +63,9 @@ public class ReviewUserResponseDto {
 
     public static ReviewUserResponseDto fromEntity(Review review) {
         return fromEntity(review, 0L, 0L);
+    }
+
+    public void setOwner(Boolean owner) {
+        isOwner = owner;
     }
 }

@@ -74,14 +74,15 @@ public class BoardController {
      */
     @GetMapping("/users/{userId}")
     public ResponseEntity<DataResponseDto<PageResponseDto<List<BoardPageDto>>>> getUsersBoard(
-            @PathVariable Long userId,
-            @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam(required = false, defaultValue = "10") int size,
-            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
-            @RequestParam(required = false, defaultValue = "false") boolean isAsc
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long userId,
+        @RequestParam(required = false, defaultValue = "1") int page,
+        @RequestParam(required = false, defaultValue = "10") int size,
+        @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+        @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<BoardPageDto>> responseDto = boardService.getUsersBoard(userId,pageable);
+        PageResponseDto<List<BoardPageDto>> responseDto = boardService.getUsersBoard(userDetails, userId, pageable);
         return ResponseUtils.success(responseDto);
     }
 

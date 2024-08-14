@@ -2,6 +2,7 @@ package com.sparta.filmfly.domain.user.repository;
 
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
+import com.sparta.filmfly.global.common.batch.hardDelete.SoftDeletableRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import jakarta.transaction.Transactional;
@@ -13,10 +14,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, SoftDeletableRepository<User> {
 
     default User findByIdOrElseThrow(Long userId) {
         return findById(userId)
@@ -44,11 +46,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Page<User> findAll(Pageable pageable);
 
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM User u WHERE u.deletedAt IS NOT NULL AND u.deletedAt < :cutoffDate AND u.userStatus = 'DELETED'")
-    void deleteOldSoftDeletedUsers(@Param("cutoffDate") LocalDateTime cutoffDate);
-
     boolean existsByUsername(String username);
 
     boolean existsByNickname(String nickname);
@@ -56,4 +53,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     long count();
+
+    List<User> findAllByDeletedAtBefore(LocalDateTime deletionThresholdDate);
+
+    void deleteAllByDeletedAtBefore(LocalDateTime deletionThresholdDate);
+
 }

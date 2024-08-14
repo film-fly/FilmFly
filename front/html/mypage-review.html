@@ -42,7 +42,6 @@
   // URL에서 'user' 파라미터 값을 가져옵니다.
   const urlParams = new URLSearchParams(window.location.search);
   const userId = urlParams.get('user');
-  console.log("user id : " + userId);
 
   $(document).ready(function () {
     if(userId == null) {
@@ -62,7 +61,7 @@
 
   // 리뷰 HTML 생성 함수
   function generateReviewHtml(review) {
-    return `
+    let reviewHtml = `
     <div class="list-group-item d-flex p-3 mypage-interactive-item" data-review-id="${review.id}">
       <a href="../html/movie-detail.html?movie=${review.movieId}" class="d-flex flex-column flex-grow-1">
         <div class="d-flex align-items-center justify-content-between">
@@ -90,12 +89,20 @@
             </div>
           </div>
       </a>
+      `;
+
+    if (review.isOwner) {
+      reviewHtml += `
       <div class="d-flex flex-column align-items-center ms-3 gap-2">
         <button type="button" class="btn btn-primary" onclick="requestEditReview(${review.id})">수정</button>
         <button type="button" class="btn btn-primary" onclick="requestRemoveReview(${review.id})">삭제</button>
       </div>
-    </div>
+    `;
+    }
+
+    reviewHtml += `</div>
   `;
+    return reviewHtml;
   }
 
   function loadReviews(page) {
@@ -103,7 +110,6 @@
     apiModule.GET("/reviews/users/" + userId + "?page=" + page,
             function (result) {
               // 성공적으로 데이터를 받아왔을 때
-              console.log("API 성공:", result);
               if (result.data && result.data.data) {
                 const reviews = result.data.data;
                 $('#review-box').empty(); // 기존 리뷰 삭제

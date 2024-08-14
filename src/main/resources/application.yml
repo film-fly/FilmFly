@@ -20,6 +20,12 @@ spring:
 #      data-locations: classpath:/data.sql
 #      mode: always
 
+#  batch:
+#    job:
+#      enabled: false  # 서버 재시작시 배치 자동실행 방지
+#    jdbc:
+#      initialize-schema: always
+
   mail:
     protocol: smtp
     host: smtp.gmail.com
@@ -80,3 +86,5 @@ cloud:
 memcached:
   host: ${MEMCACHED_HOST}
   port: ${MEMCACHED_PORT:11211}
+
+

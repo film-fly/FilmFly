@@ -1,5 +1,6 @@
 package com.sparta.filmfly.domain.review.dto;
 
+import ch.qos.logback.core.joran.conditional.IfAction;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.filmfly.domain.review.entity.Review;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ public class ReviewResponseDto {
     private Boolean isGood;
     private Boolean isBad;
     private Boolean isBlock;
+    private Boolean isOwner;
 
     public ReviewResponseDto(Long id, Long userId, String nickname, String pictureUrl, Float rating,
         String title, String content, LocalDateTime createdAt, Long goodCount, Long badCount) {
@@ -42,11 +44,12 @@ public class ReviewResponseDto {
         this.isGood = false;
         this.isBad = false;
         this.isBlock = false;
+        this.isOwner = false;
     }
 
     public static ReviewResponseDto fromEntity(
         Review review, Long goodCount, Long badCount,
-        Boolean isGood, Boolean isBad, Boolean isBlock
+        Boolean isGood, Boolean isBad, Boolean isBlock, Boolean isOwner
     ) {
         return ReviewResponseDto.builder()
             .id(review.getId())
@@ -62,20 +65,21 @@ public class ReviewResponseDto {
             .isGood(isGood)
             .isBad(isBad)
             .isBlock(isBlock)
+            .isOwner(isOwner)
             .build();
     }
 
-    public static ReviewResponseDto fromEntity(Review review, Long goodCount, Long badCount) {
-        return fromEntity(review, goodCount, badCount, false, false, false);
+    public static ReviewResponseDto fromEntity(Review review, Long goodCount, Long badCount, Boolean isOwner) {
+        return fromEntity(review, goodCount, badCount, false, false, false, isOwner);
     }
 
     public static ReviewResponseDto fromEntity(Review review) {
-        return fromEntity(review, 0L, 0L, false, false, false);
+        return fromEntity(review, 0L, 0L, false, false, false, false);
     }
 
     public void setReactions(ReviewReactionCheckResponseDto dto) {
-        this.isGood = dto.getIsGood();
-        this.isBad = dto.getIsBad();
-        this.isBlock = dto.getIsBlock();
+        if(dto.getIsGood() != null) this.isGood = dto.getIsGood();
+        if(dto.getIsBad() != null) this.isBad = dto.getIsBad();
+        if(dto.getIsBlock() != null) this.isBlock = dto.getIsBlock();
     }
 }

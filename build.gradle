@@ -18,6 +18,9 @@ repositories {
 }
 
 dependencies {
+    // batch
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+
     //API 요청
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
 

@@ -41,14 +41,7 @@
     <div id="review-box">
     </div>
 
-<!--    리액션 -->
-    <div class="d-flex gap-3">
-      <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true">
-        <i class="fa-regular fa-face-smile">좋아요</i>
-      </button>
-      <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true">
-        <i class="fa-regular fa-face-angry">싫어요</i>
-      </button>
+    <div id="tool-box" class="d-flex justify-content-between gap-3">
     </div>
   </div>
 </div>
@@ -116,71 +109,7 @@
         },
         function (xhr, status, error) {
         });
-  });
-
-  const initCollection = [
-    {
-      id: 333,
-      url: '../images/logo.png',
-      title: '영화 보관함 제목',
-      description: '영화 보관함 설명'
-    },
-    {
-      id: 222,
-      url: '../images/logo.png',
-      title: '영화 보관함 제목 zzz',
-      description: '영화 보관함 설명 zzz'
-    },
-  ];
-  initCollection.forEach(collection => {
-    let collectionHtml = `
-    <div class="collection-form d-flex flex-row card mb-3">
-      <div class="d-flex justify-content-center ms-3 me-3">
-        <input type="checkbox" class="checkCollection" aria-label="checkCollection" style="zoom: 1.5" value="${collection.id}">
-      </div>
-      <div class="collection-img-box">
-        <img src="${collection.url}" class="img-fluid rounded-start" alt="영화 포스터">
-      </div>
-      <div class="collection-text-box">
-        <div>
-          <p class="collection-title">${collection.title}</p>
-          <p class="collection-description">${collection.description}</p>
-        </div>
-      </div>
-    </div>
-  `;
-    $('#collection-box').append(collectionHtml);
-  });
-
-  $('#btnAddCollection').on('click', function () {
-    const selectedCollections = [];
-    $('#collection-box .checkCollection:checked').each(function () {
-      selectedCollections.push($(this).val());
-    });
-
-    if (selectedCollections.length === 0) {
-      alert("보관함을 하나 이상 선택해주세요.");
-      return;
-    }
-
-    const data = {
-      collections: selectedCollections
-    };
-
-    // $.ajax({
-    //   type: 'POST',
-    //   url: '/',  // 서버의 실제 엔드포인트로 변경
-    //   data: JSON.stringify(data),
-    //   contentType: "application/json;charset=utf-8"
-    // })
-    // .done(function (result, status, xhr) {
-    //   alert("보관함에 추가되었습니다.");
-    //   $('#addCollection').hide();
-    // })
-    // .fail(function (xhr, status, er) {
-    //   alert("보관함 추가 실패");
-    // });
-  });
+  })
 
   function loadReview() {
     apiModule.GET(`/reviews/${reviewId}`,
@@ -192,12 +121,8 @@
           <div>
             <img class="img-profile-size" src="${review.pictureUrl || '../images/profileImg.png'}" alt="프로필 사진">
           </div>
-          <div>
-            ${review.nickname}
-          </div>
-          <div>
-            ${review.createdAt}
-          </div>
+          <div><a href="./mypage.html?user=${review.userId}">${review.nickname}</a></div>
+          <div>${review.createdAt}</div>
           <div class="d-flex justify-content-end flex-grow-1">
             <i class="fa-solid fa-ellipsis-vertical settings-icon fs-4" data-bs-toggle="dropdown" aria-expanded="false"></i>
             <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${review.userId}" data-content-id="${review.id}" data-content-type="REVIEW">
@@ -218,9 +143,53 @@
           </div>
           `;
           $('#review-box').append(reviewHtml);
+
+          let toolHtml = `
+          <div>`;
+          if (review.isGood) {
+              toolHtml += `
+                    <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile"> ${review.goodCount}</i></button>
+            `;
+            } else {
+              toolHtml += `
+                    <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile"> ${review.goodCount}</i></button>
+            `;
+            }
+            if (review.isBad) {
+              toolHtml += `
+                    <button class="btnReaction btn btn-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry"> ${review.badCount}</i></button>
+            `;
+            } else {
+              toolHtml += `
+                    <button class="btnReaction btn btn-outline-primary" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry"> ${review.badCount}</i></button>
+            `;
+            }
+          toolHtml += `</div>
+          <div>`;
+
+          if (review.isOwner) {
+            toolHtml += `
+            <button class="btn btn-primary" onClick="location.href='./create-review.html?movie=${movieId}&review=${review.id}'">수정</button>
+            <button class="btn btn-primary" onClick="deleteReview(${review.id})">삭제</button>
+            `;
+          }
+
+          toolHtml += `</div>
+          `;
+          $('#tool-box').append(toolHtml);
         },
         function (xhr, status, error) {
         });
+  }
+
+  function deleteReview(id) {
+    if (confirm('리뷰를 삭제하시겠습니까?')) {
+      apiModule.DELETE(`/reviews/${id}`, null, function (result) {
+        location.replace(`./movie-detail.html?movie=${movieId}`);
+      }, function (result) {
+        alert('삭제 실패\n' + result.responseJSON.message);
+      });
+    }
   }
 </script>
 

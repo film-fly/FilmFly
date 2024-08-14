@@ -6,14 +6,15 @@ import com.sparta.filmfly.domain.board.repository.BoardRepository;
 import com.sparta.filmfly.domain.file.service.FileService;
 import com.sparta.filmfly.domain.media.entity.MediaTypeEnum;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
-import com.sparta.filmfly.domain.reaction.dto.ReactionBoardResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionCheckResponseDto;
 import com.sparta.filmfly.domain.reaction.service.BadService;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
+import com.sparta.filmfly.domain.review.dto.ReviewUserResponseDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -59,11 +60,16 @@ public class BoardService {
 
         BoardResponseDto board = boardRepository.getBoard(boardId);
         ReactionCheckResponseDto reactions = ReactionCheckResponseDto.setupFalse();
+        boolean isOwner = false;
         if (userDetails != null) {
             reactions = boardRepository.checkBoardReaction(userDetails.getUser(), boardId);
+
+            if (Objects.equals(board.getUserId(), userDetails.getUser().getId())) {
+                isOwner = true;
+            }
         }
 
-        return BoardReactionResponseDto.of(board, reactions);
+        return BoardReactionResponseDto.of(board, reactions, isOwner);
 
 //        Board board = boardRepository.findByIdOrElseThrow(boardId);
 //
@@ -85,8 +91,19 @@ public class BoardService {
     /**
      * 유저의 보드 조회
      */
-    public PageResponseDto<List<BoardPageDto>> getUsersBoard(Long userId, Pageable pageable) {
-        return boardRepository.findAllByUserId(userId,pageable);
+    public PageResponseDto<List<BoardPageDto>> getUsersBoard(UserDetailsImpl userDetails, Long userId, Pageable pageable) {
+        PageResponseDto<List<BoardPageDto>> pageBoard = boardRepository.findAllByUserId(userId, pageable);
+
+        if (userDetails != null) {
+            List<BoardPageDto> boards = pageBoard.getData();
+            for (BoardPageDto board : boards) {
+                if (Objects.equals(userDetails.getUser().getId(), board.getUserId())) {
+                    board.setOwner(true);
+                }
+            }
+        }
+
+        return pageBoard;
     }
 
     /**

@@ -48,6 +48,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 .leftJoin(bad).on(bad.type.eq(ReactionContentTypeEnum.COMMENT).and(bad.typeId.eq(comment.id)))
                 .where(comment.board.id.eq(boardId))
                 .groupBy(comment.id, comment.user.id, comment.user.nickname, comment.content, comment.updatedAt)
+                .orderBy(comment.createdAt.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 

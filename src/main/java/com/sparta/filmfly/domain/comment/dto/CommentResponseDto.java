@@ -22,9 +22,10 @@ public class CommentResponseDto {
     private long badCount;
     private Boolean isGood;
     private Boolean isBad;
+    private Boolean isOwner;
 
     @Builder
-    public CommentResponseDto(Long id, Long userId,Long boardId, String nickname, String content, LocalDateTime createdAt, long goodCount, long badCount) {
+    public CommentResponseDto(Long id, Long userId,Long boardId, String nickname, String content, LocalDateTime createdAt, long goodCount, long badCount, Boolean isGood, Boolean isBad) {
         this.id = id;
         this.userId = userId;
         this.boardId = boardId;
@@ -35,6 +36,20 @@ public class CommentResponseDto {
         this.badCount = badCount;
         this.isGood = false;
         this.isBad = false;
+        this.isOwner = false;
+    }
+
+    public CommentResponseDto(Long id, Long userId, Long boardId, String nickname, String content,
+        LocalDateTime createdAt, long goodCount, long badCount) {
+        this.id = id;
+        this.userId = userId;
+        this.boardId = boardId;
+        this.nickname = nickname;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.goodCount = goodCount;
+        this.badCount = badCount;
+        this.isOwner = false;
     }
 
     public static CommentResponseDto fromEntity(Comment comment,Long goodCount, Long badCount) {
@@ -53,5 +68,9 @@ public class CommentResponseDto {
     public void setReactions(ReactionCheckResponseDto dto) {
         this.isGood = dto.getIsGood();
         this.isBad = dto.getIsBad();
+    }
+
+    public void setOwner(Boolean owner) {
+        isOwner = owner;
     }
 }
