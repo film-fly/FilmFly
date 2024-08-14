@@ -44,7 +44,7 @@
   <div class="mb-3">
     <label for="inputComment" class="form-label">댓글 입력</label>
     <textarea class="form-control mb-3" id="inputComment" rows="3"></textarea>
-    <button id="btnSaveComment" class="btn btn-primary">저장</button>
+    <button id="btnSaveComment" class="btn btn-light">저장</button>
   </div>
 </div>
 
@@ -61,7 +61,7 @@
         <textarea id="inputBlockReport" style="width: 100%;height: 200px;"></textarea>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="btnBlockReport">저장</button>
+        <button type="button" class="btn btn-light" id="btnBlockReport">저장</button>
       </div>
     </div>
   </div>
@@ -160,20 +160,20 @@
             <div class="d-flex gap-2">`;
 
           if (reactions.isGood) {
-            boardHtml += `<button class="btnReaction btn btn-primary" data-content-id="${board.id}" data-type="BOARD" data-good="true"><i class="fa-regular fa-face-smile"> ${board.goodCount}</i></button>`;
+            boardHtml += `<button class="btnReaction btn btn-light" data-content-id="${board.id}" data-type="BOARD" data-good="true"><i class="fa-regular fa-face-smile"> ${board.goodCount}</i></button>`;
           } else {
-            boardHtml += `<button class="btnReaction btn btn-outline-primary" data-content-id="${board.id}" data-type="BOARD" data-good="true"><i class="fa-regular fa-face-smile"> ${board.goodCount}</i></button>`;
+            boardHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${board.id}" data-type="BOARD" data-good="true"><i class="fa-regular fa-face-smile"> ${board.goodCount}</i></button>`;
           }
           if (reactions.isBad) {
-            boardHtml += `<button class="btnReaction btn btn-primary" data-content-id="${board.id}" data-type="BOARD" data-bad="true"><i class="fa-regular fa-face-angry"> ${board.badCount}</i></button>`;
+            boardHtml += `<button class="btnReaction btn btn-light" data-content-id="${board.id}" data-type="BOARD" data-bad="true"><i class="fa-regular fa-face-angry"> ${board.badCount}</i></button>`;
           } else {
-            boardHtml += `<button class="btnReaction btn btn-outline-primary" data-content-id="${board.id}" data-type="BOARD" data-bad="true"><i class="fa-regular fa-face-angry"> ${board.badCount}</i></button>`;
+            boardHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${board.id}" data-type="BOARD" data-bad="true"><i class="fa-regular fa-face-angry"> ${board.badCount}</i></button>`;
           }
 
           boardHtml += `</div>
             <div id="board-update-box">
-              <button class="btn btn-primary" onclick="location.href='./create-board.html?board=${boardId}'">수정</button>
-              <button class="btn btn-primary" onclick="deleteBoard()">삭제</button>
+              <button class="btn btn-light" onclick="location.href='./create-board.html?board=${boardId}'">수정</button>
+              <button class="btn btn-light" onclick="deleteBoard()">삭제</button>
             </div>
           </div>
           `;
@@ -215,10 +215,10 @@
                 </div>`;
                 if (comment.isOwner) {
                   commentHtml += `<div>
-                      <button class="btn btn-primary edit-comment">수정</button>
-                      <button class="btn btn-primary delete-comment">삭제</button>
-                      <button class="btn btn-primary save-comment" style="display:none;">저장</button>
-                      <button class="btn btn-primary cancel-edit" style="display:none;">취소</button>
+                      <button class="btn btn-light edit-comment">수정</button>
+                      <button class="btn btn-light delete-comment">삭제</button>
+                      <button class="btn btn-light save-comment" style="display:none;">저장</button>
+                      <button class="btn btn-light cancel-edit" style="display:none;">취소</button>
                     </div>`;
                 }
               commentHtml += `</div>
@@ -229,14 +229,14 @@
             <div class="d-flex gap-2">`;
 
             if (comment.isGood) {
-              commentHtml += `<button class="btnReaction btn btn-primary" data-content-id="${comment.id}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-face-smile"> ${comment.goodCount}</i></button>`;
+              commentHtml += `<button class="btnReaction btn btn-light" data-content-id="${comment.id}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-face-smile"> ${comment.goodCount}</i></button>`;
             } else {
-              commentHtml += `<button class="btnReaction btn btn-outline-primary" data-content-id="${comment.id}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-face-smile"> ${comment.goodCount}</i></button>`;
+              commentHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${comment.id}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-face-smile"> ${comment.goodCount}</i></button>`;
             }
             if (comment.isBad) {
-              commentHtml += `<button class="btnReaction btn btn-primary" data-content-id="${comment.id}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-face-angry"> ${comment.badCount}</i></button>`;
+              commentHtml += `<button class="btnReaction btn btn-light" data-content-id="${comment.id}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-face-angry"> ${comment.badCount}</i></button>`;
             } else {
-              commentHtml += `<button class="btnReaction btn btn-outline-primary" data-content-id="${comment.id}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-face-angry"> ${comment.badCount}</i></button>`;
+              commentHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${comment.id}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-face-angry"> ${comment.badCount}</i></button>`;
             }
 
             commentHtml += `</div>

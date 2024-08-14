@@ -23,7 +23,7 @@ $(document).ready(function() {
 // 좋아요 or 싫어요를 클릭했을 때
 $(document).on('click', '.btnReaction', function () {
   let button = $(this);
-  let isAdding = button.hasClass('btn-outline-primary');
+  let isAdding = button.hasClass('btn-outline-light');
   let isGood = button.attr('data-good') ? true : false;
 
   let contentType = button.attr('data-type');
@@ -47,10 +47,10 @@ $(document).on('click', '.btnReaction', function () {
     text += '를 등록하시겠습니까?';
     if (confirm(text)) {
       apiModule.POST(reactionUrl, data, function (result) {
-        button.removeClass('btn-outline-primary').addClass('btn-primary');
+        button.removeClass('btn-outline-light').addClass('btn-light');
         button.find('i').text(' ' + ++reactionCount);
       }, function (xhr) {
-        button.removeClass('btn-primary').addClass('btn-outline-primary');
+        button.removeClass('btn-light').addClass('btn-outline-light');
         alert(xhr.responseJSON.message);
       });
     }
@@ -58,10 +58,10 @@ $(document).on('click', '.btnReaction', function () {
     text += '를 취소하시겠습니까?';
     if (confirm(text)) {
       apiModule.DELETE(reactionUrl, data, function (result) {
-        button.removeClass('btn-primary').addClass('btn-outline-primary');
+        button.removeClass('btn-light').addClass('btn-outline-light');
         button.find('i').text(' ' + --reactionCount);
       }, function (xhr) {
-        button.removeClass('btn-outline-primary').addClass('btn-primary');
+        button.removeClass('btn-outline-light').addClass('btn-light');
         alert(xhr.responseJSON.message);
       });
     }
