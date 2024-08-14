@@ -8,9 +8,9 @@ import java.util.*;
 
 class RandomCollectionGeneratorTest {
     private static final List<Long> MOVIE_IDS = RandomReviewGeneratorTest.MOVIE_IDS;
-    public static final int NUMBER_OF_COLLECTIONS = 180; // 생성할 컬렉션 수
+    public static final int NUMBER_OF_COLLECTIONS = 300; // 생성할 컬렉션 수
     private static final int MIN_MOVIES_PER_COLLECTION = 0; // 컬렉션당 최소 영화 수
-    private static final int MAX_MOVIES_PER_COLLECTION = 15; // 컬렉션당 최대 영화 수
+    private static final int MAX_MOVIES_PER_COLLECTION = 20; // 컬렉션당 최대 영화 수
     private static final int NUMBER_OF_USERS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_USER_RECORDS; // 생성할 유저 수
     private static final int DAYS_BEFORE = RandomEntityUserAndBoardAndCommentTest.DAYS_BEFORE; // 기준 날짜로부터 몇 일 전
 
@@ -105,7 +105,7 @@ class RandomCollectionGeneratorTest {
 
             if (!COLLECTION_NAMES.isEmpty()) {
                 String collectionName = generateUniqueName(usedNames, random);
-                usedNames.add(collectionName);
+                usedNames.add(collectionName);  // 사용된 이름에 추가
 
                 String collectionContent = getRandomElement(COLLECTION_CONTENTS, random);
 
@@ -119,7 +119,7 @@ class RandomCollectionGeneratorTest {
                 // 컬렉션 데이터를 저장
                 collections.add(new CollectionData(userId, collectionName, collectionContent, formattedCreationDate, formattedUpdateDate));
 
-                Long collectionId = (long) i + 1; // 임시로 컬렉션 ID 할당
+                Long collectionId = (long) (collections.size()); // 임시로 컬렉션 ID 할당
 
                 // 영화 컬렉션 데이터 생성
                 int moviesPerCollection = Math.min(random.nextInt(MAX_MOVIES_PER_COLLECTION - MIN_MOVIES_PER_COLLECTION + 1) + MIN_MOVIES_PER_COLLECTION, movieIds.size());

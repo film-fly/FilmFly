@@ -123,7 +123,7 @@ class RandomEntityUserAndBoardAndCommentTest {
             BoardData boardData = boardDataList.get(i);
             boardSb.append(String.format(
                     "(%d, '%s', '%s', '%s', '%s', %d)",
-                    boardData.getUserId(), boardData.getTitle(), boardData.getContent(),
+                boardData.getUserId(), boardData.getTitle(), boardData.getContent(),
                     boardData.getCreatedAt(), boardData.getUpdatedAt(), boardData.getHits()
             ));
 
@@ -133,18 +133,35 @@ class RandomEntityUserAndBoardAndCommentTest {
         }
 
         // 댓글 데이터 생성
-        List<CommentData> commentDataList = new ArrayList<>();
+        List<CommentData> commentDataList = new ArrayList<>(); // <- 여기에 commentDataList 선언
+        Set<String> existingComments = new HashSet<>();  // user_id와 board_id 조합을 저장할 Set
 
         for (int i = 1; i <= NUMBER_OF_COMMENT_RECORDS; i++) {
-            // 랜덤 보드 선택
-            int boardIndex = random.nextInt(NUMBER_OF_BOARD_RECORDS);
-            BoardData boardData = boardDataList.get(boardIndex);
+            long userId;
+            long boardId;
+            String commentKey;
 
-            // 랜덤 유저 선택
-            int userIndex = random.nextInt(NUMBER_OF_USER_RECORDS);
+            // 유저와 보드의 조합이 중복되지 않도록 조합 생성
+            do {
+                // 랜덤 보드 선택
+                int boardIndex = random.nextInt(NUMBER_OF_BOARD_RECORDS);
+                BoardData boardData = boardDataList.get(boardIndex);
+
+                // 랜덤 유저 선택
+                int userIndex = random.nextInt(NUMBER_OF_USER_RECORDS);
+
+                userId = userIndex + 1;  // 유저 ID는 1부터 시작
+                boardId = boardData.getBoardId();  // 보드 ID 가져오기
+
+                commentKey = userId + "_" + boardId;  // 유저 ID와 보드 ID 조합 키 생성
+
+            } while (existingComments.contains(commentKey));  // 조합이 이미 존재하면 다시 시도
+
+            // 새로운 조합을 Set에 추가
+            existingComments.add(commentKey);
 
             // 보드 생성일자를 LocalDateTime으로 변환
-            LocalDateTime boardCreationDate = LocalDateTime.parse(boardData.getCreatedAt().replace(" ", "T"));
+            LocalDateTime boardCreationDate = LocalDateTime.parse(boardDataList.get((int) boardId - 1).getCreatedAt().replace(" ", "T"));
 
             // 댓글 생성일자를 보드 생성일자 이후로 설정
             LocalDateTime commentCreationDate = boardCreationDate.plusSeconds(i * 100); // 시간 간격을 두고 생성
@@ -153,20 +170,20 @@ class RandomEntityUserAndBoardAndCommentTest {
             int randomMinute = commentCreationDate.getMinute();
             int randomSecond = commentCreationDate.getSecond();
             commentCreationDate = commentCreationDate.withHour(randomHour)
-                    .withMinute(randomMinute)
-                    .withSecond(randomSecond);
+                .withMinute(randomMinute)
+                .withSecond(randomSecond);
 
             int randomMillis = random.nextInt(1000);
             int randomNanos = random.nextInt(1_000_000_000);
             commentCreationDate = commentCreationDate.plusNanos(randomMillis * 1_000_000 + randomNanos);
 
             String formattedDateTime = commentCreationDate.toString().replace("T", " ");
-            long userId = userIndex + 1; // 유저 ID는 1부터 시작
 
             // 댓글 내용에 한글 추가
             String commentContent = getRandomCommentContent(random);
 
-            commentDataList.add(new CommentData(userId, boardData.getBoardId(), commentContent, formattedDateTime));
+            // CommentData 객체를 생성하고 리스트에 추가
+            commentDataList.add(new CommentData(userId, boardId, commentContent, formattedDateTime));
         }
 
         // 댓글 데이터를 생성일자 기준으로 정렬
@@ -176,8 +193,8 @@ class RandomEntityUserAndBoardAndCommentTest {
         for (int i = 0; i < commentDataList.size(); i++) {
             CommentData commentData = commentDataList.get(i);
             commentSb.append(String.format(
-                    "(%d, %d, '%s', '%s', '%s')",
-                    commentData.getUserId(), commentData.getBoardId(), commentData.getContent(), commentData.getCreatedAt(), commentData.getCreatedAt()
+                "(%d, %d, '%s', '%s', '%s')",
+                commentData.getUserId(), commentData.getBoardId(), commentData.getContent(), commentData.getCreatedAt(), commentData.getCreatedAt()
             ));
 
             if (i < commentDataList.size() - 1) {
