@@ -498,7 +498,7 @@
               $('#movie-description').text(movie.overview);
 
               // 출연진 데이터 처리
-              let credits = result.data.credits;  // credits 배열 사용
+              let credits = result.data.creditList;  // credits 배열 사용
               if (credits && credits.length > 0) {  // credits 배열이 존재하고 비어 있지 않은 경우
                 $('#movie-actor-box').empty();
                 credits.forEach(credit => {
