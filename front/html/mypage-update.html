@@ -42,6 +42,51 @@
     #common-header{
       margin-bottom: 100px;
     }
+
+    .card {
+      background-color: transparent;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(255, 0, 0, 0.5);
+      padding: 10px;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .list-item {
+      background-color: #2a2a2a;
+      color: #e5e5e5;
+      border: 1px solid #333;
+      border-radius: 5px;
+      margin: 5px;
+      padding: 15px;
+      font-size: 1rem;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .list-item:hover {
+      background-color: #333;
+      transform: translateY(-2px);
+    }
+
+    .list-item span {
+      font-size: 1.2rem;
+    }
+
+    .list-item i {
+      font-size: 1.2rem;
+    }
   </style>
 </head>
 <body>
@@ -49,25 +94,24 @@
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
-  <a href="./mypage-update-profile.html" class="card-link">
-    <div class="card w-100 mb-3">
-      <div class="card-body d-flex align-items-center">
-        <i class="fa-solid fa-user card-icon"></i>
-        <span class="flex-grow-1">프로필 수정</span>
-        <i class="fa-solid fa-chevron-right"></i>
-      </div>
-    </div>
-  </a>
 
-  <a href="./mypage-update-password.html" class="card-link">
     <div class="card w-100 mb-3">
-      <div class="card-body d-flex align-items-center">
-        <i class="fa-solid fa-key card-icon"></i>
-        <span class="flex-grow-1">비밀번호 변경</span>
-        <i class="fa-solid fa-chevron-right"></i>
-      </div>
+      <a href="./mypage-update-profile.html" >
+        <div class="list-item d-flex align-items-center">
+          <i class="fa-solid fa-user card-icon"></i>
+          <span class="flex-grow-1">프로필 수정</span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </div>
+      </a>
+
+      <a href="./mypage-update-password.html" >
+        <div class="list-item d-flex align-items-center">
+          <i class="fa-solid fa-key card-icon"></i>
+          <span class="flex-grow-1">비밀번호 변경</span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </div>
+      </a>
     </div>
-  </a>
 </div>
 
 <!-- 부트스트랩 JS -->

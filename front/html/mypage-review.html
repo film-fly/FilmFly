@@ -35,7 +35,7 @@
   <div id="review-box" class="list-group list-group-flush">
   </div>
   <br/>
-  <ul id="pagination-reviews" class="pagination-sm d-flex justify-content-center"></ul>
+  <ul id="pagination-reviews" class="pagination d-flex justify-content-center"></ul>
 </div>
 
 <script>
@@ -66,7 +66,7 @@
       <a href="../html/movie-detail.html?movie=${review.movieId}" class="d-flex flex-column flex-grow-1">
         <div class="d-flex align-items-center justify-content-between">
           <div class="me-2 d-flex flex-column">
-            <div style="font-weight: bold; color: #FF6F61;">${review.movieTitle || '영화 제목 미확인'}</div>
+            <div class="mypage-movie-title">${review.movieTitle || '영화 제목 미확인'}</div>
             <div class="d-flex align-items-center mt-2">
               <img style="width: 52px; height: 52px;" class="rounded-circle" src="${review.pictureUrl || defaultProfileImg}" alt="프로필사진" onerror="this.src='${defaultProfileImg}'">
               <div class="ms-3">${review.nickname || '닉네임 없음'}</div>

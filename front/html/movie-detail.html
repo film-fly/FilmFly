@@ -196,7 +196,7 @@
   <div id="review-box" class="list-group list-group-flush mb-5">
     <!-- 리뷰 목록이 여기에 표시됩니다. -->
   </div>
-  <ul id="pagination-reviews" class="pagination-sm d-flex justify-content-center"></ul>
+  <ul id="pagination-reviews" class="pagination d-flex justify-content-center"></ul>
 </div>
 
 <!-- 보관함 모달 -->
@@ -631,7 +631,7 @@
 
               pagination.append(`<button class="btn btn-outline-light" data-page="${nextPageSet}">다음</button>`);
 
-              $(document).on('click', '.pagination-sm button', function () {
+              $(document).on('click', '.pagination button', function () {
                 const page = $(this).data('page');
                 const currentScrollPosition = $(window).scrollTop();
                 loadReviews(page);
