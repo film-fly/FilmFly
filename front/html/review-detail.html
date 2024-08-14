@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>FilmFly</title>
+  <title>Review Detail - FilmFly</title>
   <!-- 부트 스트랩 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -22,55 +22,227 @@
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .review-container {
+      background-color: #333;
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      display: flex;
+      gap: 20px;
+      min-height: 600px; /* 세로 길이 조정 */
+    }
+
+    .left-side {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 20px;
+    }
+
+    .right-side {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .movie-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-direction: column;
+    }
+
+    .movie-info img {
+      width: 150px;
+      height: 250px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .review-author-info img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .review-author-info h5 {
+      margin-top: 10px;
+      font-size: 1.6rem; /* 제목과 동일한 크기 */
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      position: relative;
+      width: 100%;
+    }
+
+
+
+    .review-content {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      word-wrap: break-word;
+      word-break: break-all;
+      margin: 20px 0;
+      padding: 20px;
+      border: 1px solid #555;
+      border-radius: 10px;
+      background-color: #444;
+      height: 70%;
+    }
+
+    .user-rating-box {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .user-rating-box i {
+      color: yellow;
+      margin-right: 5px;
+      font-size: 1.5rem;
+    }
+
+    .user-rating-box span {
+      font-size: 1.2rem;
+      margin-left: 10px;
+      color: #ccc;
+    }
+
+    .review-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .review-footer .btnReaction {
+      display: flex;
+      align-items: center;
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .review-footer .btnReaction.active {
+      background-color: white;
+      color: black;
+    }
+
+    .review-footer .btn-edit,
+    .review-footer .btn-delete {
+      background-color: #555;
+      border-radius: 5px;
+      border: none;
+      padding: 10px 20px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .review-footer .btn-edit:hover,
+    .review-footer .btn-delete:hover {
+      background-color: #777;
+    }
+
+    .settings-icon {
+      color: white;
+      cursor: pointer;
+    }
+
+    .dropdown-menu {
+      background-color: #444;
+      border: none;
+    }
+
+    .dropdown-item {
+      color: white;
+      cursor: pointer;
+    }
+
+    .dropdown-item:hover {
+      background-color: #555;
+    }
+
+  </style>
 </head>
 <body>
 <div class="container">
-  <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
-  <div class="d-flex gap-3 flex-column">
-    <!--    영화 -->
-    <div id="movie-box" class="d-flex align-items-center">
-    </div>
-    <hr>
-    <!--    프로필 -->
-    <div id="profile-box" class="d-flex align-items-center gap-3" data-content-id="1" data-user-id="">
-    </div>
-    <!--    리뷰 -->
-    <div id="review-box">
+  <div class="review-container">
+    <div class="left-side" id="movie-box">
+      <!-- 작성자 정보 -->
+      <div class="review-author-info" id="review-author-info">
+        <!-- 작성자 정보가 여기에 추가됩니다 -->
+      </div>
+      <!-- 영화 정보 -->
+      <div class="movie-info">
+        <!-- 영화 포스터와 제목, 평점이 여기에 추가됩니다. -->
+      </div>
     </div>
 
-    <div id="tool-box" class="d-flex justify-content-between gap-3">
+    <div class="right-side">
+      <div class="review-header">
+        <h4 id="review-title">리뷰 제목</h4>
+        <div class="dropstart">
+          <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
+          <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="" data-content-id="" data-content-type="REVIEW">
+            <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
+            <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="review-content" id="review-content">
+        리뷰 내용
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="user-rating-box" id="user-rating-box">
+          <i class="fa-solid fa-star"></i>
+          <span>평가 평점: <span id="user-rating">0.0</span></span>
+        </div>
+      </div>
+
+      <div class="review-footer">
+        <div class="d-flex align-items-center">
+          <button class="btnReaction" id="btn-like" data-good="true" data-content-id="" data-type="REVIEW">
+            <i class="fa-regular fa-thumbs-up"></i> <span>0</span>
+          </button>
+          <button class="btnReaction ms-3" id="btn-dislike" data-bad="true" data-content-id="" data-type="REVIEW">
+            <i class="fa-regular fa-thumbs-down"></i> <span>0</span>
+          </button>
+        </div>
+        <div class="d-flex">
+          <button class="btn-edit" id="btn-edit">수정</button>
+          <button class="btn-delete ms-2" id="btn-delete">삭제</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="addCollection" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">보관함 추가</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div id="collection-box">
-
-
-        </div>
-        <div class="modal-footer">
-          <button id="btnAddCollection" type="button" class="btn btn-light">추가</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 신고, 차단 모달 -->
+<!-- 차단/신고 모달 -->
 <div class="modal fade" id="blockReportModal" tabindex="-1" aria-labelledby="blockReportModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="blockReportModalLabel">Modal title</h1>
+        <h1 class="modal-title fs-5" id="blockReportModalLabel">차단/신고</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -93,92 +265,73 @@
     loadReview();
 
     apiModule.GET(`/movies/${movieId}`,
-        function (result, status, xhr) {
-          let movie = result.data.movie;
-          let movieHtml = `
-          <img class="img-default-size me-3" src="${imageUrl}${movie.posterPath}" alt="영화 프로필">
-          <div class="d-flex flex-column gap-3">
-            <div>${movie.title}</div>
-            <div>
-              <i class="fa-solid fa-star align-content-center">${result.data.avgRating}</i>
+            function (result, status, xhr) {
+              let movie = result.data.movie;
+              let movieHtml = `
+        <div class="movie-info">
+          <img src="${imageUrl}${movie.posterPath}" alt="영화 포스터">
+          <div class="details">
+            <h5>${movie.title}</h5>
+            <div class="rating-box">
+              <i class="fa-solid fa-star"></i>
+              ${result.data.avgRating}
             </div>
           </div>
-          `;
-          $('#movie-box').append(movieHtml);
-        },
-        function (xhr, status, error) {
-        });
-  })
+        </div>`;
+              $('#movie-box').append(movieHtml);
+            },
+            function (xhr, status, error) {
+              console.error("영화 정보를 불러오는 데 실패했습니다:", error);
+            });
+  });
 
   function loadReview() {
     apiModule.GET(`/reviews/${reviewId}`,
-        function (result, status, xhr) {
-          let review = result.data;
-          $('#profile-box').attr('data-content-id', review.id).attr('data-user-id', review.userId);
+            function (result, status, xhr) {
+              let review = result.data;
+              $('#review-title').text(review.title);
+              $('#review-content').text(review.content);
+              $('#user-rating').text(review.rating);
 
-          let profileHtml = `
-          <div>
-            <img class="img-profile-size rounded-circle" src="${review.pictureUrl || '../images/profileImg.png'}" alt="프로필 사진">
-          </div>
-          <div><a href="./mypage.html?user=${review.userId}">${review.nickname}</a></div>
-          <div>${review.createdAt}</div>
-          <div class="d-flex justify-content-end flex-grow-1">
-            <i class="fa-solid fa-ellipsis-vertical settings-icon fs-4" data-bs-toggle="dropdown" aria-expanded="false"></i>
-            <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${review.userId}" data-content-id="${review.id}" data-content-type="REVIEW">
-              <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
-              <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
-            </ul>
-          </div>
-          `;
-          $('#profile-box').append(profileHtml);
+              let authorHtml = `
+        <img src="${review.pictureUrl || '../images/profileImg.png'}" alt="작성자 프로필 사진">
+        <h5>${review.nickname}</h5>`;
+              $('#review-author-info').html(authorHtml);
 
-          let reviewHtml = `
-          <i class="fa-solid fa-star align-content-center">${review.rating}</i>
-          <div class="fs-4 my-3">
-            ${review.title}
-          </div>
-          <div>
-            ${review.content}
-          </div>
-          `;
-          $('#review-box').append(reviewHtml);
+              // 좋아요/싫어요 버튼 초기화
+              $('#btn-like').html(`<i class="fa-regular fa-thumbs-up"></i> <span>${review.goodCount}</span>`);
+              $('#btn-dislike').html(`<i class="fa-regular fa-thumbs-down"></i> <span>${review.badCount}</span>`);
 
-          let toolHtml = `
-          <div>`;
-          if (review.isGood) {
-              toolHtml += `
-                    <button class="btnReaction btn btn-light" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-thumbs-up"> ${review.goodCount}</i></button>
-            `;
-            } else {
-              toolHtml += `
-                    <button class="btnReaction btn btn-outline-light" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-thumbs-up"> ${review.goodCount}</i></button>
-            `;
-            }
-            if (review.isBad) {
-              toolHtml += `
-                    <button class="btnReaction btn btn-light" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-thumbs-down"> ${review.badCount}</i></button>
-            `;
-            } else {
-              toolHtml += `
-                    <button class="btnReaction btn btn-outline-light" data-content-id="${review.id}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-thumbs-down"> ${review.badCount}</i></button>
-            `;
-            }
-          toolHtml += `</div>
-          <div>`;
+              $('#btn-like').attr('data-content-id', reviewId);
+              $('#btn-dislike').attr('data-content-id', reviewId);
 
-          if (review.isOwner) {
-            toolHtml += `
-            <button class="btn btn-light" onClick="location.href='./create-review.html?movie=${movieId}&review=${review.id}'">수정</button>
-            <button class="btn btn-light" onClick="deleteReview(${review.id})">삭제</button>
-            `;
-          }
+              if (review.isGood) {
+                $('#btn-like').addClass('active');
+              }
+              if (review.isBad) {
+                $('#btn-dislike').addClass('active');
+              }
 
-          toolHtml += `</div>
-          `;
-          $('#tool-box').append(toolHtml);
-        },
-        function (xhr, status, error) {
-        });
+              if (review.isOwner) {
+                $('#btn-edit').on('click', function () {
+                  location.href = `./create-review.html?movie=${movieId}&review=${review.id}`;
+                });
+                $('#btn-delete').on('click', function () {
+                  deleteReview(review.id);
+                });
+              } else {
+                $('#btn-edit').hide();
+                $('#btn-delete').hide();
+              }
+
+              // 드롭다운 메뉴에 데이터 속성 설정
+              $('.dropdown-menu').attr('data-user-id', review.userId);
+              $('.dropdown-menu').attr('data-content-id', review.id);
+              $('.dropdown-menu').attr('data-content-type', 'REVIEW');
+            },
+            function (xhr, status, error) {
+              console.error('리뷰 정보를 불러오는 데 실패했습니다:', error);
+            });
   }
 
   function deleteReview(id) {
@@ -190,8 +343,101 @@
       });
     }
   }
-</script>
 
-<script src="../js/reaction.js"></script>
+  // 좋아요/싫어요 버튼 클릭 이벤트 처리
+  $(document).on('click', '.btnReaction', function () {
+    let button = $(this);
+    let isGood = button.attr('data-good') ? true : false;
+    let contentType = button.attr('data-type');
+    let contentId = button.attr('data-content-id');
+    let data = {
+      contentId: contentId,
+      contentType: contentType
+    };
+
+    let reactionUrl = isGood ? '/goods' : '/bads';
+    let reactionCount = parseInt(button.find('span').text().trim()) || 0;
+
+    let confirmMessage = isGood ? "좋아요를 등록하시겠습니까?" : "싫어요를 등록하시겠습니까?";
+    let cancelMessage = isGood ? "좋아요를 취소하시겠습니까?" : "싫어요를 취소하시겠습니까?";
+
+    if (button.hasClass('active')) {
+      if (confirm(cancelMessage)) {
+        // 현재 활성화 상태라면 비활성화 처리
+        apiModule.DELETE(reactionUrl, data, function (result) {
+          button.removeClass('active');
+          button.find('span').text(reactionCount - 1);
+        }, function (xhr) {
+          alert(xhr.responseJSON.message);
+        });
+      }
+    } else {
+      if (confirm(confirmMessage)) {
+        // 현재 비활성화 상태라면 활성화 처리
+        apiModule.POST(reactionUrl, data, function (result) {
+          button.addClass('active');
+          button.find('span').text(reactionCount + 1);
+        }, function (xhr) {
+          alert(xhr.responseJSON.message);
+        });
+      }
+    }
+  });
+
+  $(document).ready(function() {
+    let selectedUserId = null;
+    let selectedContentId = null;
+    let selectedContentType = null;
+
+    $(document).on('click', '.block-user', function(e) {
+      e.preventDefault();
+      selectedUserId = $(this).closest('.dropdown-menu').attr('data-user-id');
+      selectedContentId = $(this).closest('.dropdown-menu').attr('data-content-id');
+      selectedContentType = $(this).closest('.dropdown-menu').attr('data-content-type');
+
+      $('#inputBlockReport').val('');
+      $('#blockReportModalLabel').text('차단하기');
+      $('#btnBlockReport').data('action', 'block');
+      $('#blockReportModal').modal('show');
+    });
+
+    $(document).on('click', '.report-user', function(e) {
+      e.preventDefault();
+      selectedUserId = $(this).closest('.dropdown-menu').attr('data-user-id');
+      selectedContentId = $(this).closest('.dropdown-menu').attr('data-content-id');
+      selectedContentType = $(this).closest('.dropdown-menu').attr('data-content-type');
+
+      $('#inputBlockReport').val('');
+      $('#blockReportModalLabel').text('신고하기');
+      $('#btnBlockReport').data('action', 'report');
+      $('#blockReportModal').modal('show');
+    });
+
+    $('#btnBlockReport').on('click', function() {
+      let action = $(this).data('action');
+      let memoOrReason = $('#inputBlockReport').val();
+
+      let data = {
+        blockedId: selectedUserId,
+        memo: action === 'block' ? memoOrReason : undefined,
+        reportedId: action === 'report' ? selectedUserId : undefined,
+        typeId: action === 'report' ? selectedContentId : undefined,
+        type: action === 'report' ? selectedContentType.toUpperCase() : undefined,
+        reason: action === 'report' ? memoOrReason : undefined
+      };
+
+      let apiUrl = action === 'block' ? '/blocks' : '/reports';
+
+      apiModule.POST(apiUrl, data,
+              function (result) {
+                alert(action === 'block' ? "선택한 유저를 차단했습니다." : "신고가 접수되었습니다.");
+                location.reload();
+              },
+              function (result) {
+                alert(result.responseJSON.message);
+              });
+    });
+  });
+</script>
 </body>
 </html>
