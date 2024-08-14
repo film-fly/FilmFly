@@ -50,7 +50,7 @@ class RandomReactionGeneratorTest {
 
     private void generateReactions(int numberOfReactions, List<Long> userIds, ReactionContentTypeEnum[] types,
         Set<String> reactions, Random random) {
-        Map<Long, Set<String>> userReactionMap = new HashMap<>();
+        Map<Long, Set<String>> userReactionMap = new HashMap<>();  // 사용자가 리액션한 콘텐츠를 추적하기 위한 맵
 
         while (reactions.size() < numberOfReactions) {
             Long userId = getRandomElement(userIds, random);
@@ -69,15 +69,17 @@ class RandomReactionGeneratorTest {
 
             String reactionKey = String.format("%s_%d", type.getContentType(), typeId);
 
-            // 유저가 해당 타입과 ID로 리액션을 한 적이 있는지 확인
+            // 사용자가 해당 콘텐츠에 대해 이미 리액션을 했는지 확인
             userReactionMap.putIfAbsent(userId, new HashSet<>());
+            Set<String> userReactions = userReactionMap.get(userId);
 
-            if (userReactionMap.get(userId).add(reactionKey)) { // 중복이 아니라면 추가
+            if (userReactions.add(reactionKey)) { // 중복이 아니라면 추가
                 String reactionInsertKey = String.format("(%d, '%s', %d)", userId, type.getContentType(), typeId);
                 reactions.add(reactionInsertKey);
             }
         }
     }
+
 
     private List<Long> getBoardIds() {
         List<Long> boardIds = new ArrayList<>();

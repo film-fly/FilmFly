@@ -36,51 +36,58 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         QGood good = QGood.good;
         QBad bad = QBad.bad;
 
+        // 메인 쿼리에서 좋아요와 싫어요 개수를 계산하여 데이터를 조회
         JPQLQuery<BoardPageDto> query = queryFactory
-                .select(Projections.constructor(BoardPageDto.class,
-                        board.id,
-                        board.user.id,
-                        board.title,
-                        board.user.nickname,
-                        board.createdAt,
-                        good.id.count().as("goodCount"),
-                        bad.id.count().as("badCount"),
-                        board.hits
-                ))
-                .from(board)
-                .leftJoin(good).on(good.type.eq(ReactionContentTypeEnum.BOARD).and(good.typeId.eq(board.id)))
-                .leftJoin(bad).on(bad.type.eq(ReactionContentTypeEnum.BOARD).and(bad.typeId.eq(board.id)))
-                .groupBy(board.id, board.user.id, board.title, board.user.nickname, board.createdAt, board.hits)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize());
+            .select(Projections.constructor(BoardPageDto.class,
+                board.id,
+                board.user.id,
+                board.title,
+                board.user.nickname,
+                board.createdAt,
+                good.id.countDistinct().as("goodCount"),
+                bad.id.countDistinct().as("badCount"),
+                board.hits
+            ))
+            .from(board)
+            .leftJoin(good).on(good.type.eq(ReactionContentTypeEnum.BOARD).and(good.typeId.eq(board.id)))
+            .leftJoin(bad).on(bad.type.eq(ReactionContentTypeEnum.BOARD).and(bad.typeId.eq(board.id)))
+            .groupBy(board.id, board.user.id, board.title, board.user.nickname, board.createdAt, board.hits)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize());
 
+        // 좋아요 필터링 조건
         if (filterGoodCount != null) {
-            query.having(good.id.count().goe(filterGoodCount));
+            query.having(good.id.countDistinct().goe(filterGoodCount));
         }
+        // 조회수 필터링 조건
         if (filterHits != null) {
-            query.having(board.hits.goe(filterHits));
+            query.where(board.hits.goe(filterHits));
         }
+        // 검색어 필터링 조건
         if (search != null && !search.isEmpty()) {
             query.where(board.title.containsIgnoreCase(search));
         }
 
-        query.orderBy(board.createdAt.desc()); // 기본 정렬 조건: 생성 일자 최신순
+        // 생성 일자 기준 내림차순 정렬
+        query.orderBy(board.createdAt.desc());
 
+        // 페이징 처리된 결과 목록 가져오기
         List<BoardPageDto> content = query.fetch();
-        long total = query.fetchCount();  // 페이지의 총 요소 수를 가져옵니다.
+        long total = query.fetchCount();
 
         // PageImpl을 사용하여 페이지 정보를 생성합니다.
         PageImpl<BoardPageDto> page = new PageImpl<>(content, pageable, total);
 
         // PageResponseDto 반환합니다.
         return PageResponseDto.<List<BoardPageDto>>builder()
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .currentPage(page.getNumber() + 1)
-                .pageSize(page.getSize())
-                .data(content)
-                .build();
+            .totalElements(page.getTotalElements())
+            .totalPages(page.getTotalPages())
+            .currentPage(page.getNumber() + 1)
+            .pageSize(page.getSize())
+            .data(content)
+            .build();
     }
+
 
     @Override
     public PageResponseDto<List<BoardPageDto>> findAllByUserId(Long userId, Pageable pageable) {
@@ -140,16 +147,16 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                     qBoard.user.nickname,
                     qBoard.user.pictureUrl,
                     qBoard.createdAt,
-                    qGood.id.count().as("goodCount"),
-                    qBad.id.count().as("badCount"),
+                    qGood.id.countDistinct().as("goodCount"),
+                    qBad.id.countDistinct().as("badCount"),
                     qBoard.hits
                 )
             )
             .from(qBoard)
-            .leftJoin(qGood).on(qGood.typeId.eq(boardId)
+            .leftJoin(qGood).on(qGood.typeId.eq(qBoard.id)
                 .and(qGood.type.eq(ReactionContentTypeEnum.BOARD))
             )
-            .leftJoin(qBad).on(qBad.typeId.eq(boardId)
+            .leftJoin(qBad).on(qBad.typeId.eq(qBoard.id)
                 .and(qBad.type.eq(ReactionContentTypeEnum.BOARD))
             )
             .where(qBoard.id.eq(boardId))
@@ -158,6 +165,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
         return fetch;
     }
+
 
     @Override
     public ReactionCheckResponseDto checkBoardReaction(User user, Long boardId) {

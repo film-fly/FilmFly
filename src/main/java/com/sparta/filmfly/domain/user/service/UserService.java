@@ -95,11 +95,6 @@ public class UserService {
 
         userRepository.save(user);
 
-        // 일반 유저일 경우 이메일 인증 데이터 삭제
-        if (userRole == UserRoleEnum.ROLE_USER) {
-            emailVerificationService.deleteEmailVerificationByEmail(requestDto.getEmail());
-        }
-
         return UserResponseDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())

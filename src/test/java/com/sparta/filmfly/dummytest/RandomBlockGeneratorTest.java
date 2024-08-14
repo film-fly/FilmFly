@@ -77,11 +77,19 @@ class RandomBlockGeneratorTest {
                     String formattedUpdateDate = blockUpdateDate.toString().replace("T", " ");
 
                     // BlockData 객체로 차단 기록을 저장
-                    blocks.add(new BlockData(blockerId, blockedId, memo, formattedCreationDate, formattedUpdateDate));
+                    BlockData newBlock = new BlockData(blockerId, blockedId, memo, formattedCreationDate, formattedUpdateDate);
+
+                    // 중복 확인 후 추가
+                    if (blocks.stream().noneMatch(block -> block.getBlockerId() == newBlock.getBlockerId() &&
+                        block.getBlockedId() == newBlock.getBlockedId() &&
+                        block.getCreatedAt().equals(newBlock.getCreatedAt()))) {
+                        blocks.add(newBlock);
+                    }
                 }
             }
         }
     }
+
 
     private <T> T getRandomElement(List<T> list, Random random) {
         return list.get(random.nextInt(list.size()));

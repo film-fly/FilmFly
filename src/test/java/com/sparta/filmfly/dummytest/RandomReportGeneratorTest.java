@@ -72,29 +72,38 @@ class RandomReportGeneratorTest {
 
     private void generateReports(int numberOfReports, List<Long> userIds, List<ReportData> reports, Random random,
         LocalDateTime startDate, long secondsBetween) {
-        Set<String> uniqueReports = new HashSet<>();
-        while (uniqueReports.size() < numberOfReports) {
+        Map<String, Set<String>> reportMap = new HashMap<>(); // reporterId와 reportedId에 대한 신고 이유 추적
+
+        while (reports.size() < numberOfReports) {
             Long reporterId = getRandomElement(userIds, random);
             Long reportedId = getRandomElement(userIds, random);
 
             if (!reporterId.equals(reportedId)) { // 자기 자신을 신고하지 않도록 체크
-                String reportKey = String.format("%d_%d", reporterId, reportedId);
-                if (uniqueReports.add(reportKey)) { // 중복 체크 후 추가
-                    ReportTypeEnum type = getRandomElement(Arrays.asList(ReportTypeEnum.values()), random);
-                    String content = "원본 Content 내용";
-                    Long typeId = getTypeIdByType(type, random); // type에 맞는 ID 생성
-                    String reason = getRandomElement(REASONS_BY_TYPE.get(type), random);
+                String reportKey = reporterId + "_" + reportedId;
+                reportMap.putIfAbsent(reportKey, new HashSet<>());
 
-                    // 생성시간과 수정시간 설정
-                    LocalDateTime reportCreationDate = startDate.plusSeconds(random.nextInt((int) secondsBetween + 1));
-                    LocalDateTime reportUpdateDate = reportCreationDate.plusDays(random.nextInt(10)); // 수정시간은 생성시간 이후 0~10일 사이
+                // 새로운 신고 이유를 선택하고 중복 여부를 체크
+                ReportTypeEnum type = getRandomElement(Arrays.asList(ReportTypeEnum.values()), random);
+                String reason;
+                do {
+                    reason = getRandomElement(REASONS_BY_TYPE.get(type), random);
+                } while (reportMap.get(reportKey).contains(reason)); // 같은 이유로 중복 신고 방지
 
-                    String formattedCreationDate = reportCreationDate.toString().replace("T", " ");
-                    String formattedUpdateDate = reportUpdateDate.toString().replace("T", " ");
+                // 신고 이유 추가
+                reportMap.get(reportKey).add(reason);
 
-                    // ReportData 객체로 신고 기록을 저장
-                    reports.add(new ReportData(reporterId, reportedId, content, typeId, type, reason, formattedCreationDate, formattedUpdateDate));
-                }
+                String content = "원본 Content 내용";
+                Long typeId = getTypeIdByType(type, random); // type에 맞는 ID 생성
+
+                // 생성시간과 수정시간 설정
+                LocalDateTime reportCreationDate = startDate.plusSeconds(random.nextInt((int) secondsBetween + 1));
+                LocalDateTime reportUpdateDate = reportCreationDate.plusDays(random.nextInt(10)); // 수정시간은 생성시간 이후 0~10일 사이
+
+                String formattedCreationDate = reportCreationDate.toString().replace("T", " ");
+                String formattedUpdateDate = reportUpdateDate.toString().replace("T", " ");
+
+                // ReportData 객체로 신고 기록을 저장
+                reports.add(new ReportData(reporterId, reportedId, content, typeId, type, reason, formattedCreationDate, formattedUpdateDate));
             }
         }
     }
