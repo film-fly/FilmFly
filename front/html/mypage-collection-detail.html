@@ -22,16 +22,62 @@
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
   <style>
+    /* 카드 아이템 스타일 */
     .card {
-      position: relative;
-      transition: background-color 0.3s, box-shadow 0.3s;
-      border: none;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 240px;
+      margin: 0 auto;
+      background-color: #2a2a2a;
+      border-radius: 15px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      border: 2px solid transparent;
     }
 
     .card:hover {
-      background-color: #f8f9fa; /* 마우스 오버 시 카드의 배경색 변경 */
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 카드에 그림자 추가 */
+      transform: scale(1.05);
+      z-index: 2;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .card img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+
+    .card-body {
+      text-align: center;
+      color: #e5e5e5;
+      margin-top: 10px;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .card-stats {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      font-size: 0.9rem;
+      color: #e5e5e5;
+    }
+
+    .card-stats span {
+      display: flex;
+      align-items: center;
+    }
+
+    .card-stats i {
+      margin-right: 5px;
     }
 
     .delete-icon {
@@ -47,22 +93,6 @@
 
     .card:hover .delete-icon {
       display: block; /* 카드에 마우스를 올렸을 때 삭제 아이콘 표시 */
-    }
-
-    .card {
-      position: relative;
-      border: none;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .card-img-top {
-      transition: transform 0.3s;
-      height: 300px; /* 통일된 이미지 높이 */
-      object-fit: cover; /* 이미지가 카드의 크기에 맞게 잘리거나 축소됨 */
-    }
-
-    .card:hover .card-img-top {
-      transform: scale(1.05); /* 카드 이미지 확대 효과 */
     }
   </style>
 </head>
@@ -87,7 +117,7 @@
 
     <div id="collection-detail-content" class="row row-cols-1 row-cols-md-3 g-4">
     </div>
-    <ul id="pagination-collection-detail" class="pagination-sm d-flex justify-content-center mt-4"></ul>
+    <ul id="pagination-collection-detail" class="pagination d-flex justify-content-center mt-4"></ul>
   </div>
 </div>
 
@@ -174,11 +204,8 @@
         <div class="card h-100">
           <img src="${imageUrl}${movie.posterPath}" class="card-img-top" alt="영화 포스터">
           <i class="fa-solid fa-trash-can delete-icon" data-movie-id="${movie.id}"></i>
-          <div class="card-body">
-            <h5 class="card-title mypage-entity-title">${movie.title}</h5>
-            <p class="card-text"><small class="text-muted">개봉일: ${movie.releaseDate}</small></p>
-            <br/>
-            <p class="card-text">${truncatedOverview}</p>
+          <div class="card-body" style="background-color: #2a2a2a; color: white;"> <!-- 배경색 회색, 폰트색 흰색 -->
+            <h5 class="card-title mypage-entity-title text-center">${movie.title}</h5>
           </div>
         </div>
       </div>

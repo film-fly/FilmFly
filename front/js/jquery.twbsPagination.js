@@ -333,10 +333,10 @@
         pageVariable: '{{page}}',
         totalPagesVariable: '{{total_pages}}',
         page: null,
-        first: '처음',
+        first: null, //'처음'
         prev: '이전',
         next: '다음',
-        last: '마지막',
+        last: null, //'마지막'
         loop: false,
         beforePageClick: null,
         onPageClick: null,
@@ -348,7 +348,7 @@
         pageClass: 'page-item',
         activeClass: 'active',
         disabledClass: 'disabled',
-        anchorClass: 'page-link'
+        anchorClass: 'page-link btn btn-outline-light'
     };
 
     $.fn.twbsPagination.Constructor = TwbsPagination;
