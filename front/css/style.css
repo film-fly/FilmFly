@@ -20,6 +20,11 @@ body {
   color: black;
 }
 
+.btn-light {
+  background-color: white;
+  color: black;
+}
+
 .container {
   width: 800px;
   margin: 0 auto 30px auto;
@@ -282,10 +287,52 @@ input[name="tab_item"] {
   transform: scale(1.05); /* 이미지 확대 효과 */
 }
 
-.mypage-interactive-item .btn-primary {
+.mypage-interactive-item .btn-light {
   transition: background-color 0.3s, border-color 0.3s;
 }
 
-.text-createTime {
+.text-create-time {
   color: white;
+}
+
+.modal-dialog {
+  color: white;
+}
+
+.modal-title {
+  color: white;
+}
+
+.modal-content {
+  background-color: #333;
+}
+
+.btn-close {
+  background-color: white;
+}
+
+/* form-control 클래스를 가진 모든 textarea 요소의 배경색을 변경 */
+textarea, textarea.form-control {
+  background-color: rgba(255, 255, 255, 0.2); /* 원하는 배경색으로 변경 */
+  color:white;
+}
+
+textarea.form-control:focus {
+  background-color: rgba(255, 255, 255, 0.2); /* 반투명 배경색 */
+  border-color: transparent; /* 기본 테두리 색상을 투명하게 설정 */
+  outline: 3px solid white; /* 흰색 테두리와 두께 설정 */
+  color: white; /* 텍스트 색상 설정 */
+}
+
+/* form-control 클래스를 가진 모든 input 요소의 배경색을 변경 */
+input, input.form-control {
+  background-color: rgba(255, 255, 255, 0.2); /* 원하는 배경색으로 변경 */
+  color:white;
+}
+
+input.form-control:focus {
+  background-color: rgba(255, 255, 255, 0.2); /* 반투명 배경색 */
+  border-color: transparent; /* 기본 테두리 색상을 투명하게 설정 */
+  outline: 3px solid white; /* 흰색 테두리와 두께 설정 */
+  color: white; /* 텍스트 색상 설정 */
 }

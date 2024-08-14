@@ -51,7 +51,7 @@
             <div>${coupon.description}</div>
             <div class="mt-3">쿠폰 번호: ${coupon.title}</div>
           </div>
-          <button class="btn-copy-coupon btn btn-primary" ${isExpired ? 'disabled'
+          <button class="btn-copy-coupon btn btn-light" ${isExpired ? 'disabled'
         : ''} data-coupon-number="${coupon.title}">복사</button>
         </div>
       `;
@@ -123,7 +123,7 @@
             <div>${coupon.couponContent}</div>
             <div class="mt-3">쿠폰 번호: ${coupon.couponNumber}</div>
           </div>
-          <button class="btn-copy-coupon btn btn-primary" ${isExpired ? 'disabled'
+          <button class="btn-copy-coupon btn btn-light" ${isExpired ? 'disabled'
           : ''} data-coupon-number="${coupon.couponNumber}">복사</button>
         </div>
       `;

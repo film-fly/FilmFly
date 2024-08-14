@@ -20,20 +20,23 @@
     <link rel="stylesheet" href="../css/style.css">
     <style>
         body {
+            background-image: url("../images/background-login.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             font-family: Arial, sans-serif;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding-top: 100px;
         }
 
         header {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             align-items: center;
-            padding: 10px 0;
             width: 100%;
         }
 
@@ -67,28 +70,23 @@
             font-size: 32px; /* 제목 크기 */
         }
 
-        .btn-primary {
+        .btn-light {
             height: 50px; /* 버튼 높이 */
             font-size: 18px; /* 버튼 글자 크기 */
+        }
+
+        .signup-form {
+            background-color: #080808;
         }
     </style>
 </head>
 <body>
 <div class="container">
     <!-- 공통 헤더 -->
-    <header id="common-header" class="common-header">
-        <img src="../images/logo.png" alt="FilmFly Logo">
-        <nav>
-            <a href="#" class="text-dark mx-2">회원가입</a>
-            <a href="#" class="text-dark mx-2">로그인</a>
-            <a href="#" class="text-dark mx-2">로그아웃</a>
-            <a href="#" class="text-dark mx-2">마이 페이지</a>
-            <a href="#" class="text-dark mx-2">관리자 페이지</a>
-        </nav>
-    </header>
+    <header id="common-header" class="common-header"></header>
 </div>
 <div class="auth-form container mt-5">
-    <form id="auth-form" class="border p-4 bg-light shadow-sm">
+    <form id="auth-form" class="border p-4 signup-form shadow-sm">
         <h2 class="mb-4 text-center">Sign Up</h2>
 
         <div class="mb-3">
@@ -142,7 +140,7 @@
             </div>
         </div>
 
-        <button type="button" id="btnSignup" class="btn btn-primary w-100 mb-3">회원가입</button>
+        <button type="button" id="btnSignup" class="btn btn-light w-100 mb-3">회원가입</button>
 
         <button type="button" class="btn btn-link w-100 mt-2" onclick="location.href='./login.html'">로그인 하러 가기</button>
     </form>
