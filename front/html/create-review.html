@@ -22,11 +22,12 @@
   <style>
     .rating {
       display: flex;
-      flex-direction: row-reverse;
+      flex-direction: row-reverse; /* 별을 오른쪽에서 왼쪽으로 표시합니다 */
       font-size: 2rem; /* 별의 크기 조절 */
       unicode-bidi: bidi-override;
-      direction: rtl;
-      margin-bottom: 1em;
+      direction: ltr; /* 왼쪽에서 오른쪽으로 읽기 */
+      margin-bottom: 0em;
+      align-items: center; /* 별과 점수를 수직으로 중앙 정렬 */
     }
 
     .rating input[type="radio"] {
@@ -34,14 +35,14 @@
     }
 
     .rating label {
-      color: gray;
+      color: gray; /* 기본 색상: 회색 */
       cursor: pointer;
       position: relative;
-      display: inline-block;
       width: 2em; /* 별의 크기 */
       height: 2em; /* 별의 크기 */
       text-align: center;
       line-height: 2em; /* 별의 크기와 일치시킴 */
+      margin-left: 0; /* 기본 마진 제거 */
     }
 
     .rating label::before {
@@ -54,16 +55,16 @@
     }
 
     .rating input:checked ~ label::before {
-      color: gold;
+      color: gold; /* 선택된 별 색상: 금색 */
     }
 
     .rating input:checked ~ label {
-      color: gold;
+      color: gold; /* 선택된 별 색상: 금색 */
     }
 
-    .rating input:checked ~ label[data-checked="true"]::before {
-      content: "\f005"; /* Font Awesome 별 아이콘 */
-      color: gold;
+    .rating .rating-value {
+      margin-left: 0.5em; /* 별과 점수 사이의 간격 */
+      font-size: 1.2rem; /* 점수 크기 조절 */
     }
   </style>
 </head>
@@ -77,18 +78,18 @@
     <input type="text" id="inputReviewTitle" class="form-control">
     <label for="inputReviewContent">리뷰 설명</label>
     <textarea id="inputReviewContent" class="form-control" style="height: 200px;"></textarea>
-    <label for="inputReviewRating">별점</label>
-    <div class="rating">
-      <input type="radio" id="star5" name="rating" value="5"><label for="star5" data-checked="true"></label>
-      <input type="radio" id="star4.5" name="rating" value="4.5"><label for="star4.5" data-checked="true"></label>
-      <input type="radio" id="star4" name="rating" value="4"><label for="star4" data-checked="true"></label>
-      <input type="radio" id="star3.5" name="rating" value="3.5"><label for="star3.5" data-checked="true"></label>
-      <input type="radio" id="star3" name="rating" value="3"><label for="star3" data-checked="true"></label>
-      <input type="radio" id="star2.5" name="rating" value="2.5"><label for="star2.5" data-checked="true"></label>
-      <input type="radio" id="star2" name="rating" value="2"><label for="star2" data-checked="true"></label>
-      <input type="radio" id="star1.5" name="rating" value="1.5"><label for="star1.5" data-checked="true"></label>
-      <input type="radio" id="star1" name="rating" value="1"><label for="star1" data-checked="true"></label>
-      <input type="radio" id="star0.5" name="rating" value="0.5"><label for="star0.5" data-checked="true"></label>
+    <label for="inputReviewRating">별점 (<span id="rating-value" class="rating-value">0</span>)</label> <!-- 점수를 표시할 요소 -->
+    <div id="inputReviewRating" class="rating align-self-start">
+      <input type="radio" id="star5" name="rating" value="5"><label for="star5"></label>
+
+      <input type="radio" id="star4" name="rating" value="4"><label for="star4"></label>
+
+      <input type="radio" id="star3" name="rating" value="3"><label for="star3"></label>
+
+      <input type="radio" id="star2" name="rating" value="2"><label for="star2"></label>
+
+      <input type="radio" id="star1" name="rating" value="1"><label for="star1"></label>
+
     </div>
   </div>
   <button id="btnReview" class="btn btn-light mt-3" onclick="createReview()">저장</button>
@@ -98,6 +99,7 @@
   const urlParams = new URLSearchParams(window.location.search);
   const movieId = urlParams.get('movie');
   const reviewId = urlParams.get('review');
+
   if (reviewId) {
     apiModule.GET(`/reviews/${reviewId}`,
             function (result, status, xhr) {
@@ -106,12 +108,19 @@
               $('#inputReviewContent').val(`${review.content}`);
               if ($(`input[name="rating"][value="${review.rating}"]`).length) {
                 $(`input[name="rating"][value="${review.rating}"]`).prop('checked', true);
+                $('#rating-value').text(review.rating);
               }
               $('#btnReview').text("수정");
             }, function (xhr, status, error) {
               alert('수정할 데이터를 불러오는데 실패했습니다.');
             });
   }
+
+  // 별점을 선택했을 때 점수 업데이트
+  $('input[name="rating"]').on('change', function () {
+    const rating = $(this).val();
+    $('#rating-value').text(rating);
+  });
 
   // 리뷰 생성
   $('#btnReview').on('click', function () {
