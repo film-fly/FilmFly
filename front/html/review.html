@@ -38,8 +38,6 @@
   <div class="d-flex my-4 gap-3">
     <input type="checkbox" class="btn-check" id="btnFilterGoods" autocomplete="off">
     <label class="btn btn-outline-light" for="btnFilterGoods">좋아요 수 20개 이상</label>
-    <input type="checkbox" class="btn-check" id="btnFilterHits" autocomplete="off">
-    <label class="btn btn-outline-light" for="btnFilterHits">조회 수 20개 이상</label>
   </div>
   <ul id="review-box" class="list-group list-group-flush">
   </ul>
@@ -54,12 +52,10 @@
   $('#btnMovieSearch').on('click', function () {
     let searchText = $('#inputMovieSearch').val();
     const filterGoods = $('#btnFilterGoods').is(':checked');
-    const filterHits = $('#btnFilterHits').is(':checked');
 
     let queryParams = new URLSearchParams({
       search: searchText,
-      filterGoodCount: filterGoods ? 20 : 0,
-      filterHits: filterHits ? 20 : 0
+      filterGoodCount: filterGoods ? 20 : 0
     });
 
     loadReviews(1, queryParams.toString());
@@ -86,7 +82,6 @@
                     </div>
                   </div>
                   <div class="d-flex gap-3">
-                    <p>조회수(${review.hits})</p>
                     <p>좋아요 수(${review.goodCount})</p>
                     <p>싫어요 수(${review.badCount})</p>
                     <p>${review.createdAt}</p>
