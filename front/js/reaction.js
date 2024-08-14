@@ -171,6 +171,6 @@ function reportUser(data) {
         }
       },
       function (result) {
-        console.log("fail : " + result);
+        alert(result.responseJSON.message);
       });
 }
