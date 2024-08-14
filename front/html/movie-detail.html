@@ -473,7 +473,11 @@
     apiModule.GET(`/movies/${movieId}`,
             function (result, status, xhr) {
               let movie = result.data.movie;
-              $('#moviePoster').attr('src', `${imageUrl}${movie.posterPath}`);
+              let movieImg = imageUrl + movie.posterPath;
+              if (!movie.posterPath) {
+                movieImg = imageUrl + movie.backdropPath || '../images/profileImg.png';
+              }
+              $('#moviePoster').attr('src', `${movieImg}`);
               $('#movieTitle').text(movie.title);
 
               $('#movie-description').text(movie.overview);

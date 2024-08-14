@@ -6,15 +6,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-
 class RandomFavoriteGeneratorTest {
     private static final List<Long> MOVIE_IDS = RandomReviewGeneratorTest.MOVIE_IDS;
-    public static final int NUMBER_OF_FAVORITES = 400; // 생성할 찜하기 수
+    public static final int NUMBER_OF_FAVORITES = 1000; // 생성할 찜하기 수
     private static final int NUMBER_OF_USERS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_USER_RECORDS; // 생성할 유저 수
     private static final int DAYS_BEFORE = RandomEntityUserAndBoardAndCommentTest.DAYS_BEFORE; // 기준 날짜로부터 몇 일 전
 
@@ -48,7 +42,7 @@ class RandomFavoriteGeneratorTest {
             throw new IllegalArgumentException("The movieIds list is empty, cannot generate favorites.");
         }
 
-        Map<Long, Set<Long>> userMovieMap = new HashMap<>();
+        Map<Long, Set<Long>> userMovieMap = new HashMap<>(); // 유저별 찜한 영화 ID를 관리하는 맵
 
         while (favorites.size() < numberOfFavorites) {
             Long userId = getRandomElement(userIds, random);

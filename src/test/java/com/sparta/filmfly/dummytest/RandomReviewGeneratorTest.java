@@ -146,9 +146,24 @@ class RandomReviewGeneratorTest {
 
     private void generateReviews(int numberOfReviews, List<Long> userIds, List<Long> movieIds,
         List<ReviewData> reviews, Random random, LocalDateTime startDate, long secondsBetween) {
+
+        Set<String> existingReviews = new HashSet<>();  // 이미 생성된 리뷰의 userId와 movieId 조합을 저장할 Set
+
         for (int i = 0; i < numberOfReviews; i++) {
-            Long userId = getRandomElement(userIds, random);
-            Long movieId = getRandomElement(movieIds, random);
+            long userId;
+            long movieId;
+            String reviewKey;
+
+            // 중복된 리뷰가 생성되지 않도록 검사를 수행
+            do {
+                userId = getRandomElement(userIds, random);
+                movieId = getRandomElement(movieIds, random);
+                reviewKey = userId + "_" + movieId;  // userId와 movieId의 조합으로 고유한 키 생성
+            } while (existingReviews.contains(reviewKey));  // 중복된 조합이 존재하면 다시 시도
+
+            // 새로운 조합을 Set에 추가
+            existingReviews.add(reviewKey);
+
             float rating = 1 + random.nextInt(5); // 별점은 1~5
 
             // 리뷰 제목과 내용을 별점에 따라 생성
@@ -170,6 +185,7 @@ class RandomReviewGeneratorTest {
                     formattedUpdateDate));
         }
     }
+
 
     private String generateReviewTitle(float rating, Random random) {
         // 별점에 따라 다양한 제목을 생성
