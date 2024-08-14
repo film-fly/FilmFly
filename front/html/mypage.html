@@ -106,7 +106,7 @@
     </div>
   </div>
 
-  <div class="card w-100 my-5">
+  <div class="card w-100 my-5 d-none">
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
         <div id="btnActiveUser" class="d-flex justify-content-between" style="padding: 12px 0; cursor:pointer;">
@@ -292,6 +292,9 @@
         $('#bad-link').attr('href', `./mypage-bad.html?user=${data.id}`);
         $('#coupon-link').attr('href', `./mypage-coupon.html?user=${data.id}`);
         $('#block-link').attr('href', `./mypage-block.html?user=${data.id}`);
+        if (data.deletedAt) {
+          $('#btnActiveUser').closest('.card').removeClass('d-none');
+        }
       }, function () {
         alert("유저 정보를 불러오는데 실패했습니다.");
       });

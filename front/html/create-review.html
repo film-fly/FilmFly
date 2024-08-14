@@ -90,7 +90,8 @@
       if (confirm('생성 하시겠습니까?')) {
         apiModule.POST(`/movies/${movieId}/reviews`, data
             , function (result, status, xhr) {
-              location.replace(`./movie-detail.html?movie=${movieId}`);
+              let id = result.data.id;
+              location.replace(`./review-detail.html?movie=${movieId}&review=${id}`);
             },
             function (xhr, status, error) {
               alert('리뷰 생성 실패\n');
@@ -102,7 +103,8 @@
       if (confirm('수정 하시겠습니까?')) {
         apiModule.PATCH(`/reviews/${reviewId}`, data
             , function (result, status, xhr) {
-              location.replace(`./movie-detail.html?movie=${movieId}`);
+              let id = result.data.id;
+              location.replace(`./review-detail.html?movie=${movieId}&review=${id}`);
             },
             function (xhr, status, error) {
               alert('리뷰 수정 실패\n');

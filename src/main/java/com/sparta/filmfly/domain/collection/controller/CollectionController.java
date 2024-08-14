@@ -43,9 +43,10 @@ public class CollectionController {
      */
     @GetMapping("/{collectionId}")
     public ResponseEntity<DataResponseDto<CollectionWithUserResponseDto>> getCollection(
-            @PathVariable Long collectionId
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long collectionId
     ) {
-        CollectionWithUserResponseDto collectionResponseDto = collectionService.getCollection(collectionId);
+        CollectionWithUserResponseDto collectionResponseDto = collectionService.getCollection(userDetails, collectionId);
         return ResponseUtils.success(collectionResponseDto);
     }
 

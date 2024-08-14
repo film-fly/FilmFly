@@ -79,7 +79,7 @@ public class MovieService {
 
     @Transactional
     public List<ApiMovieResponseDto> apiRequestForMovie(Object apiDiscoverMovieRequestDto) {
-
+        log.info("apiRequestForMovie");
         String movieUrl = "";
         if (apiDiscoverMovieRequestDto instanceof ApiDiscoverMovieRequestDto) {
             movieUrl = "/3/discover/movie";
@@ -109,7 +109,7 @@ public class MovieService {
                     }
                 }
             } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                e.printStackTrace();
+                e.getStackTrace();
             }
         }
 

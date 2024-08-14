@@ -1,7 +1,6 @@
 package com.sparta.filmfly.domain.review.service;
 
 import com.sparta.filmfly.domain.block.repository.BlockRepository;
-import com.sparta.filmfly.domain.movie.dto.MovieReactionCheckResponseDto;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
@@ -13,7 +12,7 @@ import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
-import java.util.stream.Stream;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -51,12 +50,23 @@ public class ReviewService {
      * 리뷰 단일 조회
      */
     @Transactional(readOnly = true)
-    public ReviewResponseDto getReview(Long reviewId) {
+    public ReviewResponseDto getReview(UserDetailsImpl userDetails, Long reviewId) {
         Review findReview = reviewRepository.findByIdOrElseThrow(reviewId);
 
         Long goodCount = goodRepository.countByTypeAndTypeId(ReactionContentTypeEnum.REVIEW, reviewId);
         Long badCount = badRepository.countByTypeAndTypeId(ReactionContentTypeEnum.REVIEW, reviewId);
-        return ReviewResponseDto.fromEntity(findReview, goodCount, badCount);
+
+        boolean isOwner = false;
+        ReviewReactionCheckResponseDto reactions = ReviewReactionCheckResponseDto.setupFalse();
+        if (userDetails != null) {
+            reactions = reviewRepository.checkReviewReaction(userDetails.getUser(), List.of(findReview.getId())).get(0);
+            if (Objects.equals(userDetails.getUser().getId(), findReview.getUser().getId())) {
+                isOwner = true;
+            }
+        }
+        ReviewResponseDto responseDto = ReviewResponseDto.fromEntity(findReview, goodCount, badCount, isOwner);
+        responseDto.setReactions(reactions);
+        return responseDto;
     }
 
     /**
@@ -82,8 +92,19 @@ public class ReviewService {
      * 유저의 리뷰 목록
      */
     @Transactional(readOnly = true)
-    public PageResponseDto<List<ReviewUserResponseDto>> getUsersReviews(Long userId, Pageable pageable) {
-        return reviewRepository.getPageReviewByUserId(userId, pageable);
+    public PageResponseDto<List<ReviewUserResponseDto>> getUsersReviews(UserDetailsImpl userDetails, Long userId, Pageable pageable) {
+        PageResponseDto<List<ReviewUserResponseDto>> pageReview = reviewRepository.getPageReviewByUserId(userId, pageable);
+
+        if (userDetails != null) {
+            List<ReviewUserResponseDto> reviews = pageReview.getData();
+            for (ReviewUserResponseDto review : reviews) {
+                if (Objects.equals(userDetails.getUser().getId(), review.getUserId())) {
+                    review.setOwner(true);
+                }
+            }
+        }
+
+        return pageReview;
     }
 
     /**

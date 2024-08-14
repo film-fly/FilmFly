@@ -20,6 +20,12 @@ spring:
 #      data-locations: classpath:/data.sql
 #      mode: always
 
+#  batch:
+#    job:
+#      enabled: false  # 서버 재시작시 배치 자동실행 방지
+#    jdbc:
+#      initialize-schema: always
+
   mail:
     protocol: smtp
     host: smtp.gmail.com
@@ -76,3 +82,4 @@ cloud:
       static: ap-northeast-2
     s3:
       bucket: filmfly-backend
+

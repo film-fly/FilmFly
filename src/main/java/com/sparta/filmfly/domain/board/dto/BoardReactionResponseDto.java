@@ -9,11 +9,13 @@ import lombok.Getter;
 public class BoardReactionResponseDto {
     BoardResponseDto board;
     ReactionCheckResponseDto reactions;
+    Boolean isOwner;
 
-    public static BoardReactionResponseDto of(BoardResponseDto board, ReactionCheckResponseDto reactions) {
+    public static BoardReactionResponseDto of(BoardResponseDto board, ReactionCheckResponseDto reactions, Boolean isOwner) {
         return BoardReactionResponseDto.builder()
             .board(board)
             .reactions(reactions)
+            .isOwner(isOwner)
             .build();
     }
 }

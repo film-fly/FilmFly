@@ -8,13 +8,13 @@ import com.sparta.filmfly.domain.comment.dto.CommentUpdateResponseDto;
 import com.sparta.filmfly.domain.comment.entity.Comment;
 import com.sparta.filmfly.domain.comment.repository.CommentRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
-import com.sparta.filmfly.domain.reaction.dto.ReactionBoardResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionCheckResponseDto;
 import com.sparta.filmfly.domain.reaction.service.BadService;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -71,6 +71,10 @@ public class CommentService {
             List<ReactionCheckResponseDto> reactions = commentRepository.checkCommentReaction(userDetails.getUser(), commentIds);
             for (int i = 0; i < comments.size(); ++i) {
                 comments.get(i).setReactions(reactions.get(i));
+
+                if (Objects.equals(comments.get(i).getUserId(), userDetails.getUser().getId())) {
+                    comments.get(i).setOwner(true);
+                }
             }
         }
         return pageComments;
@@ -79,8 +83,19 @@ public class CommentService {
     /**
      * 유저의 댓글 조회
      */
-    public PageResponseDto<List<CommentResponseDto>> getUsersComments(Long userId, Pageable pageable) {
-        return commentRepository.findAllByUserId(userId,pageable);
+    public PageResponseDto<List<CommentResponseDto>> getUsersComments(UserDetailsImpl userDetails, Long userId, Pageable pageable) {
+        PageResponseDto<List<CommentResponseDto>> pageComment = commentRepository.findAllByUserId(userId, pageable);
+
+        if (userDetails != null) {
+            List<CommentResponseDto> comments = pageComment.getData();
+            for (CommentResponseDto comment : comments) {
+                if (Objects.equals(userDetails.getUser().getId(), comment.getUserId())) {
+                    comment.setOwner(true);
+                }
+            }
+        }
+
+        return pageComment;
     }
 
     /**

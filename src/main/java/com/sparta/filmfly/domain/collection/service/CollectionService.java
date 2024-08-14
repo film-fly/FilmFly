@@ -9,8 +9,11 @@ import com.sparta.filmfly.domain.movie.dto.MovieResponseDto;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.user.entity.User;
+import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CollectionService {
@@ -47,9 +51,18 @@ public class CollectionService {
     /**
      * 보관함 단일 조회
      */
-    public CollectionWithUserResponseDto getCollection(Long collectionId) {
+    public CollectionWithUserResponseDto getCollection(UserDetailsImpl userDetails, Long collectionId) {
         Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
-        return CollectionWithUserResponseDto.fromEntity(collection);
+
+        boolean isOwner = false;
+        if (userDetails != null) {
+            log.info("userDetails.userId: {}, collection.userid: {}", userDetails.getUser().getId(), collection.getUser().getId());
+            if (Objects.equals(userDetails.getUser().getId(), collection.getUser().getId())) {
+                isOwner = true;
+            }
+        }
+
+        return CollectionWithUserResponseDto.fromEntity(collection, isOwner);
     }
 
     /**

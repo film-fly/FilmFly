@@ -57,7 +57,7 @@
   });
 
   function generateBoardHtml(board) {
-    return `
+    let boardHtml = `
       <div class="list-group-item d-flex p-3 mypage-interactive-item" data-board-id="${board.id}">
         <a href="board-detail.html?board=${board.id}" class="d-flex flex-column flex-grow-1">
           <div class="d-flex justify-content-between align-items-center">
@@ -74,19 +74,23 @@
               <div><i class="fa-regular fa-eye"></i> ${board.hits}</div>
             </div>
           </div>
-        </a>
+        </a>`;
+    if (board.isOwner) {
+      boardHtml += `
         <div class="ms-3 d-flex flex-column gap-2">
           <button type="button" class="btn btn-primary" onclick="editBoard(${board.id})">수정</button>
           <button type="button" class="btn btn-primary" onclick="deleteBoard(${board.id})">삭제</button>
         </div>
-      </div>
+      `;
+    }
+      boardHtml += `</div>
     `;
+    return boardHtml;
   }
 
   function loadBoards(page) {
     apiModule.GET("/boards/users/" + userId + "?page=" + page,
             function (result) {
-              console.log("API 성공:", result);
               if (result.data && result.data.data) {
                 const boards = result.data.data;
                 $('#board-box').empty();
