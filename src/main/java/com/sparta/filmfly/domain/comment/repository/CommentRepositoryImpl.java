@@ -34,14 +34,15 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
         JPQLQuery<CommentResponseDto> query = queryFactory
                 .select(Projections.constructor(CommentResponseDto.class,
-                        comment.id,
-                        comment.user.id,
-                        comment.board.id,
-                        comment.user.nickname,
-                        comment.content,
-                        comment.updatedAt,
-                        good.id.count().as("goodCount"),
-                        bad.id.count().as("badCount")
+                    comment.id,
+                    comment.user.id,
+                    comment.board.id,
+                    comment.user.nickname,
+                    comment.user.pictureUrl,
+                    comment.content,
+                    comment.updatedAt,
+                    good.id.count().as("goodCount"),
+                    bad.id.count().as("badCount")
                 ))
                 .from(comment)
                 .leftJoin(good).on(good.type.eq(ReactionContentTypeEnum.COMMENT).and(good.typeId.eq(comment.id)))

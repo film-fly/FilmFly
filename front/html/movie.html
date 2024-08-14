@@ -236,19 +236,19 @@
       color: #ffffff;
     }
 
-    .pagination-sm .page-link {
+    .pagination .page-link {
       background-color: #141414;
       border-color: #141414;
       color: #ffffff;
     }
 
-    .pagination-sm .page-link:hover {
+    .pagination .page-link:hover {
       background-color: #333;
       border-color: #333;
       color: #ffffff;
     }
 
-    .pagination-sm .active .page-link {
+    .pagination .active .page-link {
       background-color: #333;
       border-color: #333;
       color: #ffffff;
@@ -385,7 +385,7 @@
   </div>
   <div id="movie-box" class="row row-cols-1 row-cols-md-4 g-4 mt-1 mb-5">
   </div>
-  <ul id="pagination-movies" class="pagination-sm d-flex justify-content-center"></ul>
+  <ul id="pagination-movies" class="pagination d-flex justify-content-center"></ul>
 </div>
 
 <div class="modal fade" id="searchOptionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -568,7 +568,7 @@
       pagination.append(`<button class="btn btn-outline-light" data-page="${nextPageSet}">다음</button>`);
     }
 
-    $(document).on('click', '.pagination-sm button', function () {
+    $(document).on('click', '.pagination button', function () {
       const page = $(this).data('page');
 
       // 현재 스크롤 위치를 저장
