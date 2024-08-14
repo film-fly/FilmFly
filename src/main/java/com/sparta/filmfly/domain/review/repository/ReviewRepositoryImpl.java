@@ -3,8 +3,11 @@ package com.sparta.filmfly.domain.review.repository;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.filmfly.domain.block.entity.QBlock;
+import com.sparta.filmfly.domain.board.dto.BoardPageDto;
+import com.sparta.filmfly.domain.board.entity.QBoard;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;
@@ -12,6 +15,7 @@ import com.sparta.filmfly.domain.review.dto.ReviewReactionCheckResponseDto;
 import com.sparta.filmfly.domain.review.dto.ReviewResponseDto;
 import com.sparta.filmfly.domain.review.dto.ReviewUserResponseDto;
 import com.sparta.filmfly.domain.review.entity.QReview;
+import com.sparta.filmfly.domain.review.entity.Review;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
 import java.time.LocalDateTime;
@@ -251,5 +255,60 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
             .fetch();
 
         return fetch;
+    }
+
+    @Override
+    public PageResponseDto<List<ReviewResponseDto>> findAllWithFilters(Pageable pageable, Long filterGoodCount, String search) {
+        QReview review = QReview.review;
+        QGood good = QGood.good;
+        QBad bad = QBad.bad;
+        // 메인 쿼리에서 좋아요와 싫어요 개수를 계산하여 데이터를 조회
+        JPQLQuery<ReviewResponseDto> query = queryFactory
+                .select(Projections.constructor(ReviewResponseDto.class,
+                        review.id,
+                        review.user.id,
+                        review.user.nickname,
+                        review.user.pictureUrl,
+                        review.rating,
+                        review.title,
+                        review.content,
+                        review.createdAt,
+                        good.id.countDistinct().as("goodCount"),
+                        bad.id.countDistinct().as("badCount")
+                ))
+                .from(review)
+                .leftJoin(good).on(good.type.eq(ReactionContentTypeEnum.REVIEW).and(good.typeId.eq(review.id)))
+                .leftJoin(bad).on(bad.type.eq(ReactionContentTypeEnum.REVIEW).and(bad.typeId.eq(review.id)))
+                .groupBy(review.id, review.user.id, review.title, review.user.nickname, review.createdAt)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
+
+        // 좋아요 필터링 조건
+        if (filterGoodCount != null) {
+            query.having(good.id.countDistinct().goe(filterGoodCount));
+        }
+        // 검색어 필터링 조건
+        if (search != null && !search.isEmpty()) {
+            query.where(review.title.containsIgnoreCase(search));
+        }
+
+        // 생성 일자 기준 내림차순 정렬
+        query.orderBy(review.createdAt.desc());
+
+        // 페이징 처리된 결과 목록 가져오기
+        List<ReviewResponseDto> content = query.fetch();
+        long total = query.fetchCount();
+
+        // PageImpl을 사용하여 페이지 정보를 생성합니다.
+        PageImpl<ReviewResponseDto> page = new PageImpl<>(content, pageable, total);
+
+        // PageResponseDto 반환합니다.
+        return PageResponseDto.<List<ReviewResponseDto>>builder()
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .currentPage(page.getNumber() + 1)
+                .pageSize(page.getSize())
+                .data(content)
+                .build();
     }
 }

@@ -18,4 +18,7 @@ public interface ReviewRepositoryCustom {
     Float getAverageRatingByMovieId(Long movieId);
 
     List<ReviewReactionCheckResponseDto> checkReviewReaction(User user, List<Long> reviewIds);
+
+    PageResponseDto<List<ReviewResponseDto>> findAllWithFilters(Pageable pageable, Long filterGoodCount, String search);
+
 }

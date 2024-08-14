@@ -13,61 +13,104 @@
   <!-- 공통 헤더 -->
   <script src="../js/common.js"></script>
   <!-- Font Awesome -->
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="../js/apiModule.js"></script>
+  <script src="../js/jquery.twbsPagination.js"></script>
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/style.css">
-  <style>
-    .review-card {
-      border: 1px solid black;
-      margin-bottom: 1rem;
-      padding: 1rem;
-      border-radius: 10px;
-    }
-    .review-title {
-      font-size: 1.25rem;
-      font-weight: bold;
-    }
-  </style>
 </head>
 <body>
 <div class="container">
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
-  <h1 class="mb-3">최신 리뷰</h1>
-  <div class="review-card">
-
-    <div class="d-flex">
-      <img src="../images/logo.png" class="img-default-size" alt="프로필 사진">
-      <div class="d-flex flex-column justify-content-center ms-3 gap-3">
-        <div class="review-title">북극백화점의 안내원</div>
-        <div class="d-flex gap-2">
-          <div class="review-rating">${review.nickname}</div>님의 평가
-          <i class="fa-solid fa-star">4.2</i>
-        </div>
-      </div>
-    </div>
-    <div class="review-text fw-bold my-3">
-      우화적 그림체로 꾸민 북극백화점 속 동물 손님들을 지켜보면서 흐뭇해지기도, 때로는 미안해지기도.
-    </div>
-    <div class="review-actions d-flex gap-2">
-      <button class="btnReaction btn btn-light" data-content-id="${review.id}" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>
-<!--      <button class="btnReaction btn btn-outline-light" data-type="REVIEW" data-good="true"><i class="fa-regular fa-face-smile">좋아요</i></button>-->
-      <button class="btnReaction btn btn-light" data-content-id="${review.badId}" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>
-<!--      <button class="btnReaction btn btn-outline-light" data-type="REVIEW" data-bad="true"><i class="fa-regular fa-face-angry">싫어요</i></button>-->
-    </div>
-
+  <div class="d-flex input-group align-items-center">
+    <label for="inputMovieSearch">
+      <span class="input-group-text" id="basic-addon1">
+        <i class="fa-solid fa-magnifying-glass fs-4"></i>
+      </span>
+    </label>
+    <input type="text" id="inputMovieSearch" class="form-control" placeholder="검색">
+    <button id="btnMovieSearch" type="button" class="btn btn-light">검색</button>
   </div>
 
+  <div class="d-flex my-4 gap-3">
+    <input type="checkbox" class="btn-check" id="btnFilterGoods" autocomplete="off">
+    <label class="btn btn-outline-light" for="btnFilterGoods">좋아요 수 20개 이상</label>
+    <input type="checkbox" class="btn-check" id="btnFilterHits" autocomplete="off">
+    <label class="btn btn-outline-light" for="btnFilterHits">조회 수 20개 이상</label>
+  </div>
+  <ul id="review-box" class="list-group list-group-flush">
+  </ul>
+  <ul id="pagination-reviews" class="pagination d-flex justify-content-center my-5"></ul>
 </div>
 
-<!-- 부트스트랩 JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ho+j7jyWK8fNQe+a1LVfdA1gBoF8XTK5sMjbfkz0RHgijVVp+0R4W7HCi6t2cERf"
-        crossorigin="anonymous"></script>
-<script src="../js/reaction.js"></script>
+<script>
+  $(document).ready(function () {
+    loadReviews(1);
+  });
+
+  $('#btnMovieSearch').on('click', function () {
+    let searchText = $('#inputMovieSearch').val();
+    const filterGoods = $('#btnFilterGoods').is(':checked');
+    const filterHits = $('#btnFilterHits').is(':checked');
+
+    let queryParams = new URLSearchParams({
+      search: searchText,
+      filterGoodCount: filterGoods ? 20 : 0,
+      filterHits: filterHits ? 20 : 0
+    });
+
+    loadReviews(1, queryParams.toString());
+  });
+
+  function loadReviews(page, queryString = '') {
+    apiModule.GET(`/reviews?page=${page}&${queryString}`,
+            function (result, status, xhr) {
+              $('#review-box').empty();
+              let reviews = result.data.data;
+              reviews.forEach(review => {
+                let reviewHtml = `
+              <li class="list-group-item">
+                <div class="d-flex flex-column">
+                  <a href="./review-detail.html?review=${review.id}" class="fs-5 fw-bold py-3">${review.title}</a>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="profile-box d-flex align-items-center gap-2">
+        <!--            <div>-->
+        <!--              <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">-->
+        <!--            </div>-->
+                    <div>
+                      ${review.nickname}
+                    </div>
+                  </div>
+                  <div class="d-flex gap-3">
+                    <p>조회수(${review.hits})</p>
+                    <p>좋아요 수(${review.goodCount})</p>
+                    <p>싫어요 수(${review.badCount})</p>
+                    <p>${review.createdAt}</p>
+                  </div>
+                </div>
+              </li>
+            `;
+                $('#review-box').append(reviewHtml);
+              });
+
+              $('#pagination-reviews').twbsPagination('destroy');
+              $('#pagination-reviews').twbsPagination({
+                totalPages: result.data.totalPages,
+                startPage: page,
+                initiateStartPageClick: false,
+                onPageClick: function (event, page) {
+                  loadreviews(page, queryString);
+                }
+              });
+            },
+            function (xhr, status, error) {
+              alert('보드 데이터 가져오기 실패');
+            });
+  }
+</script>
 </body>
 </html>
