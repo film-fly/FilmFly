@@ -93,7 +93,7 @@ jobs:
         run: |
           aws s3 sync front/ s3://${{env.BUCKET}}/ --delete
 
-      - name: Clear Cache  # 여기서 "Clear Cash" 오타도 수정했습니다.
+      - name: Clear CloudFront Cache
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CLOUD_FRONT_ID }} \
