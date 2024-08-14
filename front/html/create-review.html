@@ -75,21 +75,16 @@
 
   <div class="create-collection-form">
     <label for="inputReviewTitle">리뷰 제목</label>
-    <input type="text" id="inputReviewTitle" class="form-control">
+    <input type="text" id="inputReviewTitle" class="form-control" maxlength="25"> <!-- 제목 길이 제한 -->
     <label for="inputReviewContent">리뷰 설명</label>
-    <textarea id="inputReviewContent" class="form-control" style="height: 200px;"></textarea>
+    <textarea id="inputReviewContent" class="form-control" style="height: 200px;" maxlength="250"></textarea> <!-- 내용 길이 제한 -->
     <label for="inputReviewRating">별점 (<span id="rating-value" class="rating-value">0</span>)</label> <!-- 점수를 표시할 요소 -->
     <div id="inputReviewRating" class="rating align-self-start">
       <input type="radio" id="star5" name="rating" value="5"><label for="star5"></label>
-
       <input type="radio" id="star4" name="rating" value="4"><label for="star4"></label>
-
       <input type="radio" id="star3" name="rating" value="3"><label for="star3"></label>
-
       <input type="radio" id="star2" name="rating" value="2"><label for="star2"></label>
-
       <input type="radio" id="star1" name="rating" value="1"><label for="star1"></label>
-
     </div>
   </div>
   <button id="btnReview" class="btn btn-light mt-3" onclick="createReview()">저장</button>
@@ -122,7 +117,7 @@
     $('#rating-value').text(rating);
   });
 
-  // 리뷰 생성
+  // 리뷰 생성 또는 수정
   $('#btnReview').on('click', function () {
     const title = $('#inputReviewTitle').val();
     const content = $('#inputReviewContent').val();
@@ -138,9 +133,8 @@
       rating: rating
     };
 
-    // 리뷰 생성
     if (!reviewId) {
-      if (confirm('생성 하시겠습니까?')) {
+      if (confirm('리뷰를 생성하시겠습니까?')) {
         apiModule.POST(`/movies/${movieId}/reviews`, data
                 , function (result, status, xhr) {
                   let id = result.data.id;
@@ -150,10 +144,8 @@
                   alert('리뷰 생성 실패\n');
                 });
       }
-    }
-    // 리뷰 수정
-    else {
-      if (confirm('수정 하시겠습니까?')) {
+    } else {
+      if (confirm('리뷰를 수정하시겠습니까?')) {
         apiModule.PATCH(`/reviews/${reviewId}`, data
                 , function (result, status, xhr) {
                   let id = result.data.id;
@@ -171,8 +163,16 @@
       alert('제목을 입력해주세요');
       return false;
     }
+    if (title.length > 25) {
+      alert('제목은 25자 이내로 입력해주세요');
+      return false;
+    }
     if (!content) {
       alert('내용을 입력해주세요');
+      return false;
+    }
+    if (content.length > 250) {
+      alert('내용은 250자 이내로 입력해주세요');
       return false;
     }
     if (!rating) {
