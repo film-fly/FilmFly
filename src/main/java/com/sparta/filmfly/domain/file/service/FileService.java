@@ -57,6 +57,7 @@ public class FileService {
      * local 주소를 s3 주소로 변경된 값을 반환
      */
     public String uploadLocalImageToS3(MediaTypeEnum mediaType,Long boardId,String content) {
+        log.info("파일 변환");
         content = fileUtils.decodeUrlsInContent(content);
 
         Matcher matcher = pattern.matcher(content);
@@ -64,6 +65,7 @@ public class FileService {
             String src = matcher.group(2).trim(); // http://localhost:8080/temp/9bee7b11-3고양이.jpg
             String srcFileName = fileUtils.extractFileName(src); // 9bee7b11-3고양이.jpg
             String currentUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString(); //http://localhost:8080
+            log.info(" srcUrl : {} \n currentUrl : {} \n srcFileName : {}",src,currentUrl,srcFileName);
 
             //img의 src 값의 앞 부분이 임시 이미지면 http://localhost:8080/temp ?
             if(src.startsWith(currentUrl+"/temp/")) {
@@ -78,6 +80,7 @@ public class FileService {
 
                     //temp 폴더에 있는 경우
                     if(!multipartFile.isEmpty()) {
+                        log.info("변환 후 저장");
                         // s3에 저장 및 media 테이블에 저장
                         MediaResponseDto mediaResponseDto = mediaService.createMedia(mediaType, boardId, multipartFile);
                         // local 임시 이미지 삭제
