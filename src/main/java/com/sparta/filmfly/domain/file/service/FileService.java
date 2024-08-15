@@ -58,18 +58,20 @@ public class FileService {
      */
     public String uploadLocalImageToS3(MediaTypeEnum mediaType,Long boardId,String content) {
         log.info("파일 변환");
-        content = fileUtils.decodeUrlsInContent(content);
-
+        content = fileUtils.decodeUrlsInContent(content);   // src= 찾기
+//        log.info(content);
         Matcher matcher = pattern.matcher(content);
         while (matcher.find()){
             String src = matcher.group(2).trim(); // http://localhost:8080/temp/9bee7b11-3고양이.jpg
-            String srcFileName = fileUtils.extractFileName(src); // 9bee7b11-3고양이.jpg
-            String currentUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString(); //http://localhost:8080
-            log.info(" srcUrl : {} \n currentUrl : {} \n srcFileName : {}",src,currentUrl,srcFileName);
+            String srcUrl = fileUtils.extractFileName(src).get("url"); // http://localhost:8080/temp
+            String srcFileName = fileUtils.extractFileName(src).get("file"); // 9bee7b11-3고양이.jpg
+            String currentUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString().split("://")[1]; //http://localhost:8080
+
+            log.info(" srcUrl : {} \n currentUrl : {} \n srcFileName : {}",srcUrl,currentUrl,srcFileName);
 
             //img의 src 값의 앞 부분이 임시 이미지면 http://localhost:8080/temp ?
             if(src.startsWith(currentUrl+"/temp/")) {
-                //log.error("temp 이미지 확인");
+                log.info("temp 이미지 확인");
                 try {
                     String filePath = fileUtils.getAbsoluteUploadFolder() + srcFileName;
 
