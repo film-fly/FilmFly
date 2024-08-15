@@ -215,16 +215,16 @@
       <div class="d-flex justify-content-between align-items-center">
         <div class="user-rating-box" id="user-rating-box">
           <i class="fa-solid fa-star"></i>
-          <span>평가 평점: <span id="user-rating">0.0</span></span>
+          <span>평가 평점:<span id="user-rating">0.0</span></span>
         </div>
       </div>
 
       <div class="review-footer">
         <div class="d-flex align-items-center">
-          <button class="btnReaction" id="btn-like" data-good="true" data-content-id="" data-type="REVIEW">
+          <button class="btnReaction btn" id="btn-like" data-good="true" data-content-id="" data-type="REVIEW">
             <i class="fa-regular fa-thumbs-up"></i> <span>0</span>
           </button>
-          <button class="btnReaction ms-3" id="btn-dislike" data-bad="true" data-content-id="" data-type="REVIEW">
+          <button class="btnReaction btn ms-3" id="btn-dislike" data-bad="true" data-content-id="" data-type="REVIEW">
             <i class="fa-regular fa-thumbs-down"></i> <span>0</span>
           </button>
         </div>
@@ -268,7 +268,7 @@
             function (result, status, xhr) {
               let movie = result.data.movie;
               let movieHtml = `
-        <div class="movie-info">
+        <div class="movie-info common-interactive-item" onclick="location.href='./movie-detail.html?movie=${movieId}'">
           <img src="${imageUrl}${movie.posterPath}" alt="영화 포스터">
           <div class="details">
             <h5>${movie.title}</h5>
@@ -294,13 +294,15 @@
               $('#user-rating').text(review.rating);
 
               let authorHtml = `
-        <img src="${review.pictureUrl || '../images/profileImg.png'}" alt="작성자 프로필 사진">
-        <h5>${review.nickname}</h5>`;
+                <div class="common-interactive-item" onclick="location.href='./mypage.html?user=${review.userId}'">
+                     <img src="${review.pictureUrl || '../images/profileImg.png'}" alt="작성자 프로필 사진">
+                    <h5>${review.nickname}</h5>
+                </div>`;
               $('#review-author-info').html(authorHtml);
 
               // 좋아요/싫어요 버튼 초기화
-              $('#btn-like').html(`<i class="fa-regular fa-thumbs-up"></i> <span>${review.goodCount}</span>`);
-              $('#btn-dislike').html(`<i class="fa-regular fa-thumbs-down"></i> <span>${review.badCount}</span>`);
+              $('#btn-like').html(`<i class="fa-regular fa-thumbs-up"></i><span>&nbsp;${review.goodCount}</span>`);
+              $('#btn-dislike').html(`<i class="fa-regular fa-thumbs-down"></i><span>&nbsp;${review.badCount}</span>`);
 
               $('#btn-like').attr('data-content-id', reviewId);
               $('#btn-dislike').attr('data-content-id', reviewId);
@@ -314,6 +316,7 @@
 
               if (review.isOwner) {
                 $('#btn-edit').on('click', function () {
+                  alert("??");
                   location.href = `./create-review.html?movie=${movieId}&review=${review.id}`;
                 });
                 $('#btn-delete').on('click', function () {

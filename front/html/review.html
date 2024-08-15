@@ -24,7 +24,7 @@
 <div class="container">
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
-
+  <div class="page-title">최신 리뷰</div>
   <div class="d-flex input-group align-items-center">
     <label for="inputMovieSearch">
       <span class="input-group-text" id="basic-addon1">
@@ -39,7 +39,7 @@
     <input type="checkbox" class="btn-check" id="btnFilterGoods" autocomplete="off">
     <label class="btn btn-outline-light" for="btnFilterGoods">좋아요 수 20개 이상</label>
   </div>
-  <ul id="review-box" class="list-group list-group-flush">
+  <ul id="review-box" class="list-group">
   </ul>
   <ul id="pagination-reviews" class="pagination d-flex justify-content-center my-5"></ul>
 </div>
@@ -68,26 +68,32 @@
               let reviews = result.data.data;
               reviews.forEach(review => {
                 let reviewHtml = `
-              <li class="list-group-item">
-                <div class="d-flex flex-column">
-                  <a href="./review-detail.html?review=${review.id}" class="fs-5 fw-bold py-3">${review.title}</a>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                  <div class="profile-box d-flex align-items-center gap-2">
-        <!--            <div>-->
-        <!--              <img class="img-profile-size" src="../images/profileImg.png" alt="프로필 사진">-->
-        <!--            </div>-->
-                    <div>
-                      ${review.nickname}
+                  <li class="list-group-item mypage-interactive-item" onclick="location.href='./review-detail.html?movie=${review.movieId}&review=${review.id}'" style="cursor: pointer;">
+                    <!-- 제목과 생성 시간 -->
+                    <div class="fs-5 fw-bold py-2 mypage-movie-title">${review.movieTitle}</div>
+                    <div class="d-flex align-items-center justify-content-between">
+                      <!-- 리뷰 제목 -->
+                      <div class="fs-5 fw-bold py-2">${review.title}</div>
+
+                      <!-- 생성 시간 -->
+                      <div class="text-end">${review.createdAt}</div>
                     </div>
-                  </div>
-                  <div class="d-flex gap-3">
-                    <p>좋아요 수(${review.goodCount})</p>
-                    <p>싫어요 수(${review.badCount})</p>
-                    <p>${review.createdAt}</p>
-                  </div>
-                </div>
-              </li>
+
+                    <!-- 사용자 이름과 좋아요/싫어요/조회수 -->
+                    <div class="d-flex align-items-center justify-content-between">
+                      <!-- 사용자 이름 -->
+                      <div class="profile-box d-flex align-items-center gap-2 py-1">
+                        <div>${review.nickname}</div>
+                      </div>
+
+                      <!-- 좋아요, 싫어요 -->
+                      <div class="d-flex gap-3 ms-auto">
+                        <div><i class="fa-regular fa-thumbs-up mypage-smile"></i> ${review.goodCount}</div>
+                        <div><i class="fa-regular fa-thumbs-down mypage-angry"></i> ${review.badCount}</div>
+                        <i class="fa-solid fa-star"> ${review.rating || 0}</i>
+                      </div>
+                    </div>
+                  </li>
             `;
                 $('#review-box').append(reviewHtml);
               });

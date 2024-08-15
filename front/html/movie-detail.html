@@ -170,7 +170,7 @@
       <div class="rating-box">
         <i class="fa-solid fa-star"></i>
         <span id="movieRating"></span>
-        <span id="reviewCount"></span>
+        &nbsp;<span id="reviewCount"></span>
       </div>
       <div class="button-box">
         <button id="btnMovieGood" class="btnReaction btn btn-outline-light me-2" data-content-id="" data-type="MOVIE" data-good="true"><i class="fa-regular fa-thumbs-up"></i></button>
@@ -340,14 +340,14 @@
     const statusText = collection.isRegistered ? '<p class="status-message" style="color: red">이미 보관함에 등록되어 있습니다</p>' : '';
 
     return `
-    <div class="collection-form d-flex flex-row card mb-3 ${statusClass}" style="display: flex; align-items: center; position: relative; transition: box-shadow 0.3s;">
+    <div class="common-interactive-item collection-form d-flex flex-row card mb-3 ${statusClass}" style="display: flex; align-items: center;">
       <div class="d-flex justify-content-center ms-3 me-3" style="flex-shrink: 0;">
         <input type="checkbox" class="checkCollection" aria-label="checkCollection" style="zoom: 2; margin: 0; cursor: pointer;" value="${collection.collectionId}" ${collection.isRegistered ? 'disabled' : ''}>
       </div>
       <div class="collection-img-box" style="flex-shrink: 0; width: 100px; height: 150px; display: flex; align-items: center; justify-content: center;">
         <img src="../images/logo.png" class="img-fluid rounded-start" alt="영화 포스터" style="max-width: 100%; max-height: 100%; object-fit: cover;">
       </div>
-      <div class="collection-text-box" style="flex-grow: 1; padding: 10px;">
+      <div class="collection-text-box" style="flex-grow: 1; padding: 10px; color: white;">
         <div>
           <p class="collection-title" style="font-weight: bold;">${collection.collectionName}</p>
           <p class="collection-description">${collection.collectionContent}</p>
@@ -358,7 +358,7 @@
         <button class="btn btn-sm btn-danger btn-delete" style="display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px;" data-collection-id="${collection.collectionId}">
           <i class="bi bi-trash"></i>
         </button>
-        <button class="btn btn-sm btn-light btn-move" style="display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px; margin-left: 5px;" data-collection-id="${collection.collectionId}">
+        <button class="btn btn-sm btn-danger btn-move" style="display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px; margin-left: 5px;" data-collection-id="${collection.collectionId}">
           <i class="bi bi-arrow-right"></i>
         </button>
       </div>
@@ -406,7 +406,7 @@
   });
 
   $(document).on('mouseover', '.collection-form', function() {
-    $(this).css('box-shadow', '0 4px 8px rgba(0, 0, 0, 0.2)');
+    $(this).css('box-shadow', '0 4px 8px rgba(0, 0, 0, 1.0)');
   }).on('mouseout', '.collection-form', function() {
     $(this).css('box-shadow', 'none');
   });
@@ -548,7 +548,7 @@
                   <div class="d-flex align-items-center gap-3">
                     <img class="img-profile-size rounded-circle" src="${review.pictureUrl === null ? '../images/profileImg.png' : review.pictureUrl}" alt="프로필사진">
                     <div><a href="./mypage.html?user=${review.userId}">${review.nickname}</a></div>
-                    <div>${review.createdAt}</div>
+                    <div>(${review.createdAt})</div>
                     <i class="fa-solid fa-star"> ${review.rating}</i>
                   </div>
                 </div>
