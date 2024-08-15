@@ -62,6 +62,10 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
             .limit(pageable.getPageSize())
             .fetch();
 
+        for (CommentResponseDto commentResponseDto : fetch) {
+            System.out.println("댓글시간 : " + commentResponseDto.getId() + " | " + commentResponseDto.getCreatedAt());
+        }
+
         // 페이지의 총 요소 수를 가져옵니다.
         Long total = queryFactory
             .select(comment.count())
