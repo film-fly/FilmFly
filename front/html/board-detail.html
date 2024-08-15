@@ -29,6 +29,12 @@
   <!-- 공통 헤더 -->
   <header id="common-header"></header>
 
+  <div class="d-flex justify-content-between align-items-center my-3">
+    <h2 class="m-0"></h2> <!--얘 있으면 버튼 오른쪽 끝에 감-->
+    <button type="button" class="btn btn-outline-primary" onclick="location.href='board.html'">
+      <i class="fas fa-list"></i> 전체 게시물 보기
+    </button>
+  </div>
 <!--  게시물 -->
   <div id="board-box" class="d-flex flex-column gap-3">
   </div>
@@ -36,7 +42,7 @@
   <hr>
 
 <!--  댓글 -->
-  <ul id="comment-box" class="list-group list-group-flush mb-5">
+  <ul id="comment-box" class="list-group mb-5">
   </ul>
 
   <ul id="pagination-comments" class="pagination d-flex justify-content-center"></ul>
@@ -44,8 +50,11 @@
   <div class="mb-3">
     <label for="inputComment" class="form-label">댓글 입력</label>
     <textarea class="form-control mb-3" id="inputComment" rows="3"></textarea>
-    <button id="btnSaveComment" class="btn btn-light">저장</button>
+    <div class="d-flex justify-content-end">
+      <button id="btnSaveComment" class="btn btn-light">저장</button>
+    </div>
   </div>
+
 </div>
 
 <!-- 신고, 차단 모달 -->
@@ -146,18 +155,21 @@
           let board = result.data.board;
           let reactions = result.data.reactions;
           let boardHtml = `
-          <div class="d-flex align-items-center gap-3">
-            <div class="profile-box d-flex align-items-center gap-2">
-              <div>
-                <img class="img-profile-size rounded-circle" src="${board.profileUrl === null ? '../images/profileImg.png' : board.profileUrl}" alt="프로필 사진">
-              </div>
-              <div><a href="./mypage.html?user=${board.userId}">${board.nickname}</a></div>
+          <div class="d-flex align-items-center justify-content-between py-2 border-bottom">
+            <!-- 프로필 및 닉네임 (왼쪽 끝) -->
+            <div class="d-flex align-items-center">
+              <img class="img-profile-size rounded-circle" src="${board.profileUrl === null ? '../images/profileImg.png' : board.profileUrl}" alt="프로필 사진">
+              <a href="./mypage.html?user=${board.userId}" class="text-decoration-none ms-2">${board.nickname}</a>
             </div>
-            <div>${board.createdAt}</div>
-            <div>조회수(${board.hits})</div>
-            <div class="d-flex justify-content-end flex-grow-1">
+
+            <!-- 생성 시간 (중앙) -->
+            <div class="text-create-time mx-auto">${board.createdAt}</div>
+
+            <!-- 조회 수 및 옵션 메뉴 (오른쪽 끝) -->
+            <div class="d-flex align-items-center gap-3">
+              <div>조회 ${board.hits}</div>
               <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
-              <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${board.userId}" data-content-id="${board.id}" data-content-type="BOARD">
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settings-icon" data-user-id="${board.userId}" data-content-id="${board.id}" data-content-type="BOARD">
                 <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
                 <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
               </ul>
@@ -171,14 +183,14 @@
             <div class="d-flex gap-2">`;
 
           if (reactions.isGood) {
-            boardHtml += `<button class="btnReaction btn btn-light" data-content-id="${board.id}" data-type="BOARD" data-good="true"><i class="fa-regular fa-face-smile"> ${board.goodCount}</i></button>`;
+            boardHtml += `<button class="btnReaction btn btn-light" data-content-id="${board.id}" data-type="BOARD" data-good="true"><i class="fa-regular fa-thumbs-up"> ${board.goodCount}</i></button>`;
           } else {
-            boardHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${board.id}" data-type="BOARD" data-good="true"><i class="fa-regular fa-face-smile"> ${board.goodCount}</i></button>`;
+            boardHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${board.id}" data-type="BOARD" data-good="true"><i class="fa-regular fa-thumbs-up"> ${board.goodCount}</i></button>`;
           }
           if (reactions.isBad) {
-            boardHtml += `<button class="btnReaction btn btn-light" data-content-id="${board.id}" data-type="BOARD" data-bad="true"><i class="fa-regular fa-face-angry"> ${board.badCount}</i></button>`;
+            boardHtml += `<button class="btnReaction btn btn-light" data-content-id="${board.id}" data-type="BOARD" data-bad="true"><i class="fa-regular fa-thumbs-down"> ${board.badCount}</i></button>`;
           } else {
-            boardHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${board.id}" data-type="BOARD" data-bad="true"><i class="fa-regular fa-face-angry"> ${board.badCount}</i></button>`;
+            boardHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${board.id}" data-type="BOARD" data-bad="true"><i class="fa-regular fa-thumbs-down"> ${board.badCount}</i></button>`;
           }
 
           boardHtml += `</div>
@@ -279,14 +291,14 @@
 
   function generateCommentHtml(comment) {
     let commentHtml = `
-          <li class="list-group-item" data-content-id="${comment.id}">
+          <li class="list-group-item " data-content-id="${comment.id}">
             <div class="profile-box d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center gap-2">
+              <div class="d-flex align-items-center gap-2 common-interactive-item" onclick="location.href='./mypage.html?user=${comment.userId}'">
                 <div class="my-2">
                   <img class="img-profile-size rounded-circle" src="${comment.profileImg || '../images/profileImg.png'}" alt="프로필 사진">
                 </div>
-                <div><a href="./mypage.html?user=${comment.userId}">${comment.nickname}</a></div>
-                <div>${comment.createdAt}</div>
+                <div>${comment.nickname}</div>
+                <div>(${comment.createdAt})</div>
               </div>
               <div class="d-flex align-items-center gap-3">
                 <div class="d-flex justify-content-end flex-grow-1">
@@ -312,14 +324,14 @@
             <div class="d-flex gap-2">`;
 
     if (comment.isGood) {
-      commentHtml += `<button class="btnReaction btn btn-light" data-content-id="${comment.id}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-face-smile"> ${comment.goodCount}</i></button>`;
+      commentHtml += `<button class="btnReaction btn btn-light" data-content-id="${comment.id}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-thumbs-up"> ${comment.goodCount}</i></button>`;
     } else {
-      commentHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${comment.id}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-face-smile"> ${comment.goodCount}</i></button>`;
+      commentHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${comment.id}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-thumbs-up"> ${comment.goodCount}</i></button>`;
     }
     if (comment.isBad) {
-      commentHtml += `<button class="btnReaction btn btn-light" data-content-id="${comment.id}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-face-angry"> ${comment.badCount}</i></button>`;
+      commentHtml += `<button class="btnReaction btn btn-light" data-content-id="${comment.id}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-thumbs-down"> ${comment.badCount}</i></button>`;
     } else {
-      commentHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${comment.id}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-face-angry"> ${comment.badCount}</i></button>`;
+      commentHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${comment.id}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-thumbs-down"> ${comment.badCount}</i></button>`;
     }
 
     commentHtml += `</div>

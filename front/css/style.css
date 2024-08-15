@@ -297,9 +297,40 @@ input[name="tab_item"] {
   transform: scale(1.05); /* 이미지 확대 효과 */
 }
 
-.mypage-interactive-item .btn-light {
-  transition: background-color 0.3s, border-color 0.3s;
+.common-interactive-item {
+  position: relative;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  border-radius: 8px; /* 요소 자체의 모서리를 둥글게 설정 */
 }
+
+.common-interactive-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 기본 항목에 마우스 오버 시 그림자 추가 */
+  border-radius: 8px; /* 그림자도 요소와 동일한 둥글기 적용 */
+}
+
+.common-interactive-item:hover img {
+  transform: scale(1.05); /* 이미지 확대 효과 */
+}
+
+.common-interactive-item {
+  position: relative;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.common-interactive-item.active {
+  background-color: rgba(255, 255, 255, 0.1); /* 기본 활성 상태 색상 */
+}
+
+.common-interactive-item.inactive {
+  background-color: rgba(0, 0, 0, 0.3); /* 비활성 상태의 어두운 배경색 */
+  color: #ccc; /* 비활성 상태의 텍스트 색상 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* 비활성 상태에 그림자 추가 */
+}
+
+.common-interactive-item.inactive:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); /* 비활성 상태에서 마우스 오버 시 더 강한 그림자 */
+}
+
 
 .text-create-time {
   color: white;
