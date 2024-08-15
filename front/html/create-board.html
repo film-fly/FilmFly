@@ -90,6 +90,7 @@ if (uri.startsWith("/temp") || uri.startsWith("/image/upload")) {
   $('#btnSaveBoard').on('click', function () {
     let title = $('#inputBoardTitle').val();
     let content = $('#summernote').val();
+    console.log(content);
 
     const data = {
       title: title,

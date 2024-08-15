@@ -11,6 +11,9 @@ import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,7 +54,7 @@ public class FileUtils {
      * url 끝에 FilmeName 추출
      * http://localhost:8080/temp/9bee7b11-3고양이.jpg  -> 9bee7b11-3고양이.jpg
      */
-    public String extractFileName(String url) {
+    public Map<String, String> extractFileName(String url) {
         if (url == null || url.isEmpty()) {
             return null;
         }
@@ -61,7 +64,10 @@ public class FileUtils {
             return null;
         }
         // 슬래시 이후의 부분을 파일 이름으로 추출합니다.
-        return url.substring(lastSlashIndex + 1);
+        Map<String, String> urlMap = new HashMap<>();
+        urlMap.put("url", url.substring(0,lastSlashIndex + 1));
+        urlMap.put("file", url.substring(lastSlashIndex + 1));
+        return urlMap;
     }
 
     /**
