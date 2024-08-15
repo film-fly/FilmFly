@@ -46,6 +46,8 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 ReviewResponseDto.class,
                 qReview.id,
                 qReview.user.id,
+                qReview.movie.id,
+                qReview.movie.title,
                 qReview.user.nickname,
                 qReview.user.pictureUrl,
                 qReview.rating,

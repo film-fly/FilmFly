@@ -11,6 +11,8 @@ import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
+import java.sql.SQLOutput;
+import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
@@ -32,32 +34,43 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
         QGood good = QGood.good;
         QBad bad = QBad.bad;
 
-        JPQLQuery<CommentResponseDto> query = queryFactory
-                .select(Projections.constructor(CommentResponseDto.class,
-                    comment.id,
-                    comment.user.id,
-                    comment.board.id,
-                    comment.user.nickname,
-                    comment.user.pictureUrl,
-                    comment.content,
-                    comment.updatedAt,
-                    good.id.count().as("goodCount"),
-                    bad.id.count().as("badCount")
-                ))
-                .from(comment)
-                .leftJoin(good).on(good.type.eq(ReactionContentTypeEnum.COMMENT).and(good.typeId.eq(comment.id)))
-                .leftJoin(bad).on(bad.type.eq(ReactionContentTypeEnum.COMMENT).and(bad.typeId.eq(comment.id)))
-                .where(comment.board.id.eq(boardId))
-                .groupBy(comment.id, comment.user.id, comment.user.nickname, comment.content, comment.updatedAt)
-                .orderBy(comment.createdAt.asc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize());
+        List<CommentResponseDto> fetch = queryFactory
+            .select(Projections.constructor(CommentResponseDto.class,
+                comment.id,
+                comment.user.id,
+                comment.board.id,
+                comment.user.nickname,
+                comment.user.pictureUrl,
+                comment.content,
+                comment.createdAt,
+                good.id.countDistinct().as("goodCount"),
+                bad.id.countDistinct().as("badCount")
+            ))
+            .from(comment)
+            .leftJoin(good).on(
+                good.type.eq(ReactionContentTypeEnum.COMMENT)
+                    .and(good.typeId.eq(comment.id))
+            )
+            .leftJoin(bad).on(
+                bad.type.eq(ReactionContentTypeEnum.COMMENT)
+                    .and(bad.typeId.eq(comment.id))
+            )
+            .where(comment.board.id.eq(boardId))
+            .groupBy(comment.id, comment.user.id, comment.user.nickname, comment.content, comment.createdAt)
+            .orderBy(comment.createdAt.desc())
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
 
-        List<CommentResponseDto> content = query.fetch();
-        long total = query.fetchCount();  // 페이지의 총 요소 수를 가져옵니다.
+        // 페이지의 총 요소 수를 가져옵니다.
+        Long total = queryFactory
+            .select(comment.count())
+            .from(comment)
+            .where(comment.board.id.eq(boardId))
+            .fetchOne();
 
         // PageImpl을 사용하여 페이지 정보를 생성합니다.
-        PageImpl<CommentResponseDto> page = new PageImpl<>(content, pageable, total);
+        PageImpl<CommentResponseDto> page = new PageImpl<>(fetch, pageable, total);
 
         // PageResponseDto 반환합니다.
         return PageResponseDto.<List<CommentResponseDto>>builder()
@@ -65,7 +78,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 .totalPages(page.getTotalPages())
                 .currentPage(page.getNumber() + 1)
                 .pageSize(page.getSize())
-                .data(content)
+                .data(page.getContent())
                 .build();
     }
 
@@ -138,8 +151,16 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                     .and(qBad.type.eq(ReactionContentTypeEnum.COMMENT))
             )
             .where(qComment.id.in(commentIds))
-            .orderBy(qComment.createdAt.asc())
+            .orderBy(qComment.createdAt.desc())
             .fetch();
+
+        for (ReactionCheckResponseDto reactionCheckResponseDto : fetch) {
+            System.out.println(reactionCheckResponseDto);
+        }
+
+        for (ReactionCheckResponseDto reactionCheckResponseDto : fetch) {
+            System.out.println(reactionCheckResponseDto);
+        }
 
         return fetch;
     }
