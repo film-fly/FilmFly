@@ -97,8 +97,8 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                         comment.user.pictureUrl,
                         comment.content,
                         comment.updatedAt,
-                        good.id.count().as("goodCount"),
-                        bad.id.count().as("badCount")
+                        good.id.countDistinct().as("goodCount"),
+                        bad.id.countDistinct().as("badCount")
                 ))
                 .from(comment)
                 .leftJoin(good).on(good.type.eq(ReactionContentTypeEnum.COMMENT).and(good.typeId.eq(comment.id)))

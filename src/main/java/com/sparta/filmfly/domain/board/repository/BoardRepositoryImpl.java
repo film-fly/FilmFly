@@ -102,8 +102,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                         board.title,
                         board.user.nickname,
                         board.createdAt,
-                        good.id.count().as("goodCount"),
-                        bad.id.count().as("badCount"),
+                        good.id.countDistinct().as("goodCount"),
+                        bad.id.countDistinct().as("badCount"),
                         board.hits
                 ))
                 .from(board)
