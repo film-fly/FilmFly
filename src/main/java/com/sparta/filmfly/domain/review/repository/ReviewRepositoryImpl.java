@@ -54,8 +54,8 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 qReview.title,
                 qReview.content,
                 qReview.createdAt,
-                qGood.id.count().as("goodCount"),
-                qBad.id.count().as("badCount")
+                qGood.id.countDistinct().as("goodCount"),
+                qBad.id.countDistinct().as("badCount")
             ))
             .from(qReview)
             .leftJoin(qGood).on(qGood.type.eq(ReactionContentTypeEnum.REVIEW)

@@ -70,8 +70,8 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
                 qMovie.originalTitle,
                 qMovie.posterPath,
                 qMovie.backdropPath,
-                qGood.id.count().as("goodCount"),
-                qBad.id.count().as("badCount")
+                qGood.id.countDistinct().as("goodCount"),
+                qBad.id.countDistinct().as("badCount")
             ))
             .from(qMovie)
             .leftJoin(qGood).on(qGood.type.eq(ReactionContentTypeEnum.MOVIE)
@@ -97,7 +97,7 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
             .totalPages(page.getTotalPages())
             .currentPage(page.getNumber() + 1)
             .pageSize(page.getSize())
-            .data(fetch)
+            .data(page.getContent())
             .build();
     }
 
@@ -127,8 +127,8 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
                     qCredit.originalName,
                     qCredit.profilePath
                 ),
-                qGood.id.count().as("goodCount"),
-                qBad.id.count().as("badCount")
+                qGood.id.countDistinct().as("goodCount"),
+                qBad.id.countDistinct().as("badCount")
             )
             .from(qMovieCredit)
             .join(qMovie).on(qMovieCredit.movie.id.eq(qMovie.id))
@@ -156,9 +156,6 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
             goodCount = tuples.get(0).get(2, Long.class);
             badCount = tuples.get(0).get(3, Long.class);
         }
-        log.info("movieDto: {}", movieDto);
-        log.info("creditDtos: {}", creditDtos);
-        log.info("goodCount: {}, badCount: {}", goodCount, badCount);
 
         return MovieDetailSimpleResponseDto.builder()
             .movie(movieDto)
