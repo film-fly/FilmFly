@@ -52,6 +52,7 @@ public class GoodRepositoryImpl implements GoodRepositoryCustom {
                 .and(qGood.user.id.eq(userId))
             )
             .where(qGood.type.eq(ReactionContentTypeEnum.MOVIE))
+            .orderBy(qGood.id.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -107,6 +108,7 @@ public class GoodRepositoryImpl implements GoodRepositoryCustom {
             )
             .join(qReview).on(qReview.movie.eq(qMovie))
             .where(qGood.type.eq(ReactionContentTypeEnum.REVIEW))
+            .orderBy(qGood.id.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -156,6 +158,7 @@ public class GoodRepositoryImpl implements GoodRepositoryCustom {
                     .and(qGood.user.id.eq(userId))
             )
             .where(qGood.type.eq(ReactionContentTypeEnum.BOARD))
+            .orderBy(qGood.id.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -207,6 +210,7 @@ public class GoodRepositoryImpl implements GoodRepositoryCustom {
             )
             .join(qComment).on(qComment.board.eq(qBoard))
             .where(qGood.type.eq(ReactionContentTypeEnum.COMMENT))
+            .orderBy(qGood.id.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();

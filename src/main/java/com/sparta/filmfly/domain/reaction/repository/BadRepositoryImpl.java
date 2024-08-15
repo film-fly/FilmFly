@@ -51,6 +51,7 @@ public class BadRepositoryImpl implements BadRepositoryCustom {
                 .and(qBad.user.id.eq(userId))
             )
             .where(qBad.type.eq(ReactionContentTypeEnum.MOVIE))
+            .orderBy(qBad.id.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -106,6 +107,7 @@ public class BadRepositoryImpl implements BadRepositoryCustom {
             )
             .join(qReview).on(qReview.movie.eq(qMovie))
             .where(qBad.type.eq(ReactionContentTypeEnum.REVIEW))
+            .orderBy(qBad.id.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -155,6 +157,7 @@ public class BadRepositoryImpl implements BadRepositoryCustom {
                     .and(qBad.user.id.eq(userId))
             )
             .where(qBad.type.eq(ReactionContentTypeEnum.BOARD))
+            .orderBy(qBad.id.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -206,6 +209,7 @@ public class BadRepositoryImpl implements BadRepositoryCustom {
             )
             .join(qComment).on(qComment.board.eq(qBoard))
             .where(qBad.type.eq(ReactionContentTypeEnum.COMMENT))
+            .orderBy(qBad.id.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();

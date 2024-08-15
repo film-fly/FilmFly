@@ -155,10 +155,6 @@
 <div class="container">
   <header id="common-header"></header>
 
-  <button type="button" class="btn review-btn" onclick="moveToCreateReview()">
-    리뷰 작성하기
-  </button>
-
   <div class="d-flex">
     <div class="me-4">
       <img id="moviePoster" src="" class="img-fluid" alt="영화 포스터" style="max-width: 300px;">
@@ -178,7 +174,9 @@
         <button id="btnFavorite" class="btn btn-outline-light me-2"><i class="fa-regular fa-bookmark"></i> 찜하기</button>
         <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#addCollection"><i class="fa-regular fa-floppy-disk"></i> 보관함 추가</button>
       </div>
-      <p id="movie-description" class="text-center">영화의 줄거리가 여기에 표시됩니다...</p>
+      <p id="movie-description" class="text-center"
+         style="padding: 10px; /* 텍스트 블록의 패딩 추가 */">
+        영화의 줄거리가 여기에 표시됩니다...</p>
     </div>
   </div>
 
@@ -192,6 +190,10 @@
   </div>
 
   <hr>
+
+  <button type="button" class="btn review-btn" onclick="moveToCreateReview()">
+    리뷰 작성하기
+  </button>
 
   <div id="review-box" class="list-group list-group-flush mb-5">
     <!-- 리뷰 목록이 여기에 표시됩니다. -->
@@ -542,7 +544,7 @@
 
               reviews.forEach(review => {
                 let reviewHtml = `
-            <div class="profile-box list-group-item d-flex flex-column p-3 mb-3" style="background-color: #333; color: white;">
+            <div class="profile-box list-group-item d-flex flex-column p-3 mb-3" style="background-color: #333; color: white; border-radius: 8px; border: 1px solid white;">
               <div class="d-flex align-items-center justify-content-between mb-3">
                 <div class="me-3 d-flex flex-column">
                   <div class="d-flex align-items-center gap-3">

@@ -400,3 +400,7 @@ input::placeholder, input.form-control::placeholder {
   border-color: #333;
   color: #ffffff;
 }
+
+p {
+  line-height: 1.6; /* 줄 높이를 1.6배로 설정 (기본값보다 높게) */
+}
