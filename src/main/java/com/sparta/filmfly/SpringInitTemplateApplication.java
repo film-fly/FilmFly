@@ -19,6 +19,7 @@ public class SpringInitTemplateApplication {
     @PostConstruct
     void started(){
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+        System.out.println("현재 타임존: " + TimeZone.getDefault().getID());
     }
 
 //    @Component
