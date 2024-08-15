@@ -3,17 +3,36 @@ $(function () {
   $('#common-header').load('../common/common-header.html', function() {
     console.log('Header loaded.');
 
+    // 쿠키에서 accessToken 가져오기 함수
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
     // 로그인 상태 확인 함수
     function checkLoginStatus() {
       const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
       const loginTime = localStorage.getItem('loginTime');
       const currentTime = new Date().getTime();
+      const accessToken = getCookie('accessToken');
+
+      // accessToken이 없으면 로그아웃 처리
+      if (!accessToken) {
+        if (isLoggedIn) {
+          localStorage.setItem('isLoggedIn', 'false');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('loginTime');
+        }
+        return false;
+      }
 
       // 로그인 시간이 설정되어 있고, 현재 시간이 로그인 시간보다 크면 세션 만료
       if (loginTime && currentTime > parseInt(loginTime)) {
-        if (localStorage.getItem('isLoggedIn') === 'true') {
+        if (isLoggedIn) {
           localStorage.setItem('isLoggedIn', 'false');
           localStorage.removeItem('userRole');
+          localStorage.removeItem('loginTime');
           alert('세션이 만료되었습니다. 다시 로그인해 주세요.');
           location.href = '../html/login.html';
         }

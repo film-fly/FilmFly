@@ -91,31 +91,6 @@
       commentBox.find('.cancel-edit').show();
     });
 
-    // 저장 버튼 클릭 이벤트 핸들러
-    $(document).on('click', '.save-comment', function () {
-      let commentBox = $(this).closest('.list-group-item');
-      let updatedContent = commentBox.find('.edit-textarea').val().trim();
-      let commentId = commentBox.data('content-id');
-
-      $.ajax({
-        type: 'POST',
-        url: '/update-comment', // 실제 서버의 댓글 수정 API URL로 변경
-        data: JSON.stringify({ commentId: commentId, content: updatedContent }),
-        contentType: 'application/json;charset=utf-8'
-      })
-      .done(function (result, status, xhr) {
-        commentBox.find('.comment-content').html(updatedContent);
-        commentBox.find('.edit-comment').show();
-        commentBox.find('.delete-comment').show();
-        commentBox.find('.btnReaction').show();
-        commentBox.find('.save-comment').hide();
-        commentBox.find('.cancel-edit').hide();
-      })
-      .fail(function (xhr, status, er) {
-        alert("댓글 수정 실패");
-      });
-    });
-
     // 취소 버튼 클릭 이벤트 핸들러
     $(document).on('click', '.cancel-edit', function () {
       let commentBox = $(this).closest('.list-group-item');
@@ -125,6 +100,42 @@
       commentBox.find('.btnReaction').show();
       commentBox.find('.save-comment').hide();
       commentBox.find('.cancel-edit').hide();
+    });
+
+    // 저장 버튼 클릭 이벤트 핸들러
+    $(document).on('click', '.save-comment', function () {
+      let commentBox = $(this).closest('.list-group-item');
+      let updatedContent = commentBox.find('.edit-textarea').val().trim();
+      let commentId = commentBox.data('content-id');
+
+      const data = {
+        content: updatedContent
+      }
+
+      apiModule.PATCH(`/comments/${commentId}`, data, function (result) {
+        commentBox.find('.comment-content').html(updatedContent);
+        commentBox.find('.edit-comment').show();
+        commentBox.find('.delete-comment').show();
+        commentBox.find('.btnReaction').show();
+        commentBox.find('.save-comment').hide();
+        commentBox.find('.cancel-edit').hide();
+      }, function (result) {
+        alert(result.responseJSON.message)
+      });
+    });
+
+    // 삭제 버튼 클릭 이벤트 핸들러
+    $(document).on('click', '.delete-comment', function () {
+      if (confirm('삭제 하시겠습니까?')) {
+        let commentBox = $(this).closest('.list-group-item');
+        let commentId = commentBox.data('content-id');
+
+        apiModule.DELETE(`/comments/${commentId}`, null, function (result) {
+          commentBox.remove();
+        }, function (result) {
+          alert(result.responseJSON.message)
+        });
+      }
     });
   });
 
@@ -195,53 +206,7 @@
           let comments = result.data.data;
           $('#comment-box').empty(); // 기존 댓글을 지우고 새 댓글을 불러옵니다.
           comments.forEach(comment => {
-            let commentHtml = `
-          <li class="list-group-item" data-content-id="${comment.id}">
-            <div class="profile-box d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center gap-2">
-                <div class="my-2">
-                  <img class="img-profile-size rounded-circle" src="${comment.profileImg || '../images/profileImg.png'}" alt="프로필 사진">
-                </div>
-                <div><a href="./mypage.html?user=${comment.userId}">${comment.nickname}</a></div>
-                <div>${comment.createdAt}</div>
-              </div>
-              <div class="d-flex align-items-center gap-3">
-                <div class="d-flex justify-content-end flex-grow-1">
-                  <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
-                  <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${comment.userId}" data-content-id="${comment.commentId}" data-content-type="COMMENT">
-                    <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
-                    <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
-                  </ul>
-                </div>`;
-                if (comment.isOwner) {
-                  commentHtml += `<div>
-                      <button class="btn btn-light edit-comment">수정</button>
-                      <button class="btn btn-light delete-comment">삭제</button>
-                      <button class="btn btn-light save-comment" style="display:none;">저장</button>
-                      <button class="btn btn-light cancel-edit" style="display:none;">취소</button>
-                    </div>`;
-                }
-              commentHtml += `</div>
-            </div>
-            <div class="comment-content mb-3">
-              ${comment.content}
-            </div>
-            <div class="d-flex gap-2">`;
-
-            if (comment.isGood) {
-              commentHtml += `<button class="btnReaction btn btn-light" data-content-id="${comment.id}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-face-smile"> ${comment.goodCount}</i></button>`;
-            } else {
-              commentHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${comment.id}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-face-smile"> ${comment.goodCount}</i></button>`;
-            }
-            if (comment.isBad) {
-              commentHtml += `<button class="btnReaction btn btn-light" data-content-id="${comment.id}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-face-angry"> ${comment.badCount}</i></button>`;
-            } else {
-              commentHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${comment.id}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-face-angry"> ${comment.badCount}</i></button>`;
-            }
-
-            commentHtml += `</div>
-          </li>
-        `;
+            let commentHtml = generateCommentHtml(comment);
             $('#comment-box').append(commentHtml);
           });
 
@@ -279,30 +244,89 @@
 
 <script>
   $('#btnSaveComment').on('click', function () {
-    let content = $('#inputComment').val();
+    let content = $('#inputComment').val().trim();
+
+    if (content === '') {
+      alert('댓글 내용을 입력하세요.');
+      return;
+    }
 
     const data = {
       content: content
     };
 
-    apiModule.POST('/users/check-nickname', data, function () {
+    apiModule.POST(`/boards/${boardId}/comments`, data, function (result) {
+      // 댓글이 성공적으로 추가된 후
+      let comment = result.data;
+      $('#inputComment').val(''); // 입력 필드를 초기화
+      comment.isOwner = true;
 
-    }, function () {
+      // 새로운 댓글 HTML 생성
+      let commentHtml = generateCommentHtml(comment);
+
+      // 현재 댓글 수 체크
+      const commentCount = $('#comment-box .list-group-item').length;
+
+      // 제일 처음에 추가
+      $('#comment-box').prepend(commentHtml);
+      $('html, body').animate({
+        scrollTop: $('#comment-box').offset().top
+      }, 'fast');
+    }, function (result) {
+      alert(result.responseJSON.message);
     });
-
-    // $.ajax({
-    //   type: 'POST',
-    //   url: '',
-    //   data: JSON.stringify(data),
-    //   contentType: "application/json;charset=utf-8"
-    // })
-    // .done(function (result, status, xhr) {
-    //
-    // })
-    // .fail(function (xhr, status, er) {
-    //   alert("댓글 등록 실패");
-    // });
   });
+
+  function generateCommentHtml(comment) {
+    let commentHtml = `
+          <li class="list-group-item" data-content-id="${comment.id}">
+            <div class="profile-box d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="my-2">
+                  <img class="img-profile-size rounded-circle" src="${comment.profileImg || '../images/profileImg.png'}" alt="프로필 사진">
+                </div>
+                <div><a href="./mypage.html?user=${comment.userId}">${comment.nickname}</a></div>
+                <div>${comment.createdAt}</div>
+              </div>
+              <div class="d-flex align-items-center gap-3">
+                <div class="d-flex justify-content-end flex-grow-1">
+                  <i class="fa-solid fa-ellipsis-vertical fs-4 settings-icon" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                  <ul class="dropdown-menu" aria-labelledby="settings-icon" data-user-id="${comment.userId}" data-content-id="${comment.commentId}" data-content-type="COMMENT">
+                    <li class="dropdown-item block-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">차단</li>
+                    <li class="dropdown-item report-user" data-bs-toggle="modal" data-bs-target="#blockReportModal">신고</li>
+                  </ul>
+                </div>`;
+    if (comment.isOwner) {
+      commentHtml += `<div>
+                      <button class="btn btn-light edit-comment">수정</button>
+                      <button class="btn btn-light delete-comment">삭제</button>
+                      <button class="btn btn-light save-comment" style="display:none;">저장</button>
+                      <button class="btn btn-light cancel-edit" style="display:none;">취소</button>
+                    </div>`;
+    }
+    commentHtml += `</div>
+            </div>
+            <div class="comment-content mb-3">
+              ${comment.content}
+            </div>
+            <div class="d-flex gap-2">`;
+
+    if (comment.isGood) {
+      commentHtml += `<button class="btnReaction btn btn-light" data-content-id="${comment.id}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-face-smile"> ${comment.goodCount}</i></button>`;
+    } else {
+      commentHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${comment.id}" data-type="COMMENT" data-good="true"><i class="fa-regular fa-face-smile"> ${comment.goodCount}</i></button>`;
+    }
+    if (comment.isBad) {
+      commentHtml += `<button class="btnReaction btn btn-light" data-content-id="${comment.id}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-face-angry"> ${comment.badCount}</i></button>`;
+    } else {
+      commentHtml += `<button class="btnReaction btn btn-outline-light" data-content-id="${comment.id}" data-type="COMMENT" data-bad="true"><i class="fa-regular fa-face-angry"> ${comment.badCount}</i></button>`;
+    }
+
+    commentHtml += `</div>
+          </li>
+        `;
+    return commentHtml;
+  }
 </script>
 <script src="../js/reaction.js"></script>
 </body>
