@@ -108,8 +108,8 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 qReview.title,
                 qReview.content,
                 qReview.createdAt,
-                qGood.id.count().as("goodCount"),
-                qBad.id.count().as("badCount")
+                qGood.id.countDistinct().as("goodCount"),
+                qBad.id.countDistinct().as("badCount")
             ))
             .from(qReview)
             .leftJoin(qGood).on(qGood.type.eq(ReactionContentTypeEnum.REVIEW)
@@ -186,6 +186,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 qReview.title,
                 qReview.content,
                 qReview.createdAt,
+//                추후 좋아요, 싫어요 숫자에 문제가 생기면 count()를 countDistinct()로 바꿔보기
                 qGood.id.count().as("goodCount"),
                 qBad.id.count().as("badCount")
             ))

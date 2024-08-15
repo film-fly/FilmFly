@@ -289,6 +289,7 @@
                 const data = response.data;
                 loadContents(data);
                 $('.section-private').hide();
+                $('#board-section').hide();
             }, function () {
                 alert("상대방 유저 정보를 불러오는데 실패했습니다.");
             });
