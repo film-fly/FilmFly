@@ -154,14 +154,6 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
             .orderBy(qComment.createdAt.desc())
             .fetch();
 
-        for (ReactionCheckResponseDto reactionCheckResponseDto : fetch) {
-            System.out.println(reactionCheckResponseDto);
-        }
-
-        for (ReactionCheckResponseDto reactionCheckResponseDto : fetch) {
-            System.out.println(reactionCheckResponseDto);
-        }
-
         return fetch;
     }
 }
