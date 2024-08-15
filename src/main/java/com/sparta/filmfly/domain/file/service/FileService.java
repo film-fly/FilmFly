@@ -62,7 +62,7 @@ public class FileService {
 //        log.info(content);
         Matcher matcher = pattern.matcher(content);
         while (matcher.find()){
-            String src = matcher.group(2).trim().split("://")[1]; // http://localhost:8080/temp/9bee7b11-3고양이.jpg
+            String src = matcher.group(2).trim(); // http://localhost:8080/temp/9bee7b11-3고양이.jpg
             String srcUrl = fileUtils.extractFileName(src).get("url"); // http://localhost:8080/temp
             String srcFileName = fileUtils.extractFileName(src).get("file"); // 9bee7b11-3고양이.jpg
             String currentUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString().split("://")[1]; //http://localhost:8080
@@ -70,7 +70,7 @@ public class FileService {
             log.info(" srcUrl : {} \n currentUrl : {} \n srcFileName : {}",srcUrl,currentUrl,srcFileName);
 
             //img의 src 값의 앞 부분이 임시 이미지면 http://localhost:8080/temp ?
-            if(src.startsWith(currentUrl+"/temp/")) {
+            if(src.split("://")[1].startsWith(currentUrl+"/temp/")) {
                 log.info("temp 이미지 확인");
                 try {
                     String filePath = fileUtils.getAbsoluteUploadFolder() + srcFileName;
