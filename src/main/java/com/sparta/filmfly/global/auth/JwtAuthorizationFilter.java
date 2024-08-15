@@ -87,6 +87,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         log.info("요청된 URI: {} {}", http, uri);
 
         String accessToken = getTokenFromCookie(req, "accessToken");
+        log.info("accessToken : {}",accessToken);
         if (!StringUtils.hasText(accessToken)) {
             filterChain.doFilter(req, res);
             return;
