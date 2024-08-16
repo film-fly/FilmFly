@@ -17,11 +17,89 @@
     - 대용량 트래픽 관리와 동시성 제어, 쿼리 최적화 등을 통해 쾌적한 서버 환경을 제공합니다.
 
 <br/><br/>
-# 🖼️ 프로젝트 상세 소개 및 이미지
+# 🖼️ 프로젝트 상세 이미지
 <img src="https://github.com/user-attachments/assets/9f8ae500-ba16-4136-a4a2-ca8654ed6192" alt="FilmFlyLogo" style="width: 100px;">
 
-프론트 이미지들 넣기
+**메인 페이지**
+<img src="https://github.com/user-attachments/assets/a45ee213-ec3a-4ccd-ad42-130a96f3982b" alt="" style="max-width: 100%;">
 
+<br/>
+<details>
+<summary><b>페이지 상세 소개</b></summary> 
+<br/><b>로그인</b>
+<img src="https://github.com/user-attachments/assets/e6cbe27f-e744-450b-aa14-33506d0b5d15" alt="" style="max-width: 100%;">
+
+<br/><b>회원가입</b>
+<img src="https://github.com/user-attachments/assets/61e31c14-c49d-451f-bbcf-fa8d9461ee3a" alt="" style="max-width: 100%;">
+
+<br/><b>영화</b>
+<img src="https://github.com/user-attachments/assets/9b447bcc-3350-4801-a4f2-57f607b4c213" alt="" style="max-width: 100%;">
+
+<br/><b>영화 검색</b>
+<img src="https://github.com/user-attachments/assets/2711a70a-1225-46b4-b4a3-342016120359" alt="" style="max-width: 100%;">
+
+<br/><b>영화 상세</b>
+<img src="https://github.com/user-attachments/assets/d467ef20-8ef0-4ebd-9c45-62b061a35b16" alt="" style="max-width: 100%;">
+
+<br/><b>영화 상세 보관함</b>
+<img src="https://github.com/user-attachments/assets/d460d1e2-8ded-455b-884e-b548138d1ed1" alt="" style="max-width: 100%;">
+
+<br/><b>영화 리뷰 작성</b>
+<img src="https://github.com/user-attachments/assets/28e987aa-c6a8-4c64-921e-020e4e963c25" alt="" style="max-width: 100%;">
+
+<br/><b>영화 리뷰</b>
+<img src="https://github.com/user-attachments/assets/72a5db69-460b-4932-966b-a232c8e4aafa" alt="" style="max-width: 100%;">
+
+<br/><b>최신 게시물</b>
+<img src="https://github.com/user-attachments/assets/55d52b7e-ac5a-4ba7-85c6-9871b2a80b70" alt="" style="max-width: 100%;">
+
+<br/><b>게시물 작성</b>
+<img src="https://github.com/user-attachments/assets/dc14a68e-2d21-4852-be69-6cc0d50f4ab6" alt="" style="max-width: 100%;">
+
+<br/><b>게시물</b>
+<img src="https://github.com/user-attachments/assets/63303bfc-9fe2-4071-a1d6-29292b8b621d" alt="" style="max-width: 100%;">
+
+<br/><b>최신 리뷰</b>
+<img src="https://github.com/user-attachments/assets/62acf464-e1ef-44b4-ba07-8d101e8b17c0" alt="" style="max-width: 100%;">
+
+<br/><b>신고 및 차단</b>
+<img width="1280" alt="FilmFly-신고 차단" src="https://github.com/user-attachments/assets/6a848942-46c9-4cc7-9a7c-3b2a57387e18">
+</details>
+
+<br/>
+<details>
+<summary><b>마이 페이지</b></summary> 
+<br/><b>마이페이지</b>
+<img src="https://github.com/user-attachments/assets/fa6115a8-9788-4aeb-981c-bb6541ce3080" alt="" style="max-width: 100%;">
+
+<br/><b>마이페이지 - 보관함</b>
+<img src="https://github.com/user-attachments/assets/80f1b576-94e3-47d9-a942-50926602f211" alt="" style="max-width: 100%;">
+
+<br/><b>마이페이지 - 보관함 상세</b>
+<img src="https://github.com/user-attachments/assets/de5a6243-1175-4c89-8ad6-50bbb9822979" alt="" style="max-width: 100%;">
+
+<br/><b>마이페이지 - 리뷰 목록</b>
+<img src="https://github.com/user-attachments/assets/77c59c3c-91b0-4f4a-8523-d1bdddd24caa" alt="" style="max-width: 100%;">
+
+<br/><b>마이페이지 - 좋아요</b>
+<img src="https://github.com/user-attachments/assets/76e8c2c9-021e-4c91-b89a-f74d72903269" alt="" style="max-width: 100%;">
+</details>
+
+<br/>
+<details>
+<summary><b>관리자 페이지</b></summary> 
+<br/><b>관리자 페이지 - 유저 관리</b>
+<img src="https://github.com/user-attachments/assets/e964637e-0641-4e4b-b486-99ed7918b714" alt="" style="max-width: 100%;">
+
+<br/><b>관리자 페이지 - 유저 상세</b>
+<img src="https://github.com/user-attachments/assets/a715613d-10aa-413c-ad14-6d7e9cca565d" alt="" style="max-width: 100%;">
+
+<br/><b>관리자 페이지 - 신고 관리</b>
+<img src="https://github.com/user-attachments/assets/da9b3320-2072-4490-ad3b-0fb8f9e8c4f1" alt="" style="max-width: 100%;">
+
+<br/><b>관리자 페이지 - 신고 상세</b>
+<img src="https://github.com/user-attachments/assets/60d86650-9866-4dee-aee1-59ab948308ec" alt="" style="max-width: 100%;">
+</details>
 🙏🙏🤝🎉✨🎟️🎫🎁🖼️🎨🛠️⚙️🖥️💻🪪🎥🎬📽️📺✏️🗓️📋📌
 
 <br/><br/>
