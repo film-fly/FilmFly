@@ -103,7 +103,7 @@ if (uri.startsWith("/temp") || uri.startsWith("/image/upload")) {
         apiModule.POST('/boards', data,
             function (result, status, xhr) {
               let savedBoardId = result.data.id;
-              location.replace(`./board-detail.html?board=${savedBoardId}`);
+              location.replace(`../html/board-detail.html?board=${savedBoardId}`);
             },
             function (xhr, status, error) {
               alert('생성 실패\n');
@@ -115,7 +115,7 @@ if (uri.startsWith("/temp") || uri.startsWith("/image/upload")) {
       if (confirm('수정 하시겠습니까?')) {
         apiModule.PATCH(`/boards/${boardId}`, data
             , function (result, status, xhr) {
-              location.replace(`./board-detail.html?board=${boardId}`);
+              location.replace(`../html/board-detail.html?board=${boardId}`);
             },
             function (xhr, status, error) {
               alert('수정 실패\n');
