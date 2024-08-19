@@ -61,11 +61,14 @@ public class AdminController {
     @GetMapping("/reports")
     public ResponseEntity<DataResponseDto<ReportPageResponseDto>> getAllReports(
             @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam(required = false, defaultValue = "10") int size
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String order
     ) {
-        ReportPageResponseDto reports = reportService.getAllReports(page - 1, size);
+        ReportPageResponseDto reports = reportService.getAllReports(page - 1, size, sortBy, order);
         return ResponseUtils.success(reports);
     }
+
 
     /**
      * 신고 상세 조회

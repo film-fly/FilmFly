@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,8 +74,14 @@ public class ReportService {
      * 신고 목록 조회 (어드민 권한)
      */
     @Transactional(readOnly = true)
-    public ReportPageResponseDto getAllReports(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public ReportPageResponseDto getAllReports(int page, int size, String sortBy, String order) {
+        // 정렬 방향 설정 (ASC 또는 DESC)
+        Sort.Direction sortDirection = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        // 정렬 정보 포함한 Pageable 객체 생성
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+
+        // 페이지 요청에 따른 결과 조회
         Page<Report> reportsPage = reportRepository.findAll(pageable);
 
         List<ReportResponseDto> reportResponseDtos = reportsPage.getContent().stream()
@@ -99,6 +106,7 @@ public class ReportService {
                 .pageSize(size)
                 .build();
     }
+
 
     /**
      * 신고 상세 조회
