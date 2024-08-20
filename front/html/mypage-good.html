@@ -221,7 +221,7 @@
   function generateMovieHtml(movie) {
     return `
       <div class="list-group-item d-flex p-3 movie-item">
-        <a href="./movie-detail.html?movie=${movie.movieId}" class="d-flex align-items-center flex-grow-1">
+        <a href="../html/movie-detail.html?movie=${movie.movieId}" class="d-flex align-items-center flex-grow-1">
           <div>
             <img class="img-default-size" src="${imageUrl}${movie.posterPath}" alt="${movie.title}">
           </div>

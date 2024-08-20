@@ -482,9 +482,9 @@
                         // 클릭 이벤트 리스너 추가
                         element.addEventListener('click', function () {
                             if (itemType === 'review') {
-                                location.href = `./review-detail.html?movie=${item.movieId}&review=${item.id}`;
+                                location.href = `../html/review-detail.html?movie=${item.movieId}&review=${item.id}`;
                             } else {
-                                location.href = `./${itemType}-detail.html?${itemType}=${item.id}`;
+                                location.href = `../html/${itemType}-detail.html?${itemType}=${item.id}`;
                             }
                         });
                     }

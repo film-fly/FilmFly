@@ -29,7 +29,7 @@ function renderUserProfile(userId,userInfo) {
 
   // 프로필 클릭 이벤트 추가
   $('#user-info').on('click', function() {
-    const newUrl = `mypage.html?user=${userId}`;
+    const newUrl = `../html/mypage.html?user=${userId}`;
     window.location.href = newUrl;
   });
 }
