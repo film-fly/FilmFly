@@ -3,6 +3,7 @@ package com.sparta.filmfly.domain.user.service;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
+import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
 import com.sparta.filmfly.global.exception.custom.detail.LimitedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,9 @@ public class EmailVerificationService {
     @Transactional
     public void sendVerificationEmail(String email) {
         // 이메일 존재 여부 확인
-        userRepository.existsByEmail(email);
+        if (userRepository.existsByEmail(email)) {
+            throw new DuplicateException(ResponseCodeEnum.EMAIL_ALREADY_EXISTS);
+        }
 
         // 전송 횟수 확인
         String sendCountKey = email + ":sendCount";
